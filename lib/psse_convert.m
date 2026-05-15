@@ -143,18 +143,37 @@ nbr = size(data.branch.num, 1);
 branch = zeros(nbr, ANGMAX);
 branch(:, ANGMIN) = -360;
 branch(:, ANGMAX) = 360;
-branch(:, [F_BUS BR_R BR_X BR_B RATE_A RATE_B RATE_C]) = ...
-    data.branch.num(:, [1 4 5 6 7 8 9]);
-branch(:, T_BUS) = abs(data.branch.num(:, 2));  %% can be negative to indicate metered end
-if rev <= 27        %% includes transformer ratio, angle
-    branch(:, BR_STATUS) = data.branch.num(:, 16);
-    branch(~isnan(data.branch.num(:, 10)), TAP) = ...
-        data.branch.num(~isnan(data.branch.num(:, 10)), 10);
-    branch(~isnan(data.branch.num(:, 11)), SHIFT) = ...
-        data.branch.num(~isnan(data.branch.num(:, 11)), 11);
+if rev >= 34 && size(data.branch.num, 2) >= 24
+    branch(:, [F_BUS BR_R BR_X BR_B RATE_A RATE_B RATE_C]) = ...
+        data.branch.num(:, [1 4 5 6 8 9 10]);
+    branch(:, BR_STATUS) = data.branch.num(:, 24);
+    brsh_f = 20:21;
+    brsh_t = 22:23;
+    warns{end+1} = sprintf('For PSS/E rev %d branch data, branch names, ratings 4-12, metered end, length, and ownership data were not retained.', rev);
+    if verbose
+        fprintf('WARNING: For PSS/E rev %d branch data, only ratings 1-3 were retained.\n', rev);
+    end
 else
-    branch(:, BR_STATUS)    = data.branch.num(:, 14);
+    branch(:, [F_BUS BR_R BR_X BR_B RATE_A RATE_B RATE_C]) = ...
+        data.branch.num(:, [1 4 5 6 7 8 9]);
+    if rev <= 27        %% includes transformer ratio, angle
+        branch(:, BR_STATUS) = data.branch.num(:, 16);
+        branch(~isnan(data.branch.num(:, 10)), TAP) = ...
+            data.branch.num(~isnan(data.branch.num(:, 10)), 10);
+        branch(~isnan(data.branch.num(:, 11)), SHIFT) = ...
+            data.branch.num(~isnan(data.branch.num(:, 11)), 11);
+    else
+        branch(:, BR_STATUS)    = data.branch.num(:, 14);
+    end
+    if rev <= 27
+        brsh_f = 12:13;
+        brsh_t = 14:15;
+    else
+        brsh_f = 10:11;
+        brsh_t = 12:13;
+    end
 end
+branch(:, T_BUS) = abs(data.branch.num(:, 2));  %% can be negative to indicate metered end
 %% integrate branch shunts (explicit shunts, not line-charging)
 ibr = (1:nbr)';
 fbus = e2i(branch(:, F_BUS));
@@ -175,14 +194,37 @@ if length(nzt) < nbr
 end
 Cf = sparse(ibr(nzf), fbus(nzf), branch(nzf, BR_STATUS), nbr, nb);  %% only in-service branches
 Ct = sparse(ibr(nzt), tbus(nzt), branch(nzt, BR_STATUS), nbr, nb);  %% only in-service branches
-if rev <= 27
+if ~isempty(brsh_f) && size(data.branch.num, 2) >= brsh_t(end)
     bus(:, [GS BS]) = bus(:, [GS BS]) + ...
-        Cf' * data.branch.num(:, 12:13)*baseMVA + ...
-        Ct' * data.branch.num(:, 14:15)*baseMVA;
-else
-    bus(:, [GS BS]) = bus(:, [GS BS]) + ...
-        Cf' * data.branch.num(:, 10:11)*baseMVA + ...
-        Ct' * data.branch.num(:, 12:13)*baseMVA;
+        Cf' * data.branch.num(:, brsh_f)*baseMVA + ...
+        Ct' * data.branch.num(:, brsh_t)*baseMVA;
+end
+
+%%-----  system switching device data  -----
+if isfield(data, 'swdev') && ~isempty(data.swdev.num)
+    nswdev = size(data.swdev.num, 1);
+    swdev = data.swdev.num;
+    swbranch = zeros(nswdev, ANGMAX);
+    swbranch(:, ANGMIN) = -360;
+    swbranch(:, ANGMAX) = 360;
+
+    x = swdev(:, 4);
+    x(isnan(x)) = 0;
+    rates = swdev(:, 5:7);
+    rates(isnan(rates)) = 0;
+    status = swdev(:, 17);
+    status(isnan(status)) = 1;
+
+    swbranch(:, [F_BUS T_BUS]) = [swdev(:, 1) abs(swdev(:, 2))];
+    swbranch(:, BR_X) = x;
+    swbranch(:, [RATE_A RATE_B RATE_C]) = rates;
+    swbranch(:, BR_STATUS) = status;
+    branch = [branch; swbranch];
+
+    warns{end+1} = sprintf('Converted %d system switching devices to zero-resistance MATPOWER branches; normal status, switching type, names, and ratings 4-12 were not retained.', nswdev);
+    if verbose
+        fprintf('WARNING: Converted %d system switching devices to zero-resistance MATPOWER branches.\n', nswdev);
+    end
 end
 
 %%-----  generator data  -----

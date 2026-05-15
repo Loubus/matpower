@@ -82,7 +82,10 @@ end
 if rev
     warns{end+1} = sprintf('Conversion explicitly using PSS/E revision %d', rev);
 end
-[d, c] = psse_parse_line(records{1}, 'dfdfff');
+id_records = records(sections(s).first:sections(s).last);
+id_headers = cellfun(@(r)~isempty(regexp(r, '^\s*@!', 'once')), id_records);
+id_records(id_headers) = [];
+[d, c] = psse_parse_line(id_records{1}, 'dfdfff');
 nn = length(d);
 data.id.IC = d{1};
 if isempty(d{2}) || d{2} <= 0
@@ -116,8 +119,16 @@ else
     data.id.BASFRQ = 0;
 end
 data.id.comment0 = c;
-data.id.comment1 = records{2};
-data.id.comment2 = records{3};
+if length(id_records) > 1
+    data.id.comment1 = id_records{2};
+else
+    data.id.comment1 = '';
+end
+if length(id_records) > 2
+    data.id.comment2 = id_records{3};
+else
+    data.id.comment2 = '';
+end
 if verbose
     if rev
         if data.id.REV
@@ -151,6 +162,11 @@ if isempty(data.id.IC) || data.id.IC ~= 0
     end
 end
 s = s + 1;
+
+%%-----  skip system-wide data  -----
+if s <= length(sections) && strcmpi(sections(s).name, 'SYSTEM-WIDE')
+    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'system-wide');
+end
 
 %%-----  bus data  -----
 if rev < 24         %% includes load data 
@@ -197,12 +213,27 @@ elseif rev < 31
     [data.branch, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
         'branch', 'dd.ffffffffffd');
 %       'branch', 'ddsffffffffffdfdfdfdfdf');
+elseif rev >= 34
+    branch_template = ['dd.fff.' repmat('f', 1, 16) 'ddfdfdfdfdf'];
+    [data.branch, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+        'branch', branch_template);
 else
     [data.branch, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
         'branch', 'dd.ffffffffffd');
 %       'branch', 'ddsffffffffffddfdfdfdfdf');
 end
 s = s + 1;
+
+%%-----  system switching device data  -----
+if s <= length(sections) && strcmpi(sections(s).name, 'SYSTEM SWITCHING DEVICE')
+    swdev_template = ['dd.' repmat('f', 1, 13) 'dddd.'];
+    [data.swdev, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+        'system switching device', swdev_template);
+    s = s + 1;
+else
+    data.swdev.num = zeros(0, 20);
+    data.swdev.txt = cell(0, 20);
+end
 
 %%-----  skip transformer adjustment data  -----
 if rev <= 27
@@ -241,6 +272,10 @@ if rev > 27
     i3 = 0;
 
     while i <= sections(s).last
+        if ~isempty(regexp(records{i}, '^\s*@!', 'once'))
+            i = i + 1;
+            continue;
+        end
         %% determine transformer type
         pat = '[^''",\s/]+\s*(,|\s)\s*[^''",\s/]+\s*(,|\s)\s*([^''",\s/]+)';
         m = regexp(records{i}, pat, 'tokens', 'once');
@@ -379,7 +414,12 @@ s = s + 1;
 
 %%-----  skip voltage source converter data  -----
 if rev > 28
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'voltage source converter');
+    if s <= length(sections) && strcmpi(sections(s).name, 'VSC DC LINE')
+        label = 'VSC DC LINE';
+    else
+        label = 'voltage source converter';
+    end
+    [s, warns] = psse_skip_section(warns, sections, s, verbose, label);
 end
 
 %%-----  switched shunt data  -----
@@ -423,7 +463,12 @@ end
 
 %%-----  skip FACTS control device data  -----
 if rev > 25
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'FACTS control device');
+    if s <= length(sections) && strcmpi(sections(s).name, 'FACTS DEVICE')
+        label = 'FACTS device';
+    else
+        label = 'FACTS control device';
+    end
+    [s, warns] = psse_skip_section(warns, sections, s, verbose, label);
 end
 
 %%-----  switched shunt data  -----
@@ -443,12 +488,17 @@ end
 
 %%-----  skip GNE device data  -----
 if rev > 31
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'GNE device');
+    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'GNE');
 end
 
 %%-----  skip induction machine data  -----
 if rev > 32
     [s, warns] = psse_skip_section(warns, sections, s, verbose, 'induction machine');
+end
+
+%%-----  skip substation data  -----
+if s <= length(sections) && strcmpi(sections(s).name, 'SUBSTATION')
+    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'substation');
 end
 
 %%-----  check for extra sections  -----

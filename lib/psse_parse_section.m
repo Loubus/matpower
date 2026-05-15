@@ -267,6 +267,9 @@ end
 function num = extract_col_num(n, c, t)
 if c <= length(n) && ~isempty(n(c).col)
     num = sscanf(n(c).col, ['%' t]);
+    if isempty(num)
+        num = NaN;
+    end
 else
     num = NaN;
 end
@@ -275,6 +278,9 @@ end
 function num = extract_col_num_octave(n, c, t)
 if c <= length(n{1}.col) && ~isempty(n{1}.col{c})
     num = sscanf(n{1}.col{c}, ['%' t]);
+    if isempty(num)
+        num = NaN;
+    end
 else
     num = NaN;
 end
@@ -289,6 +295,9 @@ if c <= length(n)
         str = str(2:end-1);
     end
     num = sscanf(str, ['%' t]);
+    if isempty(num)
+        num = NaN;
+    end
 else
     num = NaN;
 end
@@ -303,6 +312,9 @@ if c <= length(n{1}.col)
         str = str(2:end-1);
     end
     num = sscanf(str, ['%' t]);
+    if isempty(num)
+        num = NaN;
+    end
 else
     num = NaN;
 end

@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 143;
+num_tests = 158;
 
 t_begin(num_tests, quiet);
 
@@ -97,6 +97,27 @@ else
             end
         end
     end
+
+    t = 'psse2mpc : rev 34 headers and switching devices : ';
+    raw34 = 't_psse_case4.raw';
+    [records34, sections34] = psse_read(raw34, verbose);
+    t_is(sections34(1).last, 4, 12, [t 'case ID header']);
+    t_ok(strcmp(sections34(2).name, 'SYSTEM-WIDE'), [t 'system-wide section']);
+    [data34, w34] = psse_parse(records34, sections34, verbose, 34);
+    t_is(data34.id.SBASE, 100, 12, [t 'SBASE']);
+    t_is(size(data34.branch.num, 1), 1, 12, [t 'branch rows']);
+    t_is(data34.branch.num(1, [8 9 10 24]), [100 90 80 1], 12, [t 'rev 34 branch columns']);
+    t_is(size(data34.swdev.num, 1), 1, 12, [t 'switching device rows']);
+    t_is(data34.swdev.num(1, [4 5 6 7 17]), [1e-4 70 60 50 1], 12, [t 'switching device columns']);
+    t_is(size(data34.trans2.num, 1), 1, 12, [t 'transformer rows']);
+    t_is(data34.trans2.num(1, [25 41]), [0 0], 12, [t 'transformer NOMV defaults']);
+    [mpc34, w34] = psse2mpc(raw34, 0, 34);
+    t_is(size(mpc34.bus, 1), 2, 12, [t 'bus rows']);
+    t_is(size(mpc34.branch, 1), 3, 12, [t 'branch rows with switching device and transformer']);
+    t_is(mpc34.branch(1, [6 7 8 11]), [100 90 80 1], 12, [t 'branch conversion']);
+    t_is(mpc34.branch(2, [4 6 7 8 11]), [1e-4 70 60 50 1], 12, [t 'switching device conversion']);
+    t_is(mpc34.branch(3, [3 4 9 11]), [0 0.1 1 1], 12, [t 'NOMV zero transformer conversion']);
+    t_ok(any(~cellfun(@isempty, strfind(w34, 'system switching devices'))), [t 'switching device warning']);
 
     t = 'psse2mpc(rawfile, casefile)';
     txt = 'MATPOWER 5.0 using PSSE2MPC on 11-Aug-2014';

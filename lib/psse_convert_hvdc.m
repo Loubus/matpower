@@ -49,8 +49,17 @@ SETVL = dc(:,4); % depend on control mode: current or power demand
 VSCHD = dc(:,5); % scheduled compounded dc voltage
 ANMXR = dc(:,15); % nominal maximum rectifier firing angle
 ANMNR = dc(:,16); % nominal minimum rectifier firing angle
-GAMMX = dc(:,32); % nominal maximum inverter firing angle
-GAMMN = dc(:,33); % nominal minimum inverter firing angle
+if size(dc, 2) >= 34 && all(isnan(dc(:,30))) && any(~isnan(dc(:,31)))
+    inv_bus_col = 31;
+    gamma_max_col = 33;
+    gamma_min_col = 34;
+else
+    inv_bus_col = 30;
+    gamma_max_col = 32;
+    gamma_min_col = 33;
+end
+GAMMX = dc(:, gamma_max_col); % nominal maximum inverter firing angle
+GAMMN = dc(:, gamma_min_col); % nominal minimum inverter firing angle
 SETVL = abs(SETVL);
 % Convert the voltage on rectifier side and inverter side
 % The value is calculated as basekV/VSCHD
@@ -58,7 +67,7 @@ SETVL = abs(SETVL);
 % voltage
 dcline = zeros(ndc, c.LOSS1); % initiate the hvdc data format
 indr = dc(:,13); % rectifier end bus number
-indi = dc(:,30); % inverter end bus number
+indi = dc(:, inv_bus_col); % inverter end bus number
 dcind = [indr indi]; 
 % bus nominal voltage
 Vr = bus(e2i(indr), VM);

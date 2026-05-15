@@ -109,11 +109,23 @@ if nt2 > 0
     cz3 = find(trans2(:,6) == 3);   %% CZ = 3
     cz23 = [cz2;cz3];               %% CZ = 2 or 3
 
+    %% NOMVn = 0 means use the base voltage of the corresponding bus.
+    nomv1 = trans2(:,25);
+    nomv2 = trans2(:,41);
+    k = find(isnan(nomv1) | nomv1 == 0);
+    if ~isempty(k)
+        nomv1(k) = bus(fbus(k), BASE_KV);
+    end
+    k = find(isnan(nomv2) | nomv2 == 0);
+    if ~isempty(k)
+        nomv2(k) = bus(tbus(k), BASE_KV);
+    end
+
     R = trans2(:,21);
     X = trans2(:,22);
     if use_winding_baseV
         Zb = ones(nt2, 1);
-        Zb(cz23) = trans2(cz23,25).^2 ./ trans2(cz23,23);
+        Zb(cz23) = nomv1(cz23).^2 ./ trans2(cz23,23);
     end
     R(cz3) = 1e-6 * R(cz3, 1) ./ trans2(cz3,23);
     X(cz3) = sqrt(X(cz3).^2 - R(cz3).^2);   %% R, X for cz3, pu on winding bases
@@ -126,7 +138,7 @@ if nt2 > 0
     end
     tap = trans2(:,24) ./ trans2(:,40);                 %% WINDV1/WINDV2
     tap(cw23) = tap(cw23, 1) .* bus(tbus(cw23), BASE_KV)./bus(fbus(cw23), BASE_KV);
-    tap(cw3)  = tap(cw3, 1)  .* trans2(cw3,25)./trans2(cw3,41);
+    tap(cw3)  = tap(cw3, 1)  .* nomv1(cw3)./nomv2(cw3);
     shift = trans2(:, 26);
 end
 
@@ -161,15 +173,32 @@ if nt3 > 0
     cz3 = find(trans3(:,6) == 3);   %% CZ = 3
     cz23 = [cz2;cz3];               %% CZ = 2 or 3
 
+    %% NOMVn = 0 means use the base voltage of the corresponding bus.
+    nomv1 = trans3(:,33);
+    nomv2 = trans3(:,49);
+    nomv3 = trans3(:,65);
+    k = find(isnan(nomv1) | nomv1 == 0);
+    if ~isempty(k)
+        nomv1(k) = bus(ind1(k), BASE_KV);
+    end
+    k = find(isnan(nomv2) | nomv2 == 0);
+    if ~isempty(k)
+        nomv2(k) = bus(ind2(k), BASE_KV);
+    end
+    k = find(isnan(nomv3) | nomv3 == 0);
+    if ~isempty(k)
+        nomv3(k) = bus(ind3(k), BASE_KV);
+    end
+
     tap1 = trans3(:, 32);   %% off nominal tap ratio of branch 1
     tap2 = trans3(:, 48);   %% off nominal tap ratio of branch 2
     tap3 = trans3(:, 64);   %% off nominal tap ratio of branch 3
     tap1(cw23) = tap1(cw23, 1) ./ bus(ind1(cw23), BASE_KV);
     tap2(cw23) = tap2(cw23, 1) ./ bus(ind2(cw23), BASE_KV);
     tap3(cw23) = tap3(cw23, 1) ./ bus(ind3(cw23), BASE_KV);
-    tap1(cw3)  = tap1(cw3, 1)  .* trans3(cw3, 33);
-    tap2(cw3)  = tap2(cw3, 1)  .* trans3(cw3, 49);
-    tap3(cw3)  = tap3(cw3, 1)  .* trans3(cw3, 65);
+    tap1(cw3)  = tap1(cw3, 1)  .* nomv1(cw3);
+    tap2(cw3)  = tap2(cw3, 1)  .* nomv2(cw3);
+    tap3(cw3)  = tap3(cw3, 1)  .* nomv3(cw3);
     shift1 = trans3(:, 34);
     shift2 = trans3(:, 50);
     shift3 = trans3(:, 66);
@@ -186,9 +215,9 @@ if nt3 > 0
     X23 = trans3(:, 25);
     R31 = trans3(:, 27);
     X31 = trans3(:, 28);
-    Zb1 = trans3(:, 33).^2 ./ trans3(:, 23);
-    Zb2 = trans3(:, 49).^2 ./ trans3(:, 26);
-    Zb3 = trans3(:, 65).^2 ./ trans3(:, 29);
+    Zb1 = nomv1.^2 ./ trans3(:, 23);
+    Zb2 = nomv2.^2 ./ trans3(:, 26);
+    Zb3 = nomv3.^2 ./ trans3(:, 29);
 
     R12(cz3) = 1e-6 * R12(cz3, 1) ./ trans3(cz3,23);
     X12(cz3) = sqrt(X12(cz3).^2 - R12(cz3).^2);

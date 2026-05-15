@@ -85,8 +85,19 @@ end
 
 %% find section extents and names
 ns = length(eos) + 1;
-i1 = [1 4 eos(1:end-1)+1];
-iN = [3 eos-1];
+id_data = 0;
+id_last = 3;
+for k = 1:eos(1)-1
+    if isempty(regexp(records{k}, '^\s*@!', 'once'))
+        id_data = id_data + 1;
+    end
+    if id_data == 3
+        id_last = k;
+        break;
+    end
+end
+i1 = [1 id_last+1 eos(1:end-1)+1];
+iN = [id_last eos-1];
 names = cell(1, ns);
 names{1} = 'ID';
 for k = 2:ns
@@ -112,3 +123,11 @@ end
 sections = struct(  'first', num2cell(i1), ...
                     'last', num2cell(iN), ...
                     'name', names   );
+
+%% skip informational column header records at beginning of data sections
+for k = 2:ns
+    while sections(k).first <= sections(k).last && ...
+            ~isempty(regexp(records{sections(k).first}, '^\s*@!', 'once'))
+        sections(k).first = sections(k).first + 1;
+    end
+end
