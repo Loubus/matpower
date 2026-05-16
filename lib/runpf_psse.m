@@ -1,12 +1,17 @@
 function [MVAbase, bus, gen, branch, success, et] = ...
                 runpf_psse(casedata, mpopt, fname, solvedcase)
-% runpf - Runs a power flow.
+% runpf_psse - Runs a power flow with opt-in PSS/E controls.
 % ::
 %
-%   [RESULTS, SUCCESS] = RUNPF(CASEDATA, MPOPT, FNAME, SOLVEDCASE)
+%   [RESULTS, SUCCESS] = RUNPF_PSSE(CASEDATA, MPOPT, FNAME, SOLVEDCASE)
 %
-%   Runs a power flow (full AC Newton's method by default), optionally
-%   returning a RESULTS struct and SUCCESS flag.
+%   Runs a power flow using the standard MATPOWER power flow implementation
+%   with the mp.xt_psse extension enabled. This provides PSS/E-specific
+%   control behavior through MP-Core, while leaving RUNPF unchanged.
+%
+%   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is the
+%   switched shunt voltage control preserved from PSS/E RAW data in
+%   MPC.PSSE.SWSHUNT.
 %
 %   Inputs (all are optional):
 %       CASEDATA : either a MATPOWER case struct or a string containing
@@ -32,17 +37,17 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %           a second output argument
 %
 %   Calling syntax options:
-%       results = runpf;
-%       results = runpf(casedata);
-%       results = runpf(casedata, mpopt);
-%       results = runpf(casedata, mpopt, fname);
-%       results = runpf(casedata, mpopt, fname, solvedcase);
-%       [results, success] = runpf(...);
+%       results = runpf_psse;
+%       results = runpf_psse(casedata);
+%       results = runpf_psse(casedata, mpopt);
+%       results = runpf_psse(casedata, mpopt, fname);
+%       results = runpf_psse(casedata, mpopt, fname, solvedcase);
+%       [results, success] = runpf_psse(...);
 %
 %       Alternatively, for compatibility with previous versions of MATPOWER,
 %       some of the results can be returned as individual output arguments:
 %
-%       [baseMVA, bus, gen, branch, success, et] = runpf(...);
+%       [baseMVA, bus, gen, branch, success, et] = runpf_psse(...);
 %
 %   If the pf.enforce_q_lims option is set to true (default is false) then, if
 %   any generator reactive power limit is violated after running the AC power
@@ -55,10 +60,10 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   from the specified values.
 %
 %   Examples:
-%       results = runpf('case30');
-%       results = runpf('case30', mpoption('pf.enforce_q_lims', 1));
+%       results = runpf_psse('case30');
+%       results = runpf_psse('case30', mpoption('pf.enforce_q_lims', 1));
 %
-% See also rundcpf.
+% See also runpf, mp.xt_psse, mp.task_pf_psse.
 
 %   MATPOWER
 %   Copyright (c) 1996-2024, Power Systems Engineering Research Center (PSERC)
@@ -95,6 +100,9 @@ if nargin < 4
     end
 end
 
+%% activate PSS/E power flow extension
+mpopt = psse_mpx_options(mpopt);
+
 %% options
 qlim = mpopt.pf.enforce_q_lims;         %% enforce Q limits on gens?
 dc = strcmp(upper(mpopt.model), 'DC');  %% use DC formulation?
@@ -113,6 +121,9 @@ if have_mp_core && ~mpopt.exp.use_legacy_core
               mpopt.pf.v_cartesian ~= 2
         use_mp_core = 1;
     end
+end
+if ~use_mp_core
+    error('runpf_psse: PSS/E power flow requires MP-Core-compatible power flow options.');
 end
 
 %% shortcut formulation options via Newton solver name
@@ -518,3 +529,27 @@ if (~isempty(mpopt.exp.sys_wide_zip_loads.pw) && ...
 else
     TorF = 0;
 end
+
+function mpopt = psse_mpx_options(mpopt)
+mpopt.exp.use_legacy_core = 0;
+if isfield(mpopt.exp, 'mpx') && ~isempty(mpopt.exp.mpx)
+    if iscell(mpopt.exp.mpx)
+        mpx = mpopt.exp.mpx;
+    else
+        mpx = { mpopt.exp.mpx };
+    end
+else
+    mpx = {};
+end
+
+has_psse = 0;
+for k = 1:length(mpx)
+    if isa(mpx{k}, 'mp.xt_psse')
+        has_psse = 1;
+        break;
+    end
+end
+if ~has_psse
+    mpx{end+1} = mp.xt_psse();
+end
+mpopt.exp.mpx = mpx;
