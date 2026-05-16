@@ -3,6 +3,7 @@
 Rev 34 header and switching-device test
 Minimal RAW case for psse2mpc
 GENERAL, THRSHZ=0.0001
+SOLVER, FNSL, SWSHNT=2, FLATST=0
 RATING, 1, "RATE1 ", "RATING SET 1"
 0 / END OF SYSTEM-WIDE DATA, BEGIN BUS DATA
 @!   I,'NAME        ', BASKV, IDE,AREA,ZONE,OWNER, VM,        VA,    NVHI,   NVLO,   EVHI,   EVLO

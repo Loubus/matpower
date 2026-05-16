@@ -163,9 +163,10 @@ if isempty(data.id.IC) || data.id.IC ~= 0
 end
 s = s + 1;
 
-%%-----  skip system-wide data  -----
+%%-----  system-wide data  -----
 if s <= length(sections) && strcmpi(sections(s).name, 'SYSTEM-WIDE')
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'system-wide');
+    data.system = psse_parse_system_wide(records, sections, s);
+    s = s + 1;
 end
 
 %%-----  bus data  -----
@@ -542,6 +543,58 @@ while s <= length(sections)
 end
 
 
+
+%%---------------------------------------------------------------------
+function system = psse_parse_system_wide(records, sections, s)
+%PSSE_PARSE_SYSTEM_WIDE  Parses system-wide records into a struct.
+%   SYSTEM = PSSE_PARSE_SYSTEM_WIDE(RECORDS, SECTIONS, SIDX)
+
+idx = sections(s).first:sections(s).last;
+system = struct('records', {records(idx)}, 'entries', []);
+entries = struct('name', {}, 'record', {}, 'params', {});
+
+for k = 1:length(idx)
+    rec = records{idx(k)};
+    parts = regexp(rec, ',', 'split');
+    name = upper(strtrim(parts{1}));
+    params = psse_parse_system_params(rec);
+    if strcmpi(name, 'SOLVER') && length(parts) > 1
+        method = strtrim(parts{2});
+        if isempty(strfind(method, '='))
+            params.METHOD = method;
+        end
+    end
+
+    entries(k).name = name;
+    entries(k).record = rec;
+    entries(k).params = params;
+
+    switch name
+        case {'GENERAL', 'GAUSS', 'NEWTON', 'ADJUST', 'TYSL', 'SOLVER'}
+            system.(lower(name)) = params;
+    end
+end
+system.entries = entries;
+
+function params = psse_parse_system_params(rec)
+params = struct();
+tok = regexp(rec, '([A-Za-z][A-Za-z0-9_]*)\s*=\s*("[^"]*"|''[^'']*''|[^,]+)', 'tokens');
+for k = 1:length(tok)
+    key = upper(tok{k}{1});
+    val = strtrim(tok{k}{2});
+    if numel(val) >= 2 && ((val(1) == '"' && val(end) == '"') || ...
+            (val(1) == '''' && val(end) == ''''))
+        val = val(2:end-1);
+        params.(key) = val;
+    else
+        num = str2double(val);
+        if isnan(num)
+            params.(key) = val;
+        else
+            params.(key) = num;
+        end
+    end
+end
 
 %%---------------------------------------------------------------------
 function [s, warns] = psse_skip_section(warns, sections, s, verbose, label)

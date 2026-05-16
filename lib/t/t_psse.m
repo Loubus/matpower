@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 164;
+num_tests = 168;
 
 t_begin(num_tests, quiet);
 
@@ -105,6 +105,9 @@ else
     t_ok(strcmp(sections34(2).name, 'SYSTEM-WIDE'), [t 'system-wide section']);
     [data34, w34] = psse_parse(records34, sections34, verbose, 34);
     t_is(data34.id.SBASE, 100, 12, [t 'SBASE']);
+    t_ok(isfield(data34, 'system'), [t 'system-wide parsed']);
+    t_is(numel(data34.system.records), 3, 12, [t 'system-wide records']);
+    t_is(data34.system.solver.SWSHNT, 2, 12, [t 'system-wide SWSHNT']);
     t_is(size(data34.branch.num, 1), 1, 12, [t 'branch rows']);
     t_is(data34.branch.num(1, [8 9 10 24]), [100 90 80 1], 12, [t 'rev 34 branch columns']);
     t_is(size(data34.swdev.num, 1), 1, 12, [t 'switching device rows']);
@@ -123,6 +126,7 @@ else
     t_is(mpc34.branch(3, [3 4 9 11]), [0 0.1 1 1], 12, [t 'NOMV zero transformer conversion']);
     t_is(mpc34.bus(:, [1 6]), [1 0; 2 12.5], 12, [t 'switched shunt status conversion']);
     t_ok(isfield(mpc34, 'psse') && isfield(mpc34.psse, 'swshunt'), [t 'switched shunt preserved']);
+    t_is(mpc34.psse.system.solver.SWSHNT, 2, 12, [t 'system-wide preserved']);
     t_ok(any(~cellfun(@isempty, strfind(w34, 'system switching devices'))), [t 'switching device warning']);
 
     t = 'psse2mpc(rawfile, casefile)';

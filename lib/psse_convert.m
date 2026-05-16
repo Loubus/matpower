@@ -262,6 +262,9 @@ mpc.psse.swshunt = struct( ...
     'binit_col', swshunt_binit_col, ...
     'status_col', swshunt_status_col ...
 );
+if isfield(data, 'system')
+    mpc.psse.system = data.system;
+end
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
