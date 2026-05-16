@@ -478,10 +478,22 @@ if rev > 30
         [data.swshunt, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
             'switched shunt', 'd......f');
 %           'switched shunt', 'ddffdfsfdfdfdfdfdfdfdfdf');
+    elseif rev < 34
+        [data.swshunt, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+            'switched shunt', 'ddddffdfsfdfdfdfdfdfdfdfdf');
+%           'switched shunt', 'I,MODSW,ADJM,STAT,VSWHI,VSWLO,SWREM,RMPCT,RMIDNT,BINIT,N1,B1,...,N8,B8');
+    elseif rev < 35
+        [data.swshunt, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+            'switched shunt', 'ddddffdfsfdfdfdfdfdfdfdfdfd');
+%           'switched shunt', 'I,MODSW,ADJM,STAT,VSWHI,VSWLO,SWREG,RMPCT,RMIDNT,BINIT,N1,B1,...,N8,B8,NREG');
+    elseif rev < 36
+        [data.swshunt, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+            'switched shunt', 'dsdddffddfsfddfddfddfddfddfddfddfddfddf');
+%           'switched shunt', 'I,ID,MODSW,ADJM,STAT,VSWHI,VSWLO,SWREG,NREG,RMPCT,RMIDNT,BINIT,S1,N1,B1,...,S8,N8,B8');
     else
         [data.swshunt, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
-            'switched shunt', 'd........f');
-%           'switched shunt', 'ddddffdfsfdfdfdfdfdfdfdfdf');
+            'switched shunt', 'dsdddffddfsfsddfddfddfddfddfddfddfddfddf');
+%           'switched shunt', 'I,ID,MODSW,ADJM,STAT,VSWHI,VSWLO,SWREG,NREG,RMPCT,RMIDNT,BINIT,NAME,S1,N1,B1,...,S8,N8,B8');
     end
     s = s + 1;
 end

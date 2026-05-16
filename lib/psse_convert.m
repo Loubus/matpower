@@ -55,6 +55,7 @@ Vmax = 1.1;
 %%-----  case identification data  -----
 baseMVA = data.id.SBASE;
 rev = data.id.REV;
+[swshunt_binit_col, swshunt_status_col, swshunt_cols] = psse_swshunt_columns(rev);
 
 %%-----  bus data  -----
 numbus = data.bus.num;
@@ -126,16 +127,18 @@ end
 
 %%-----  switched shunt data  -----
 nswsh = size(data.swshunt.num, 1);
-swshuntbus = e2i(data.swshunt.num(:,1));
-Cswsh = sparse(1:nswsh, swshuntbus, 1, nswsh, nb);
-if rev <= 27
-    bus(:, BS) = bus(:, BS) + Cswsh' * data.swshunt.num(:, 6);
-elseif rev <= 29
-    bus(:, BS) = bus(:, BS) + Cswsh' * data.swshunt.num(:, 7);
-elseif rev < 32
-    bus(:, BS) = bus(:, BS) + Cswsh' * data.swshunt.num(:, 8);
-else
-    bus(:, BS) = bus(:, BS) + Cswsh' * data.swshunt.num(:, 10);
+if nswsh
+    swshuntbus = e2i(data.swshunt.num(:,1));
+    binit = data.swshunt.num(:, swshunt_binit_col);
+    binit(isnan(binit)) = 0;
+    if swshunt_status_col && size(data.swshunt.num, 2) >= swshunt_status_col
+        swshunt_status = data.swshunt.num(:, swshunt_status_col);
+        swshunt_status(isnan(swshunt_status)) = 1;
+    else
+        swshunt_status = ones(nswsh, 1);
+    end
+    Cswsh = sparse(1:nswsh, swshuntbus, swshunt_status ~= 0, nswsh, nb);
+    bus(:, BS) = bus(:, BS) + Cswsh' * binit;
 end
 
 %%-----  branch data  -----
@@ -251,7 +254,62 @@ mpc = struct( ...
     'branch', branch, ...
     'gen', gen ...
 );
+mpc.psse.rev = rev;
+mpc.psse.swshunt = struct( ...
+    'colnames', {swshunt_cols}, ...
+    'num', data.swshunt.num, ...
+    'txt', {data.swshunt.txt}, ...
+    'binit_col', swshunt_binit_col, ...
+    'status_col', swshunt_status_col ...
+);
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
+end
+
+function [binit_col, status_col, cols] = psse_swshunt_columns(rev)
+% psse_swshunt_columns - Returns PSS/E switched shunt column metadata.
+
+if rev <= 27
+    cols = {'I', 'MODSW', 'VSWHI', 'VSWLO', 'SWREG', 'BINIT'};
+    binit_col = 6;
+    status_col = 0;
+elseif rev <= 29
+    cols = {'I', 'MODSW', 'VSWHI', 'VSWLO', 'SWREG', 'RMIDNT', 'BINIT'};
+    binit_col = 7;
+    status_col = 0;
+elseif rev < 32
+    cols = {'I', 'MODSW', 'VSWHI', 'VSWLO', 'SWREG', 'NREG', 'RMIDNT', 'BINIT'};
+    binit_col = 8;
+    status_col = 0;
+elseif rev < 34
+    cols = {'I', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', 'SWREM', ...
+        'RMPCT', 'RMIDNT', 'BINIT', ...
+        'N1', 'B1', 'N2', 'B2', 'N3', 'B3', 'N4', 'B4', ...
+        'N5', 'B5', 'N6', 'B6', 'N7', 'B7', 'N8', 'B8'};
+    binit_col = 10;
+    status_col = 4;
+elseif rev < 35
+    cols = {'I', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', 'SWREG', ...
+        'RMPCT', 'RMIDNT', 'BINIT', ...
+        'N1', 'B1', 'N2', 'B2', 'N3', 'B3', 'N4', 'B4', ...
+        'N5', 'B5', 'N6', 'B6', 'N7', 'B7', 'N8', 'B8', 'NREG'};
+    binit_col = 10;
+    status_col = 4;
+elseif rev < 36
+    cols = {'I', 'ID', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', ...
+        'SWREG', 'NREG', 'RMPCT', 'RMIDNT', 'BINIT', ...
+        'S1', 'N1', 'B1', 'S2', 'N2', 'B2', 'S3', 'N3', 'B3', ...
+        'S4', 'N4', 'B4', 'S5', 'N5', 'B5', 'S6', 'N6', 'B6', ...
+        'S7', 'N7', 'B7', 'S8', 'N8', 'B8'};
+    binit_col = 12;
+    status_col = 5;
+else
+    cols = {'I', 'ID', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', ...
+        'SWREG', 'NREG', 'RMPCT', 'RMIDNT', 'BINIT', 'NAME', ...
+        'S1', 'N1', 'B1', 'S2', 'N2', 'B2', 'S3', 'N3', 'B3', ...
+        'S4', 'N4', 'B4', 'S5', 'N5', 'B5', 'S6', 'N6', 'B6', ...
+        'S7', 'N7', 'B7', 'S8', 'N8', 'B8'};
+    binit_col = 12;
+    status_col = 5;
 end
