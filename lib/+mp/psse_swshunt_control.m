@@ -177,7 +177,7 @@ for gg = 1:length(state.group.reg_bus_idx)
     for jj = 1:length(active_members)
         k = active_members(jj);
         if state.modsw(k) == 1
-            b = discrete_next_b(state, k, v, target, direction, sens);
+            b = discrete_next_b(state, k, direction);
         else
             b = continuous_next_b(state, k, v, target, direction, sens);
         end
@@ -252,8 +252,8 @@ if hi < lo
     lo = tmp;
 end
 
-function b = discrete_next_b(state, k, v, target, direction, sens)
-% Select the admissible discrete block state closest to the group request.
+function b = discrete_next_b(state, k, direction)
+% Advance one admissible discrete block state for ADJM = 0.
 states = state.states{k};
 [~, cur] = min(abs(states - state.current_b(k)));
 if direction > 0
@@ -269,13 +269,6 @@ end
 step_idx = cand(1);
 if direction < 0
     step_idx = cand(end);
-end
-
-db = requested_db(state, k, v, target, direction, sens);
-if sign(db) == direction
-    desired = state.current_b(k) + db;
-    [~, jj] = min(abs(states(cand) - desired));
-    step_idx = cand(jj);
 end
 b = states(step_idx);
 

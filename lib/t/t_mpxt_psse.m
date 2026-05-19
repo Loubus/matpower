@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 25;
+num_tests = 26;
 
 t_begin(num_tests, quiet);
 
@@ -35,6 +35,11 @@ t_ok(r.success, 'MODSW=1 success');
 t_is(r.psse.swshunt.num(1, 10), 25, 10, 'MODSW=1 switched one capacitor step');
 t_is(r.bus(9, BS), 25, 10, 'MODSW=1 updates bus BS from BINIT=0');
 t_ok(r.psse.swshunt.control.inside_band == 1, 'MODSW=1 reaches voltage band');
+
+mpc = psse_case2_swshunt_discrete();
+r = runpf_psse(mpc, mpopt);
+t_is(r.psse.swshunt.control.num_adjustments, 6, 10, ...
+    'MODSW=1 ADJM=0 advances one block per adjustment');
 
 %% SWSHNT = 0 disables automatic control
 mpc = psse_case9_swshunt(1, 1, 0, 1.02, 1.01, 9, 0, [2 25], 0);
@@ -124,6 +129,36 @@ mpc.psse.swshunt = struct( ...
     'colnames', {cols}, ...
     'num', num, ...
     'txt', {cell(nr, 27)}, ...
+    'binit_col', 10, ...
+    'status_col', 4 ...
+);
+
+function mpc = psse_case2_swshunt_discrete()
+mpc.version = '2';
+mpc.baseMVA = 100;
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 70 45 0 0 1 0.96 0 230 1 1.1 0.9
+];
+mpc.gen = [
+    1 70 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
+];
+mpc.branch = [
+    1 2 0.02 0.15 0 200 200 200 0 0 1 -360 360
+];
+cols = {'I', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', ...
+    'SWREG', 'RMPCT', 'RMIDNT', 'BINIT', ...
+    'N1', 'B1', 'N2', 'B2', 'N3', 'B3', 'N4', 'B4', ...
+    'N5', 'B5', 'N6', 'B6', 'N7', 'B7', 'N8', 'B8', 'NREG'};
+row = nan(1, 27);
+row([1:8 10:14 27]) = [2 1 0 1 1.03 0.99 2 100 0 6 10 0 0 0];
+mpc.psse.rev = 34;
+mpc.psse.system.solver.SWSHNT = 2;
+mpc.psse.system.adjust.MXTPSS = 20;
+mpc.psse.swshunt = struct( ...
+    'colnames', {cols}, ...
+    'num', row, ...
+    'txt', {cell(1, 27)}, ...
     'binit_col', 10, ...
     'status_col', 4 ...
 );
