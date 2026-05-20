@@ -12,11 +12,11 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 48;
+num_tests = 59;
 
 t_begin(num_tests, quiet);
 
-[~, ~, ~, ~, ~, ~, ~, ~, ~, BS, ~, VM] = idx_bus;
+[~, ~, ~, ~, ~, ~, ~, QD, ~, BS, ~, VM] = idx_bus;
 [~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
 [~, ~, QG] = idx_gen;
 mpopt = mpoption('verbose', 0, 'out.all', 0);
@@ -88,6 +88,27 @@ t_ok(r.psse.swshunt.control.cycle_detected, 'cycle memory detects repeated BINIT
 t_ok(r.psse.swshunt.control.cycle_resolved, 'cycle memory resolves repeated BINIT state');
 t_ok(r.psse.swshunt.control.cycle_resolution_changes > 0, ...
     'cycle memory applies best visited BINIT');
+
+%% PSS/E FACTS MODE=1, J=0 STATCON control is opt-in via runpf_psse
+mpc = psse_case3_facts_statcon(300, 0.98);
+r0 = runpf(mpc, mpopt);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'FACTS STATCON success');
+t_ok(r.bus(3, VM) > r0.bus(3, VM) + 1e-4, 'FACTS STATCON raises remote voltage');
+t_is(r.bus(3, VM), 0.98, 4, 'FACTS STATCON reaches remote voltage target');
+t_is(r.psse.facts.control.controllable, 1, 10, 'FACTS STATCON report controllable');
+t_is(r.psse.facts.control.remote_regulated, 1, 10, 'FACTS STATCON report remote control');
+t_ok(r.psse.facts.control.qinj(1) > 0, 'FACTS STATCON injects reactive power');
+t_is(r.bus(2, QD), -r.psse.facts.control.qinj(1), 10, ...
+    'FACTS STATCON applies reactive injection through bus QD');
+
+mpc = psse_case3_facts_statcon(5, 1.05);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'FACTS STATCON limited success');
+t_ok(r.psse.facts.control.at_max(1), 'FACTS STATCON upper SHMX limit reported');
+t_ok(r.psse.facts.control.limited(1), 'FACTS STATCON reports voltage limited by SHMX');
+t_ok(r.psse.facts.control.qinj(1) <= r.psse.facts.control.qmax(1) + 1e-7, ...
+    'FACTS STATCON respects SHMX reactive limit');
 
 %% PSS/E transformer tap control is gated by ACTAPS and COD
 mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
@@ -212,6 +233,47 @@ mpc.psse.swshunt = struct( ...
     'txt', {cell(1, 27)}, ...
     'binit_col', 10, ...
     'status_col', 4 ...
+);
+
+function mpc = psse_case3_facts_statcon(shmx, vset)
+mpc.version = '2';
+mpc.baseMVA = 100;
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
+    3 1 90 45 0 0 1 1.00 0 115 1 1.1 0.9
+];
+mpc.gen = [
+    1 90 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
+];
+mpc.branch = [
+    1 2 0.01 0.10 0 250 250 250 0 0 1 -360 360
+    2 3 0.02 0.12 0 250 250 250 0 0 1 -360 360
+];
+
+cols = {'NAME', 'I', 'J', 'MODE', 'PDES', 'QDES', 'VSET', ...
+    'SHMX', 'TRMX', 'VTMN', 'VTMX', 'VSMX', 'IMX', 'LINX', ...
+    'RMPCT', 'OWNER', 'SET1', 'SET2', 'VSREF', 'FCREG', ...
+    'MNAME', 'NREG'};
+col = struct();
+for k = 1:length(cols)
+    col.(lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'))) = k;
+end
+num = nan(1, 22);
+num([2:20 22]) = [2 0 1 0 0 vset shmx 9999 0.9 1.1 1 0 0.05 100 1 0 0 0 3 0];
+txt = cell(1, 22);
+txt{1} = 'FACTS 1     ';
+txt{21} = '            ';
+mpc.psse.rev = 34;
+mpc.psse.system.newton.VCTOLV = 1e-5;
+mpc.psse.system.adjust.MXTPSS = 20;
+mpc.psse.facts = struct( ...
+    'colnames', {cols}, ...
+    'num', num, ...
+    'txt', {txt}, ...
+    'col', col, ...
+    'bus_idx', 2, ...
+    'reg_bus_idx', 3 ...
 );
 
 function mpc = psse_case2_xfmr_tap(actaps, cod, cont, tap, vma, vmi, rma, rmi, ntp, pd, qd)

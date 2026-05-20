@@ -490,14 +490,19 @@ if rev > 24
     [s, warns] = psse_skip_section(warns, sections, s, verbose, 'owner');
 end
 
-%%-----  skip FACTS control device data  -----
+%%-----  FACTS device data  -----
 if rev > 25
-    if s <= length(sections) && strcmpi(sections(s).name, 'FACTS DEVICE')
-        label = 'FACTS device';
+    if s <= length(sections) && strcmpi(sections(s).name, 'FACTS DEVICE') && rev >= 34
+        [data.facts, warns] = psse_parse_facts(warns, records, sections, s, verbose, rev);
+        s = s + 1;
     else
-        label = 'FACTS control device';
+        if s <= length(sections) && strcmpi(sections(s).name, 'FACTS DEVICE')
+            label = 'FACTS device';
+        else
+            label = 'FACTS control device';
+        end
+        [s, warns] = psse_skip_section(warns, sections, s, verbose, label);
     end
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, label);
 end
 
 %%-----  switched shunt data  -----
@@ -730,6 +735,30 @@ for k = 1:length(tok)
             params.(key) = num;
         end
     end
+end
+
+%%---------------------------------------------------------------------
+function [data, warns] = psse_parse_facts(warns, records, sections, s, verbose, rev)
+%PSSE_PARSE_FACTS  Parses rev 34+ FACTS device records.
+
+[cols, template] = psse_facts_columns(rev);
+[data, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+    'FACTS DEVICE', template);
+data.colnames = cols;
+
+%%---------------------------------------------------------------------
+function [cols, template] = psse_facts_columns(rev)
+%PSSE_FACTS_COLUMNS  Returns FACTS device column names and parse template.
+
+base = {'NAME', 'I', 'J', 'MODE', 'PDES', 'QDES', 'VSET', ...
+    'SHMX', 'TRMX', 'VTMN', 'VTMX', 'VSMX', 'IMX', 'LINX', ...
+    'RMPCT', 'OWNER', 'SET1', 'SET2', 'VSREF', 'FCREG'};
+if rev < 35
+    cols = [base {'MNAME', 'NREG'}];
+    template = ['sddd' repmat('f', 1, 11) 'dffddsd'];
+else
+    cols = [base {'NREG', 'MNAME'}];
+    template = ['sddd' repmat('f', 1, 11) 'dffddds'];
 end
 
 %%---------------------------------------------------------------------

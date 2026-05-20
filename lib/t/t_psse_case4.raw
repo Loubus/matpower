@@ -55,6 +55,7 @@ RATING, 1, "RATE1 ", "RATING SET 1"
 @! I,   'OWNAME'
 0 / END OF OWNER DATA, BEGIN FACTS DEVICE DATA
 @!  'NAME',         I,     J,MODE,   PDES,      QDES,  VSET,      SHMX,      TRMX,   VTMN,   VTMX,   VSMX,      IMX,     LINX,   RMPCT,OWNER,    SET1,      SET2,VSREF, FCREG,   'MNAME'    ,NREG
+"FACTS 1     ",     2,     0,   1,   0.000,     0.000,1.00000,   100.000,  9999.000,0.90000,1.10000,1.00000,     0.000, 0.05000,  100.0,   1,   0.00000,   0.00000,   0,     2,"            ",   0
 0 / END OF FACTS DEVICE DATA, BEGIN SWITCHED SHUNT DATA
 @!  I,MODSW,ADJM,ST, VSWHI,  VSWLO, SWREG,  RMPCT,   'RMIDNT',      BINIT,N1,     B1, NREG
 2,  1,  0,  1,1.05000,0.95000,     2,  100.0,'            ',   12.50, 1,   12.50, 0

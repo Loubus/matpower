@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 176;
+num_tests = 182;
 
 t_begin(num_tests, quiet);
 
@@ -112,6 +112,11 @@ else
     t_is(data34.branch.num(1, [8 9 10 24]), [100 90 80 1], 12, [t 'rev 34 branch columns']);
     t_is(size(data34.swdev.num, 1), 1, 12, [t 'switching device rows']);
     t_is(data34.swdev.num(1, [4 5 6 7 17]), [1e-4 70 60 50 1], 12, [t 'switching device columns']);
+    t_is(size(data34.facts.num, 1), 1, 12, [t 'FACTS device rows']);
+    t_is(size(data34.facts.num, 2), 22, 12, [t 'FACTS device rev 34 columns']);
+    t_str_match(data34.facts.txt{1, 1}, 'FACTS 1     ', [t 'FACTS device name']);
+    t_is(data34.facts.num(1, [2 3 4 8 20 22]), [2 0 1 100 2 0], 12, ...
+        [t 'FACTS device columns']);
     t_is(size(data34.trans2.num), [2 52], 12, [t 'transformer rev 34 columns']);
     t_is(data34.trans2.num(:, [7 8 9]), [1 0.01 -0.02; 2 1e6 0.1], 12, ...
         [t 'transformer magnetizing columns']);
@@ -133,6 +138,9 @@ else
     t_is(mpc34.bus(:, [1 5 6]), [1 2 -11.9498743710662; 2 0 12.5], 10, ...
         [t 'switched shunt and transformer magnetizing conversion']);
     t_ok(isfield(mpc34, 'psse') && isfield(mpc34.psse, 'swshunt'), [t 'switched shunt preserved']);
+    t_ok(isfield(mpc34.psse, 'facts'), [t 'FACTS device preserved']);
+    t_is([mpc34.psse.facts.bus_idx mpc34.psse.facts.reg_bus_idx], ...
+        [2 2], 12, [t 'FACTS device metadata mapping']);
     t_ok(isfield(mpc34.psse, 'xfmr'), [t 'transformer metadata preserved']);
     t_ok(isfield(mpc34.psse, 'impcor'), [t 'impedance correction preserved']);
     t_is(mpc34.psse.impcor.num(1, :), [9 1 1 0], 12, [t 'impedance correction metadata values']);

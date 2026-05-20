@@ -277,6 +277,9 @@ end
 if isfield(data, 'impcor')
     mpc.psse.impcor = data.impcor;
 end
+if isfield(data, 'facts')
+    mpc.psse.facts = psse_facts_metadata(data.facts, mpc);
+end
 if rev > 27
     mpc.psse.xfmr = psse_xfmr_metadata(data, xfmr_info, xfmr_branch_offset, rev);
 end
@@ -284,6 +287,30 @@ if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
 end
+
+function facts = psse_facts_metadata(data, mpc)
+% psse_facts_metadata - Preserves PSS/E FACTS device metadata.
+
+cols = data.colnames;
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+bus_idx = zeros(n, 1);
+reg_bus_idx = zeros(n, 1);
+if n
+    bus_idx = psse_bus_map(mpc, data.num(:, col.i));
+    fcreg = data.num(:, col.fcreg);
+    fcreg(isnan(fcreg) | fcreg == 0) = data.num(isnan(fcreg) | fcreg == 0, col.i);
+    reg_bus_idx = psse_bus_map(mpc, fcreg);
+end
+
+facts = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'bus_idx', bus_idx, ...
+    'reg_bus_idx', reg_bus_idx ...
+);
 
 function xfmr = psse_xfmr_metadata(data, info, branch_offset, rev)
 % psse_xfmr_metadata - Preserves PSS/E transformer control metadata.
@@ -390,6 +417,23 @@ for k = 1:length(cols)
     name = lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'));
     col.(name) = k;
 end
+
+function col = psse_col_struct(cols)
+% psse_col_struct - Builds a case-insensitive name-to-column struct.
+
+col = struct();
+for k = 1:length(cols)
+    name = lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'));
+    col.(name) = k;
+end
+
+function idx = psse_bus_map(mpc, bus)
+% psse_bus_map - Maps external bus numbers to MPC bus rows.
+
+[~, ~, ~, ~, BUS_I] = idx_bus;
+idx = zeros(size(bus));
+[tf, loc] = ismember(bus, mpc.bus(:, BUS_I));
+idx(tf) = loc(tf);
 
 function [binit_col, status_col, cols] = psse_swshunt_columns(rev)
 % psse_swshunt_columns - Returns PSS/E switched shunt column metadata.
