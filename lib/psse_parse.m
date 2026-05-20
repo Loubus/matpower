@@ -312,7 +312,7 @@ if rev > 27
         '2-winding transformers (1)', 'dd..ddd....d........');
 %       '2-winding transformers (1)', 'dddsdddffdsddfdfdfdf');
     [t3_1, warns] = psse_parse_section(warns, records(idx3), verbose, ...
-        '3-winding transformers (1)', 'ddd.ddd....d........');
+        '3-winding transformers (1)', 'ddd.ddd....d........sd');
 %       '3-winding transformers (1)', 'dddsdddffdsddfdfdfdf');
 
     %% two-winding
@@ -320,11 +320,20 @@ if rev > 27
     [t2_2, warns] = psse_parse_section(warns, records(idx2+1), verbose, ...
         '2-winding transformers (2)', 'fff');
 
-    %% parse record 3 (cols 24-39)
-    %% parse up to CX1, should warn if CNXA1 is present and non-zero
+    %% parse winding records
+    if rev >= 34
+        wdg_template = 'fffffffffffffffddffffddfffd';
+    else
+        wdg_template = 'ffffff..........';
+    end
+
+    %% parse record 3 (Winding 1 data)
     [t2_3, warns] = psse_parse_section(warns, records(idx2+2), verbose, ...
-        '2-winding transformers (3)', 'ffffff..........');
+        '2-winding transformers (3)', wdg_template);
 %       '2-winding transformers (3)', 'ffffffddffffddff');
+    if rev >= 34
+        t2_3 = psse_normalize_xfmr_winding(t2_3, records(idx2+2));
+    end
 
     %% parse record 4 (cols 40-41)
     [t2_4, warns] = psse_parse_section(warns, records(idx2+3), verbose, ...
@@ -336,31 +345,49 @@ if rev > 27
         '3-winding transformers (2)', 'fffffffffff');
 %       '3-winding transformers (2)', 'fffffffffff');
 
-    %% parse record 3 (cols 32-47)
-    %% parse up to CX1, should warn if CNXA1 is present and non-zero
+    %% parse record 3 (Winding 1 data)
     [t3_3, warns] = psse_parse_section(warns, records(idx3+2), verbose, ...
-        '3-winding transformers (3)', 'ffffff..........');
+        '3-winding transformers (3)', wdg_template);
 %       '3-winding transformers (3)', 'ffffffddffffddff');
+    if rev >= 34
+        t3_3 = psse_normalize_xfmr_winding(t3_3, records(idx3+2));
+    end
 
-    %% parse record 4 (cols 48-63)
-    %% parse up to CX2
+    %% parse record 4 (Winding 2 data)
     [t3_4, warns] = psse_parse_section(warns, records(idx3+3), verbose, ...
-        '3-winding transformers (4)', 'ffffff..........');
+        '3-winding transformers (4)', wdg_template);
 %       '3-winding transformers (4)', 'ffffffddffffddff');
+    if rev >= 34
+        t3_4 = psse_normalize_xfmr_winding(t3_4, records(idx3+3));
+    end
 
-    %% parse record 5 (cols 64-79)
-    %% parse up to CX3
+    %% parse record 5 (Winding 3 data)
     [t3_5, warns] = psse_parse_section(warns, records(idx3+4), verbose, ...
-        '3-winding transformers (5)', 'ffffff..........');
+        '3-winding transformers (5)', wdg_template);
 %       '3-winding transformers (5)', 'ffffffddffffddff');
+    if rev >= 34
+        t3_5 = psse_normalize_xfmr_winding(t3_5, records(idx3+4));
+    end
 
     %% assemble two-winding transformer records
-    data.trans2.num = [t2_1.num(:, 1:20) t2_2.num(:, 1:3) t2_3.num(:, 1:16) t2_4.num(:, 1:2)];
-    data.trans2.txt = [t2_1.txt(:, 1:20) t2_2.txt(:, 1:3) t2_3.txt(:, 1:16) t2_4.txt(:, 1:2)];
+    if rev >= 34
+        wdg_cols = 27;
+    else
+        wdg_cols = 16;
+    end
+    data.trans2.num = [t2_1.num(:, 1:20) t2_2.num(:, 1:3) t2_3.num(:, 1:wdg_cols) t2_4.num(:, 1:2)];
+    data.trans2.txt = [t2_1.txt(:, 1:20) t2_2.txt(:, 1:3) t2_3.txt(:, 1:wdg_cols) t2_4.txt(:, 1:2)];
 
     %% assemble three-winding transformer records
-    data.trans3.num = [t3_1.num(:, 1:20) t3_2.num(:, 1:11) t3_3.num(:, 1:16) t3_4.num(:, 1:16) t3_5.num(:, 1:16)];
-    data.trans3.txt = [t3_1.txt(:, 1:20) t3_2.txt(:, 1:11) t3_3.txt(:, 1:16) t3_4.txt(:, 1:16) t3_5.txt(:, 1:16)];
+    if rev >= 34
+        t3_1_num = [t3_1.num(:, 1:20) t3_1.num(:, 22)];
+        t3_1_txt = [t3_1.txt(:, 1:20) t3_1.txt(:, 22)];
+    else
+        t3_1_num = t3_1.num(:, 1:20);
+        t3_1_txt = t3_1.txt(:, 1:20);
+    end
+    data.trans3.num = [t3_1_num t3_2.num(:, 1:11) t3_3.num(:, 1:wdg_cols) t3_4.num(:, 1:wdg_cols) t3_5.num(:, 1:wdg_cols)];
+    data.trans3.txt = [t3_1_txt t3_2.txt(:, 1:11) t3_3.txt(:, 1:wdg_cols) t3_4.txt(:, 1:wdg_cols) t3_5.txt(:, 1:wdg_cols)];
 
     % if verbose
     %     fprintf('%s\n', upper(label));
@@ -442,8 +469,9 @@ if rev < 31
     s = s + 1;
 end
 
-%%-----  skip impedance correction data  -----
-[s, warns] = psse_skip_section(warns, sections, s, verbose, 'impedance correction');
+%%-----  impedance correction data  -----
+[data.impcor, warns] = psse_parse_impedance_correction(warns, records, sections, s, verbose);
+s = s + 1;
 
 %%-----  skip multi-terminal DC data  -----
 [s, warns] = psse_skip_section(warns, sections, s, verbose, 'multi-terminal DC');
@@ -543,6 +571,114 @@ while s <= length(sections)
 end
 
 
+
+%%---------------------------------------------------------------------
+function data = psse_normalize_xfmr_winding(data, records)
+%PSSE_NORMALIZE_XFMR_WINDING  Normalizes Rev34 winding data to 27 columns.
+%   Rev34 RAW files use the full winding record with RATE1-RATE12, CNXA and
+%   NOD fields. Some compact tests use the older 16-column winding layout.
+%   This returns the full Rev34 layout in both cases.
+
+if isempty(data.num)
+    data.num = NaN(0, 27);
+    data.txt = cell(0, 27);
+    return;
+end
+
+nr = size(data.num, 1);
+num = NaN(nr, 27);
+txt = cell(nr, 27);
+for k = 1:nr
+    vals = psse_parse_line(records{k});
+    nc = length(vals);
+    if nc <= 16       %% compact layout with RATE1-RATE3 and no CNXA/NOD
+        n = data.num(k, :);
+        t = data.txt(k, :);
+        num(k, 1:6) = n(1:6);
+        txt(k, 1:6) = t(1:6);
+        num(k, 7:15) = 0;          %% RATE4-RATE12
+        num(k, 16:17) = n(7:8);    %% COD, CONT
+        txt(k, 16:17) = t(7:8);
+        num(k, 18:25) = n(9:16);   %% RMA/RMI/VMA/VMI/NTP/TAB/CR/CX
+        txt(k, 18:25) = t(9:16);
+        num(k, 26) = 0;            %% CNXA
+        num(k, 27) = 0;            %% NOD
+    else
+        ncols = min(27, size(data.num, 2));
+        num(k, 1:ncols) = data.num(k, 1:ncols);
+        txt(k, 1:ncols) = data.txt(k, 1:ncols);
+    end
+end
+data.num = num;
+data.txt = txt;
+
+%%---------------------------------------------------------------------
+function [data, warns] = psse_parse_impedance_correction(warns, records, sections, s, verbose)
+%PSSE_PARSE_IMPEDANCE_CORRECTION  Parses transformer impedance correction tables.
+
+label = 'impedance correction';
+data = struct( ...
+    'colnames', {{'I', 'T', 'RE', 'IM'}}, ...
+    'num', zeros(0, 4), ...
+    'txt', {cell(0, 4)} ...
+);
+
+if s > length(sections)
+    if verbose
+        spacers = repmat('.', 1, 58-length(label));
+        fprintf('No %s data read %s done.\n', label, spacers);
+    end
+    return;
+end
+
+nr = sections(s).last - sections(s).first + 1;
+if ~isempty(sections(s).name) && ~strcmpi(label, sections(s).name)
+    warns{end+1} = sprintf('Section label mismatch, found ''%s'', expected ''%s''', ...
+        sections(s).name, upper(label));
+    if verbose
+        fprintf('-----  WARNING:  Found section labeled:    ''%s''\n', sections(s).name);
+        fprintf('-----            Expected section labeled: ''%s''\n', upper(label));
+    end
+end
+if verbose
+    spacers = repmat('.', 1, 42-length(label));
+    fprintf('Parsing %6d lines of %s data %s', nr, label, spacers);
+end
+
+rows = zeros(0, 4);
+itable = [];
+for rr = sections(s).first:sections(s).last
+    vals = psse_parse_line(records{rr});
+    nums = nan(1, length(vals));
+    for cc = 1:length(vals)
+        nums(cc) = str2double(vals{cc});
+    end
+    nums = nums(~isnan(nums));
+    if isempty(nums)
+        continue;
+    end
+    if isempty(itable)
+        itable = nums(1);
+        nums = nums(2:end);
+    end
+    for cc = 1:3:length(nums)
+        if cc + 2 > length(nums)
+            break;
+        end
+        pt = nums(cc:cc+2);
+        if all(abs(pt) < 1e-12)
+            itable = [];
+            break;
+        else
+            rows(end+1, :) = [itable pt];       %#ok<AGROW>
+        end
+    end
+end
+data.num = rows;
+data.txt = cell(size(rows));
+if verbose
+    fprintf(' done.\n');
+end
 
 %%---------------------------------------------------------------------
 function system = psse_parse_system_wide(records, sections, s)

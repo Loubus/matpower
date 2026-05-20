@@ -9,7 +9,6 @@ function mpc = t_psse_case3
 %
 %   WARNINGS:
 %       Skipped 6 lines of voltage source converter data.
-%       Skipped 2 lines of impedance correction data.
 %       Skipped 14 lines of multi-terminal DC data.
 %       Skipped 1 line of multi-section line data.
 %       Skipped 9 lines of zone data.

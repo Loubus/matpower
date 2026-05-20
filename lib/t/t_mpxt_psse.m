@@ -12,11 +12,12 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 26;
+num_tests = 48;
 
 t_begin(num_tests, quiet);
 
 [~, ~, ~, ~, ~, ~, ~, ~, ~, BS, ~, VM] = idx_bus;
+[~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
 [~, ~, QG] = idx_gen;
 mpopt = mpoption('verbose', 0, 'out.all', 0);
 
@@ -87,6 +88,56 @@ t_ok(r.psse.swshunt.control.cycle_detected, 'cycle memory detects repeated BINIT
 t_ok(r.psse.swshunt.control.cycle_resolved, 'cycle memory resolves repeated BINIT state');
 t_ok(r.psse.swshunt.control.cycle_resolution_changes > 0, ...
     'cycle memory applies best visited BINIT');
+
+%% PSS/E transformer tap control is gated by ACTAPS and COD
+mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'COD=1 transformer tap success');
+t_is(r.branch(1, TAP), 0.95, 10, 'COD=1 transformer tap moves one step');
+t_is(r.psse.xfmr.two.num(1, 24), 0.95, 10, 'COD=1 transformer WINDV updated');
+t_ok(r.psse.xfmr.control.inside_band == 1, 'COD=1 transformer reaches voltage band');
+
+mpc = psse_case2_xfmr_tab();
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'TAB transformer correction success');
+t_is(r.branch(1, TAP), 0.95, 10, 'TAB transformer tap moves one step');
+t_is(r.branch(1, [BR_R BR_X]), [0.0095 0.095], 10, 'TAB updates branch R/X from corrected tap');
+t_is(r.psse.xfmr.control.tab_corrected, 1, 10, 'TAB correction reported');
+
+mpc = psse_case3_xfmr_tap_remote();
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 1.05, 10, 'remote transformer tap reaches voltage band');
+t_ok(r.psse.xfmr.control.inside_band == 1, 'remote transformer reaches voltage band');
+
+mpc = psse_case3_xfmr_tap_remote_limit();
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 1.10, 10, 'remote transformer tap reaches upper limit');
+t_is(r.psse.xfmr.control.at_max, 1, 10, 'remote transformer upper limit reported');
+
+mpc = psse_case3_xfmr_tap_remote_cont_pos();
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 0.95, 10, 'positive CONT remote transformer tap matches PSS/E direction');
+t_ok(r.psse.xfmr.control.inside_band == 1, 'positive CONT remote transformer reaches voltage band');
+
+mpc = psse_case2_xfmr_tap(1, 1, 2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 0.95, 10, 'positive CONT terminal transformer tap matches PSS/E direction');
+t_ok(r.psse.xfmr.control.inside_band == 1, 'positive CONT terminal transformer reaches voltage band');
+
+mpc = psse_case2_xfmr_tap(0, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 1.00, 10, 'ACTAPS=0 leaves transformer tap fixed');
+t_ok(~r.psse.xfmr.control.enabled, 'ACTAPS=0 report disabled');
+
+mpc = psse_case2_xfmr_tap(1, -1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 1.00, 10, 'COD=-1 suppresses automatic tap adjustment');
+t_is(r.psse.xfmr.control.suppressed_auto, 1, 10, 'COD=-1 reported suppressed');
+
+mpc = psse_case2_xfmr_tap(1, 1, -2, 0.90, 1.09, 1.08, 1.1, 0.9, 5, 100, 50);
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 0.90, 10, 'transformer tap lower limit is respected');
+t_is(r.psse.xfmr.control.at_min, 1, 10, 'transformer lower limit reported');
 
 t_end;
 
@@ -162,3 +213,91 @@ mpc.psse.swshunt = struct( ...
     'binit_col', 10, ...
     'status_col', 4 ...
 );
+
+function mpc = psse_case2_xfmr_tap(actaps, cod, cont, tap, vma, vmi, rma, rmi, ntp, pd, qd)
+mpc.version = '2';
+mpc.baseMVA = 100;
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 pd qd 0 0 1 1.00 0 115 1 1.1 0.9
+];
+mpc.gen = [
+    1 pd 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
+];
+mpc.branch = [
+    1 2 0.01 0.10 0 250 250 250 tap 0 1 -360 360
+];
+
+cols = {'I', 'J', 'K', 'CKT', 'CW', 'CZ', 'CM', 'MAG1', ...
+    'MAG2', 'NMETR', 'NAME', 'STAT', 'O1', 'F1', 'O2', 'F2', ...
+    'O3', 'F3', 'O4', 'F4', 'R1_2', 'X1_2', 'SBASE1_2', ...
+    'WINDV1', 'NOMV1', 'ANG1', ...
+    'RATE11', 'RATE21', 'RATE31', 'RATE41', 'RATE51', 'RATE61', ...
+    'RATE71', 'RATE81', 'RATE91', 'RATE101', 'RATE111', 'RATE121', ...
+    'COD1', 'CONT1', 'RMA1', 'RMI1', 'VMA1', 'VMI1', ...
+    'NTP1', 'TAB1', 'CR1', 'CX1', 'CNXA1', 'NOD1', 'WINDV2', 'NOMV2'};
+col = struct();
+for k = 1:length(cols)
+    col.(lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'))) = k;
+end
+
+num = nan(1, 52);
+num([1 2 3 5 6 7 12 21 22 23 24 25 26 27:38 39 40 ...
+        41 42 43 44 45 46 47 48 49 50 51 52]) = ...
+    [1 2 0 1 1 1 1 0.01 0.10 100 tap 0 0 zeros(1, 12) ...
+        cod cont rma rmi vma vmi ntp 0 0 0 0 0 1 0];
+mpc.psse.rev = 34;
+mpc.psse.system.solver.ACTAPS = actaps;
+mpc.psse.system.adjust.MXTPSS = 10;
+mpc.psse.xfmr.two = struct( ...
+    'colnames', {cols}, ...
+    'num', num, ...
+    'txt', {cell(1, 52)}, ...
+    'branch_idx', 1, ...
+    'col', col ...
+);
+mpc.psse.xfmr.three = struct( ...
+    'colnames', {{}}, ...
+    'num', zeros(0, 112), ...
+    'txt', {cell(0, 112)}, ...
+    'branch_idx', zeros(0, 3), ...
+    'col', struct() ...
+);
+
+function mpc = psse_case2_xfmr_tab()
+mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+mpc.psse.xfmr.two.num(1, 46) = 1;
+mpc.psse.xfmr.two.tab_applied = true;
+mpc.psse.xfmr.two.tab_factor = complex(1);
+mpc.psse.xfmr.two.nominal_rx = mpc.branch(1, [3 4]);
+mpc.psse.impcor = struct( ...
+    'colnames', {{'I', 'T', 'RE', 'IM'}}, ...
+    'num', [1 0.90 0.90 0; 1 1.10 1.10 0], ...
+    'txt', {cell(2, 4)} ...
+);
+
+function mpc = psse_case3_xfmr_tap_remote()
+mpc = psse_case2_xfmr_tap(1, 1, -3, 1.00, 0.98, 0.95, 1.1, 0.9, 5, 0, 0);
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
+    3 1 80 35 0 0 1 1.00 0 115 1 1.1 0.9
+];
+mpc.gen(1, 2) = 80;
+mpc.branch = [
+    2 1 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
+    2 3 0.01 0.08 0 250 250 250 0 0 1 -360 360
+];
+mpc.psse.xfmr.two.num(1, 1:2) = [2 1];
+
+function mpc = psse_case3_xfmr_tap_remote_limit()
+mpc = psse_case3_xfmr_tap_remote();
+mpc.branch = [
+    1 2 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
+    2 3 0.01 0.08 0 250 250 250 0 0 1 -360 360
+];
+mpc.psse.xfmr.two.num(1, 1:2) = [1 2];
+
+function mpc = psse_case3_xfmr_tap_remote_cont_pos()
+mpc = psse_case3_xfmr_tap_remote_limit();
+mpc.psse.xfmr.two.num(1, 40) = 3;

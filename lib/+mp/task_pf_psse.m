@@ -1,16 +1,17 @@
 classdef task_pf_psse < mp.task_pf_legacy
 % mp.task_pf_psse - Legacy power flow task with PSS/E controls.
 %
-% Adds PSS/E switched shunt control to the legacy MP-Core power flow task.
-% The control is applied in next_dm(), so each shunt adjustment triggers a
-% formal data model iteration and a complete rebuild of the network and
-% mathematical models.
+% Adds PSS/E transformer tap and switched shunt control to the legacy
+% MP-Core power flow task. The controls are applied in next_dm(), so each
+% adjustment triggers a formal data model iteration and a complete rebuild
+% of the network and mathematical models.
 %
 % mp.task_pf_psse Properties:
+%   * psse_xfmr - transformer tap control state and diagnostics
 %   * psse_swshunt - switched shunt control state and diagnostics
 %
 % mp.task_pf_psse Methods:
-%   * next_dm - coordinate PSS/E switched shunt control
+%   * next_dm - coordinate PSS/E transformer tap and switched shunt control
 %   * network_model_build_post - initialize reference-bus tracking for data
 %       model iterations
 %   * network_model_x_soln - correct voltage angles when the reference bus
@@ -26,16 +27,23 @@ classdef task_pf_psse < mp.task_pf_legacy
 %   See https://matpower.org for more info.
 
     properties
+        psse_xfmr = []      % PSS/E transformer tap control state/report
         psse_swshunt = []   % PSS/E switched shunt control state/report
     end
 
     methods
         function dm = next_dm(obj, mm, nm, dm, mpopt, mpx)
-            % Coordinate PSS/E switched shunt control.
+            % Coordinate PSS/E transformer tap and switched shunt control.
 
             dm0 = dm;
             dm = next_dm@mp.task_pf(obj, mm, nm, dm, mpopt, mpx);
             if ~isempty(dm) || obj.dc || ~obj.success
+                return;
+            end
+
+            [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
+                obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
+            if ~isempty(dm)
                 return;
             end
 

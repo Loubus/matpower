@@ -238,8 +238,17 @@ gen(:, [GEN_BUS PG QG QMAX QMIN VG MBASE GEN_STATUS PMAX PMIN]) = ...
     data.gen.num(:, [1 3 4 5 6 7 9 15 17 18]);
 
 %%-----  transformer data  -----
+xfmr_info = [];
+xfmr_branch_offset = size(branch, 1);
+if isfield(data, 'impcor')
+    impcor = data.impcor;
+else
+    impcor = [];
+end
 if rev > 27
-    [transformer, bus, warns, bus_name] = psse_convert_xfmr(warns, data.trans2.num, data.trans3.num, verbose, baseMVA, bus, bus_name);
+    [transformer, bus, warns, bus_name, xfmr_info] = psse_convert_xfmr( ...
+        warns, data.trans2.num, data.trans3.num, verbose, baseMVA, ...
+        bus, bus_name, impcor);
     branch = [branch; transformer];
 end
 
@@ -265,9 +274,121 @@ mpc.psse.swshunt = struct( ...
 if isfield(data, 'system')
     mpc.psse.system = data.system;
 end
+if isfield(data, 'impcor')
+    mpc.psse.impcor = data.impcor;
+end
+if rev > 27
+    mpc.psse.xfmr = psse_xfmr_metadata(data, xfmr_info, xfmr_branch_offset, rev);
+end
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
+end
+
+function xfmr = psse_xfmr_metadata(data, info, branch_offset, rev)
+% psse_xfmr_metadata - Preserves PSS/E transformer control metadata.
+
+[two_cols, three_cols, two_col, three_col] = psse_xfmr_columns(rev, ...
+    size(data.trans2.num, 2), size(data.trans3.num, 2));
+
+nt2 = size(data.trans2.num, 1);
+nt3 = size(data.trans3.num, 1);
+two_branch_idx = NaN(nt2, 1);
+three_branch_idx = NaN(nt3, 3);
+two_tab_applied = false(nt2, 1);
+three_tab_applied = false(nt3, 3);
+two_tab_factor = complex(NaN(nt2, 1));
+three_tab_factor = complex(NaN(nt3, 3));
+two_nominal_rx = NaN(nt2, 2);
+three_nominal_rx = NaN(nt3, 3, 2);
+if ~isempty(info)
+    if ~isempty(info.two.raw_idx)
+        two_branch_idx(info.two.raw_idx) = branch_offset + info.two.branch_idx;
+        two_tab_applied(info.two.raw_idx) = info.two.tab_applied;
+        two_tab_factor(info.two.raw_idx) = info.two.tab_factor;
+        two_nominal_rx(info.two.raw_idx, :) = info.two.nominal_rx;
+    end
+    if ~isempty(info.three.raw_idx)
+        three_branch_idx(info.three.raw_idx, :) = branch_offset + info.three.branch_idx;
+        three_tab_applied(info.three.raw_idx, :) = info.three.tab_applied;
+        three_tab_factor(info.three.raw_idx, :) = info.three.tab_factor;
+        three_nominal_rx(info.three.raw_idx, :, :) = info.three.nominal_rx;
+    end
+end
+
+xfmr = struct( ...
+    'two', struct( ...
+        'colnames', {two_cols}, ...
+        'num', data.trans2.num, ...
+        'txt', {data.trans2.txt}, ...
+        'branch_idx', two_branch_idx, ...
+        'tab_applied', two_tab_applied, ...
+        'tab_factor', two_tab_factor, ...
+        'nominal_rx', two_nominal_rx, ...
+        'col', two_col), ...
+    'three', struct( ...
+        'colnames', {three_cols}, ...
+        'num', data.trans3.num, ...
+        'txt', {data.trans3.txt}, ...
+        'branch_idx', three_branch_idx, ...
+        'tab_applied', three_tab_applied, ...
+        'tab_factor', three_tab_factor, ...
+        'nominal_rx', three_nominal_rx, ...
+        'col', three_col) ...
+);
+
+function [two_cols, three_cols, two_col, three_col] = psse_xfmr_columns(rev, nc2, nc3)
+% psse_xfmr_columns - Returns preserved transformer column metadata.
+
+base_cols = {'I', 'J', 'K', 'CKT', 'CW', 'CZ', 'CM', 'MAG1', ...
+    'MAG2', 'NMETR', 'NAME', 'STAT', 'O1', 'F1', 'O2', 'F2', ...
+    'O3', 'F3', 'O4', 'F4'};
+base3_cols = [base_cols {'ZCOD'}];
+z_cols = {'R1_2', 'X1_2', 'SBASE1_2'};
+z3_cols = {'R1_2', 'X1_2', 'SBASE1_2', 'R2_3', 'X2_3', ...
+    'SBASE2_3', 'R3_1', 'X3_1', 'SBASE3_1', 'VMSTAR', 'ANSTAR'};
+
+if rev >= 34 || nc2 >= 52 || nc3 >= 112
+    w1 = psse_xfmr_winding_cols(1, 12, 1);
+    w2 = psse_xfmr_winding_cols(2, 12, 1);
+    w3 = psse_xfmr_winding_cols(3, 12, 1);
+else
+    w1 = psse_xfmr_winding_cols(1, 3, 0);
+    w2 = psse_xfmr_winding_cols(2, 3, 0);
+    w3 = psse_xfmr_winding_cols(3, 3, 0);
+end
+
+two_cols = [base_cols z_cols w1 {'WINDV2', 'NOMV2'}];
+if nc3 >= 113
+    three_cols = [base3_cols z3_cols w1 w2 w3];
+else
+    three_cols = [base_cols z3_cols w1 w2 w3];
+end
+two_col = psse_xfmr_col_struct(two_cols);
+three_col = psse_xfmr_col_struct(three_cols);
+
+function cols = psse_xfmr_winding_cols(w, nrates, include_node)
+% psse_xfmr_winding_cols - Returns one winding column-name block.
+
+cols = {sprintf('WINDV%d', w), sprintf('NOMV%d', w), sprintf('ANG%d', w)};
+for k = 1:nrates
+    cols{end+1} = sprintf('RATE%d%d', k, w);
+end
+cols = [cols {sprintf('COD%d', w), sprintf('CONT%d', w)}];
+cols = [cols {sprintf('RMA%d', w), sprintf('RMI%d', w), ...
+    sprintf('VMA%d', w), sprintf('VMI%d', w), sprintf('NTP%d', w), ...
+    sprintf('TAB%d', w), sprintf('CR%d', w), sprintf('CX%d', w)}];
+if include_node
+    cols = [cols {sprintf('CNXA%d', w), sprintf('NOD%d', w)}];
+end
+
+function col = psse_xfmr_col_struct(cols)
+% psse_xfmr_col_struct - Builds case-insensitive name-to-column struct.
+
+col = struct();
+for k = 1:length(cols)
+    name = lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'));
+    col.(name) = k;
 end
 
 function [binit_col, status_col, cols] = psse_swshunt_columns(rev)

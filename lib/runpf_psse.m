@@ -9,9 +9,9 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   with the mp.xt_psse extension enabled. This provides PSS/E-specific
 %   control behavior through MP-Core, while leaving RUNPF unchanged.
 %
-%   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is the
-%   switched shunt voltage control preserved from PSS/E RAW data in
-%   MPC.PSSE.SWSHUNT.
+%   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is
+%   voltage control for transformer taps and switched shunts preserved from
+%   PSS/E RAW data in MPC.PSSE.
 %
 %   Inputs (all are optional):
 %       CASEDATA : either a MATPOWER case struct or a string containing
