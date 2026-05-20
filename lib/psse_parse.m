@@ -421,14 +421,11 @@ if rev < 31
 %       'two-terminal DC (3)', 'ddffffffffffdddsf');
 else
     [dc1, warns] = psse_parse_section(warns, records(idx), verbose, ...
-        'two-terminal DC (1)', '.d.ff.......');
-%       'two-terminal DC (1)', 'sdffffffsfdf');
+        'two-terminal DC (1)', 'sdffffffsfdf');
     [dc2, warns] = psse_parse_section(warns, records(idx+1), verbose, ...
-        'two-terminal DC (2)', 'd.ff.............');
-%       'two-terminal DC (2)', 'ddffffffffffdddDf');
+        'two-terminal DC (2)', 'ddffffffffffdddsfd');
     [dc3, warns] = psse_parse_section(warns, records(idx+2), verbose, ...
-        'two-terminal DC (3)', 'd.ff.............');
-%       'two-terminal DC (3)', 'ddffffffffffdddDf');
+        'two-terminal DC (3)', 'ddffffffffffdddsfd');
 end
 
 %% assemble two-terminal DC transmission line

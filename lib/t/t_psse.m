@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 182;
+num_tests = 192;
 
 t_begin(num_tests, quiet);
 
@@ -117,6 +117,15 @@ else
     t_str_match(data34.facts.txt{1, 1}, 'FACTS 1     ', [t 'FACTS device name']);
     t_is(data34.facts.num(1, [2 3 4 8 20 22]), [2 0 1 100 2 0], 12, ...
         [t 'FACTS device columns']);
+    t_is(size(data34.twodc.num), [2 48], 12, [t 'two-terminal DC rows and columns']);
+    t_is(data34.twodc.num(:, [2 3 4 5 6 7 10 11]), ...
+        [0 10 100 500 400 10 0 20; 1 10 100 500 400 10 0 20], 12, ...
+        [t 'two-terminal DC line control columns']);
+    t_is(data34.twodc.num(:, [13 29 30 31 47 48]), ...
+        [1 0 0 2 0 0; 1 0 0 2 0 0], 12, ...
+        [t 'two-terminal DC terminal columns']);
+    t_str_match(data34.twodc.txt{1, 1}, 'DC BLOCK    ', [t 'two-terminal DC blocked name']);
+    t_str_match(data34.twodc.txt{2, 9}, 'R', [t 'two-terminal DC meter']);
     t_is(size(data34.trans2.num), [2 52], 12, [t 'transformer rev 34 columns']);
     t_is(data34.trans2.num(:, [7 8 9]), [1 0.01 -0.02; 2 1e6 0.1], 12, ...
         [t 'transformer magnetizing columns']);
@@ -138,6 +147,15 @@ else
     t_is(mpc34.bus(:, [1 5 6]), [1 2 -11.9498743710662; 2 0 12.5], 10, ...
         [t 'switched shunt and transformer magnetizing conversion']);
     t_ok(isfield(mpc34, 'psse') && isfield(mpc34.psse, 'swshunt'), [t 'switched shunt preserved']);
+    t_ok(isfield(mpc34.psse, 'twodc'), [t 'two-terminal DC preserved']);
+    t_is([mpc34.psse.twodc.col.rdc mpc34.psse.twodc.col.ipi mpc34.psse.twodc.col.xcapi], ...
+        [3 31 47], 12, [t 'two-terminal DC metadata columns']);
+    t_is([mpc34.psse.twodc.rect_bus_idx mpc34.psse.twodc.inv_bus_idx], ...
+        [1 2; 1 2], 12, [t 'two-terminal DC metadata bus mapping']);
+    t_is(mpc34.psse.twodc.loss_mw, [0; 0.4], 12, [t 'two-terminal DC metadata loss']);
+    t_is(mpc34.dcline(:, [1 2 3 4 5 16 17]), ...
+        [1 2 0 0 0 0 0; 1 2 1 100 99.6 0.4 0], 12, ...
+        [t 'two-terminal DC dcline conversion']);
     t_ok(isfield(mpc34.psse, 'facts'), [t 'FACTS device preserved']);
     t_is([mpc34.psse.facts.bus_idx mpc34.psse.facts.reg_bus_idx], ...
         [2 2], 12, [t 'FACTS device metadata mapping']);

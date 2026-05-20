@@ -1,18 +1,20 @@
 classdef task_pf_psse < mp.task_pf_legacy
 % mp.task_pf_psse - Legacy power flow task with PSS/E controls.
 %
-% Adds PSS/E transformer tap, switched shunt, and FACTS STATCON control to
-% the legacy MP-Core power flow task. The controls are applied in next_dm(),
-% so each adjustment triggers a formal data model iteration and a complete
-% rebuild of the network and mathematical models.
+% Adds PSS/E transformer tap, two-terminal DC, switched shunt, and FACTS
+% STATCON control to the legacy MP-Core power flow task. The controls are
+% applied in next_dm(), so each adjustment triggers a formal data model
+% iteration and a complete rebuild of the network and mathematical models.
 %
 % mp.task_pf_psse Properties:
 %   * psse_xfmr - transformer tap control state and diagnostics
+%   * psse_twodc - two-terminal DC control state and diagnostics
 %   * psse_facts - FACTS device control state and diagnostics
 %   * psse_swshunt - switched shunt control state and diagnostics
 %
 % mp.task_pf_psse Methods:
-%   * next_dm - coordinate PSS/E transformer, switched shunt and FACTS control
+%   * next_dm - coordinate PSS/E transformer, two-terminal DC, switched
+%       shunt and FACTS control
 %   * network_model_build_post - initialize reference-bus tracking for data
 %       model iterations
 %   * network_model_x_soln - correct voltage angles when the reference bus
@@ -29,13 +31,14 @@ classdef task_pf_psse < mp.task_pf_legacy
 
     properties
         psse_xfmr = []      % PSS/E transformer tap control state/report
+        psse_twodc = []     % PSS/E two-terminal DC control state/report
         psse_facts = []     % PSS/E FACTS device control state/report
         psse_swshunt = []   % PSS/E switched shunt control state/report
     end
 
     methods
         function dm = next_dm(obj, mm, nm, dm, mpopt, mpx)
-            % Coordinate PSS/E transformer, switched shunt and FACTS control.
+            % Coordinate PSS/E transformer, DC, shunt and FACTS control.
 
             dm0 = dm;
             dm = next_dm@mp.task_pf(obj, mm, nm, dm, mpopt, mpx);
@@ -45,6 +48,12 @@ classdef task_pf_psse < mp.task_pf_legacy
 
             [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
+            if ~isempty(dm)
+                return;
+            end
+
+            [dm, obj.psse_twodc] = mp.psse_twodc_control( ...
+                obj, mm, nm, dm0, mpopt, mpx, obj.psse_twodc);
             if ~isempty(dm)
                 return;
             end

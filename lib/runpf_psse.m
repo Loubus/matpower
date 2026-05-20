@@ -10,8 +10,9 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   control behavior through MP-Core, while leaving RUNPF unchanged.
 %
 %   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is
-%   voltage control for transformer taps, FACTS STATCON devices, and
-%   switched shunts preserved from PSS/E RAW data in MPC.PSSE.
+%   voltage control for transformer taps, FACTS STATCON devices, switched
+%   shunts, and opt-in two-terminal DC LCC equivalents preserved from PSS/E
+%   RAW data in MPC.PSSE.
 %
 %   Inputs (all are optional):
 %       CASEDATA : either a MATPOWER case struct or a string containing
@@ -85,6 +86,7 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 [GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS, PMAX, PMIN, ...
     MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, PC1, PC2, QC1MIN, QC1MAX, ...
     QC2MIN, QC2MAX, RAMP_AGC, RAMP_10, RAMP_30, RAMP_Q, APF] = idx_gen;
+dci = idx_dcline;
 
 %% default arguments
 if nargin < 4
@@ -478,6 +480,41 @@ mpc.iterations = its;
 %%-----  output results  -----
 %% convert back to original bus numbering & print results
 results = int2ext(mpc);
+if success && use_mp_core && isfield(results, 'dcline') && ...
+        isfield(results, 'psse') && isfield(results.psse, 'twodc') && ...
+        isfield(results.psse.twodc, 'control')
+    ctrl = results.psse.twodc.control;
+    if isfield(results.psse.twodc, 'dcline_idx')
+        k = results.psse.twodc.dcline_idx(:);
+    else
+        k = (1:length(ctrl.pf))';
+    end
+    src = (1:length(k))';
+    ok = k > 0 & k <= size(results.dcline, 1) & src <= length(ctrl.pf);
+    if any(ok)
+        dst = k(ok);
+        src = src(ok);
+        results.dcline(dst, dci.PF) = ctrl.pf(src);
+        results.dcline(dst, dci.PT) = ctrl.pt(src);
+        if isfield(ctrl, 'qacr_mvar') && isfield(ctrl, 'qaci_mvar')
+            results.dcline(dst, dci.QF) = -ctrl.qacr_mvar(src);
+            results.dcline(dst, dci.QT) = -ctrl.qaci_mvar(src);
+        end
+        results.dcline(dst, dci.LOSS0) = ctrl.loss_mw(src);
+        results.dcline(dst, dci.LOSS1) = 0;
+        if isfield(results, 'order') && isfield(results.order, 'ext') && ...
+                isfield(results.order.ext, 'dcline')
+            results.order.ext.dcline(dst, dci.PF) = ctrl.pf(src);
+            results.order.ext.dcline(dst, dci.PT) = ctrl.pt(src);
+            if isfield(ctrl, 'qacr_mvar') && isfield(ctrl, 'qaci_mvar')
+                results.order.ext.dcline(dst, dci.QF) = -ctrl.qacr_mvar(src);
+                results.order.ext.dcline(dst, dci.QT) = -ctrl.qaci_mvar(src);
+            end
+            results.order.ext.dcline(dst, dci.LOSS0) = ctrl.loss_mw(src);
+            results.order.ext.dcline(dst, dci.LOSS1) = 0;
+        end
+    end
+end
 
 if success && use_mp_core
     results.om = pf.mm;

@@ -277,6 +277,9 @@ end
 if isfield(data, 'impcor')
     mpc.psse.impcor = data.impcor;
 end
+if isfield(data, 'twodc')
+    mpc.psse.twodc = psse_twodc_metadata(data.twodc, dcline, mpc);
+end
 if isfield(data, 'facts')
     mpc.psse.facts = psse_facts_metadata(data.facts, mpc);
 end
@@ -286,6 +289,49 @@ end
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
+end
+
+function twodc = psse_twodc_metadata(data, dcline, mpc)
+% psse_twodc_metadata - Preserves PSS/E two-terminal DC metadata.
+
+c = idx_dcline;
+cols = psse_twodc_columns(size(data.num, 2));
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+rect_bus_idx = zeros(n, 1);
+inv_bus_idx = zeros(n, 1);
+loss_mw = zeros(n, 1);
+if n
+    rect_bus_idx = psse_bus_map(mpc, data.num(:, col.ipr));
+    inv_bus_idx = psse_bus_map(mpc, data.num(:, col.ipi));
+    if ~isempty(dcline)
+        loss_mw = dcline(:, c.LOSS0) + dcline(:, c.LOSS1) .* dcline(:, c.PF);
+    end
+end
+
+twodc = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'dcline_idx', (1:n)', ...
+    'rect_bus_idx', rect_bus_idx, ...
+    'inv_bus_idx', inv_bus_idx, ...
+    'loss_mw', loss_mw ...
+);
+
+function cols = psse_twodc_columns(ncols)
+% psse_twodc_columns - Returns PSS/E two-terminal DC column metadata.
+
+cols = {'NAME', 'MDC', 'RDC', 'SETVL', 'VSCHD', 'VCMOD', ...
+    'RCOMP', 'DELTI', 'METER', 'DCVMIN', 'CCCITMX', 'CCCACC', ...
+    'IPR', 'NBR', 'ANMXR', 'ANMNR', 'RCR', 'XCR', 'EBASR', ...
+    'TRR', 'TAPR', 'TMXR', 'TMNR', 'STPR', 'ICR', 'IFR', ...
+    'ITR', 'IDR', 'XCAPR', 'NDR', 'IPI', 'NBI', 'ANMXI', ...
+    'ANMNI', 'RCI', 'XCI', 'EBASI', 'TRI', 'TAPI', 'TMXI', ...
+    'TMNI', 'STPI', 'ICI', 'IFI', 'ITI', 'IDI', 'XCAPI', 'NDI'};
+for k = length(cols)+1:ncols
+    cols{end+1} = sprintf('COL%d', k);
 end
 
 function facts = psse_facts_metadata(data, mpc)
