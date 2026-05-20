@@ -309,10 +309,10 @@ if rev > 27
 
     %% parse record 1 (cols 1-20)
     [t2_1, warns] = psse_parse_section(warns, records(idx2), verbose, ...
-        '2-winding transformers (1)', 'dd..ddd....d........');
+        '2-winding transformers (1)', 'dd..dddff..d........');
 %       '2-winding transformers (1)', 'dddsdddffdsddfdfdfdf');
     [t3_1, warns] = psse_parse_section(warns, records(idx3), verbose, ...
-        '3-winding transformers (1)', 'ddd.ddd....d........sd');
+        '3-winding transformers (1)', 'ddd.dddff..d........sd');
 %       '3-winding transformers (1)', 'dddsdddffdsddfdfdfdf');
 
     %% two-winding

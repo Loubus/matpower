@@ -155,6 +155,23 @@ if nt2 > 0
     tap(cw3)  = tap(cw3, 1)  .* nomv1(cw3)./nomv2(cw3);
     shift = trans2(:, t2c.ang1);
 
+    [gmag2, bmag2, bad_cm2] = xfmr_mag_admittance(trans2(:, 7), ...
+        trans2(:, 8), trans2(:, 9), trans2(:, 23), nomv1, ...
+        bus(fbus, BASE_KV), baseMVA);
+    if any(bad_cm2)
+        warns{end+1} = sprintf('Ignoring magnetizing admittance for %d two-winding transformers with unsupported CM codes.', nnz(bad_cm2));
+        if verbose
+            fprintf('WARNING: Ignoring magnetizing admittance for %d two-winding transformers with unsupported CM codes.\n', nnz(bad_cm2));
+        end
+    end
+    k = find(trans2(:, 12) ~= 0 & ~bad_cm2 & (gmag2 ~= 0 | bmag2 ~= 0));
+    if ~isempty(k)
+        bus(:, GS) = bus(:, GS) + full(sparse(fbus(k), 1, ...
+            gmag2(k) * baseMVA, size(bus, 1), 1));
+        bus(:, BS) = bus(:, BS) + full(sparse(fbus(k), 1, ...
+            bmag2(k) * baseMVA, size(bus, 1), 1));
+    end
+
     R_nom2 = R;
     X_nom2 = X;
     [R, X, tab_applied2, tab_factor2] = apply_tab_winding( ...
@@ -229,6 +246,24 @@ if nt3 > 0
     shift1 = trans3(:, t3c.ang1);
     shift2 = trans3(:, t3c.ang2);
     shift3 = trans3(:, t3c.ang3);
+
+    [gmag3, bmag3, bad_cm3] = xfmr_mag_admittance(trans3(:, 7), ...
+        trans3(:, 8), trans3(:, 9), trans3(:, t3c.sbase12), nomv1, ...
+        bus(ind1, BASE_KV), baseMVA);
+    if any(bad_cm3)
+        warns{end+1} = sprintf('Ignoring magnetizing admittance for %d three-winding transformers with unsupported CM codes.', nnz(bad_cm3));
+        if verbose
+            fprintf('WARNING: Ignoring magnetizing admittance for %d three-winding transformers with unsupported CM codes.\n', nnz(bad_cm3));
+        end
+    end
+    k = find(trans3(:, 12) ~= 0 & trans3(:, 12) ~= 4 & ...
+        ~bad_cm3 & (gmag3 ~= 0 | bmag3 ~= 0));
+    if ~isempty(k)
+        bus(:, GS) = bus(:, GS) + full(sparse(ind1(k), 1, ...
+            gmag3(k) * baseMVA, size(bus, 1), 1));
+        bus(:, BS) = bus(:, BS) + full(sparse(ind1(k), 1, ...
+            bmag3(k) * baseMVA, size(bus, 1), 1));
+    end
 
     %% replace winding base voltage with bus base voltage
     % commented out: Yujia thinks this is wrong
@@ -430,6 +465,29 @@ function ratio = tab_ratio(cw, windv, basekv)
 ratio = windv;
 k = find(cw == 2 & basekv ~= 0);
 ratio(k) = windv(k) ./ basekv(k);
+
+function [g, b, bad_cm] = xfmr_mag_admittance(cm, mag1, mag2, sbase, nomv1, basekv, baseMVA)
+%XFMR_MAG_ADMITTANCE  Converts PSS/E transformer magnetizing data to pu.
+
+g = zeros(size(mag1));
+b = zeros(size(mag2));
+has_mag = mag1 ~= 0 | mag2 ~= 0;
+cm(isnan(cm)) = 1;
+
+k = find(has_mag & cm == 1);
+g(k) = mag1(k);
+b(k) = mag2(k);
+
+k = find(has_mag & cm == 2);
+if ~isempty(k)
+    g0 = mag1(k) / 1e6 ./ sbase(k);
+    b0 = -sqrt(max(mag2(k).^2 - g0.^2, 0));
+    scale = sbase(k) ./ baseMVA .* (basekv(k) ./ nomv1(k)).^2;
+    g(k) = g0 .* scale;
+    b(k) = b0 .* scale;
+end
+
+bad_cm = has_mag & cm ~= 1 & cm ~= 2;
 
 function [t2c, t3c] = psse_xfmr_col_idx(nc2, nc3)
 %PSSE_XFMR_COL_IDX  Column indices for parsed transformer winding records.
