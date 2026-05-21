@@ -271,6 +271,9 @@ mpc.psse.swshunt = struct( ...
     'binit_col', swshunt_binit_col, ...
     'status_col', swshunt_status_col ...
 );
+if isfield(data, 'gen')
+    mpc.psse.genq = psse_genq_metadata(data.gen, mpc, rev);
+end
 if isfield(data, 'system')
     mpc.psse.system = data.system;
 end
@@ -289,6 +292,110 @@ end
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
+end
+
+function genq = psse_genq_metadata(data, mpc, rev)
+% psse_genq_metadata - Preserves PSS/E generator voltage-control metadata.
+
+cols = psse_genq_columns(size(data.num, 2));
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+
+bus_ext = parsed_col(data, col.i, NaN);
+id = parsed_txt(data, col.id, n);
+reg_bus_ext = parsed_col(data, col.ireg, 0);
+local = isnan(reg_bus_ext) | reg_bus_ext == 0;
+reg_bus_ext(local) = bus_ext(local);
+
+genq = struct( ...
+    'rev', rev, ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'raw_row_idx', (1:n)', ...
+    'gen_idx', (1:n)', ...
+    'bus_idx', psse_bus_map(mpc, bus_ext), ...
+    'bus_ext', bus_ext, ...
+    'reg_bus_idx', psse_bus_map(mpc, reg_bus_ext), ...
+    'reg_bus_ext', reg_bus_ext, ...
+    'id', {id}, ...
+    'status', parsed_col(data, col.stat, 1), ...
+    'vs', parsed_col(data, col.vs, NaN), ...
+    'rmpct', parsed_col(data, col.rmpct, 100), ...
+    'qmax', parsed_col(data, col.qt, NaN), ...
+    'qmin', parsed_col(data, col.qb, NaN), ...
+    'qg', parsed_col(data, col.qg, NaN), ...
+    'ireg_col', col.ireg, ...
+    'rmpct_col', col.rmpct ...
+);
+
+function cols = psse_genq_columns(ncols)
+% psse_genq_columns - Returns PSS/E generator column metadata.
+
+cols = {'I', 'ID', 'PG', 'QG', 'QT', 'QB', 'VS', 'IREG', ...
+    'MBASE', 'ZR', 'ZX', 'RT', 'XT', 'GTAP', 'STAT', 'RMPCT', ...
+    'PT', 'PB', 'O1', 'F1', 'O2', 'F2', 'O3', 'F3', 'O4', 'F4', ...
+    'WMOD', 'WPF'};
+for k = length(cols)+1:ncols
+    cols{end+1} = sprintf('COL%d', k);
+end
+
+function v = parsed_col(data, col, default)
+% parsed_col - Parses a numeric column from num first, then txt.
+
+n = size(data.num, 1);
+v = default * ones(n, 1);
+if ~col || col > max(size(data.num, 2), size(data.txt, 2))
+    return;
+end
+if col <= size(data.num, 2)
+    num = data.num(:, col);
+    ok = ~isnan(num);
+    v(ok) = num(ok);
+else
+    ok = false(n, 1);
+end
+if col <= size(data.txt, 2)
+    for kk = 1:n
+        if ok(kk)
+            continue;
+        end
+        str = data.txt{kk, col};
+        if isempty(str)
+            continue;
+        end
+        if numel(str) >= 2 && ((str(1) == '''' && str(end) == '''') || ...
+                (str(1) == '"' && str(end) == '"'))
+            str = str(2:end-1);
+        end
+        num = str2double(strtrim(str));
+        if ~isnan(num)
+            v(kk) = num;
+        end
+    end
+end
+
+function txt = parsed_txt(data, col, n)
+% parsed_txt - Returns dequoted text for a preserved RAW column.
+
+txt = cell(n, 1);
+for kk = 1:n
+    txt{kk} = '';
+end
+if ~col || col > size(data.txt, 2)
+    return;
+end
+for kk = 1:n
+    str = data.txt{kk, col};
+    if isempty(str) && col <= size(data.num, 2) && ~isnan(data.num(kk, col))
+        str = sprintf('%g', data.num(kk, col));
+    end
+    if numel(str) >= 2 && ((str(1) == '''' && str(end) == '''') || ...
+            (str(1) == '"' && str(end) == '"'))
+        str = str(2:end-1);
+    end
+    txt{kk} = strtrim(str);
 end
 
 function twodc = psse_twodc_metadata(data, dcline, mpc)

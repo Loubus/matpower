@@ -1,20 +1,24 @@
 classdef task_pf_psse < mp.task_pf_legacy
 % mp.task_pf_psse - Legacy power flow task with PSS/E controls.
 %
-% Adds PSS/E transformer tap, two-terminal DC, switched shunt, and FACTS
-% STATCON control to the legacy MP-Core power flow task. The controls are
-% applied in next_dm(), so each adjustment triggers a formal data model
-% iteration and a complete rebuild of the network and mathematical models.
+% Adds PSS/E generator reactive limit/remote voltage regulation,
+% low-voltage constant MVA load behavior, transformer tap, two-terminal DC,
+% switched shunt, and FACTS STATCON control to the legacy MP-Core power
+% flow task. The controls are applied in next_dm(), so each adjustment
+% triggers a formal data model iteration and a complete rebuild of the
+% network and mathematical models.
 %
 % mp.task_pf_psse Properties:
+%   * psse_genq - generator Q limit/remote regulation state and diagnostics
+%   * psse_pqbrak - low-voltage constant MVA load state and diagnostics
 %   * psse_xfmr - transformer tap control state and diagnostics
 %   * psse_twodc - two-terminal DC control state and diagnostics
 %   * psse_facts - FACTS device control state and diagnostics
 %   * psse_swshunt - switched shunt control state and diagnostics
 %
 % mp.task_pf_psse Methods:
-%   * next_dm - coordinate PSS/E transformer, two-terminal DC, switched
-%       shunt and FACTS control
+%   * next_dm - coordinate PSS/E generator Q, low-voltage load, transformer,
+%       two-terminal DC, switched shunt and FACTS control
 %   * network_model_build_post - initialize reference-bus tracking for data
 %       model iterations
 %   * network_model_x_soln - correct voltage angles when the reference bus
@@ -30,6 +34,8 @@ classdef task_pf_psse < mp.task_pf_legacy
 %   See https://matpower.org for more info.
 
     properties
+        psse_genq = []      % PSS/E generator Q/remote regulation state/report
+        psse_pqbrak = []    % PSS/E low-voltage constant MVA load state/report
         psse_xfmr = []      % PSS/E transformer tap control state/report
         psse_twodc = []     % PSS/E two-terminal DC control state/report
         psse_facts = []     % PSS/E FACTS device control state/report
@@ -38,12 +44,20 @@ classdef task_pf_psse < mp.task_pf_legacy
 
     methods
         function dm = next_dm(obj, mm, nm, dm, mpopt, mpx)
-            % Coordinate PSS/E transformer, DC, shunt and FACTS control.
+            % Coordinate PSS/E generator Q, load, transformer, DC, shunt and FACTS control.
 
             dm0 = dm;
             dm = next_dm@mp.task_pf(obj, mm, nm, dm, mpopt, mpx);
             if ~isempty(dm) || obj.dc || ~obj.success
                 return;
+            end
+
+            if ~isempty(which('mp.psse_genq_control'))
+                [dm, obj.psse_genq] = mp.psse_genq_control( ...
+                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_genq);
+                if ~isempty(dm)
+                    return;
+                end
             end
 
             [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
@@ -66,6 +80,14 @@ classdef task_pf_psse < mp.task_pf_legacy
 
             [dm, obj.psse_facts] = mp.psse_facts_control( ...
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_facts);
+            if ~isempty(dm)
+                return;
+            end
+
+            if ~isempty(which('mp.psse_pqbrak_control'))
+                [dm, obj.psse_pqbrak] = mp.psse_pqbrak_control( ...
+                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
+            end
         end
 
         function nm = network_model_build_post(obj, nm, dm, mpopt)

@@ -10,9 +10,10 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   control behavior through MP-Core, while leaving RUNPF unchanged.
 %
 %   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is
-%   voltage control for transformer taps, FACTS STATCON devices, switched
-%   shunts, and opt-in two-terminal DC LCC equivalents preserved from PSS/E
-%   RAW data in MPC.PSSE.
+%   voltage control for generator Q limits/remote regulation, PSS/E
+%   low-voltage constant MVA load behavior, transformer taps, FACTS STATCON
+%   devices, switched shunts, and opt-in two-terminal DC LCC equivalents
+%   preserved from PSS/E RAW data in MPC.PSSE.
 %
 %   Inputs (all are optional):
 %       CASEDATA : either a MATPOWER case struct or a string containing
@@ -149,6 +150,12 @@ end
 
 %% read data
 mpc = loadcase(casedata);
+if ~isempty(which('mp.psse_pqbrak_prepare'))
+    mpc = mp.psse_pqbrak_prepare(mpc);
+end
+if ~isempty(which('mp.psse_genq_prepare'))
+    mpc = mp.psse_genq_prepare(mpc);
+end
 
 %% add zero columns to branch for flows if needed
 if size(mpc.branch,2) < QT
@@ -512,6 +519,20 @@ if success && use_mp_core && isfield(results, 'dcline') && ...
             end
             results.order.ext.dcline(dst, dci.LOSS0) = ctrl.loss_mw(src);
             results.order.ext.dcline(dst, dci.LOSS1) = 0;
+        end
+    end
+end
+
+if success && use_mp_core && isfield(results, 'psse') && ...
+        isfield(results.psse, 'genq') && isfield(results.psse.genq, 'control')
+    ctrl = results.psse.genq.control;
+    if isfield(ctrl, 'gen_idx') && isfield(ctrl, 'qmax') && isfield(ctrl, 'qmin')
+        for k = 1:length(ctrl.gen_idx)
+            gi = ctrl.gen_idx(k);
+            if gi > 0 && gi <= size(results.gen, 1)
+                results.gen(gi, QMAX) = ctrl.qmax(k);
+                results.gen(gi, QMIN) = ctrl.qmin(k);
+            end
         end
     end
 end
