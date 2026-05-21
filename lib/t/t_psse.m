@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 259;
+num_tests = 296;
 
 t_begin(num_tests, quiet);
 
@@ -263,6 +263,142 @@ else
     t_is(r_meta.branch, r_plain.branch, 10, [t 'runpf branch unchanged without admin metadata']);
     t_is(mpc34.psse.system.solver.SWSHNT, 2, 12, [t 'system-wide preserved']);
     t_ok(any(~cellfun(@isempty, strfind(w34, 'system switching devices'))), [t 'switching device warning']);
+
+    t = 'psse2mpc : rev 34 load metadata : ';
+    raw_load = 't_psse_load_meta.raw';
+    load_cols = {'I', 'ID', 'STAT', 'AREA', 'ZONE', 'PL', 'QL', ...
+        'IP', 'IQ', 'YP', 'YQ', 'OWNER', 'SCALE', 'INTRPT', ...
+        'DGENP', 'DGENQ', 'DGENF'};
+    load_col_fields = {'i', 'id', 'stat', 'area', 'zone', 'pl', 'ql', ...
+        'ip', 'iq', 'yp', 'yq', 'owner', 'scale', 'intrpt', ...
+        'dgenp', 'dgenq', 'dgenf'};
+    load_fields = {'colnames', 'col', 'num', 'txt', 'raw_row_idx', ...
+        'bus_ext', 'bus_idx', 'id', 'status', 'in_service', 'area', ...
+        'zone', 'owner', 'area_idx', 'zone_idx', 'owner_idx', 'scale', ...
+        'interruptible', 'p_const_mw', 'q_const_mvar', 'p_current_mw', ...
+        'q_current_mvar', 'p_admittance_mw', 'q_admittance_mvar', ...
+        'p_contribution_mw', 'q_contribution_mvar', 'dgenp', 'dgenq', ...
+        'dgenf', 'undefined_area', 'undefined_zone', 'undefined_owner'};
+    expected_load_id = {'A1'; 'I1'; 'B1'};
+    [records_load, sections_load] = psse_read(raw_load, verbose);
+    [data_load, w_load] = psse_parse(records_load, sections_load, verbose, 34);
+    t_is(size(data_load.load.num), [3 17], 12, [t 'raw LOAD rows and columns']);
+    t_ok(isfield(data_load.load, 'colnames') && ...
+        isequal(data_load.load.colnames, load_cols), [t 'raw LOAD colnames']);
+    raw_load_col_map = zeros(1, length(load_cols));
+    if isfield(data_load.load, 'colnames')
+        for k = 1:length(load_cols)
+            kk = find(strcmpi(data_load.load.colnames, load_cols{k}));
+            if ~isempty(kk)
+                raw_load_col_map(k) = kk(1);
+            end
+        end
+    end
+    t_ok(all(raw_load_col_map > 0), [t 'raw LOAD col map fields']);
+    t_is(raw_load_col_map, 1:17, 12, [t 'raw LOAD col map']);
+
+    [mpc_load, w_load] = psse2mpc(raw_load, 0, 34);
+    has_load = isfield(mpc_load, 'psse') && isfield(mpc_load.psse, 'load');
+    t_ok(has_load, [t 'metadata preserved']);
+    if has_load
+        ld = mpc_load.psse.load;
+        has_load_fields = all(isfield(ld, load_fields));
+        t_ok(has_load_fields, [t 'metadata fields']);
+        has_load_col = has_load_fields && all(isfield(ld.col, load_col_fields));
+        t_ok(has_load_col, [t 'metadata col map fields']);
+        if has_load_fields && has_load_col
+            t_ok(isequal(ld.colnames, load_cols), [t 'metadata colnames']);
+            t_is([ld.col.i ld.col.id ld.col.stat ld.col.area ld.col.zone ...
+                    ld.col.pl ld.col.ql ld.col.ip ld.col.iq ld.col.yp ...
+                    ld.col.yq ld.col.owner ld.col.scale ld.col.intrpt ...
+                    ld.col.dgenp ld.col.dgenq ld.col.dgenf], ...
+                1:17, 12, [t 'metadata col map']);
+            t_is(size(ld.num), [3 17], 12, [t 'metadata size']);
+            t_ok(isequal(ld.txt(:, ld.col.id), expected_load_id), [t 'metadata txt ID']);
+            t_is(ld.raw_row_idx, [1; 2; 3], 12, [t 'metadata raw row index']);
+            t_is(ld.bus_ext, [1; 1; 2], 12, [t 'metadata bus numbers']);
+            t_is(ld.bus_idx, [1; 1; 2], 12, [t 'metadata bus mapping']);
+            t_ok(isequal(ld.id, expected_load_id), [t 'metadata ID']);
+            t_is(ld.status, [1; 0; 1], 12, [t 'metadata status']);
+            t_is(double(ld.in_service), [1; 0; 1], 12, [t 'metadata in-service']);
+            t_is([ld.area ld.zone ld.owner], [10 100 1; 20 200 3; 20 200 2], ...
+                12, [t 'metadata area zone owner']);
+            t_is([ld.area_idx ld.zone_idx ld.owner_idx], [1 1 1; 2 2 3; 2 2 2], ...
+                12, [t 'metadata area zone owner mapping']);
+            t_is([ld.scale ld.interruptible], [1 0; 0 1; 1 0], ...
+                12, [t 'metadata scale interruptible']);
+            t_is([ld.p_const_mw ld.q_const_mvar ld.p_current_mw ...
+                    ld.q_current_mvar ld.p_admittance_mw ld.q_admittance_mvar], ...
+                [10 5 2 1 3 0.5; 12 6 2.5 -1 0.6 -0.4; 7 4 1.53 0.51 0.2601 -0.7803], ...
+                8, [t 'metadata load components']);
+            t_is([ld.p_contribution_mw ld.q_contribution_mvar], ...
+                [15 6.5; 0 0; 8.7901 3.7297], 8, [t 'metadata load contribution']);
+            t_is([ld.dgenp ld.dgenq ld.dgenf], [0 0 1; 1.1 -2.2 0; 0 0 1], ...
+                12, [t 'metadata distributed generation']);
+            t_ok(isempty(ld.undefined_area), [t 'metadata area references defined']);
+            t_ok(isempty(ld.undefined_zone), [t 'metadata zone references defined']);
+            t_ok(isempty(ld.undefined_owner), [t 'metadata owner references defined']);
+            [~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
+            t_is(mpc_load.bus(:, [PD QD]), [15 6.5; 8.7901 3.7297], ...
+                8, [t 'bus aggregate load']);
+            mpopt = mpoption('verbose', 0, 'out.all', 0);
+            [r_load_meta, success_load_meta] = runpf(mpc_load, mpopt);
+            mpc_load_plain = mpc_load;
+            mpc_load_plain.psse = rmfield(mpc_load_plain.psse, 'load');
+            [r_load_plain, success_load_plain] = runpf(mpc_load_plain, mpopt);
+            t_ok(success_load_meta && success_load_plain, ...
+                [t 'runpf succeeds with and without LOAD metadata']);
+            t_is(r_load_meta.bus, r_load_plain.bus, 10, ...
+                [t 'runpf bus unchanged without LOAD metadata']);
+            t_is(r_load_meta.gen, r_load_plain.gen, 10, ...
+                [t 'runpf gen unchanged without LOAD metadata']);
+            t_is(r_load_meta.branch, r_load_plain.branch, 10, ...
+                [t 'runpf branch unchanged without LOAD metadata']);
+        else
+            t_skip(24, 'load metadata fields unavailable');
+        end
+    else
+        t_skip(26, 'load metadata unavailable');
+    end
+
+    t = 'psse2mpc : V26p load metadata audit : ';
+    t_psse_dir = fileparts(which('t_psse'));
+    raw_big_candidates = { ...
+        fullfile(pwd, '..', 'PSSE', 'V26p_Trs_2532.raw'), ...
+        fullfile(pwd, '..', '..', 'PSSE', 'V26p_Trs_2532.raw'), ...
+        fullfile(t_psse_dir, '..', '..', 'PSSE', 'V26p_Trs_2532.raw'), ...
+        fullfile(t_psse_dir, '..', '..', '..', 'PSSE', 'V26p_Trs_2532.raw') ...
+    };
+    raw_big = '';
+    for k = 1:length(raw_big_candidates)
+        if exist(raw_big_candidates{k}, 'file')
+            raw_big = raw_big_candidates{k};
+            break;
+        end
+    end
+    if isempty(raw_big)
+        t_skip(6, 'V26p_Trs_2532.raw not found');
+    else
+        [mpc_big, w_big] = psse2mpc(raw_big, 0, 34);
+        has_big_load = isfield(mpc_big, 'psse') && isfield(mpc_big.psse, 'load') && ...
+            all(isfield(mpc_big.psse.load, {'num', 'in_service', 'bus_idx', ...
+                'undefined_area', 'undefined_zone', 'undefined_owner'}));
+        if has_big_load
+            ld_big = mpc_big.psse.load;
+            t_is(size(ld_big.num, 1), 1691, 12, [t 'LOAD row count']);
+            t_is(sum(double(ld_big.in_service(:) ~= 0)), 1593, 12, ...
+                [t 'active LOAD count']);
+            t_is(sum(double(ld_big.in_service(:) == 0)), 98, 12, ...
+                [t 'inactive LOAD count']);
+            t_ok(all(ld_big.bus_idx(:) > 0), [t 'all LOAD buses mapped']);
+            t_ok(isempty(ld_big.undefined_area) && isempty(ld_big.undefined_zone), ...
+                [t 'area and zone references defined']);
+            t_is(ld_big.undefined_owner(:), 99, 12, [t 'undefined owner IDs']);
+        else
+            t_ok(false, [t 'load metadata preserved']);
+            t_skip(5, 'V26p load metadata unavailable');
+        end
+    end
 
     t = 'psse2mpc(rawfile, casefile)';
     txt = 'MATPOWER 5.0 using PSSE2MPC on 11-Aug-2014';

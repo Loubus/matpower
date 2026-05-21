@@ -272,6 +272,9 @@ mpc.psse.swshunt = struct( ...
     'binit_col', swshunt_binit_col, ...
     'status_col', swshunt_status_col ...
 );
+if isfield(data, 'load')
+    mpc.psse.load = psse_load_metadata(data.load, data, mpc);
+end
 if isfield(data, 'area')
     mpc.psse.area = psse_area_metadata(data.area, mpc);
 end
@@ -401,6 +404,130 @@ for k = 1:length(names)
     end
 end
 
+function load_meta = psse_load_metadata(data, psse_data, mpc)
+% psse_load_metadata - Preserves PSS/E load metadata and voltage components.
+
+cols = psse_load_colnames(data);
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
+
+bus_ext = parsed_col(data, col.i, NaN);
+bus_idx = psse_bus_map(mpc, bus_ext);
+vm = NaN(n, 1);
+valid_bus = bus_idx ~= 0;
+vm(valid_bus) = mpc.bus(bus_idx(valid_bus), VM);
+
+status = parsed_col(data, col.stat, 1);
+in_service = status ~= 0 & ~isnan(status);
+status_factor = status;
+status_factor(~in_service) = 0;
+area = parsed_col(data, col.area, NaN);
+zone = parsed_col(data, col.zone, NaN);
+owner = parsed_col(data, col.owner, NaN);
+
+pl = parsed_col(data, col.pl, 0);
+ql = parsed_col(data, col.ql, 0);
+ip = parsed_col(data, col.ip, 0);
+iq = parsed_col(data, col.iq, 0);
+yp = parsed_col(data, col.yp, 0);
+yq = parsed_col(data, col.yq, 0);
+
+p_current = ip .* vm;
+q_current = iq .* vm;
+p_admittance = yp .* vm.^2;
+q_admittance = -yq .* vm.^2;
+p_total = pl + p_current + p_admittance;
+q_total = ql + q_current + q_admittance;
+p_contribution = p_total .* status_factor;
+q_contribution = q_total .* status_factor;
+
+area_ids = psse_reference_ids(psse_data, 'area');
+zone_ids = psse_reference_ids(psse_data, 'zone');
+owner_ids = psse_reference_ids(psse_data, 'owner');
+
+load_meta = struct( ...
+    'colnames', {cols}, ...
+    'col', col, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'raw_row_idx', (1:n)', ...
+    'bus_ext', bus_ext, ...
+    'bus_idx', bus_idx, ...
+    'id', {parsed_txt_untrimmed(data, col.id, n)}, ...
+    'status', status, ...
+    'in_service', in_service, ...
+    'area', area, ...
+    'zone', zone, ...
+    'owner', owner, ...
+    'area_idx', psse_reference_indices(area, area_ids), ...
+    'zone_idx', psse_reference_indices(zone, zone_ids), ...
+    'owner_idx', psse_reference_indices(owner, owner_ids), ...
+    'scale', parsed_col(data, col.scale, 1), ...
+    'interruptible', parsed_col(data, col.intrpt, 0), ...
+    'p_const_mw', pl, ...
+    'q_const_mvar', ql, ...
+    'p_current_mw', p_current, ...
+    'q_current_mvar', q_current, ...
+    'p_admittance_mw', p_admittance, ...
+    'q_admittance_mvar', q_admittance, ...
+    'p_contribution_mw', p_contribution, ...
+    'q_contribution_mvar', q_contribution, ...
+    'dgenp', parsed_col(data, col.dgenp, 0), ...
+    'dgenq', parsed_col(data, col.dgenq, 0), ...
+    'dgenf', parsed_col(data, col.dgenf, 0), ...
+    'undefined_area', psse_undefined_ref_ids(area, area_ids), ...
+    'undefined_zone', psse_undefined_ref_ids(zone, zone_ids), ...
+    'undefined_owner', psse_undefined_ref_ids(owner, owner_ids) ...
+);
+
+function cols = psse_load_colnames(data)
+% psse_load_colnames - Returns PSS/E load column names.
+
+cols = psse_metadata_colnames(data, {'I', 'ID', 'STAT', 'AREA', 'ZONE', ...
+    'PL', 'QL', 'IP', 'IQ', 'YP', 'YQ', 'OWNER', 'SCALE', 'INTRPT', ...
+    'DGENP', 'DGENQ', 'DGENF'});
+
+function ids = psse_reference_ids(psse_data, field)
+% psse_reference_ids - Returns ID column values for a parsed PSS/E table.
+
+ids = zeros(0, 1);
+if ~isfield(psse_data, field)
+    return;
+end
+data = psse_data.(field);
+if ~isfield(data, 'num')
+    return;
+end
+cols = psse_metadata_colnames(data, {'I'});
+col = psse_col_struct(cols);
+if ~isfield(col, 'i')
+    return;
+end
+ids = parsed_col(data, col.i, NaN);
+
+function idx = psse_reference_indices(refs, ids)
+% psse_reference_indices - Maps reference IDs to rows in a metadata table.
+
+idx = zeros(size(refs));
+ids = ids(:);
+for k = 1:numel(refs)
+    if isnan(refs(k)) || refs(k) == 0
+        continue;
+    end
+    m = find(ids == refs(k), 1);
+    if ~isempty(m)
+        idx(k) = m;
+    end
+end
+
+function ids = psse_undefined_ref_ids(refs, defined_ids)
+% psse_undefined_ref_ids - Returns referenced IDs absent from a metadata table.
+
+ids = unique(refs(:));
+ids(isnan(ids) | ids == 0) = [];
+ids = setdiff(ids, defined_ids(:));
+
 function area = psse_area_metadata(data, mpc)
 % psse_area_metadata - Preserves PSS/E area interchange metadata.
 
@@ -463,6 +590,8 @@ branch_owner = psse_branch_owner_refs(mpc);
 [branch_idx, branch_count] = psse_owner_ref_membership(id, branch_owner, 2);
 facts_owner = psse_facts_owner_refs(mpc);
 [facts_idx, facts_count] = psse_owner_ref_membership(id, facts_owner, 2);
+load_owner = psse_load_owner_refs(mpc);
+[load_idx, load_count] = psse_owner_ref_membership(id, load_owner, 2);
 
 owner = struct( ...
     'colnames', {cols}, ...
@@ -482,9 +611,13 @@ owner = struct( ...
     'facts_owner', facts_owner, ...
     'facts_idx', {facts_idx}, ...
     'facts_count', facts_count, ...
+    'load_owner', load_owner, ...
+    'load_idx', {load_idx}, ...
+    'load_count', load_count, ...
     'undefined_bus_owner', psse_undefined_owner_ids(bus_owner(:, 1), id), ...
     'undefined_branch_owner', psse_undefined_owner_ids(branch_owner(:, 1), id), ...
-    'undefined_facts_owner', psse_undefined_owner_ids(facts_owner(:, 1), id) ...
+    'undefined_facts_owner', psse_undefined_owner_ids(facts_owner(:, 1), id), ...
+    'undefined_load_owner', psse_undefined_owner_ids(load_owner(:, 1), id) ...
 );
 
 function cols = psse_metadata_colnames(data, default_cols)
@@ -586,6 +719,23 @@ end
 owners = mpc.psse.facts.num(:, owner_col);
 ok = ~isnan(owners) & owners ~= 0;
 facts_owner = [owners(ok), find(ok)];
+
+function load_owner = psse_load_owner_refs(mpc)
+% psse_load_owner_refs - Returns [OWNER LOAD_IDX] rows.
+
+load_owner = zeros(0, 2);
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'load') || ...
+        ~isfield(mpc.psse.load, 'owner')
+    return;
+end
+
+owners = mpc.psse.load.owner;
+load_idx = (1:length(owners))';
+if isfield(mpc.psse.load, 'raw_row_idx')
+    load_idx = mpc.psse.load.raw_row_idx(:);
+end
+ok = ~isnan(owners) & owners ~= 0;
+load_owner = [owners(ok), load_idx(ok)];
 
 function [ref_idx, ref_count] = psse_owner_ref_membership(owner_ids, refs, ref_col)
 % psse_owner_ref_membership - Groups owner reference rows by owner ID.

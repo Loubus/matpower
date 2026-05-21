@@ -185,9 +185,16 @@ s = s + 1;
 
 %%-----  load data  -----
 if rev >= 24
-    [data.load, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
-        'load', 'd.d..ffffff...');
+    if rev >= 34
+        [load_cols, load_template] = psse_load_columns();
+        [data.load, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+            'load', load_template);
+        data.load.colnames = load_cols;
+    else
+        [data.load, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
+            'load', 'd.d..ffffff...');
 %       'load', 'dsdddffffffddd');
+    end
     s = s + 1;
 end
 
@@ -796,6 +803,14 @@ end
 cols = [cols rate_cols {'GI', 'BI', 'GJ', 'BJ', 'STAT', 'MET', 'LEN', ...
     'O1', 'F1', 'O2', 'F2', 'O3', 'F3', 'O4', 'F4'}];
 template = ['ddsfffs' repmat('f', 1, 16) 'ddfdfdfdfdf'];
+
+%%---------------------------------------------------------------------
+function [cols, template] = psse_load_columns()
+%PSSE_LOAD_COLUMNS  Returns Rev34+ load column metadata.
+
+cols = {'I', 'ID', 'STAT', 'AREA', 'ZONE', 'PL', 'QL', 'IP', 'IQ', ...
+    'YP', 'YQ', 'OWNER', 'SCALE', 'INTRPT', 'DGENP', 'DGENQ', 'DGENF'};
+template = 'dsdddffffffdddffd';
 
 %%---------------------------------------------------------------------
 function [s, warns] = psse_skip_section(warns, sections, s, verbose, label)
