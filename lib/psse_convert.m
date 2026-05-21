@@ -204,27 +204,32 @@ if ~isempty(brsh_f) && size(data.branch.num, 2) >= brsh_t(end)
 end
 
 %%-----  system switching device data  -----
+swdev_branch_idx = zeros(0, 1);
 if isfield(data, 'swdev') && ~isempty(data.swdev.num)
     nswdev = size(data.swdev.num, 1);
-    swdev = data.swdev.num;
+    swdev_cols = psse_swdev_colnames(data.swdev);
+    swdev_col = psse_col_struct(swdev_cols);
+    swdev_branch_idx = nbr + (1:nswdev)';
     swbranch = zeros(nswdev, ANGMAX);
     swbranch(:, ANGMIN) = -360;
     swbranch(:, ANGMAX) = 360;
 
-    x = swdev(:, 4);
+    f_bus_ext = parsed_col(data.swdev, swdev_col.i, NaN);
+    j_signed = parsed_col(data.swdev, swdev_col.j, NaN);
+    t_bus_ext = abs(j_signed);
+    x = parsed_col(data.swdev, swdev_col.x, 0);
     x(isnan(x)) = 0;
-    rates = swdev(:, 5:7);
-    rates(isnan(rates)) = 0;
-    status = swdev(:, 17);
+    rates = psse_swdev_rates(data.swdev, swdev_col);
+    status = parsed_col(data.swdev, swdev_col.stat, 1);
     status(isnan(status)) = 1;
 
-    swbranch(:, [F_BUS T_BUS]) = [swdev(:, 1) abs(swdev(:, 2))];
+    swbranch(:, [F_BUS T_BUS]) = [f_bus_ext t_bus_ext];
     swbranch(:, BR_X) = x;
-    swbranch(:, [RATE_A RATE_B RATE_C]) = rates;
-    swbranch(:, BR_STATUS) = status;
+    swbranch(:, [RATE_A RATE_B RATE_C]) = rates(:, 1:3);
+    swbranch(:, BR_STATUS) = status ~= 0;
     branch = [branch; swbranch];
 
-    warns{end+1} = sprintf('Converted %d system switching devices to zero-resistance MATPOWER branches; normal status, switching type, names, and ratings 4-12 were not retained.', nswdev);
+    warns{end+1} = sprintf('Converted %d system switching devices to zero-resistance MATPOWER branches; PSS/E metadata is preserved in mpc.psse.swdev.', nswdev);
     if verbose
         fprintf('WARNING: Converted %d system switching devices to zero-resistance MATPOWER branches.\n', nswdev);
     end
@@ -276,6 +281,9 @@ if isfield(data, 'gen')
 end
 if isfield(data, 'system')
     mpc.psse.system = data.system;
+end
+if isfield(data, 'swdev')
+    mpc.psse.swdev = psse_swdev_metadata(data.swdev, mpc, swdev_branch_idx);
 end
 if isfield(data, 'impcor')
     mpc.psse.impcor = data.impcor;
@@ -464,6 +472,79 @@ facts = struct( ...
     'bus_idx', bus_idx, ...
     'reg_bus_idx', reg_bus_idx ...
 );
+
+function swdev = psse_swdev_metadata(data, mpc, branch_idx)
+% psse_swdev_metadata - Preserves PSS/E system switching device metadata.
+
+cols = psse_swdev_colnames(data);
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+
+f_bus_ext = parsed_col(data, col.i, NaN);
+j_signed = parsed_col(data, col.j, NaN);
+t_bus_ext = abs(j_signed);
+rates = psse_swdev_rates(data, col);
+status = parsed_col(data, col.stat, 1);
+normal_status = parsed_col(data, col.nstat, 1);
+metered_end = parsed_col(data, col.met, 1);
+stype = parsed_col(data, col.stype, NaN);
+
+swdev = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'raw_row_idx', (1:n)', ...
+    'branch_idx', branch_idx(:), ...
+    'f_bus_ext', f_bus_ext, ...
+    't_bus_ext', t_bus_ext, ...
+    'j_signed', j_signed, ...
+    'f_bus_idx', psse_bus_map(mpc, f_bus_ext), ...
+    't_bus_idx', psse_bus_map(mpc, t_bus_ext), ...
+    'ckt', {parsed_txt(data, col.ckt, n)}, ...
+    'name', {parsed_txt(data, col.name, n)}, ...
+    'status', status, ...
+    'normal_status', normal_status, ...
+    'metered_end', metered_end, ...
+    'stype', stype, ...
+    'x', parsed_col(data, col.x, 0), ...
+    'rates', rates ...
+);
+if isfield(col, 'rsetnam')
+    swdev.rsetnam = parsed_txt(data, col.rsetnam, n);
+end
+
+function rates = psse_swdev_rates(data, col)
+% psse_swdev_rates - Returns RATE1-RATE12 values, zero-filled when absent.
+
+n = size(data.num, 1);
+rates = zeros(n, 12);
+for k = 1:12
+    name = sprintf('rate%d', k);
+    if isfield(col, name)
+        rates(:, k) = parsed_col(data, col.(name), 0);
+    end
+end
+rates(isnan(rates)) = 0;
+
+function cols = psse_swdev_colnames(data)
+% psse_swdev_colnames - Returns system switching device column names.
+
+if isfield(data, 'colnames') && ~isempty(data.colnames)
+    cols = data.colnames;
+else
+    ncols = max(size(data.num, 2), size(data.txt, 2));
+    if ncols == 10
+        cols = {'I', 'J', 'CKT', 'X', 'RSETNAM', 'STAT', ...
+            'NSTAT', 'MET', 'STYPE', 'NAME'};
+    else
+        cols = {'I', 'J', 'CKT', 'X'};
+        for k = 1:12
+            cols{end+1} = sprintf('RATE%d', k);
+        end
+        cols = [cols {'STAT', 'NSTAT', 'MET', 'STYPE', 'NAME'}];
+    end
+end
 
 function xfmr = psse_xfmr_metadata(data, info, branch_offset, rev)
 % psse_xfmr_metadata - Preserves PSS/E transformer control metadata.

@@ -226,14 +226,16 @@ end
 s = s + 1;
 
 %%-----  system switching device data  -----
+[swdev_cols, swdev_template] = psse_swdev_columns(rev);
 if s <= length(sections) && strcmpi(sections(s).name, 'SYSTEM SWITCHING DEVICE')
-    swdev_template = ['dd.' repmat('f', 1, 13) 'dddd.'];
     [data.swdev, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
         'system switching device', swdev_template);
+    data.swdev.colnames = swdev_cols;
     s = s + 1;
 else
-    data.swdev.num = zeros(0, 20);
-    data.swdev.txt = cell(0, 20);
+    data.swdev.num = zeros(0, length(swdev_cols));
+    data.swdev.txt = cell(0, length(swdev_cols));
+    data.swdev.colnames = swdev_cols;
 end
 
 %%-----  skip transformer adjustment data  -----
@@ -756,6 +758,22 @@ if rev < 35
 else
     cols = [base {'NREG', 'MNAME'}];
     template = ['sddd' repmat('f', 1, 11) 'dffddds'];
+end
+
+%%---------------------------------------------------------------------
+function [cols, template] = psse_swdev_columns(rev)
+%PSSE_SWDEV_COLUMNS  Returns system switching device column metadata.
+
+cols = {'I', 'J', 'CKT', 'X'};
+if rev >= 36
+    cols = [cols {'RSETNAM', 'STAT', 'NSTAT', 'MET', 'STYPE', 'NAME'}];
+    template = 'dd.f.dddd.';
+else
+    for k = 1:12
+        cols{end+1} = sprintf('RATE%d', k);
+    end
+    cols = [cols {'STAT', 'NSTAT', 'MET', 'STYPE', 'NAME'}];
+    template = ['dd.' repmat('f', 1, 13) 'dddd.'];
 end
 
 %%---------------------------------------------------------------------

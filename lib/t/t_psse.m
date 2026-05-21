@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 192;
+num_tests = 206;
 
 t_begin(num_tests, quiet);
 
@@ -110,8 +110,14 @@ else
     t_is(data34.system.solver.SWSHNT, 2, 12, [t 'system-wide SWSHNT']);
     t_is(size(data34.branch.num, 1), 1, 12, [t 'branch rows']);
     t_is(data34.branch.num(1, [8 9 10 24]), [100 90 80 1], 12, [t 'rev 34 branch columns']);
-    t_is(size(data34.swdev.num, 1), 1, 12, [t 'switching device rows']);
-    t_is(data34.swdev.num(1, [4 5 6 7 17]), [1e-4 70 60 50 1], 12, [t 'switching device columns']);
+    t_is(size(data34.swdev.num), [3 21], 12, [t 'switching device rows and columns']);
+    t_is(data34.swdev.num(:, [1 2 4 17 18 19 20]), ...
+        [1 2 1e-4 1 1 1 2; 2 1 1e-4 0 1 2 3; 1 2 1e-4 2 0 2 1], 12, ...
+        [t 'switching device core columns']);
+    t_is(data34.swdev.num(2, 5:16), [40 30 20 19 18 17 16 15 14 13 12 11], 12, ...
+        [t 'switching device RATE1-12']);
+    t_is(data34.swdev.num(3, 5:16), [17 16 15 14 13 12 11 10 9 8 7 6], 12, ...
+        [t 'switching device stuck-closed RATE1-12']);
     t_is(size(data34.facts.num, 1), 1, 12, [t 'FACTS device rows']);
     t_is(size(data34.facts.num, 2), 22, 12, [t 'FACTS device rev 34 columns']);
     t_str_match(data34.facts.txt{1, 1}, 'FACTS 1     ', [t 'FACTS device name']);
@@ -140,13 +146,30 @@ else
     t_is(data34.impcor.num(1, :), [9 1 1 0], 12, [t 'impedance correction table point']);
     [mpc34, w34] = psse2mpc(raw34, 0, 34);
     t_is(size(mpc34.bus, 1), 2, 12, [t 'bus rows']);
-    t_is(size(mpc34.branch, 1), 4, 12, [t 'branch rows with switching device and transformer']);
+    t_is(size(mpc34.branch, 1), 6, 12, [t 'branch rows with switching devices and transformer']);
     t_is(mpc34.branch(1, [6 7 8 11]), [100 90 80 1], 12, [t 'branch conversion']);
-    t_is(mpc34.branch(2, [4 6 7 8 11]), [1e-4 70 60 50 1], 12, [t 'switching device conversion']);
-    t_is(mpc34.branch(3:4, [3 4 9 11]), [0 0.1 1 1; 0 0.1 1 1], 12, [t 'NOMV zero transformer conversion']);
+    t_is(mpc34.branch(2:4, [1 2 4 6 7 8 11]), ...
+        [1 2 1e-4 70 60 50 1; 2 1 1e-4 40 30 20 0; 1 2 1e-4 17 16 15 1], 12, ...
+        [t 'switching device conversion']);
+    t_is(mpc34.branch(5:6, [3 4 9 11]), [0 0.1 1 1; 0 0.1 1 1], 12, [t 'NOMV zero transformer conversion']);
     t_is(mpc34.bus(:, [1 5 6]), [1 2 -11.9498743710662; 2 0 12.5], 10, ...
         [t 'switched shunt and transformer magnetizing conversion']);
     t_ok(isfield(mpc34, 'psse') && isfield(mpc34.psse, 'swshunt'), [t 'switched shunt preserved']);
+    t_ok(isfield(mpc34.psse, 'swdev'), [t 'switching device preserved']);
+    t_is([mpc34.psse.swdev.col.ckt mpc34.psse.swdev.col.rate12 mpc34.psse.swdev.col.name], ...
+        [3 16 21], 12, [t 'switching device metadata columns']);
+    t_is(size(mpc34.psse.swdev.num), [3 21], 12, [t 'switching device metadata size']);
+    t_is(mpc34.psse.swdev.branch_idx, [2; 3; 4], 12, [t 'switching device branch mapping']);
+    t_is([mpc34.psse.swdev.f_bus_idx mpc34.psse.swdev.t_bus_idx], ...
+        [1 2; 2 1; 1 2], 12, [t 'switching device bus mapping']);
+    t_is(mpc34.psse.swdev.rates(2, 4:12), [19 18 17 16 15 14 13 12 11], 12, ...
+        [t 'switching device metadata RATE4-12']);
+    t_is(mpc34.psse.swdev.status, [1; 0; 2], 12, [t 'switching device raw status']);
+    t_is(mpc34.psse.swdev.normal_status, [1; 1; 0], 12, [t 'switching device normal status']);
+    t_is(mpc34.psse.swdev.metered_end, [1; 2; 2], 12, [t 'switching device metered end']);
+    t_is(mpc34.psse.swdev.stype, [2; 3; 1], 12, [t 'switching device type']);
+    t_str_match(mpc34.psse.swdev.ckt{3}, '@3', [t 'switching device CKT']);
+    t_str_match(mpc34.psse.swdev.name{2}, 'SW OPEN', [t 'switching device NAME']);
     t_ok(isfield(mpc34.psse, 'twodc'), [t 'two-terminal DC preserved']);
     t_is([mpc34.psse.twodc.col.rdc mpc34.psse.twodc.col.ipi mpc34.psse.twodc.col.xcapi], ...
         [3 31 47], 12, [t 'two-terminal DC metadata columns']);
@@ -162,7 +185,7 @@ else
     t_ok(isfield(mpc34.psse, 'xfmr'), [t 'transformer metadata preserved']);
     t_ok(isfield(mpc34.psse, 'impcor'), [t 'impedance correction preserved']);
     t_is(mpc34.psse.impcor.num(1, :), [9 1 1 0], 12, [t 'impedance correction metadata values']);
-    t_is(mpc34.psse.xfmr.two.branch_idx, [3; 4], 12, [t 'transformer branch mapping']);
+    t_is(mpc34.psse.xfmr.two.branch_idx, [5; 6], 12, [t 'transformer branch mapping']);
     t_is(mpc34.psse.xfmr.two.num(1, [39 41 42 43 44 45 46]), ...
         [0 1.1 0.9 1.1 0.9 33 0], 12, [t 'transformer metadata values']);
     t_is(mpc34.psse.system.solver.SWSHNT, 2, 12, [t 'system-wide preserved']);
