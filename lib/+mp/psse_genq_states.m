@@ -36,7 +36,7 @@ state.max_iter_reached = 0;
 state.report = struct();
 
 state.varlim = psse_system_value(mpc, 'solver', 'VARLIM', 1);
-state.varlim_enabled = isnan(state.varlim) || state.varlim ~= 0;
+state.varlim_enabled = isnan(state.varlim) || state.varlim >= 0;
 state.max_iter = psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
     state.max_iter = 99;
@@ -45,7 +45,10 @@ state.vtol = psse_system_value(mpc, 'newton', 'VCTOLV', 1e-5);
 if isnan(state.vtol) || state.vtol <= 0
     state.vtol = 1e-5;
 end
-state.qtol = 1e-7;
+state.qtol = psse_system_value(mpc, 'newton', 'VCTOLQ', 0.1);
+if isnan(state.qtol) || state.qtol <= 0
+    state.qtol = 0.1;
+end
 
 state.gen_idx = psse_gen_map(mpc, n);
 state.bus_ext = field_or_col(gq, num, 'bus_ext', 'I', NaN);
@@ -58,7 +61,7 @@ state.vs = field_or_col(gq, num, 'vs', 'VS', NaN);
 state.rmpct = field_or_col(gq, num, 'rmpct', 'RMPCT', 100);
 state.rmpct(isnan(state.rmpct) | state.rmpct <= 0) = 100;
 
-state.bus_idx = zeros(n, 1);
+state.bus_idx = psse_bus_map(mpc, state.bus_ext);
 state.base_bus_type = zeros(n, 1);
 state.current_q = field_or_col(gq, num, 'qg', 'QG', NaN);
 state.qmax = field_or_col(gq, num, 'qmax', 'QT', NaN);
@@ -73,7 +76,9 @@ end
 mapped = find(state.gen_idx > 0);
 if ~isempty(mapped)
     gi = state.gen_idx(mapped);
-    state.bus_idx(mapped) = mpc.gen(gi, GEN_BUS);
+    gen_bus_idx = gen_bus_map(mpc, mpc.gen(gi, GEN_BUS));
+    missing_bus = state.bus_idx(mapped) <= 0;
+    state.bus_idx(mapped(missing_bus)) = gen_bus_idx(missing_bus);
     state.current_q(mapped) = mpc.gen(gi, QG);
     if ~isfield(gq, 'original_qmax') || length(gq.original_qmax) ~= n
         state.qmax(mapped) = mpc.gen(gi, QMAX);
@@ -87,11 +92,6 @@ if ~isempty(mapped)
         state.vs(mm) = mpc.gen(state.gen_idx(mm), VG);
     end
     state.status(mapped) = mpc.gen(gi, GEN_STATUS);
-end
-
-unmapped_bus = state.bus_idx <= 0 & ~isnan(state.bus_ext);
-if any(unmapped_bus)
-    state.bus_idx(unmapped_bus) = psse_bus_map(mpc, state.bus_ext(unmapped_bus));
 end
 
 state.reg_bus_idx = psse_bus_map(mpc, state.reg_bus_ext);
@@ -128,7 +128,7 @@ end
 state.at_min = state.active & state.current_q <= state.qmin + state.qtol;
 state.at_max = state.active & state.current_q >= state.qmax - state.qtol;
 state.limited = state.active & ~state.swing & state.varlim_enabled & ...
-    (state.at_min | state.at_max | state.qmax <= state.qmin + state.qtol);
+    state.qmax <= state.qmin + state.qtol;
 state.controllable_local = state.active & state.local & ~state.swing;
 state.controllable_remote = state.active & state.remote & ~state.swing;
 state.unmapped = state.status ~= 0 & state.gen_idx <= 0;
@@ -250,7 +250,9 @@ idx = zeros(size(bus));
 if isempty(bus)
     return;
 end
-if isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+if isfield(mpc, 'order') && isfield(mpc.order, 'state') && ...
+        strcmp(mpc.order.state, 'i') && ...
+        isfield(mpc.order, 'bus') && ...
         isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
     e2i = mpc.order.bus.e2i;
 else
@@ -265,6 +267,21 @@ for kk = 1:length(bus)
     if ~isnan(b) && b > 0 && b <= size(e2i, 1)
         idx(kk) = full(e2i(b));
     end
+end
+
+function idx = gen_bus_map(mpc, bus)
+% Return row indices for GEN_BUS values in external or internal cases.
+idx = zeros(size(bus));
+if isempty(bus)
+    return;
+end
+if isfield(mpc, 'order') && isfield(mpc.order, 'state') && ...
+        strcmp(mpc.order.state, 'i')
+    nb = size(mpc.bus, 1);
+    ok = ~isnan(bus) & bus > 0 & bus <= nb;
+    idx(ok) = bus(ok);
+else
+    idx = psse_bus_map(mpc, bus);
 end
 
 function val = psse_system_value(mpc, section, key, default)

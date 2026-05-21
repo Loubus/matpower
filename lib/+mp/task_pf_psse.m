@@ -60,6 +60,14 @@ classdef task_pf_psse < mp.task_pf_legacy
                 end
             end
 
+            if ~isempty(which('mp.psse_pqbrak_control'))
+                [dm, obj.psse_pqbrak] = mp.psse_pqbrak_control( ...
+                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
+                if ~isempty(dm)
+                    return;
+                end
+            end
+
             [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
             if ~isempty(dm)
@@ -80,14 +88,6 @@ classdef task_pf_psse < mp.task_pf_legacy
 
             [dm, obj.psse_facts] = mp.psse_facts_control( ...
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_facts);
-            if ~isempty(dm)
-                return;
-            end
-
-            if ~isempty(which('mp.psse_pqbrak_control'))
-                [dm, obj.psse_pqbrak] = mp.psse_pqbrak_control( ...
-                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
-            end
         end
 
         function nm = network_model_build_post(obj, nm, dm, mpopt)

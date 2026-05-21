@@ -59,15 +59,19 @@ q0 = state.current_q;
 limited0 = state.limited;
 state = sync_solved_state(state, solved_q, vm);
 state = limit_local_gens(state);
-state = control_remote_groups(state, vm);
+sens = remote_group_sensitivities(dm, mpopt, state, vm);
+state = control_remote_groups(state, vm, sens);
 state = score_state(state);
 state = refresh_codes(state);
 
-changed = any(abs(state.current_q - q0) > state.qtol) || ...
+controlled = state.remote | state.limited | limited0;
+changed = any(abs(state.current_q(controlled) - q0(controlled)) > state.qtol) || ...
     any(state.limited ~= limited0);
 if changed
-    state.changed_last = nnz(abs(state.current_q - q0) > state.qtol | ...
-        state.limited ~= limited0);
+    q_changed = false(size(state.current_q));
+    q_changed(controlled) = abs(state.current_q(controlled) - ...
+        q0(controlled)) > state.qtol;
+    state.changed_last = nnz(q_changed | state.limited ~= limited0);
     state.num_adjustments = state.num_adjustments + state.changed_last;
     mpc = mp.psse_genq_update(dm.source, state);
     dm_next = task.data_model_build(mpc, task.dmc, mpopt, mpx);
@@ -140,7 +144,7 @@ for kk = idx(:)'
     end
 end
 
-function state = control_remote_groups(state, vm)
+function state = control_remote_groups(state, vm, sens)
 % Select new remote-generator group Q targets from bracket/secant state.
 for gg = 1:length(state.group.reg_bus_idx)
     members_all = state.group.members{gg};
@@ -180,7 +184,8 @@ for gg = 1:length(state.group.reg_bus_idx)
     [qmin_total, qmax_total] = group_bounds(state, members_all, movable);
     state.group.qmin(gg) = qmin_total;
     state.group.qmax(gg) = qmax_total;
-    q_next = next_total_q(state, gg, v, target, cur_total, qmin_total, qmax_total);
+    q_next = next_total_q(state, gg, v, target, cur_total, ...
+        qmin_total, qmax_total, sens(gg));
     [state.current_q, at_min, at_max] = distribute_q(state, members_all, ...
         movable, q_next);
     if state.varlim_enabled
@@ -207,9 +212,8 @@ else
     qmax_total = sum(state.current_q(members_all)) + span;
 end
 
-function q_next = next_total_q(state, gg, v, target, cur_total, qmin_total, qmax_total)
+function q_next = next_total_q(state, gg, v, target, cur_total, qmin_total, qmax_total, sens)
 % Compute the next group Q total using bracketed secant when possible.
-direction = sign(target - v);
 span = max(qmax_total - qmin_total, 0);
 have_bracket = ~isnan(state.group.qlo(gg)) && ~isnan(state.group.qhi(gg)) && ...
     ~isnan(state.group.vlo(gg)) && ~isnan(state.group.vhi(gg)) && ...
@@ -219,27 +223,101 @@ if have_bracket
         (target - state.group.vlo(gg)) * ...
         (state.group.qhi(gg) - state.group.qlo(gg)) / ...
         (state.group.vhi(gg) - state.group.vlo(gg));
+elseif isfinite(sens) && abs(sens) > eps
+    q_next = cur_total + (target - v) / sens;
 else
-    sens = NaN;
-    if ~isnan(state.group.last_q(gg)) && ~isnan(state.group.last_v(gg))
-        dq = cur_total - state.group.last_q(gg);
-        dv = v - state.group.last_v(gg);
-        if abs(dq) > state.qtol && abs(dv) > eps
-            sens = dv / dq;
-        end
-    end
-    if ~isnan(sens) && sens > 0
-        q_next = cur_total + (target - v) / sens;
-    else
-        dq = min(0.10 * span, max(1, abs(target - v) / 0.05 * span));
-        q_next = cur_total + direction * dq;
-    end
+    q_next = cur_total;
 end
 if span > 0
     q_next = min(max(q_next, qmin_total), qmax_total);
-    q_next = min(max(q_next, cur_total - 0.50 * span), cur_total + 0.50 * span);
 else
     q_next = cur_total;
+end
+
+function sens = remote_group_sensitivities(dm, mpopt, state, vm)
+% Linearized d|Vreg|/dQgroup sensitivities at the solved AC state.
+[~, PV, REF, ~, ~, BUS_TYPE, ~, ~, ~, ~, ~, VM, VA] = idx_bus;
+sens = NaN(length(state.group.reg_bus_idx), 1);
+if isempty(sens)
+    return;
+end
+mpc = dm.source;
+bus = mpc.bus;
+gen = mpc.gen;
+branch = mpc.branch;
+bus(:, VM) = vm;
+try
+    btab = dm.elements.bus.tab;
+    if istable(btab) && ismember('va', btab.Properties.VariableNames)
+        bus(:, VA) = btab.va;
+    end
+catch
+end
+try
+    [~, pv, pq] = bustypes(bus, gen);
+    if isempty(pq)
+        return;
+    end
+    [Ybus, ~, ~] = makeYbus(mpc.baseMVA, bus, branch);
+    V = bus(:, VM) .* exp(1j * pi/180 * bus(:, VA));
+    [dSbus_dVa, dSbus_dVm] = dSbus_dV(Ybus, V);
+    [~, neg_dSd_dVm] = makeSbus(mpc.baseMVA, bus, gen, mpopt, abs(V));
+    dSbus_dVm = dSbus_dVm - neg_dSd_dVm;
+    pvpq = [pv; pq];
+    npvpq = length(pvpq);
+    npq = length(pq);
+    J = [ real(dSbus_dVa(pvpq, pvpq)) real(dSbus_dVm(pvpq, pq));
+          imag(dSbus_dVa(pq, pvpq))   imag(dSbus_dVm(pq, pq)) ];
+    ng = length(sens);
+    pq_pos = zeros(size(bus, 1), 1);
+    pq_pos(pq) = 1:npq;
+    max_rhs = 0;
+    for gg = 1:ng
+        max_rhs = max_rhs + length(state.group.members{gg});
+    end
+    rhs_i = zeros(max_rhs, 1);
+    rhs_j = zeros(max_rhs, 1);
+    rhs_v = zeros(max_rhs, 1);
+    nrhs = 0;
+    for gg = 1:ng
+        members_all = state.group.members{gg};
+        movable = members_all(state.active(members_all) & ...
+            ~state.swing(members_all) & ~state.limited(members_all));
+        if isempty(movable)
+            continue;
+        end
+        weights = state.rmpct(movable);
+        weights(isnan(weights) | weights <= 0) = 100;
+        share = weights / sum(weights);
+        for kk = 1:length(movable)
+            b = state.bus_idx(movable(kk));
+            if b > 0 && b <= size(bus, 1) && bus(b, BUS_TYPE) ~= REF
+                pos = pq_pos(b);
+                if pos > 0
+                    nrhs = nrhs + 1;
+                    rhs_i(nrhs) = npvpq + pos;
+                    rhs_j(nrhs) = gg;
+                    rhs_v(nrhs) = share(kk) / mpc.baseMVA;
+                end
+            end
+        end
+    end
+    if nrhs == 0
+        return;
+    end
+    rhs = sparse(rhs_i(1:nrhs), rhs_j(1:nrhs), rhs_v(1:nrhs), ...
+        npvpq + npq, ng);
+    dx = J \ rhs;
+    for gg = 1:ng
+        reg = state.group.reg_bus_idx(gg);
+        if reg > 0 && reg <= size(bus, 1) && bus(reg, BUS_TYPE) ~= PV
+            pos = pq_pos(reg);
+            if pos > 0
+                sens(gg) = dx(npvpq + pos, gg);
+            end
+        end
+    end
+catch
 end
 
 function [q, at_min, at_max] = distribute_q(state, members_all, movable, q_total)
@@ -283,8 +361,9 @@ else
 end
 
 function state = score_state(state)
-% Update report margins and compact convergence score.
-idx = find(state.active & state.reg_bus_idx > 0);
+% Update report margins for controllers that still regulate voltage.
+idx = find(state.active & state.reg_bus_idx > 0 & ~state.limited & ...
+    ~state.swing);
 margin = state.last_margin(idx);
 margin = margin(~isnan(margin));
 margin(abs(margin) <= state.vtol) = 0;

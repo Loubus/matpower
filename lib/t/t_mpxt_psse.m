@@ -12,11 +12,11 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 286;
+num_tests = 332;
 
 t_begin(num_tests, quiet);
 
-[~, ~, ~, ~, ~, ~, ~, QD, ~, BS, ~, VM] = idx_bus;
+[~, ~, ~, ~, ~, ~, PD, QD, ~, BS, ~, VM] = idx_bus;
 [~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
 [~, ~, QG] = idx_gen;
 dci = idx_dcline;
@@ -45,6 +45,36 @@ else
             continue;
         end
         mpc = psse2mpc(raw_file, 0, 34);
+        r = runpf_psse(mpc, mpopt);
+        psse_check_genq_case(r, tc);
+    end
+
+    %% VARLIM = 0 still enables PSS/E generator reactive limit handling
+    tc = genq_cases{4};
+    raw_file = fullfile(genq_dir, tc.raw);
+    if exist(raw_file, 'file') ~= 2
+        t_skip(18, sprintf('%s VARLIM=0 missing', tc.name));
+    else
+        mpc = psse2mpc(raw_file, 0, 34);
+        mpc.psse.system.solver.VARLIM = 0;
+        tc.name = [tc.name ' VARLIM=0'];
+        r = runpf_psse(mpc, mpopt);
+        psse_check_genq_case(r, tc);
+    end
+
+    %% GENQ must not assume external bus numbers are consecutive row indices
+    tc = genq_cases{6};
+    raw_file = fullfile(genq_dir, tc.raw);
+    if exist(raw_file, 'file') ~= 2
+        t_skip(18, sprintf('%s external bus numbering missing', tc.name));
+    else
+        old_bus = (1:4)';
+        new_bus = [101; 203; 307; 409];
+        mpc = psse2mpc(raw_file, 0, 34);
+        mpc = psse_remap_bus_numbers(mpc, old_bus, new_bus);
+        tc.name = [tc.name ' external bus numbering'];
+        tc.bus_ext = psse_remap_values(tc.bus_ext, old_bus, new_bus);
+        tc.reg_bus_ext = psse_remap_values(tc.reg_bus_ext, old_bus, new_bus);
         r = runpf_psse(mpc, mpopt);
         psse_check_genq_case(r, tc);
     end
@@ -361,6 +391,40 @@ psse_is_close(r.bus(2, QD), sum(r.psse.twodc.control.qacr_mvar), ...
 psse_is_close(r.bus(3, QD), sum(r.psse.twodc.control.qaci_mvar), ...
     1e-6, 'TWO DC parallel inverter Q is accumulated at the AC bus');
 
+%% PQBRAK scales only native load while preserving TWO DC equivalent demand
+mpc = psse_case4_twodc_pqbrak_current_mode(10);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'PQBRAK with TWO DC current control success');
+has_pqbrak = isfield(r, 'psse') && isfield(r.psse, 'pqbrak') && ...
+    isfield(r.psse.pqbrak, 'control');
+t_ok(has_pqbrak, 'PQBRAK with TWO DC exposes control report');
+has_twodc = isfield(r, 'psse') && isfield(r.psse, 'twodc') && ...
+    isfield(r.psse.twodc, 'control');
+t_ok(has_twodc, 'PQBRAK with TWO DC exposes TWO DC report');
+if has_pqbrak
+    pq = r.psse.pqbrak.control;
+else
+    pq = struct('scale', ones(4, 1), 'pd0', nan(4, 1), 'qd0', nan(4, 1), ...
+        'pd', nan(4, 1), 'qd', nan(4, 1));
+end
+if has_twodc
+    tw = r.psse.twodc.control;
+else
+    tw = struct('qacr_mvar', nan, 'qaci_mvar', nan, 'pf', nan, 'pt', nan);
+end
+t_ok(any(pq.scale < 1), 'PQBRAK scales low-voltage native load');
+t_is(pq.qd0(2:3), [8; 12], 10, 'PQBRAK native converter-bus QD base');
+t_is(r.bus(2, QD), pq.qd(2) + tw.qacr_mvar(1), 8, ...
+    'PQBRAK preserves TWO DC rectifier Q demand');
+t_is(r.bus(3, QD), pq.qd(3) + tw.qaci_mvar(1), 8, ...
+    'PQBRAK preserves TWO DC inverter Q demand');
+t_is(r.bus(2, PD), pq.pd(2), 8, ...
+    'PQBRAK scales native rectifier-bus PD only');
+t_is(r.bus(3, PD), pq.pd(3), 8, ...
+    'PQBRAK scales native inverter-bus PD only');
+t_is(r.dcline(1, [dci.PF dci.PT]), [tw.pf(1) tw.pt(1)], 10, ...
+    'PQBRAK preserves TWO DC active dcline equivalent');
+
 t_end;
 
 function psse_is_close(actual, expected, tol, msg)
@@ -426,6 +490,51 @@ c = struct( ...
     'at_min', empty, ...
     'at_max', empty ...
 );
+
+function mpc = psse_remap_bus_numbers(mpc, old_bus, new_bus)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+[GEN_BUS] = idx_gen;
+[F_BUS, T_BUS] = idx_brch;
+
+mpc.bus(:, BUS_I) = psse_remap_values(mpc.bus(:, BUS_I), old_bus, new_bus);
+mpc.gen(:, GEN_BUS) = psse_remap_values(mpc.gen(:, GEN_BUS), old_bus, new_bus);
+mpc.branch(:, F_BUS) = psse_remap_values(mpc.branch(:, F_BUS), old_bus, new_bus);
+mpc.branch(:, T_BUS) = psse_remap_values(mpc.branch(:, T_BUS), old_bus, new_bus);
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'genq')
+    gq = mpc.psse.genq;
+    if isfield(gq, 'bus_ext')
+        gq.bus_ext = psse_remap_values(gq.bus_ext, old_bus, new_bus);
+    end
+    if isfield(gq, 'reg_bus_ext')
+        gq.reg_bus_ext = psse_remap_values(gq.reg_bus_ext, old_bus, new_bus);
+    end
+    if isfield(gq, 'num') && isfield(gq, 'colnames')
+        i_col = psse_test_col(gq.colnames, 'I');
+        ireg_col = psse_test_col(gq.colnames, 'IREG');
+        if i_col
+            gq.num(:, i_col) = psse_remap_values(gq.num(:, i_col), old_bus, new_bus);
+        end
+        if ireg_col
+            gq.num(:, ireg_col) = psse_remap_values(gq.num(:, ireg_col), old_bus, new_bus);
+        end
+    end
+    mpc.psse.genq = gq;
+end
+
+function values = psse_remap_values(values, old_bus, new_bus)
+sgn = sign(values);
+sgn(sgn == 0) = 1;
+abs_values = abs(values);
+for kk = 1:length(old_bus)
+    idx = abs_values == old_bus(kk);
+    values(idx) = sgn(idx) .* new_bus(kk);
+end
+
+function col = psse_test_col(cols, name)
+col = find(strcmpi(cols, name), 1);
+if isempty(col)
+    col = 0;
+end
 
 function genq_dir = psse_genq_audit_dir()
 genq_dir = '';
@@ -868,6 +977,13 @@ mpc.psse.twodc.num(1, mpc.psse.twodc.col.xcapr) = 1;
 
 function mpc = psse_case4_twodc_parallel_current_mode(rdc)
 mpc = psse_case4_twodc_current_mode(rdc, 2);
+
+function mpc = psse_case4_twodc_pqbrak_current_mode(rdc)
+[~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
+mpc = psse_case4_twodc_current_mode(rdc);
+mpc.bus(2, [PD QD]) = [10 8];
+mpc.bus(3, [PD QD]) = [15 12];
+mpc.psse.system.general.PQBRAK = 1.1;
 
 function mpc = psse_case5_twodc_v26p_active()
 c = idx_dcline;

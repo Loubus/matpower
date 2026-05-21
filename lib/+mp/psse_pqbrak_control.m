@@ -64,12 +64,12 @@ mpc = dm.source;
 for kk = find(state.active)'
     bi = state.bus_idx(kk);
     if bi > 0 && bi <= size(mpc.bus, 1)
-        if abs(mpc.bus(bi, PD) - pd(kk)) > state.tol || ...
-                abs(mpc.bus(bi, QD) - qd(kk)) > state.tol
+        if abs(state.pd(kk) - pd(kk)) > state.tol || ...
+                abs(state.qd(kk) - qd(kk)) > state.tol
             changed = true;
         end
-        mpc.bus(bi, PD) = pd(kk);
-        mpc.bus(bi, QD) = qd(kk);
+        mpc.bus(bi, PD) = mpc.bus(bi, PD) - state.pd(kk) + pd(kk);
+        mpc.bus(bi, QD) = mpc.bus(bi, QD) - state.qd(kk) + qd(kk);
     end
 end
 
@@ -90,8 +90,6 @@ else
 end
 
 function state = initialize_state(mpc)
-[~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
-
 pq = mpc.psse.pqbrak;
 n = length(pq.bus_ext);
 state = struct();
@@ -116,13 +114,6 @@ if isfield(pq, 'scale') && length(pq.scale) == n
 end
 state.pd = state.pd0 .* state.scale;
 state.qd = state.qd0 .* state.scale;
-for kk = 1:n
-    bi = state.bus_idx(kk);
-    if bi > 0 && bi <= size(mpc.bus, 1)
-        state.pd(kk) = mpc.bus(bi, PD);
-        state.qd(kk) = mpc.bus(bi, QD);
-    end
-end
 state.vact = NaN(n, 1);
 state.active = state.bus_idx > 0 & (state.pd0 ~= 0 | state.qd0 ~= 0);
 state.low_voltage = false(n, 1);
@@ -133,7 +124,9 @@ idx = zeros(size(bus));
 if isempty(bus)
     return;
 end
-if isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+if isfield(mpc, 'order') && isfield(mpc.order, 'state') && ...
+        strcmp(mpc.order.state, 'i') && ...
+        isfield(mpc.order, 'bus') && ...
         isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
     e2i = mpc.order.bus.e2i;
 else

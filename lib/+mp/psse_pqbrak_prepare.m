@@ -6,7 +6,9 @@ function mpc = psse_pqbrak_prepare(mpc)
 %
 % Preserves the converted constant MVA bus load as the nominal load used by
 % PSS/E's low-voltage load characteristic below the solution-parameter
-% breakpoint ``GENERAL.PQBRAK``. The model is only used by runpf_psse.
+% breakpoint ``GENERAL.PQBRAK``. The model is only used by runpf_psse and is
+% applied as the load component of bus demand, leaving other controls free to
+% add their own equivalent demand.
 %
 % See also mp.psse_pqbrak_control.
 
@@ -20,13 +22,6 @@ function mpc = psse_pqbrak_prepare(mpc)
 [~, ~, ~, ~, BUS_I, ~, PD, QD, ~, ~, ~, VM] = idx_bus;
 
 if ~isfield(mpc, 'psse') || isempty(mpc.bus)
-    return;
-end
-
-%% Keep the low-voltage load boundary condition out of LCC workflows here.
-%% Two-terminal DC behavior is covered by its own opt-in controller.
-if isfield(mpc.psse, 'twodc') && isfield(mpc.psse.twodc, 'num') && ...
-        ~isempty(mpc.psse.twodc.num)
     return;
 end
 
