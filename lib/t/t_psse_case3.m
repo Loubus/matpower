@@ -11,9 +11,7 @@ function mpc = t_psse_case3
 %       Skipped 6 lines of voltage source converter data.
 %       Skipped 14 lines of multi-terminal DC data.
 %       Skipped 1 line of multi-section line data.
-%       Skipped 9 lines of zone data.
 %       Skipped 5 lines of inter-area transfer data.
-%       Skipped 5 lines of owner data.
 %       Skipped 2 lines of FACTS control device data.
 %       Using default voltage magnitude limits: VMIN = 0.9 p.u., VMAX = 1.1 p.u.
 %       Added buses 100001-100004 as star-points for 3-winding transformers.

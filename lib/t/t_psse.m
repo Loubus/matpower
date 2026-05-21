@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 225;
+num_tests = 259;
 
 t_begin(num_tests, quiet);
 
@@ -108,6 +108,16 @@ else
     t_ok(isfield(data34, 'system'), [t 'system-wide parsed']);
     t_is(numel(data34.system.records), 3, 12, [t 'system-wide records']);
     t_is(data34.system.solver.SWSHNT, 2, 12, [t 'system-wide SWSHNT']);
+    t_is(size(data34.area.num), [2 5], 12, [t 'area rows and columns']);
+    t_is(data34.area.num(:, 1:4), [10 1 12.34 0.5; 20 2 -12.34 1.25], 12, ...
+        [t 'area metadata columns']);
+    t_str_match(data34.area.txt{1, 5}, 'AREA NORTE  ', [t 'area name']);
+    t_is(size(data34.zone.num), [2 2], 12, [t 'zone rows and columns']);
+    t_is(data34.zone.num(:, 1), [101; 202], 12, [t 'zone IDs']);
+    t_str_match(data34.zone.txt{2, 2}, 'ZONA SUR   ', [t 'zone name']);
+    t_is(size(data34.owner.num), [4 2], 12, [t 'owner rows and columns']);
+    t_is(data34.owner.num(:, 1), [1; 2; 3; 4], 12, [t 'owner IDs']);
+    t_str_match(data34.owner.txt{4, 2}, 'OWNER LINE D', [t 'owner name']);
     t_is(size(data34.branch.num, 1), 1, 12, [t 'branch rows']);
     t_is(size(data34.branch.num, 2), 34, 12, [t 'rev 34 branch column count']);
     t_is(data34.branch.num(1, [8:19 24]), [100 90 80 77 76 75 74 73 72 71 70 69 1], 12, ...
@@ -216,6 +226,41 @@ else
     t_is(mpc34.psse.xfmr.two.branch_idx, [5; 6], 12, [t 'transformer branch mapping']);
     t_is(mpc34.psse.xfmr.two.num(1, [39 41 42 43 44 45 46]), ...
         [0 1.1 0.9 1.1 0.9 33 0], 12, [t 'transformer metadata values']);
+    t_ok(isfield(mpc34.psse, 'area'), [t 'area metadata preserved']);
+    t_is(mpc34.psse.area.id, [10; 20], 12, [t 'area IDs']);
+    t_is([mpc34.psse.area.col.i mpc34.psse.area.col.isw ...
+            mpc34.psse.area.col.pdes mpc34.psse.area.col.ptol ...
+            mpc34.psse.area.col.arname], [1 2 3 4 5], 12, ...
+        [t 'area metadata columns']);
+    t_str_match(mpc34.psse.area.name{1}, 'AREA NORTE', [t 'area metadata name']);
+    t_is(mpc34.psse.area.isw_bus_idx, [1; 2], 12, [t 'area ISW bus mapping']);
+    t_is(mpc34.psse.area.bus_count, [1; 1], 12, [t 'area bus counts']);
+    t_is(cell2mat(mpc34.psse.area.bus_idx), [1; 2], 12, [t 'area bus mapping']);
+    t_ok(isfield(mpc34.psse, 'zone'), [t 'zone metadata preserved']);
+    t_is(mpc34.psse.zone.id, [101; 202], 12, [t 'zone IDs']);
+    t_str_match(mpc34.psse.zone.name{2}, 'ZONA SUR', [t 'zone metadata name']);
+    t_is(mpc34.psse.zone.bus_count, [1; 1], 12, [t 'zone bus counts']);
+    t_is(cell2mat(mpc34.psse.zone.bus_idx), [1; 2], 12, [t 'zone bus mapping']);
+    t_ok(isfield(mpc34.psse, 'owner'), [t 'owner metadata preserved']);
+    t_is(mpc34.psse.owner.id, [1; 2; 3; 4], 12, [t 'owner IDs']);
+    t_str_match(mpc34.psse.owner.name{3}, 'OWNER LINE C', [t 'owner metadata name']);
+    t_is(mpc34.psse.owner.bus_count, [1; 1; 0; 0], 12, [t 'owner bus counts']);
+    t_is(cell2mat(mpc34.psse.owner.bus_idx(1:2)), [1; 2], 12, [t 'owner bus mapping']);
+    t_is(mpc34.psse.owner.branch_owner, ...
+        [1 1 1 0.5; 2 1 2 0.25; 3 1 3 0.15; 4 1 4 0.1], 12, ...
+        [t 'owner branch mapping']);
+    t_is(mpc34.psse.owner.branch_count, [1; 1; 1; 1], 12, [t 'owner branch counts']);
+    t_ok(isempty(mpc34.psse.owner.undefined_bus_owner), [t 'owner bus references defined']);
+    t_ok(isempty(mpc34.psse.owner.undefined_branch_owner), [t 'owner branch references defined']);
+    mpopt = mpoption('verbose', 0, 'out.all', 0);
+    [r_meta, success_meta] = runpf(mpc34, mpopt);
+    mpc_plain = mpc34;
+    mpc_plain.psse = rmfield(mpc_plain.psse, {'area', 'zone', 'owner'});
+    [r_plain, success_plain] = runpf(mpc_plain, mpopt);
+    t_ok(success_meta && success_plain, [t 'runpf succeeds with and without admin metadata']);
+    t_is(r_meta.bus, r_plain.bus, 10, [t 'runpf bus unchanged without admin metadata']);
+    t_is(r_meta.gen, r_plain.gen, 10, [t 'runpf gen unchanged without admin metadata']);
+    t_is(r_meta.branch, r_plain.branch, 10, [t 'runpf branch unchanged without admin metadata']);
     t_is(mpc34.psse.system.solver.SWSHNT, 2, 12, [t 'system-wide preserved']);
     t_ok(any(~cellfun(@isempty, strfind(w34, 'system switching devices'))), [t 'switching device warning']);
 

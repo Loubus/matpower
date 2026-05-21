@@ -272,6 +272,12 @@ mpc.psse.swshunt = struct( ...
     'binit_col', swshunt_binit_col, ...
     'status_col', swshunt_status_col ...
 );
+if isfield(data, 'area')
+    mpc.psse.area = psse_area_metadata(data.area, mpc);
+end
+if isfield(data, 'zone')
+    mpc.psse.zone = psse_zone_metadata(data.zone, mpc);
+end
 if rev >= 34 && isfield(data, 'branch')
     mpc.psse.branch = psse_branch_metadata(data.branch, mpc, rev, (1:nbr)');
 end
@@ -295,6 +301,9 @@ if isfield(data, 'facts')
 end
 if rev > 27
     mpc.psse.xfmr = psse_xfmr_metadata(data, xfmr_info, xfmr_branch_offset, rev);
+end
+if isfield(data, 'owner')
+    mpc.psse.owner = psse_owner_metadata(data.owner, data, mpc);
 end
 if ~isempty(dcline)
     mpc.dcline = dcline;
@@ -391,6 +400,216 @@ for k = 1:length(names)
         mat(:, k) = parsed_col(data, col.(names{k}), default);
     end
 end
+
+function area = psse_area_metadata(data, mpc)
+% psse_area_metadata - Preserves PSS/E area interchange metadata.
+
+cols = psse_metadata_colnames(data, {'I', 'ISW', 'PDES', 'PTOL', 'ARNAME'});
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+id = parsed_col(data, col.i, NaN);
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BUS_AREA] = idx_bus;
+[bus_idx, bus_ext, bus_count] = psse_bus_membership(mpc, id, BUS_AREA);
+
+area = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'raw_row_idx', (1:n)', ...
+    'id', id, ...
+    'isw_bus_ext', parsed_col(data, col.isw, 0), ...
+    'isw_bus_idx', psse_bus_map(mpc, parsed_col(data, col.isw, 0)), ...
+    'pdes', parsed_col(data, col.pdes, 0), ...
+    'ptol', parsed_col(data, col.ptol, 10), ...
+    'name', {parsed_txt(data, col.arname, n)}, ...
+    'bus_ext', {bus_ext}, ...
+    'bus_idx', {bus_idx}, ...
+    'bus_count', bus_count ...
+);
+
+function zone = psse_zone_metadata(data, mpc)
+% psse_zone_metadata - Preserves PSS/E zone metadata.
+
+cols = psse_metadata_colnames(data, {'I', 'ZONAME'});
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+id = parsed_col(data, col.i, NaN);
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ZONE] = idx_bus;
+[bus_idx, bus_ext, bus_count] = psse_bus_membership(mpc, id, ZONE);
+
+zone = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'raw_row_idx', (1:n)', ...
+    'id', id, ...
+    'name', {parsed_txt(data, col.zoname, n)}, ...
+    'bus_ext', {bus_ext}, ...
+    'bus_idx', {bus_idx}, ...
+    'bus_count', bus_count ...
+);
+
+function owner = psse_owner_metadata(data, psse_data, mpc)
+% psse_owner_metadata - Preserves PSS/E owner metadata and references.
+
+cols = psse_metadata_colnames(data, {'I', 'OWNAME'});
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+id = parsed_col(data, col.i, NaN);
+[bus_owner, bus_idx, bus_ext, bus_count] = psse_bus_owner_refs(psse_data, mpc, id);
+branch_owner = psse_branch_owner_refs(mpc);
+[branch_idx, branch_count] = psse_owner_ref_membership(id, branch_owner, 2);
+facts_owner = psse_facts_owner_refs(mpc);
+[facts_idx, facts_count] = psse_owner_ref_membership(id, facts_owner, 2);
+
+owner = struct( ...
+    'colnames', {cols}, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'col', col, ...
+    'raw_row_idx', (1:n)', ...
+    'id', id, ...
+    'name', {parsed_txt(data, col.owname, n)}, ...
+    'bus_owner', bus_owner, ...
+    'bus_ext', {bus_ext}, ...
+    'bus_idx', {bus_idx}, ...
+    'bus_count', bus_count, ...
+    'branch_owner', branch_owner, ...
+    'branch_idx', {branch_idx}, ...
+    'branch_count', branch_count, ...
+    'facts_owner', facts_owner, ...
+    'facts_idx', {facts_idx}, ...
+    'facts_count', facts_count, ...
+    'undefined_bus_owner', psse_undefined_owner_ids(bus_owner(:, 1), id), ...
+    'undefined_branch_owner', psse_undefined_owner_ids(branch_owner(:, 1), id), ...
+    'undefined_facts_owner', psse_undefined_owner_ids(facts_owner(:, 1), id) ...
+);
+
+function cols = psse_metadata_colnames(data, default_cols)
+% psse_metadata_colnames - Returns explicit column names for metadata tables.
+
+if isfield(data, 'colnames') && ~isempty(data.colnames)
+    cols = data.colnames;
+else
+    cols = default_cols;
+end
+ncols = max(size(data.num, 2), size(data.txt, 2));
+for k = length(cols)+1:ncols
+    cols{end+1} = sprintf('COL%d', k);
+end
+
+function [bus_idx, bus_ext, bus_count] = psse_bus_membership(mpc, ids, bus_col)
+% psse_bus_membership - Groups MATPOWER buses by a preserved PSS/E ID.
+
+[~, ~, ~, ~, BUS_I] = idx_bus;
+n = length(ids);
+bus_idx = cell(n, 1);
+bus_ext = cell(n, 1);
+bus_count = zeros(n, 1);
+for k = 1:n
+    idx = find(mpc.bus(:, bus_col) == ids(k));
+    bus_idx{k} = idx;
+    bus_ext{k} = mpc.bus(idx, BUS_I);
+    bus_count(k) = length(idx);
+end
+
+function [bus_owner, bus_idx, bus_ext, bus_count] = psse_bus_owner_refs(data, mpc, owner_ids)
+% psse_bus_owner_refs - Groups RAW bus OWNER references by owner ID.
+
+n = length(owner_ids);
+bus_owner = zeros(0, 3);
+bus_idx = cell(n, 1);
+bus_ext = cell(n, 1);
+bus_count = zeros(n, 1);
+for k = 1:n
+    bus_idx{k} = zeros(0, 1);
+    bus_ext{k} = zeros(0, 1);
+end
+if ~isfield(data, 'bus') || size(data.bus.num, 2) < 7
+    return;
+end
+
+raw_bus_ext = data.bus.num(:, 1);
+raw_owner = data.bus.num(:, 7);
+raw_bus_idx = psse_bus_map(mpc, raw_bus_ext);
+ok = raw_bus_idx ~= 0 & ~isnan(raw_owner) & raw_owner ~= 0;
+bus_owner = [raw_owner(ok), raw_bus_idx(ok), raw_bus_ext(ok)];
+for k = 1:n
+    idx = find(bus_owner(:, 1) == owner_ids(k));
+    bus_idx{k} = bus_owner(idx, 2);
+    bus_ext{k} = bus_owner(idx, 3);
+    bus_count(k) = length(idx);
+end
+
+function branch_owner = psse_branch_owner_refs(mpc)
+% psse_branch_owner_refs - Returns [OWNER BRANCH_IDX SLOT FRACTION] rows.
+
+branch_owner = zeros(0, 4);
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'branch') || ...
+        ~isfield(mpc.psse.branch, 'owner')
+    return;
+end
+
+owners = mpc.psse.branch.owner;
+fractions = NaN(size(owners));
+if isfield(mpc.psse.branch, 'owner_fraction')
+    fractions = mpc.psse.branch.owner_fraction;
+end
+branch_idx = (1:size(owners, 1))';
+if isfield(mpc.psse.branch, 'branch_idx')
+    branch_idx = mpc.psse.branch.branch_idx(:);
+end
+for r = 1:size(owners, 1)
+    for slot = 1:size(owners, 2)
+        oid = owners(r, slot);
+        if ~isnan(oid) && oid ~= 0
+            branch_owner(end+1, :) = [oid, branch_idx(r), slot, fractions(r, slot)]; %#ok<AGROW>
+        end
+    end
+end
+
+function facts_owner = psse_facts_owner_refs(mpc)
+% psse_facts_owner_refs - Returns [OWNER FACTS_IDX] rows.
+
+facts_owner = zeros(0, 2);
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'facts') || ...
+        ~isfield(mpc.psse.facts, 'col') || ~isfield(mpc.psse.facts.col, 'owner')
+    return;
+end
+
+owner_col = mpc.psse.facts.col.owner;
+if size(mpc.psse.facts.num, 2) < owner_col
+    return;
+end
+owners = mpc.psse.facts.num(:, owner_col);
+ok = ~isnan(owners) & owners ~= 0;
+facts_owner = [owners(ok), find(ok)];
+
+function [ref_idx, ref_count] = psse_owner_ref_membership(owner_ids, refs, ref_col)
+% psse_owner_ref_membership - Groups owner reference rows by owner ID.
+
+n = length(owner_ids);
+ref_idx = cell(n, 1);
+ref_count = zeros(n, 1);
+for k = 1:n
+    if isempty(refs)
+        idx = zeros(0, 1);
+    else
+        idx = refs(refs(:, 1) == owner_ids(k), ref_col);
+        idx = unique(idx(:));
+    end
+    ref_idx{k} = idx;
+    ref_count(k) = length(idx);
+end
+
+function ids = psse_undefined_owner_ids(refs, owner_ids)
+% psse_undefined_owner_ids - Returns referenced owner IDs absent from OWNER DATA.
+
+ids = unique(refs(:));
+ids(isnan(ids) | ids == 0) = [];
+ids = setdiff(ids, owner_ids(:));
 
 function genq = psse_genq_metadata(data, mpc, rev)
 % psse_genq_metadata - Preserves PSS/E generator voltage-control metadata.

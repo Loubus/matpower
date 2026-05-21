@@ -403,6 +403,7 @@ end
 
 %%-----  area interchange data  -----
 [data.area, warns] = psse_parse_section(warns, records, sections, s, verbose, 'area', 'ddffs');
+data.area.colnames = {'I', 'ISW', 'PDES', 'PTOL', 'ARNAME'};
 s = s + 1;
 
 %%-----  two-terminal DC transmission line data  -----
@@ -481,15 +482,19 @@ s = s + 1;
 %%-----  skip multi-section line data  -----
 [s, warns] = psse_skip_section(warns, sections, s, verbose, 'multi-section line');
 
-%%-----  skip zone data  -----
-[s, warns] = psse_skip_section(warns, sections, s, verbose, 'zone');
+%%-----  zone data  -----
+[data.zone, warns] = psse_parse_section(warns, records, sections, s, verbose, 'zone', 'ds');
+data.zone.colnames = {'I', 'ZONAME'};
+s = s + 1;
 
 %%-----  skip inter-area transfer data  -----
 [s, warns] = psse_skip_section(warns, sections, s, verbose, 'inter-area transfer');
 
-%%-----  skip owner data  -----
+%%-----  owner data  -----
 if rev > 24
-    [s, warns] = psse_skip_section(warns, sections, s, verbose, 'owner');
+    [data.owner, warns] = psse_parse_section(warns, records, sections, s, verbose, 'owner', 'ds');
+    data.owner.colnames = {'I', 'OWNAME'};
+    s = s + 1;
 end
 
 %%-----  FACTS device data  -----
