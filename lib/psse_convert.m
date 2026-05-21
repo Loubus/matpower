@@ -152,10 +152,6 @@ if rev >= 34 && size(data.branch.num, 2) >= 24
     branch(:, BR_STATUS) = data.branch.num(:, 24);
     brsh_f = 20:21;
     brsh_t = 22:23;
-    warns{end+1} = sprintf('For PSS/E rev %d branch data, branch names, ratings 4-12, metered end, length, and ownership data were not retained.', rev);
-    if verbose
-        fprintf('WARNING: For PSS/E rev %d branch data, only ratings 1-3 were retained.\n', rev);
-    end
 else
     branch(:, [F_BUS BR_R BR_X BR_B RATE_A RATE_B RATE_C]) = ...
         data.branch.num(:, [1 4 5 6 7 8 9]);
@@ -276,6 +272,9 @@ mpc.psse.swshunt = struct( ...
     'binit_col', swshunt_binit_col, ...
     'status_col', swshunt_status_col ...
 );
+if rev >= 34 && isfield(data, 'branch')
+    mpc.psse.branch = psse_branch_metadata(data.branch, mpc, rev, (1:nbr)');
+end
 if isfield(data, 'gen')
     mpc.psse.genq = psse_genq_metadata(data.gen, mpc, rev);
 end
@@ -300,6 +299,97 @@ end
 if ~isempty(dcline)
     mpc.dcline = dcline;
     mpc = toggle_dcline(mpc, 'on');
+end
+
+function branch = psse_branch_metadata(data, mpc, rev, branch_idx)
+% psse_branch_metadata - Preserves PSS/E non-transformer branch metadata.
+
+cols = psse_branch_colnames(data);
+col = psse_col_struct(cols);
+n = size(data.num, 1);
+
+f_bus_ext = parsed_col(data, col.i, NaN);
+j_signed = parsed_col(data, col.j, NaN);
+t_bus_ext = abs(j_signed);
+terminal_shunt = [ ...
+    parsed_col(data, col.gi, 0), ...
+    parsed_col(data, col.bi, 0), ...
+    parsed_col(data, col.gj, 0), ...
+    parsed_col(data, col.bj, 0) ...
+];
+owner = psse_cols_matrix(data, col, {'o1', 'o2', 'o3', 'o4'}, NaN);
+owner_fraction = psse_cols_matrix(data, col, {'f1', 'f2', 'f3', 'f4'}, NaN);
+
+branch = struct( ...
+    'rev', rev, ...
+    'colnames', {cols}, ...
+    'col', col, ...
+    'num', data.num, ...
+    'txt', {data.txt}, ...
+    'raw_row_idx', (1:n)', ...
+    'branch_idx', branch_idx(:), ...
+    'f_bus_ext', f_bus_ext, ...
+    't_bus_ext', t_bus_ext, ...
+    'j_signed', j_signed, ...
+    'f_bus_idx', psse_bus_map(mpc, f_bus_ext), ...
+    't_bus_idx', psse_bus_map(mpc, t_bus_ext), ...
+    'ckt', {parsed_txt_untrimmed(data, col.ckt, n)}, ...
+    'name', {parsed_txt(data, col.name, n)}, ...
+    'rates', psse_branch_rates(data, col), ...
+    'status', parsed_col(data, col.stat, 1), ...
+    'metered_end', parsed_col(data, col.met, 1), ...
+    'len', parsed_col(data, col.len, NaN), ...
+    'terminal_shunt', terminal_shunt, ...
+    'terminal_shunt_mva', terminal_shunt * mpc.baseMVA, ...
+    'owner', owner, ...
+    'owner_fraction', owner_fraction ...
+);
+
+function cols = psse_branch_colnames(data)
+% psse_branch_colnames - Returns PSS/E non-transformer branch column names.
+
+if isfield(data, 'colnames') && ~isempty(data.colnames)
+    cols = data.colnames;
+else
+    cols = {'I', 'J', 'CKT', 'R', 'X', 'B', 'NAME'};
+    rate_cols = cell(1, 12);
+    for k = 1:12
+        rate_cols{k} = sprintf('RATE%d', k);
+    end
+    cols = [cols rate_cols {'GI', 'BI', 'GJ', 'BJ', 'STAT', 'MET', 'LEN', ...
+        'O1', 'F1', 'O2', 'F2', 'O3', 'F3', 'O4', 'F4'}];
+end
+ncols = max(size(data.num, 2), size(data.txt, 2));
+if ncols > length(cols)
+    extra_cols = cell(1, ncols - length(cols));
+    for k = 1:length(extra_cols)
+        extra_cols{k} = sprintf('COL%d', length(cols) + k);
+    end
+    cols = [cols extra_cols];
+end
+
+function rates = psse_branch_rates(data, col)
+% psse_branch_rates - Returns RATE1-RATE12 values, zero-filled when absent.
+
+n = size(data.num, 1);
+rates = zeros(n, 12);
+for k = 1:12
+    name = sprintf('rate%d', k);
+    if isfield(col, name)
+        rates(:, k) = parsed_col(data, col.(name), 0);
+    end
+end
+rates(isnan(rates)) = 0;
+
+function mat = psse_cols_matrix(data, col, names, default)
+% psse_cols_matrix - Parses a numeric matrix from a list of named columns.
+
+n = size(data.num, 1);
+mat = default * ones(n, length(names));
+for k = 1:length(names)
+    if isfield(col, names{k})
+        mat(:, k) = parsed_col(data, col.(names{k}), default);
+    end
 end
 
 function genq = psse_genq_metadata(data, mpc, rev)
@@ -404,6 +494,28 @@ for kk = 1:n
         str = str(2:end-1);
     end
     txt{kk} = strtrim(str);
+end
+
+function txt = parsed_txt_untrimmed(data, col, n)
+% parsed_txt_untrimmed - Returns dequoted text without stripping blanks.
+
+txt = cell(n, 1);
+for kk = 1:n
+    txt{kk} = '';
+end
+if ~col || col > size(data.txt, 2)
+    return;
+end
+for kk = 1:n
+    str = data.txt{kk, col};
+    if isempty(str) && col <= size(data.num, 2) && ~isnan(data.num(kk, col))
+        str = sprintf('%g', data.num(kk, col));
+    end
+    if numel(str) >= 2 && ((str(1) == '''' && str(end) == '''') || ...
+            (str(1) == '"' && str(end) == '"'))
+        str = str(2:end-1);
+    end
+    txt{kk} = str;
 end
 
 function twodc = psse_twodc_metadata(data, dcline, mpc)

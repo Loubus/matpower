@@ -13,7 +13,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 206;
+num_tests = 225;
 
 t_begin(num_tests, quiet);
 
@@ -109,7 +109,15 @@ else
     t_is(numel(data34.system.records), 3, 12, [t 'system-wide records']);
     t_is(data34.system.solver.SWSHNT, 2, 12, [t 'system-wide SWSHNT']);
     t_is(size(data34.branch.num, 1), 1, 12, [t 'branch rows']);
-    t_is(data34.branch.num(1, [8 9 10 24]), [100 90 80 1], 12, [t 'rev 34 branch columns']);
+    t_is(size(data34.branch.num, 2), 34, 12, [t 'rev 34 branch column count']);
+    t_is(data34.branch.num(1, [8:19 24]), [100 90 80 77 76 75 74 73 72 71 70 69 1], 12, ...
+        [t 'rev 34 branch RATE1-12 and STAT columns']);
+    t_is(data34.branch.num(1, 20:23), [0.001 -0.002 0.003 -0.004], 12, ...
+        [t 'rev 34 branch terminal shunt columns']);
+    t_is(data34.branch.num(1, 25:34), [2 12.34 1 0.5 2 0.25 3 0.15 4 0.1], 12, ...
+        [t 'rev 34 branch MET LEN and owner columns']);
+    t_str_match(data34.branch.txt{1, 3}, '1 ', [t 'rev 34 branch CKT column']);
+    t_str_match(strtrim(data34.branch.txt{1, 7}), 'REV34 META LINE', [t 'rev 34 branch NAME column']);
     t_is(size(data34.swdev.num), [3 21], 12, [t 'switching device rows and columns']);
     t_is(data34.swdev.num(:, [1 2 4 17 18 19 20]), ...
         [1 2 1e-4 1 1 1 2; 2 1 1e-4 0 1 2 3; 1 2 1e-4 2 0 2 1], 12, ...
@@ -147,13 +155,33 @@ else
     [mpc34, w34] = psse2mpc(raw34, 0, 34);
     t_is(size(mpc34.bus, 1), 2, 12, [t 'bus rows']);
     t_is(size(mpc34.branch, 1), 6, 12, [t 'branch rows with switching devices and transformer']);
-    t_is(mpc34.branch(1, [6 7 8 11]), [100 90 80 1], 12, [t 'branch conversion']);
+    t_is(mpc34.branch(1, 1:5), [1 2 0.01 0.05 0.1], 12, [t 'branch electrical conversion']);
+    t_is(mpc34.branch(1, 6:8), [100 90 80], 12, [t 'branch RATE_A/B/C conversion']);
+    t_is(mpc34.branch(1, 11), 1, 12, [t 'branch BR_STATUS from STAT']);
     t_is(mpc34.branch(2:4, [1 2 4 6 7 8 11]), ...
         [1 2 1e-4 70 60 50 1; 2 1 1e-4 40 30 20 0; 1 2 1e-4 17 16 15 1], 12, ...
         [t 'switching device conversion']);
     t_is(mpc34.branch(5:6, [3 4 9 11]), [0 0.1 1 1; 0 0.1 1 1], 12, [t 'NOMV zero transformer conversion']);
-    t_is(mpc34.bus(:, [1 5 6]), [1 2 -11.9498743710662; 2 0 12.5], 10, ...
+    t_is(mpc34.bus(:, [1 5 6]), [1 2.1 -12.1498743710662; 2 0.3 12.1], 10, ...
         [t 'switched shunt and transformer magnetizing conversion']);
+    t_ok(isfield(mpc34.psse, 'branch'), [t 'branch metadata preserved']);
+    t_is([mpc34.psse.branch.col.ckt mpc34.psse.branch.col.rate12 ...
+            mpc34.psse.branch.col.met mpc34.psse.branch.col.f4], ...
+        [3 19 25 34], 12, [t 'branch metadata columns']);
+    t_is(size(mpc34.psse.branch.num), [1 34], 12, [t 'branch metadata size']);
+    t_is(mpc34.psse.branch.branch_idx, 1, 12, [t 'branch metadata branch mapping']);
+    t_is([mpc34.psse.branch.f_bus_idx mpc34.psse.branch.t_bus_idx], [1 2], 12, ...
+        [t 'branch metadata bus mapping']);
+    t_is(mpc34.psse.branch.rates(1, 4:12), [77 76 75 74 73 72 71 70 69], 12, ...
+        [t 'branch metadata RATE4-12']);
+    t_is(mpc34.psse.branch.terminal_shunt, [0.001 -0.002 0.003 -0.004], 12, ...
+        [t 'branch metadata terminal shunts']);
+    t_is([mpc34.psse.branch.metered_end mpc34.psse.branch.len], [2 12.34], 12, ...
+        [t 'branch metadata MET and LEN']);
+    t_is(mpc34.psse.branch.owner, [1 2 3 4], 12, [t 'branch metadata owners']);
+    t_is(mpc34.psse.branch.owner_fraction, [0.5 0.25 0.15 0.1], 12, [t 'branch metadata fractions']);
+    t_str_match(mpc34.psse.branch.ckt{1}, '1 ', [t 'branch metadata CKT']);
+    t_str_match(mpc34.psse.branch.name{1}, 'REV34 META LINE', [t 'branch metadata NAME']);
     t_ok(isfield(mpc34, 'psse') && isfield(mpc34.psse, 'swshunt'), [t 'switched shunt preserved']);
     t_ok(isfield(mpc34.psse, 'swdev'), [t 'switching device preserved']);
     t_is([mpc34.psse.swdev.col.ckt mpc34.psse.swdev.col.rate12 mpc34.psse.swdev.col.name], ...

@@ -215,9 +215,12 @@ elseif rev < 31
         'branch', 'dd.ffffffffffd');
 %       'branch', 'ddsffffffffffdfdfdfdfdf');
 elseif rev >= 34
-    branch_template = ['dd.fff.' repmat('f', 1, 16) 'ddfdfdfdfdf'];
+    [branch_cols, branch_template] = psse_branch_columns();
     [data.branch, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
         'branch', branch_template);
+    data.branch.colnames = branch_cols;
+    data.branch.txt(:, 7) = cellfun(@strtrim, data.branch.txt(:, 7), ...
+        'UniformOutput', false);
 else
     [data.branch, warns] = psse_parse_section(warns, records, sections, s, verbose, ...
         'branch', 'dd.ffffffffffd');
@@ -775,6 +778,19 @@ else
     cols = [cols {'STAT', 'NSTAT', 'MET', 'STYPE', 'NAME'}];
     template = ['dd.' repmat('f', 1, 13) 'dddd.'];
 end
+
+%%---------------------------------------------------------------------
+function [cols, template] = psse_branch_columns()
+%PSSE_BRANCH_COLUMNS  Returns Rev34+ non-transformer branch column metadata.
+
+cols = {'I', 'J', 'CKT', 'R', 'X', 'B', 'NAME'};
+rate_cols = cell(1, 12);
+for k = 1:12
+    rate_cols{k} = sprintf('RATE%d', k);
+end
+cols = [cols rate_cols {'GI', 'BI', 'GJ', 'BJ', 'STAT', 'MET', 'LEN', ...
+    'O1', 'F1', 'O2', 'F2', 'O3', 'F3', 'O4', 'F4'}];
+template = ['ddsfffs' repmat('f', 1, 16) 'ddfdfdfdfdf'];
 
 %%---------------------------------------------------------------------
 function [s, warns] = psse_skip_section(warns, sections, s, verbose, label)
