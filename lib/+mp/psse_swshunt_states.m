@@ -36,6 +36,8 @@ state.report = struct();
 %% SYSTEM-WIDE options that affect switched shunt adjustment
 state.swshnt = psse_system_value(mpc, 'solver', 'SWSHNT', NaN);
 state.enabled = isnan(state.swshnt) || state.swshnt ~= 0;
+state.allow_discrete = state.enabled && (isnan(state.swshnt) || state.swshnt ~= 2);
+state.allow_continuous = state.enabled;
 state.max_iter = psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
     state.max_iter = 99;
@@ -96,10 +98,11 @@ bus_ok(bb) = mpc.bus(state.bus_idx(bb), BUS_TYPE) == PQ | ...
 state.active = state.stat ~= 0 & state.bus_idx > 0;
 
 %% recognize only the PSS/E switched shunt controls in scope for this task
-state.automatic = state.active & (state.modsw == 1 | state.modsw == 2);
+state.automatic = state.active & ...
+    ((state.modsw == 1 & state.allow_discrete) | ...
+     (state.modsw == 2 & state.allow_continuous));
 state.recognized = state.automatic & bus_ok;
-state.controllable = state.enabled & state.recognized & state.adjm == 0 & ...
-    (state.modsw == 1 | state.modsw == 2);
+state.controllable = state.enabled & state.recognized & state.adjm == 0;
 state.unsupported_modsw = state.active & state.modsw >= 3 & state.modsw <= 6;
 state.unsupported_adjm = state.enabled & state.recognized & state.adjm ~= 0;
 

@@ -144,8 +144,10 @@ try
                 ib <= 0 || ib > size(mpc_aux.bus, 1)
             continue;
         end
-        mpc_aux.bus(rb, PD) = mpc_aux.bus(rb, PD) + state.current_pf(k);
-        mpc_aux.bus(ib, PD) = mpc_aux.bus(ib, PD) - state.current_pt(k);
+        if ~isfield(state, 'pq_model') || ~state.pq_model(k)
+            mpc_aux.bus(rb, PD) = mpc_aux.bus(rb, PD) + state.current_pf(k);
+            mpc_aux.bus(ib, PD) = mpc_aux.bus(ib, PD) - state.current_pt(k);
+        end
         if mpc_aux.bus(rb, BUS_TYPE) ~= REF
             mpc_aux.bus(rb, BUS_TYPE) = PQ;
         end

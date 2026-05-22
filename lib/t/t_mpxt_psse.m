@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 332;
+num_tests = 336;
 
 t_begin(num_tests, quiet);
 
@@ -81,7 +81,7 @@ else
 end
 
 %% MODSW = 1, BINIT = 0, creates a shunt row through data model rebuild
-mpc = psse_case9_swshunt(1, 1, 0, 1.02, 1.01, 9, 0, [2 25], 2);
+mpc = psse_case9_swshunt(1, 1, 0, 1.02, 1.01, 9, 0, [2 25], 1);
 r = runpf_psse(mpc, mpopt);
 t_ok(r.success, 'MODSW=1 success');
 t_is(r.psse.swshunt.num(1, 10), 25, 10, 'MODSW=1 switched one capacitor step');
@@ -99,6 +99,14 @@ r = runpf_psse(mpc, mpopt);
 t_is(r.psse.swshunt.num(1, 10), 0, 10, 'SWSHNT=0 leaves BINIT unchanged');
 t_is(r.bus(9, BS), 0, 10, 'SWSHNT=0 leaves bus BS unchanged');
 t_ok(~r.psse.swshunt.control.enabled, 'SWSHNT=0 report disabled');
+
+%% SWSHNT = 2 controls continuous shunts, but leaves MODSW = 1 fixed
+mpc = psse_case9_swshunt(1, 1, 0, 1.02, 1.01, 9, 0, [2 25], 2);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'SWSHNT=2 MODSW=1 success');
+t_is(r.psse.swshunt.num(1, 10), 0, 10, 'SWSHNT=2 leaves MODSW=1 BINIT unchanged');
+t_is(r.bus(9, BS), 0, 10, 'SWSHNT=2 leaves MODSW=1 bus BS unchanged');
+t_is(r.psse.swshunt.control.controllable, 0, 10, 'SWSHNT=2 does not control MODSW=1');
 
 %% MODSW = 0 and STAT = 0 remain fixed
 mpc = psse_case9_swshunt(0, 1, 15, 1.02, 1.01, 9, 15, [2 25], 2);
@@ -122,7 +130,7 @@ rows = [
     8 1 0 1 1.02 1.01 9 100 0 0 1 25 0
     9 1 0 1 1.02 1.01 9 100 0 0 1 25 0
 ];
-mpc = psse_case9_swshunts(rows, 2, 10);
+mpc = psse_case9_swshunts(rows, 1, 10);
 r = runpf_psse(mpc, mpopt);
 t_ok(r.success, 'grouped RMPCT success');
 t_is(r.psse.swshunt.control.num_groups, 1, 10, 'grouped RMPCT has one regulated bus group');
@@ -132,7 +140,7 @@ t_is(r.psse.swshunt.num(:, 10), [25; 25], 10, 'grouped RMPCT moves both shunts t
 
 %% repeated BINIT states are resolved by selecting the best visited state
 rows = [9 1 0 1 1.03 1.03 9 100 0 0 1 50 0];
-mpc = psse_case9_swshunts(rows, 2, 10);
+mpc = psse_case9_swshunts(rows, 1, 10);
 r = runpf_psse(mpc, mpopt);
 t_ok(r.success, 'cycle memory success');
 t_ok(r.psse.swshunt.control.cycle_detected, 'cycle memory detects repeated BINIT state');
@@ -418,10 +426,10 @@ t_is(r.bus(2, QD), pq.qd(2) + tw.qacr_mvar(1), 8, ...
     'PQBRAK preserves TWO DC rectifier Q demand');
 t_is(r.bus(3, QD), pq.qd(3) + tw.qaci_mvar(1), 8, ...
     'PQBRAK preserves TWO DC inverter Q demand');
-t_is(r.bus(2, PD), pq.pd(2), 8, ...
-    'PQBRAK scales native rectifier-bus PD only');
-t_is(r.bus(3, PD), pq.pd(3), 8, ...
-    'PQBRAK scales native inverter-bus PD only');
+t_is(r.bus(2, PD), pq.pd(2) + tw.pf(1), 8, ...
+    'PQBRAK preserves TWO DC rectifier P demand');
+t_is(r.bus(3, PD), pq.pd(3) - tw.pt(1), 8, ...
+    'PQBRAK preserves TWO DC inverter P injection');
 t_is(r.dcline(1, [dci.PF dci.PT]), [tw.pf(1) tw.pt(1)], 10, ...
     'PQBRAK preserves TWO DC active dcline equivalent');
 
@@ -742,7 +750,7 @@ cols = {'I', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', ...
 row = nan(1, 27);
 row([1:8 10:14 27]) = [2 1 0 1 1.03 0.99 2 100 0 6 10 0 0 0];
 mpc.psse.rev = 34;
-mpc.psse.system.solver.SWSHNT = 2;
+mpc.psse.system.solver.SWSHNT = 1;
 mpc.psse.system.adjust.MXTPSS = 20;
 mpc.psse.swshunt = struct( ...
     'colnames', {cols}, ...

@@ -4,9 +4,9 @@ function mpc = psse_twodc_update(mpc, state)
 %
 %   MPC = MP.PSSE_TWODC_UPDATE(MPC, STATE)
 %
-% Updates ``mpc.dcline`` and equivalent bus reactive demand with the current
-% two-terminal DC operating point and synchronizes ``mpc.psse.twodc`` with a
-% diagnostic control report.
+% Updates ``mpc.dcline`` and equivalent bus active/reactive demand with the
+% current two-terminal DC operating point and synchronizes ``mpc.psse.twodc``
+% with a diagnostic control report.
 %
 % See also mp.psse_twodc_control, mp.psse_twodc_states.
 
@@ -18,7 +18,7 @@ function mpc = psse_twodc_update(mpc, state)
 %   See https://matpower.org for more info.
 
 c = idx_dcline;
-[~, ~, ~, ~, ~, ~, ~, QD] = idx_bus;
+[~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
 
 idx = find(state.valid_dcline);
 if ~isempty(idx)
@@ -34,6 +34,14 @@ if ~isempty(idx)
 end
 
 nb = size(mpc.bus, 1);
+prev_p_by_bus = previous_p_by_bus(mpc, state, nb);
+p_by_bus = current_p_by_bus(state, nb);
+if any(prev_p_by_bus) || any(p_by_bus)
+    mpc.bus(:, PD) = mpc.bus(:, PD) - prev_p_by_bus + p_by_bus;
+end
+[p_bus, p_bus_mw] = current_p_by_bus_number(state);
+state.p_bus = p_bus;
+state.p_bus_mw = p_bus_mw;
 prev_q_by_bus = previous_q_by_bus(mpc, state, nb);
 q_by_bus = current_q_by_bus(state, nb);
 mpc.bus(:, QD) = mpc.bus(:, QD) - prev_q_by_bus + q_by_bus;
@@ -45,9 +53,49 @@ mpc.psse.twodc.loss_mw = state.current_loss;
 mpc.psse.twodc.qacr_mvar = state.qacr_mvar;
 mpc.psse.twodc.qaci_mvar = state.qaci_mvar;
 mpc.psse.twodc.apply_q = state.apply_q;
+if isfield(state, 'pq_model')
+    mpc.psse.twodc.pq_model = state.pq_model;
+    mpc.psse.twodc.p_rect_mw = state.current_pf .* state.pq_model;
+    mpc.psse.twodc.p_inv_mw = -state.current_pt .* state.pq_model;
+end
+if isfield(state, 'p_bus')
+    mpc.psse.twodc.p_bus = state.p_bus;
+    mpc.psse.twodc.p_bus_mw = state.p_bus_mw;
+end
 mpc.psse.twodc.q_bus = state.q_bus;
 mpc.psse.twodc.q_bus_mvar = state.q_bus_mvar;
 mpc.psse.twodc.control = mp.psse_twodc_report(state);
+
+function p = previous_p_by_bus(mpc, state, nb)
+p = zeros(nb, 1);
+if isfield(mpc.psse.twodc, 'p_rect_mw') && ...
+        length(mpc.psse.twodc.p_rect_mw) == state.n
+    prect = mpc.psse.twodc.p_rect_mw;
+    if isfield(mpc.psse.twodc, 'pq_model') && ...
+            length(mpc.psse.twodc.pq_model) == state.n
+        prect(~mpc.psse.twodc.pq_model) = 0;
+    end
+    p = p + accum_by_bus(state.rect_bus_idx, prect, nb);
+end
+if isfield(mpc.psse.twodc, 'p_inv_mw') && ...
+        length(mpc.psse.twodc.p_inv_mw) == state.n
+    pinv = mpc.psse.twodc.p_inv_mw;
+    if isfield(mpc.psse.twodc, 'pq_model') && ...
+            length(mpc.psse.twodc.pq_model) == state.n
+        pinv(~mpc.psse.twodc.pq_model) = 0;
+    end
+    p = p + accum_by_bus(state.inv_bus_idx, pinv, nb);
+end
+
+function p = current_p_by_bus(state, nb)
+prect = state.current_pf;
+pinv = -state.current_pt;
+if isfield(state, 'pq_model')
+    prect(~state.pq_model) = 0;
+    pinv(~state.pq_model) = 0;
+end
+p = accum_by_bus(state.rect_bus_idx, prect, nb) + ...
+    accum_by_bus(state.inv_bus_idx, pinv, nb);
 
 function q = previous_q_by_bus(mpc, state, nb)
 q = zeros(nb, 1);
@@ -58,7 +106,7 @@ if isfield(mpc.psse.twodc, 'qacr_mvar') && ...
             length(mpc.psse.twodc.apply_q) == state.n
         qacr(~mpc.psse.twodc.apply_q) = 0;
     end
-    q = q + accum_q(state.rect_bus_idx, qacr, nb);
+    q = q + accum_by_bus(state.rect_bus_idx, qacr, nb);
 end
 if isfield(mpc.psse.twodc, 'qaci_mvar') && ...
         length(mpc.psse.twodc.qaci_mvar) == state.n
@@ -67,7 +115,7 @@ if isfield(mpc.psse.twodc, 'qaci_mvar') && ...
             length(mpc.psse.twodc.apply_q) == state.n
         qaci(~mpc.psse.twodc.apply_q) = 0;
     end
-    q = q + accum_q(state.inv_bus_idx, qaci, nb);
+    q = q + accum_by_bus(state.inv_bus_idx, qaci, nb);
 end
 
 function q = current_q_by_bus(state, nb)
@@ -77,10 +125,10 @@ if isfield(state, 'apply_q')
     qacr(~state.apply_q) = 0;
     qaci(~state.apply_q) = 0;
 end
-q = accum_q(state.rect_bus_idx, qacr, nb) + ...
-    accum_q(state.inv_bus_idx, qaci, nb);
+q = accum_by_bus(state.rect_bus_idx, qacr, nb) + ...
+    accum_by_bus(state.inv_bus_idx, qaci, nb);
 
-function q = accum_q(bus_idx, qdc, nb)
+function q = accum_by_bus(bus_idx, qdc, nb)
 idx = find(bus_idx > 0 & bus_idx <= nb & abs(qdc) > 0);
 if isempty(idx)
     q = zeros(nb, 1);
@@ -108,4 +156,26 @@ if isempty(idx)
 else
     [bus, ~, grp] = unique(bus_all(idx));
     q = accumarray(grp, q_all(idx), [], @sum, 0);
+end
+
+function [bus, p] = current_p_by_bus_number(state)
+prect = state.current_pf;
+pinv = -state.current_pt;
+if isfield(state, 'pq_model')
+    prect(~state.pq_model) = 0;
+    pinv(~state.pq_model) = 0;
+end
+if isfield(state, 'rect_bus') && isfield(state, 'inv_bus')
+    bus_all = [state.rect_bus(:); state.inv_bus(:)];
+else
+    bus_all = [state.rect_bus_idx(:); state.inv_bus_idx(:)];
+end
+p_all = [prect(:); pinv(:)];
+idx = find(bus_all > 0 & abs(p_all) > 0);
+if isempty(idx)
+    bus = zeros(0, 1);
+    p = zeros(0, 1);
+else
+    [bus, ~, grp] = unique(bus_all(idx));
+    p = accumarray(grp, p_all(idx), [], @sum, 0);
 end

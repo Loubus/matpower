@@ -17,7 +17,7 @@ classdef task_pf_psse < mp.task_pf_legacy
 %   * psse_swshunt - switched shunt control state and diagnostics
 %
 % mp.task_pf_psse Methods:
-%   * next_dm - coordinate PSS/E generator Q, low-voltage load, transformer,
+%   * next_dm - coordinate PSS/E low-voltage load, transformer, generator Q,
 %       two-terminal DC, switched shunt and FACTS control
 %   * network_model_build_post - initialize reference-bus tracking for data
 %       model iterations
@@ -44,21 +44,14 @@ classdef task_pf_psse < mp.task_pf_legacy
 
     methods
         function dm = next_dm(obj, mm, nm, dm, mpopt, mpx)
-            % Coordinate PSS/E generator Q, load, transformer, DC, shunt and FACTS control.
+            % Coordinate PSS/E load, transformer, generator Q, DC, shunt and FACTS control.
 
             dm0 = dm;
             dm = next_dm@mp.task_pf(obj, mm, nm, dm, mpopt, mpx);
             if ~isempty(dm) || obj.dc || ~obj.success
                 return;
             end
-
-            if ~isempty(which('mp.psse_genq_control'))
-                [dm, obj.psse_genq] = mp.psse_genq_control( ...
-                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_genq);
-                if ~isempty(dm)
-                    return;
-                end
-            end
+            dm0 = obj.sync_source_solution(dm0, nm);
 
             if ~isempty(which('mp.psse_pqbrak_control'))
                 [dm, obj.psse_pqbrak] = mp.psse_pqbrak_control( ...
@@ -72,6 +65,14 @@ classdef task_pf_psse < mp.task_pf_legacy
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
             if ~isempty(dm)
                 return;
+            end
+
+            if ~isempty(which('mp.psse_genq_control'))
+                [dm, obj.psse_genq] = mp.psse_genq_control( ...
+                    obj, mm, nm, dm0, mpopt, mpx, obj.psse_genq);
+                if ~isempty(dm)
+                    return;
+                end
             end
 
             [dm, obj.psse_twodc] = mp.psse_twodc_control( ...
@@ -88,6 +89,23 @@ classdef task_pf_psse < mp.task_pf_legacy
 
             [dm, obj.psse_facts] = mp.psse_facts_control( ...
                 obj, mm, nm, dm0, mpopt, mpx, obj.psse_facts);
+        end
+
+        function dm = sync_source_solution(obj, dm, nm)
+            % Use the previous solved voltage as the initial point for rebuilds.
+
+            [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM, VA] = idx_bus;
+            if obj.dc || isempty(dm) || ~isfield(dm.source, 'bus') || ...
+                    isempty(dm.source.bus)
+                return;
+            end
+            if ~isempty(nm) && isobject(nm) && isprop(nm, 'soln') && ...
+                    isfield(nm.soln, 'v') && ...
+                    length(nm.soln.v) == size(dm.source.bus, 1)
+                v = nm.soln.v;
+                dm.source.bus(:, VM) = abs(v);
+                dm.source.bus(:, VA) = angle(v) * 180 / pi;
+            end
         end
 
         function nm = network_model_build_post(obj, nm, dm, mpopt)

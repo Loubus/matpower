@@ -46,6 +46,11 @@ report.qacr_mvar = state.qacr_mvar;
 report.qaci_mvar = state.qaci_mvar;
 report.apply_q = state.apply_q;
 report.apply_model = state.apply_model;
+if isfield(state, 'pq_model')
+    report.pq_model = state.pq_model;
+else
+    report.pq_model = false(state.n, 1);
+end
 report.iacr_ka = state.iacr_ka;
 report.iaci_ka = state.iaci_ka;
 report.mu_r_deg = state.mu_r_deg;
@@ -83,6 +88,13 @@ if isfield(state, 'q_bus')
 else
     report.q_bus = zeros(0, 1);
     report.q_bus_mvar = zeros(0, 1);
+end
+if isfield(state, 'p_bus')
+    report.p_bus = state.p_bus;
+    report.p_bus_mw = state.p_bus_mw;
+else
+    report.p_bus = zeros(0, 1);
+    report.p_bus_mw = zeros(0, 1);
 end
 
 function flags = control_flags(state)

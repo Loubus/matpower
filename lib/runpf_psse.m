@@ -156,6 +156,9 @@ end
 if ~isempty(which('mp.psse_genq_prepare'))
     mpc = mp.psse_genq_prepare(mpc);
 end
+if ~isempty(which('mp.psse_twodc_prepare'))
+    mpc = mp.psse_twodc_prepare(mpc);
+end
 
 %% add zero columns to branch for flows if needed
 if size(mpc.branch,2) < QT

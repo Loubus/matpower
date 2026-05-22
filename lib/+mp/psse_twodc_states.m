@@ -101,7 +101,12 @@ end
 if isfield(twodc, 'inv_bus_idx')
     state.inv_bus_idx = twodc.inv_bus_idx;
 end
-if any(state.valid_dcline)
+rect_bus_idx = bus_index_from_external(mpc, state.rect_bus);
+inv_bus_idx = bus_index_from_external(mpc, state.inv_bus);
+state.rect_bus_idx(rect_bus_idx > 0) = rect_bus_idx(rect_bus_idx > 0);
+state.inv_bus_idx(inv_bus_idx > 0) = inv_bus_idx(inv_bus_idx > 0);
+dcline_internal = isfield(mpc, 'order') && isfield(mpc.order, 'dcline');
+if any(state.valid_dcline) && dcline_internal
     idx = find(state.valid_dcline);
     dcidx = state.dcline_idx(idx);
     state.rect_bus_idx(idx) = mpc.dcline(dcidx, c.F_BUS);
@@ -121,6 +126,7 @@ state.supported = state.active & (state.power_mode | state.current_mode) & ...
     state.inv_bus_idx > 0 & state.xcapr == 0 & state.xcapi == 0;
 state.apply_q = state.supported;
 state.apply_model = state.supported;
+state.pq_model = false(n, 1);
 if isfield(twodc, 'apply_q')
     if isscalar(twodc.apply_q)
         state.apply_q(:) = logical(twodc.apply_q) & state.supported;
@@ -133,6 +139,13 @@ if isfield(twodc, 'apply_model')
         state.apply_model(:) = logical(twodc.apply_model) & state.supported;
     elseif length(twodc.apply_model) == n
         state.apply_model = logical(twodc.apply_model(:)) & state.supported;
+    end
+end
+if isfield(twodc, 'pq_model')
+    if isscalar(twodc.pq_model)
+        state.pq_model(:) = logical(twodc.pq_model) & state.supported;
+    elseif length(twodc.pq_model) == n
+        state.pq_model = logical(twodc.pq_model(:)) & state.supported;
     end
 end
 
@@ -200,4 +213,18 @@ if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
         isfield(mpc.psse.system, section) && ...
         isfield(mpc.psse.system.(section), key)
     val = mpc.psse.system.(section).(key);
+end
+
+function idx = bus_index_from_external(mpc, bus)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+idx = zeros(size(bus));
+if isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+        isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
+    ok = bus > 0 & bus <= length(mpc.order.bus.e2i);
+    if any(ok)
+        idx(ok) = full(mpc.order.bus.e2i(bus(ok)));
+    end
+else
+    [tf, loc] = ismember(bus, mpc.bus(:, BUS_I));
+    idx(tf) = loc(tf);
 end
