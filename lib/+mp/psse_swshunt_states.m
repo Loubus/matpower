@@ -34,7 +34,7 @@ state.max_iter_reached = 0;
 state.report = struct();
 
 %% SYSTEM-WIDE options that affect switched shunt adjustment
-state.swshnt = psse_system_value(mpc, 'solver', 'SWSHNT', NaN);
+state.swshnt = mp.psse_system_value(mpc, 'solver', 'SWSHNT', NaN, 0);
 state.enabled = isnan(state.swshnt) || state.swshnt ~= 0;
 state.allow_discrete = state.enabled && (isnan(state.swshnt) || state.swshnt ~= 2);
 state.allow_continuous = state.enabled;
@@ -278,11 +278,3 @@ if isempty(states)
 end
 bmin = min(states);
 bmax = max(states);
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
-end

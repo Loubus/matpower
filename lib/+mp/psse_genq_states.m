@@ -35,7 +35,7 @@ state.changed_last = 0;
 state.max_iter_reached = 0;
 state.report = struct();
 
-state.varlim = psse_system_value(mpc, 'solver', 'VARLIM', 1);
+state.varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', 1, 0);
 state.varlim_enabled = isnan(state.varlim) || state.varlim >= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -282,14 +282,6 @@ if isfield(mpc, 'order') && isfield(mpc.order, 'state') && ...
     idx(ok) = bus(ok);
 else
     idx = psse_bus_map(mpc, bus);
-end
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
 end
 
 function v = weighted_mean(x, w)

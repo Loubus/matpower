@@ -30,7 +30,7 @@ state.changed_last = 0;
 state.max_iter_reached = 0;
 state.report = struct();
 
-state.actaps = psse_system_value(mpc, 'solver', 'ACTAPS', NaN);
+state.actaps = mp.psse_system_value(mpc, 'solver', 'ACTAPS', NaN, 0);
 state.enabled = ~isnan(state.actaps) && state.actaps ~= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -398,12 +398,4 @@ if isfield(mpc, 'order') && isfield(mpc.order, 'branch') && ...
 else
     idx = branch;
     idx(isnan(idx)) = 0;
-end
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
 end

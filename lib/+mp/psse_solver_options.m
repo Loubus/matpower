@@ -323,12 +323,14 @@ for k = 1:length(defs)
         reason = ['PSS/E CLI default method is reported as FNSL; ' ...
             'runpf_psse leaves MATPOWER pf.alg unchanged unless RAW ' ...
             'explicitly declares SOLVER.METHOD.'];
-    elseif strcmpi(d.section, 'solver') && strcmpi(d.name, 'ACTAPS')
+    elseif strcmpi(d.section, 'solver') && ...
+            any(strcmpi(d.name, {'ACTAPS', 'AREAIN', 'PHSHFT', ...
+                'DCTAPS', 'SWSHNT', 'VARLIM'}))
         category = 'fallback';
         status = 'deferred';
-        reason = ['PSS/E CLI effective default enables tap adjustment; ' ...
-            'runpf_psse currently requires explicit SOLVER.ACTAPS to ' ...
-            'enable AC transformer tap adjustment.'];
+        reason = ['PSS/E CLI effective default is reported; the ' ...
+            'corresponding runpf_psse gate keeps historical behavior unless ' ...
+            'RAW explicitly declares this option.'];
     elseif strcmpi(d.section, 'newton') && strcmpi(d.name, 'ITMXN')
         category = 'fallback';
         status = 'deferred';
@@ -336,48 +338,18 @@ for k = 1:length(defs)
         reason = ['PSS/E CLI effective default is reported; runpf_psse ' ...
             'maps ITMXN only when RAW explicitly declares it.'];
     elseif strcmpi(d.section, 'adjust') && strcmpi(d.name, 'MXTPSS')
-        category = 'fallback';
-        status = 'deferred';
+        category = 'applied';
+        status = 'active';
         reason = ['PSS/E CLI effective default is reported as 100; ' ...
-            'explicit RAW MXTPSS is applied, while absent RAW values still ' ...
-            'use helper-local MATPOWER fallbacks.'];
+            'manual RAW/default evidence may show 99, and explicit RAW ' ...
+            'MXTPSS always takes priority.'];
     end
     policy = add_entry(policy, category, d.section, d.name, d.value, ...
         d.origin, status, target, reason, true);
 end
 
 function defs = default_effective_specs()
-rows = {
-    'general', 'PQBRAK', 0.7, 'psse_default';
-    'general', 'THRSHZ', 0.0001, 'psse_default';
-    'solver', 'METHOD', 'FNSL', 'psse_default';
-    'solver', 'ACTAPS', 1, 'psse_default';
-    'solver', 'AREAIN', 1, 'psse_default';
-    'solver', 'PHSHFT', 1, 'psse_default';
-    'solver', 'DCTAPS', 1, 'psse_default';
-    'solver', 'SWSHNT', 1, 'psse_default';
-    'solver', 'FLATST', 0, 'psse_default';
-    'solver', 'VARLIM', 99, 'psse_default';
-    'solver', 'NONDIV', 0, 'psse_default';
-    'newton', 'ITMXN', 20, 'psse_default';
-    'newton', 'ACCN', 1, 'psse_default';
-    'newton', 'TOLN', 0.1, 'psse_default';
-    'newton', 'DVLIM', 0.99, 'psse_default';
-    'newton', 'NDVFCT', 0.99, 'psse_default';
-    'newton', 'VCTOLQ', 0.1, 'psse_default';
-    'newton', 'VCTOLV', 1e-5, 'psse_default';
-    'adjust', 'ADJTHR', 0.005, 'psse_default';
-    'adjust', 'ACCTAP', 1, 'psse_default';
-    'adjust', 'TAPLIM', 0.05, 'psse_default';
-    'adjust', 'SWVBND', 100, 'psse_default';
-    'adjust', 'MXTPSS', 100, 'psse_default';
-    'adjust', 'MXSWIM', 10, 'psse_default';
-};
-defs = struct('section', {}, 'name', {}, 'value', {}, 'origin', {});
-for k = 1:size(rows, 1)
-    defs(k) = struct('section', rows{k, 1}, 'name', rows{k, 2}, ...
-        'value', rows{k, 3}, 'origin', rows{k, 4});
-end
+defs = mp.psse_system_defaults();
 
 function tf = effective_has(policy, section, name)
 tf = false;

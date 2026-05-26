@@ -25,7 +25,7 @@ if ~isfield(mpc, 'psse') || isempty(mpc.bus)
     return;
 end
 
-pqbrak = psse_system_value(mpc, 'general', 'PQBRAK', 0.7);
+pqbrak = mp.psse_system_value(mpc, 'general', 'PQBRAK', 0.7);
 if isnan(pqbrak) || pqbrak <= 0
     return;
 end
@@ -53,14 +53,6 @@ scale = low_voltage_scale(mpc.bus(:, VM), pqbrak);
 mpc.bus(:, PD) = mpc.psse.pqbrak.pd0(:) .* scale;
 mpc.bus(:, QD) = mpc.psse.pqbrak.qd0(:) .* scale;
 mpc.psse.pqbrak.scale = scale;
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
-end
 
 function scale = low_voltage_scale(vm, pqbrak)
 scale = ones(size(vm));

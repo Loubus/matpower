@@ -37,7 +37,7 @@ state.max_iter_reached = 0;
 state.report = struct();
 
 %% SYSTEM-WIDE options and tolerances used by iterative PSS/E controls
-state.facts = psse_system_value(mpc, 'solver', 'FACTS', NaN);
+state.facts = mp.psse_system_value(mpc, 'solver', 'FACTS', NaN, 0);
 state.enabled = isnan(state.facts) || state.facts ~= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -195,12 +195,4 @@ else
             idx(kk) = full(e2i(b));
         end
     end
-end
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
 end

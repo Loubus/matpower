@@ -1,12 +1,15 @@
-function val = psse_system_value(mpc, section, key, default)
+function val = psse_system_value(mpc, section, key, default, use_effective)
 % psse_system_value - Returns a PSS/E SYSTEM-WIDE option value.
 % ::
 %
 %   VAL = MP.PSSE_SYSTEM_VALUE(MPC, SECTION, KEY, DEFAULT)
+%   VAL = MP.PSSE_SYSTEM_VALUE(MPC, SECTION, KEY, DEFAULT, USE_EFFECTIVE)
 %
 % Returns an explicit PSS/E RAW value from ``mpc.psse.system`` when present.
 % Otherwise, if ``mpc.psse.solver_options.effective`` is available, returns
 % the reported effective value from the solver policy. Falls back to DEFAULT.
+% Set USE_EFFECTIVE to false for sensitive gates that must keep historical
+% runpf_psse behavior unless RAW explicitly declares the option.
 %
 % See also mp.psse_solver_options.
 
@@ -20,6 +23,9 @@ function val = psse_system_value(mpc, section, key, default)
 if nargin < 4
     default = NaN;
 end
+if nargin < 5
+    use_effective = 1;
+end
 
 val = default;
 if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
@@ -29,7 +35,8 @@ if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
     return;
 end
 
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'solver_options') && ...
+if use_effective && isfield(mpc, 'psse') && ...
+        isfield(mpc.psse, 'solver_options') && ...
         isfield(mpc.psse.solver_options, 'effective')
     entries = mpc.psse.solver_options.effective;
     for k = 1:length(entries)

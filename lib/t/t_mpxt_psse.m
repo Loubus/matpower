@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 402;
+num_tests = 409;
 
 t_begin(num_tests, quiet);
 
@@ -154,6 +154,11 @@ mpc_default = loadcase('case9');
 mpc_default.psse.rev = 34;
 [~, policy_default] = mp.psse_solver_options(mpopt, mpc_default);
 mpc_default.psse.solver_options = policy_default;
+defs = mp.psse_system_defaults();
+t_is(psse_default_value(defs, 'adjust', 'MXTPSS'), 100, 12, ...
+    'psse_system_defaults documents ADJUST.MXTPSS CLI default');
+t_is(psse_default_value(defs, 'general', 'PQBRAK'), 0.7, 12, ...
+    'psse_system_defaults documents GENERAL.PQBRAK default');
 t_ok(psse_policy_has(policy_default.effective, 'general', 'THRSHZ'), ...
     'solver_options defaults appear without RAW SYSTEM-WIDE records');
 t_is(psse_policy_value(policy_default.effective, 'newton', 'ACCN'), 1, 12, ...
@@ -177,6 +182,11 @@ t_is(mp.psse_system_value(mpc_default, 'newton', 'VCTOLV', 0), 1e-5, 12, ...
     'psse_system_value uses effective NEWTON.VCTOLV default');
 t_is(mp.psse_system_value(mpc_default, 'newton', 'VCTOLQ', 0), 0.1, 12, ...
     'psse_system_value uses effective NEWTON.VCTOLQ default');
+t_ok(isnan(mp.psse_system_value(mpc_default, 'solver', 'ACTAPS', NaN, 0)), ...
+    'psse_system_value can skip effective default for sensitive gates');
+mpc_default.psse.system.solver.ACTAPS = 0;
+t_is(mp.psse_system_value(mpc_default, 'solver', 'ACTAPS', NaN, 0), 0, 12, ...
+    'psse_system_value raw-only mode keeps explicit sensitive gate value');
 mpc_default.psse.system.adjust.MXTPSS = 25;
 t_is(mp.psse_system_value(mpc_default, 'adjust', 'MXTPSS', 99), 25, 12, ...
     'psse_system_value keeps explicit RAW priority');
@@ -184,6 +194,12 @@ t_ok(psse_policy_has(policy_default.fallback, 'general', 'THRSHZ'), ...
     'solver_options classifies default GENERAL.THRSHZ as fallback');
 t_ok(psse_policy_has(policy_default.fallback, 'solver', 'ACTAPS'), ...
     'solver_options classifies default SOLVER.ACTAPS as fallback');
+t_ok(psse_policy_has(policy_default.fallback, 'solver', 'DCTAPS'), ...
+    'solver_options classifies default SOLVER.DCTAPS as fallback');
+t_ok(psse_policy_has(policy_default.fallback, 'solver', 'SWSHNT'), ...
+    'solver_options classifies default SOLVER.SWSHNT as fallback');
+t_ok(psse_policy_has(policy_default.fallback, 'solver', 'VARLIM'), ...
+    'solver_options classifies default SOLVER.VARLIM as fallback');
 t_ok(psse_policy_has(policy_default.ignored, 'newton', 'ACCN'), ...
     'solver_options classifies default NEWTON.ACCN as ignored');
 t_ok(psse_policy_has(policy_default.fallback, 'newton', 'TOLN'), ...
@@ -196,8 +212,8 @@ t_ok(psse_policy_has(policy_default.unsupported, 'adjust', 'MXSWIM'), ...
     'solver_options classifies default ADJUST.MXSWIM as unsupported');
 t_ok(psse_policy_has(policy_default.applied, 'newton', 'VCTOLV'), ...
     'solver_options classifies default NEWTON.VCTOLV as applied');
-t_ok(psse_policy_has(policy_default.fallback, 'adjust', 'MXTPSS'), ...
-    'solver_options classifies default ADJUST.MXTPSS as fallback');
+t_ok(psse_policy_has(policy_default.applied, 'adjust', 'MXTPSS'), ...
+    'solver_options classifies default ADJUST.MXTPSS as applied');
 
 mpc_sw_default = psse_case9_swshunt(1, 1, 0, 1.03, 0.99, 9, 0, [1 10], 1);
 mpc_sw_default.psse.system.adjust = struct();
@@ -750,6 +766,15 @@ origin = '';
 for kk = 1:length(entries)
     if strcmpi(entries(kk).section, section) && strcmpi(entries(kk).name, name)
         origin = entries(kk).origin;
+        return;
+    end
+end
+
+function value = psse_default_value(entries, section, name)
+value = NaN;
+for kk = 1:length(entries)
+    if strcmpi(entries(kk).section, section) && strcmpi(entries(kk).name, name)
+        value = entries(kk).value;
         return;
     end
 end

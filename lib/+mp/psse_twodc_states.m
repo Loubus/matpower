@@ -29,7 +29,7 @@ state.n = n;
 state.col = col;
 state.report = struct();
 
-state.dctaps = psse_system_value(mpc, 'solver', 'DCTAPS', NaN);
+state.dctaps = mp.psse_system_value(mpc, 'solver', 'DCTAPS', NaN, 0);
 state.enabled = 1;
 state.dctaps_enabled = isnan(state.dctaps) || state.dctaps ~= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 20);
@@ -205,14 +205,6 @@ if isscalar(default)
 else
     idx = isnan(v);
     v(idx) = default(idx);
-end
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
 end
 
 function idx = bus_index_from_external(mpc, bus)
