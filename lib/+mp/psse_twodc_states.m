@@ -32,7 +32,7 @@ state.report = struct();
 state.dctaps = psse_system_value(mpc, 'solver', 'DCTAPS', NaN);
 state.enabled = 1;
 state.dctaps_enabled = isnan(state.dctaps) || state.dctaps ~= 0;
-state.max_iter = psse_system_value(mpc, 'adjust', 'MXTPSS', 20);
+state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 20);
 if isnan(state.max_iter) || state.max_iter <= 0
     state.max_iter = 20;
 end

@@ -99,7 +99,7 @@ state.pqbrak = pq.pqbrak;
 state.iterations = 0;
 state.max_iter_reached = 0;
 state.changed_last = 0;
-state.max_iter = psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
+state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
     state.max_iter = 99;
 end
@@ -149,14 +149,6 @@ low = vm < pqbrak;
 if any(low)
     x = max(min(vm(low) ./ pqbrak, 1), 0);
     scale(low) = 3 * x.^2 - 2 * x.^3;
-end
-
-function val = psse_system_value(mpc, section, key, default)
-val = default;
-if isfield(mpc, 'psse') && isfield(mpc.psse, 'system') && ...
-        isfield(mpc.psse.system, section) && ...
-        isfield(mpc.psse.system.(section), key)
-    val = mpc.psse.system.(section).(key);
 end
 
 function s = report_state(state)

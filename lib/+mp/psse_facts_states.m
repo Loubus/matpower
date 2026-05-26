@@ -39,11 +39,11 @@ state.report = struct();
 %% SYSTEM-WIDE options and tolerances used by iterative PSS/E controls
 state.facts = psse_system_value(mpc, 'solver', 'FACTS', NaN);
 state.enabled = isnan(state.facts) || state.facts ~= 0;
-state.max_iter = psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
+state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
     state.max_iter = 99;
 end
-state.vtol = psse_system_value(mpc, 'newton', 'VCTOLV', 1e-5);
+state.vtol = mp.psse_system_value(mpc, 'newton', 'VCTOLV', 1e-5);
 if isnan(state.vtol) || state.vtol <= 0
     state.vtol = 1e-5;
 end

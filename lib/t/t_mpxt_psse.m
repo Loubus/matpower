@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 396;
+num_tests = 402;
 
 t_begin(num_tests, quiet);
 
@@ -153,6 +153,7 @@ t_is(mpc_flat.bus(~is_pq, VM), vm0(~is_pq), 12, ...
 mpc_default = loadcase('case9');
 mpc_default.psse.rev = 34;
 [~, policy_default] = mp.psse_solver_options(mpopt, mpc_default);
+mpc_default.psse.solver_options = policy_default;
 t_ok(psse_policy_has(policy_default.effective, 'general', 'THRSHZ'), ...
     'solver_options defaults appear without RAW SYSTEM-WIDE records');
 t_is(psse_policy_value(policy_default.effective, 'newton', 'ACCN'), 1, 12, ...
@@ -170,6 +171,15 @@ t_is(psse_policy_value(policy_default.effective, 'adjust', 'MXTPSS'), 100, 12, .
 t_ok(strcmp(psse_policy_origin(policy_default.effective, 'adjust', 'MXTPSS'), ...
         'psse_default'), ...
     'solver_options default ADJUST.MXTPSS origin');
+t_is(mp.psse_system_value(mpc_default, 'adjust', 'MXTPSS', 99), 100, 12, ...
+    'psse_system_value uses effective ADJUST.MXTPSS default');
+t_is(mp.psse_system_value(mpc_default, 'newton', 'VCTOLV', 0), 1e-5, 12, ...
+    'psse_system_value uses effective NEWTON.VCTOLV default');
+t_is(mp.psse_system_value(mpc_default, 'newton', 'VCTOLQ', 0), 0.1, 12, ...
+    'psse_system_value uses effective NEWTON.VCTOLQ default');
+mpc_default.psse.system.adjust.MXTPSS = 25;
+t_is(mp.psse_system_value(mpc_default, 'adjust', 'MXTPSS', 99), 25, 12, ...
+    'psse_system_value keeps explicit RAW priority');
 t_ok(psse_policy_has(policy_default.fallback, 'general', 'THRSHZ'), ...
     'solver_options classifies default GENERAL.THRSHZ as fallback');
 t_ok(psse_policy_has(policy_default.fallback, 'solver', 'ACTAPS'), ...
@@ -188,6 +198,20 @@ t_ok(psse_policy_has(policy_default.applied, 'newton', 'VCTOLV'), ...
     'solver_options classifies default NEWTON.VCTOLV as applied');
 t_ok(psse_policy_has(policy_default.fallback, 'adjust', 'MXTPSS'), ...
     'solver_options classifies default ADJUST.MXTPSS as fallback');
+
+mpc_sw_default = psse_case9_swshunt(1, 1, 0, 1.03, 0.99, 9, 0, [1 10], 1);
+mpc_sw_default.psse.system.adjust = struct();
+[~, policy_sw_default] = mp.psse_solver_options(mpopt, mpc_sw_default);
+mpc_sw_default.psse.solver_options = policy_sw_default;
+state_sw_default = mp.psse_swshunt_states(mpc_sw_default);
+t_is(state_sw_default.max_iter, 100, 12, ...
+    'switched shunt state uses effective ADJUST.MXTPSS default');
+mpc_sw_explicit = psse_case9_swshunt(1, 1, 0, 1.03, 0.99, 9, 0, [1 10], 1);
+[~, policy_sw_explicit] = mp.psse_solver_options(mpopt, mpc_sw_explicit);
+mpc_sw_explicit.psse.solver_options = policy_sw_explicit;
+state_sw_explicit = mp.psse_swshunt_states(mpc_sw_explicit);
+t_is(state_sw_explicit.max_iter, 10, 12, ...
+    'switched shunt state keeps explicit ADJUST.MXTPSS value');
 
 %% PSS/E GENERATOR DATA Q limits and remote regulation validation RAWs
 genq_dir = psse_genq_audit_dir();
