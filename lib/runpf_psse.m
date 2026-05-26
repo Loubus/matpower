@@ -110,6 +110,13 @@ mpopt = psse_mpx_options(mpopt);
 qlim = mpopt.pf.enforce_q_lims;         %% enforce Q limits on gens?
 dc = strcmp(upper(mpopt.model), 'DC');  %% use DC formulation?
 
+%% read data and apply PSS/E SYSTEM-WIDE solver options
+mpc = loadcase(casedata);
+[mpopt, psse_solver_policy, mpc] = mp.psse_solver_options(mpopt, mpc);
+if isfield(mpc, 'psse')
+    mpc.psse.solver_options = psse_solver_policy;
+end
+
 %% use MP-Core?
 have_mp_core = have_feature('mp_core');
 use_mp_core = 0;
@@ -148,8 +155,7 @@ if ~dc
     end
 end
 
-%% read data
-mpc = loadcase(casedata);
+%% prepare PSS/E-specific data
 if ~isempty(which('mp.psse_pqbrak_prepare'))
     mpc = mp.psse_pqbrak_prepare(mpc);
 end
@@ -490,6 +496,9 @@ mpc.iterations = its;
 %%-----  output results  -----
 %% convert back to original bus numbering & print results
 results = int2ext(mpc);
+if isfield(results, 'psse')
+    results.psse.solver_options = psse_solver_policy;
+end
 if success && use_mp_core && isfield(results, 'dcline') && ...
         isfield(results, 'psse') && isfield(results.psse, 'twodc') && ...
         isfield(results.psse.twodc, 'control')
