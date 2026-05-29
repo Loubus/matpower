@@ -30,6 +30,23 @@ report.active = nnz(state.active);
 report.supported = nnz(state.supported);
 report.current_limited = nnz(state.current_limited);
 report.current_limited_row = state.current_limited;
+if isfield(state, 'blocked')
+    report.blocked = nnz(state.blocked);
+    report.blocked_row = state.blocked;
+else
+    report.blocked = 0;
+    report.blocked_row = false(state.n, 1);
+end
+if isfield(state, 'candidate_rejected')
+    report.candidate_rejected = state.candidate_rejected;
+else
+    report.candidate_rejected = 0;
+end
+if isfield(state, 'blocked_candidate_accepted')
+    report.blocked_candidate_accepted = state.blocked_candidate_accepted;
+else
+    report.blocked_candidate_accepted = 0;
+end
 report.control_flag = control_flags(state);
 report.mode = state.mode;
 report.pf = state.current_pf;
@@ -102,6 +119,8 @@ flags = repmat({''}, state.n, 1);
 for k = 1:state.n
     if ~state.active(k)
         flags{k} = 'BL';
+    elseif isfield(state, 'blocked') && state.blocked(k)
+        flags{k} = 'BL';
     elseif ~state.supported(k)
         flags{k} = 'NA';
     elseif ~state.lcc_valid(k)
@@ -118,6 +137,8 @@ flags = repmat({''}, state.n, 1);
 tol = 1e-9;
 for k = 1:state.n
     if ~state.active(k)
+        flags{k} = 'BL';
+    elseif isfield(state, 'blocked') && state.blocked(k)
         flags{k} = 'BL';
     elseif ~state.supported(k)
         flags{k} = 'NA';

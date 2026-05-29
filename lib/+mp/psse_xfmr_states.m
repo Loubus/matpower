@@ -161,6 +161,8 @@ state.cycle_detected = 0;
 state.cycle_resolved = 0;
 state.repeated_states = 0;
 state.cycle_resolution_changes = 0;
+state.cycle_probe_attempted = 0;
+state.cycle_probe_pending = 0;
 
 function state = add_two_winding(state, two)
 num = two.num;

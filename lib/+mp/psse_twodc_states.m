@@ -28,9 +28,17 @@ state.initialized = 1;
 state.n = n;
 state.col = col;
 state.report = struct();
+state.solved_snapshot_mode = isfield(mpc.psse, 'solved_snapshot_detection') && ...
+    isfield(mpc.psse.solved_snapshot_detection, 'active') && ...
+    mpc.psse.solved_snapshot_detection.active;
+state.prepare_mode = '';
+if isfield(twodc, 'prepare_mode') && ischar(twodc.prepare_mode)
+    state.prepare_mode = twodc.prepare_mode;
+end
 
 state.dctaps = mp.psse_system_value(mpc, 'solver', 'DCTAPS', NaN, 0);
-state.enabled = 1;
+state.enabled = ~(isfield(twodc, 'freeze_control') && ...
+    logical(twodc.freeze_control));
 state.dctaps_enabled = isnan(state.dctaps) || state.dctaps ~= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 20);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -170,6 +178,12 @@ state.vdci_kv = zeros(n, 1);
 state.vcomp_kv = zeros(n, 1);
 state.qacr_mvar = zeros(n, 1);
 state.qaci_mvar = zeros(n, 1);
+if isfield(twodc, 'qacr_mvar') && length(twodc.qacr_mvar) == n
+    state.qacr_mvar = twodc.qacr_mvar(:);
+end
+if isfield(twodc, 'qaci_mvar') && length(twodc.qaci_mvar) == n
+    state.qaci_mvar = twodc.qaci_mvar(:);
+end
 state.iacr_ka = zeros(n, 1);
 state.iaci_ka = zeros(n, 1);
 state.mu_r_deg = zeros(n, 1);
@@ -185,10 +199,16 @@ state.gamma_deg = state.anmni;
 state.alpha_deg(state.mdc == 0) = 90;
 state.gamma_deg(state.mdc == 0) = 90;
 state.current_limited = false(n, 1);
+state.blocked = false(n, 1);
 state.lcc_valid = false(n, 1);
 state.ac_pf_success = 0;
 state.ac_pf_status = 'not_run';
 state.ac_pf_message = '';
+state.initial_blocked = false(n, 1);
+if isfield(twodc, 'initial_blocked') && length(twodc.initial_blocked) == n
+    state.initial_blocked = logical(twodc.initial_blocked(:)) & ...
+        state.supported;
+end
 
 function v = col_default(num, c, default)
 if c && size(num, 2) >= c

@@ -174,6 +174,7 @@ state.cycle_detected = 0;
 state.cycle_resolved = 0;
 state.repeated_states = 0;
 state.cycle_resolution_changes = 0;
+state.candidate_rejected = 0;
 
 function v = col_default(num, col, default)
 if col && size(num, 2) >= col

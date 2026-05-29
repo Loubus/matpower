@@ -18,7 +18,7 @@ function state = psse_genq_states(mpc)
 %   Covered by the 3-clause BSD License (see LICENSE file for details).
 %   See https://matpower.org for more info.
 
-[~, ~, REF, ~, ~, BUS_TYPE] = idx_bus;
+[~, ~, REF, ~, ~, BUS_TYPE, ~, ~, ~, ~, ~, VM] = idx_bus;
 [GEN_BUS, ~, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
 
 gq = mpc.psse.genq;
@@ -36,6 +36,7 @@ state.max_iter_reached = 0;
 state.report = struct();
 
 state.varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', 1, 0);
+state.enabled = ~solved_snapshot_bus_vm(mpc);
 state.varlim_enabled = isnan(state.varlim) || state.varlim >= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -106,6 +107,12 @@ for kk = 1:n
     b = state.bus_idx(kk);
     if b > 0 && b <= nb && state.base_bus_type(kk) == 0
         state.base_bus_type(kk) = mpc.bus(b, BUS_TYPE);
+    end
+end
+if solved_snapshot_bus_vm(mpc)
+    mapped_bus = find(state.gen_idx > 0 & state.bus_idx > 0 & state.bus_idx <= nb);
+    if ~isempty(mapped_bus)
+        state.vs(mapped_bus) = mpc.bus(state.bus_idx(mapped_bus), VM);
     end
 end
 
@@ -283,6 +290,22 @@ if isfield(mpc, 'order') && isfield(mpc.order, 'state') && ...
 else
     idx = psse_bus_map(mpc, bus);
 end
+
+function TorF = solved_snapshot_bus_vm(mpc)
+TorF = isfield(mpc, 'psse') && ...
+    isfield(mpc.psse, 'solved_snapshot_detection') && ...
+    isstruct(mpc.psse.solved_snapshot_detection) && ...
+    isfield(mpc.psse.solved_snapshot_detection, 'active') && ...
+    logical(mpc.psse.solved_snapshot_detection.active);
+if TorF
+    return;
+end
+TorF = isfield(mpc, 'psse') && isfield(mpc.psse, 'solved_snapshot_policy') && ...
+    isstruct(mpc.psse.solved_snapshot_policy) && ...
+    isfield(mpc.psse.solved_snapshot_policy, 'active') && ...
+    logical(mpc.psse.solved_snapshot_policy.active) && ...
+    isfield(mpc.psse.solved_snapshot_policy, 'gen_vg_source') && ...
+    strcmp(mpc.psse.solved_snapshot_policy.gen_vg_source, 'bus_vm');
 
 function v = weighted_mean(x, w)
 w(isnan(w) | w <= 0) = 100;

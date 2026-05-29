@@ -62,9 +62,10 @@ sig = state_signature(state.current_q);
 if any(strcmp(state.visited_signatures, sig)) && ~state.cycle_resolved
     state.cycle_detected = 1;
     state.repeated_states = state.repeated_states + 1;
-    if any(abs(state.best_q - state.current_q) > 1e-7)
+    best_q = clamp_q_to_current_limits(state, state.best_q);
+    if any(abs(best_q - state.current_q) > 1e-7)
         q0 = state.current_q;
-        state.current_q = state.best_q;
+        state.current_q = best_q;
         moved = abs(state.current_q - q0) > 1e-7;
         state.changed_last = nnz(moved);
         state.cycle_resolution_changes = state.cycle_resolution_changes + state.changed_last;
@@ -94,8 +95,19 @@ if state.last_score < state.best_score
 end
 
 [new_q, new_direction] = next_group_q(state, vm);
-changed = state.needs_initial_update || any(abs(new_q - state.current_q) > 1e-7);
+changed = state.needs_initial_update || state.limit_clamp_changed || ...
+    any(abs(new_q - state.current_q) > 1e-7);
 state.needs_initial_update = 0;
+if changed && probed_norton_mode(state)
+    [new_q, new_direction, accepted] = damp_candidate(dm.source, state, ...
+        new_q, new_direction, mpopt);
+    if ~accepted
+        state.candidate_rejected = state.candidate_rejected + 1;
+        new_q = state.current_q;
+        new_direction(:) = 0;
+        changed = false;
+    end
+end
 
 %% save one voltage/Q point per regulated bus for the next sensitivity step
 for kk = 1:length(state.group.reg_bus_idx)
@@ -129,6 +141,7 @@ state.last_qmax(:) = NaN;
 state.at_min(:) = false;
 state.at_max(:) = false;
 state.limited(:) = false;
+state.limit_clamp_changed = false;
 idx = find(state.controllable & state.reg_bus_idx > 0);
 for kk = 1:length(idx)
     k = idx(kk);
@@ -139,6 +152,10 @@ for kk = 1:length(idx)
     qlim = facts_q_limit(state, k, vi);
     state.last_qmin(k) = -qlim;
     state.last_qmax(k) = qlim;
+    q0 = state.current_q(k);
+    state.current_q(k) = min(max(state.current_q(k), -qlim), qlim);
+    state.limit_clamp_changed = state.limit_clamp_changed || ...
+        abs(state.current_q(k) - q0) > 1e-7;
     if abs(v - state.vset(k)) > state.vtol
         state.last_margin(k) = state.vset(k) - v;
     else
@@ -156,6 +173,13 @@ margin = margin(~isnan(margin));
 state.last_violations = nnz(margin ~= 0);
 state.last_violation_sum = sum(abs(margin));
 state.last_score = state.last_violations * 1e6 + state.last_violation_sum;
+
+function q = clamp_q_to_current_limits(state, q)
+% Enforce the voltage-dependent STATCON shunt current limits.
+for kk = find(state.controllable & ~isnan(state.last_qmin) & ...
+        ~isnan(state.last_qmax))'
+    q(kk) = min(max(q(kk), state.last_qmin(kk)), state.last_qmax(kk));
+end
 
 function [new_q, new_direction] = next_group_q(state, vm)
 % Select the next STATCON Q injection vector by regulated-bus group.
@@ -182,8 +206,13 @@ for gg = 1:length(state.group.reg_bus_idx)
 
     sens = voltage_sensitivity(state, reg, v, cur_q);
     span = qmax - qmin;
-    if isnan(sens) || sens <= 0
-        dq = sign(err) * min(max(1, 0.10 * span), 0.25 * span);
+    if isnan(sens) || (solved_snapshot_mode(state) && abs(sens) <= eps) || ...
+            (~solved_snapshot_mode(state) && sens <= 0)
+        if solved_snapshot_mode(state)
+            dq = sign(err) * min(max(1, 0.25 * span), 0.25 * span);
+        else
+            dq = sign(err) * min(max(1, 0.10 * span), 0.25 * span);
+        end
     else
         dq = err / sens;
         dq = min(max(dq, -0.50 * span), 0.50 * span);
@@ -233,3 +262,64 @@ end
 function sig = state_signature(q)
 % Build a compact key for cycle detection.
 sig = sprintf('%.7g,', round(q(:)' * 1e7) / 1e7);
+
+function tf = solved_snapshot_mode(state)
+tf = isfield(state, 'solved_snapshot_mode') && state.solved_snapshot_mode;
+
+function tf = probed_norton_mode(state)
+tf = solved_snapshot_mode(state) || (isfield(state, 'linx') && ...
+    any(state.controllable & state.linx(:) > 0));
+
+function [new_q, new_direction, accepted] = damp_candidate(mpc, state, ...
+        target_q, target_direction, mpopt)
+% Backtrack unstable STATCON moves instead of freezing control outright.
+accepted = false;
+new_q = target_q;
+new_direction = target_direction;
+q0 = state.current_q;
+if all(abs(target_q - q0) <= 1e-7)
+    accepted = true;
+    return;
+end
+for scale = [1 0.5 0.25 0.125 0.0625 0.03125]
+    candidate_q = q0 + scale * (target_q - q0);
+    if all(abs(candidate_q - q0) <= 1e-7)
+        break;
+    end
+    candidate = state;
+    candidate.current_q = candidate_q;
+    if probe_candidate(mpc, candidate, mpopt)
+        new_q = candidate_q;
+        moved = abs(candidate_q - q0) > 1e-7;
+        new_direction(:) = 0;
+        new_direction(moved) = sign(candidate_q(moved) - q0(moved));
+        accepted = true;
+        return;
+    end
+end
+
+function ok = probe_candidate(mpc, state, mpopt)
+% Probe with plain runpf so an unstable STATCON move does not poison state.
+ok = false;
+try
+    candidate = mp.psse_facts_update(mpc, state);
+    if isfield(candidate, 'order')
+        candidate = rmfield(candidate, 'order');
+    end
+    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
+        'pf.enforce_q_lims', 0);
+    auxopt.exp.mpx = {};
+    auxopt.exp.use_legacy_core = 0;
+    warn_state = warning;
+    cleanup = onCleanup(@() warning(warn_state));
+    warning('off', 'all');
+    r = runpf(candidate, auxopt);
+    if isstruct(r) && isfield(r, 'success') && r.success && ...
+            isfield(r, 'bus') && ~isempty(r.bus)
+        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
+        vm = r.bus(:, VM);
+        ok = all(isfinite(vm)) && min(vm) > 0.05 && max(vm) < 5;
+    end
+catch
+    ok = false;
+end

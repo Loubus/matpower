@@ -69,6 +69,11 @@ if isfield(state, 'cycle_blocked')
 else
     report.cycle_blocked = 0;
 end
+if isfield(state, 'candidate_rejected')
+    report.candidate_rejected = state.candidate_rejected;
+else
+    report.candidate_rejected = 0;
+end
 
 idx = find(state.controllable);
 if isempty(idx) || all(isnan(state.last_margin(idx)))

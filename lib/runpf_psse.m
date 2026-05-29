@@ -14,6 +14,10 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   low-voltage constant MVA load behavior, transformer taps, FACTS STATCON
 %   devices, switched shunts, and opt-in two-terminal DC LCC equivalents
 %   preserved from PSS/E RAW data in MPC.PSSE.
+%   Difficult mixed-control cases can additionally opt in to the coordinated
+%   active-set fallback with MPOPT.EXP.PSSE_COORDINATED_ACTIVE_SET = 1. This
+%   fallback is disabled by default and records its diagnostics under
+%   RESULTS.PSSE.COORDINATED_ACTIVE_SET when it is attempted.
 %
 %   Inputs (all are optional):
 %       CASEDATA : either a MATPOWER case struct or a string containing
@@ -79,14 +83,9 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 
 %%-----  initialize  -----
 %% define named indices into bus, gen, branch matrices
-[PQ, PV, REF, NONE, BUS_I, BUS_TYPE, PD, QD, GS, BS, BUS_AREA, VM, ...
-    VA, BASE_KV, ZONE, VMAX, VMIN, LAM_P, LAM_Q, MU_VMAX, MU_VMIN] = idx_bus;
-[F_BUS, T_BUS, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, ...
-    TAP, SHIFT, BR_STATUS, PF, QF, PT, QT, MU_SF, MU_ST, ...
-    ANGMIN, ANGMAX, MU_ANGMIN, MU_ANGMAX] = idx_brch;
-[GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS, PMAX, PMIN, ...
-    MU_PMAX, MU_PMIN, MU_QMAX, MU_QMIN, PC1, PC2, QC1MIN, QC1MAX, ...
-    QC2MIN, QC2MAX, RAMP_AGC, RAMP_10, RAMP_30, RAMP_Q, APF] = idx_gen;
+[PQ, PV, REF, ~, ~, BUS_TYPE, ~, ~, GS, ~, ~, VM, VA] = idx_bus;
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, PF, QF, PT, QT] = idx_brch;
+[GEN_BUS, PG, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
 dci = idx_dcline;
 
 %% default arguments
@@ -108,7 +107,7 @@ mpopt = psse_mpx_options(mpopt);
 
 %% options
 qlim = mpopt.pf.enforce_q_lims;         %% enforce Q limits on gens?
-dc = strcmp(upper(mpopt.model), 'DC');  %% use DC formulation?
+dc = strcmpi(mpopt.model, 'DC');        %% use DC formulation?
 
 %% read data and apply PSS/E SYSTEM-WIDE solver options
 mpc = loadcase(casedata);
@@ -116,6 +115,7 @@ mpc = loadcase(casedata);
 if isfield(mpc, 'psse')
     mpc.psse.solver_options = psse_solver_policy;
 end
+mpc_psse_source = mpc;
 
 %% use MP-Core?
 have_mp_core = have_feature('mp_core');
@@ -156,6 +156,13 @@ if ~dc
 end
 
 %% prepare PSS/E-specific data
+if psse_solved_snapshot_mode(mpc)
+    mpc = psse_record_solved_snapshot_detection(mpc);
+end
+swdev_collapse = [];
+if ~isempty(which('mp.psse_swdev_collapse'))
+    [mpc, swdev_collapse] = mp.psse_swdev_collapse(mpc);
+end
 if ~isempty(which('mp.psse_pqbrak_prepare'))
     mpc = mp.psse_pqbrak_prepare(mpc);
 end
@@ -163,7 +170,12 @@ if ~isempty(which('mp.psse_genq_prepare'))
     mpc = mp.psse_genq_prepare(mpc);
 end
 if ~isempty(which('mp.psse_twodc_prepare'))
-    mpc = mp.psse_twodc_prepare(mpc);
+    mpc = mp.psse_twodc_prepare(mpc, mpopt);
+end
+if psse_genq_needs_deferred_prepare(mpc, mpopt)
+    mpc = mp.psse_genq_prepare(mpc, 'deferred');
+    mpc.psse.genq.prepare_fallback_reason = ...
+        'fixed_q_initial_power_flow_failed';
 end
 
 %% add zero columns to branch for flows if needed
@@ -327,7 +339,7 @@ if ~isempty(mpc.bus)
         if qlim
             ref0 = ref;                         %% save index and angle of
             Varef0 = bus(ref0, VA);             %%   original reference bus(es)
-            limited = [];                       %% list of indices of gens @ Q lims
+            limited = false(size(gen, 1), 1);   %% mask of gens @ Q lims
             fixedQg = zeros(size(gen, 1), 1);   %% Qg of gens at Q limits
         end
 
@@ -373,7 +385,7 @@ if ~isempty(mpc.bus)
                     if isempty(pv)
                         Bpp = [];
                     else
-                        [Bp, Bpp] = makeB(baseMVA, bus, branch, 'FDBX');
+                        [~, Bpp] = makeB(baseMVA, bus, branch, 'FDBX');
                     end
                     [V, success, iterations] = zgausspf(Ybus, Sbus([]), V0, ref, pv, pq, Bpp, mpopt);
                 case {'PQSUM', 'ISUM', 'YSUM'}
@@ -418,7 +430,7 @@ if ~isempty(mpc.bus)
 
                     %% one at a time?
                     if qlim == 2    %% fix largest violation, ignore the rest
-                        [junk, k] = max([gen(mx, QG) - gen(mx, QMAX);
+                        [~, k] = max([gen(mx, QG) - gen(mx, QMAX);
                                          gen(mn, QMIN) - gen(mn, QG)]);
                         if k > length(mx)
                             mn = mn(k-length(mx));
@@ -439,14 +451,14 @@ if ~isempty(mpc.bus)
                     %% save corresponding limit values
                     fixedQg(mx) = gen(mx, QMAX);
                     fixedQg(mn) = gen(mn, QMIN);
-                    mx = [mx;mn];
+                    limited_gens = [mx; mn];
 
                     %% convert to PQ bus
-                    gen(mx, QG) = fixedQg(mx);      %% set Qg to binding limit
-                    if length(ref) > 1 && any(bus(gen(mx, GEN_BUS), BUS_TYPE) == REF)
+                    gen(limited_gens, QG) = fixedQg(limited_gens);  %% set Qg to binding limit
+                    if length(ref) > 1 && any(bus(gen(limited_gens, GEN_BUS), BUS_TYPE) == REF)
                         error('runpf: Sorry, MATPOWER cannot enforce Q limits for slack buses in systems with multiple slacks.');
                     end
-                    bus(gen(mx, GEN_BUS), BUS_TYPE) = PQ;   %% & set bus type to PQ
+                    bus(gen(limited_gens, GEN_BUS), BUS_TYPE) = PQ; %% & set bus type to PQ
 
                     %% update bus index lists of each type of bus
                     ref_temp = ref;
@@ -462,7 +474,7 @@ if ~isempty(mpc.bus)
                                 mpc.order.bus.i2e(ref));
                         end
                     end
-                    limited = [limited; mx];
+                    limited(limited_gens) = true;
                     V0 = V;     %% start next solve with current solution
                 else
                     repeat = 0; %% no more generator Q limits violated
@@ -471,7 +483,7 @@ if ~isempty(mpc.bus)
                 repeat = 0;     %% don't enforce generator Q limits, once is enough
             end
         end
-        if qlim && ~isempty(limited)
+        if qlim && any(limited)
             if ref ~= ref0
                 %% adjust voltage angles to make original ref bus correct
                 bus(:, VA) = bus(:, VA) - bus(ref0, VA) + Varef0;
@@ -496,8 +508,62 @@ mpc.iterations = its;
 %%-----  output results  -----
 %% convert back to original bus numbering & print results
 results = int2ext(mpc);
+if ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
+        swdev_collapse.active && ~isempty(which('mp.psse_swdev_expand'))
+    results = mp.psse_swdev_expand(results, swdev_collapse);
+end
 if isfield(results, 'psse')
     results.psse.solver_options = psse_solver_policy;
+end
+if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse)
+    mpc_retry = mpc_psse_source;
+    if isfield(mpc_retry, 'psse') && isfield(mpc_retry.psse, 'swdev')
+        mpc_retry.psse = rmfield(mpc_retry.psse, 'swdev');
+    end
+    retry_results = runpf_psse(mpc_retry, mpopt);
+    if isstruct(retry_results) && isfield(retry_results, 'success') && ...
+            retry_results.success
+        results = retry_results;
+        success = 1;
+        if isfield(results, 'psse')
+            results.psse.swdev_collapse_fallback = struct( ...
+                'attempted', 1, ...
+                'accepted', 1, ...
+                'collapsed_branches', length(swdev_collapse.collapsed_branch_idx));
+        end
+    end
+end
+cas_needed = 0;
+cas_trigger = '';
+if ~success && use_mp_core
+    [cas_needed, cas_trigger] = ...
+        psse_coordinated_active_set_needed(results, mpc_psse_source);
+end
+if cas_needed && psse_coordinated_active_set_enabled(mpopt) && ...
+        ~isempty(which('mp.psse_coordinated_active_set'))
+    cas_failure = results.psse.control_failure;
+    [cas_results, cas_success, cas_report] = ...
+        mp.psse_coordinated_active_set(mpc_psse_source, mpopt);
+    cas_report.trigger = cas_trigger;
+    cas_report.original_control_failure = cas_failure;
+    if cas_success
+        results = cas_results;
+        success = 1;
+        results.success = 1;
+        if ~isfield(results, 'psse') || isempty(results.psse)
+            results.psse = struct();
+        end
+        if ~isfield(results.psse, 'coordinated_active_set') || ...
+                isempty(results.psse.coordinated_active_set)
+            results.psse.coordinated_active_set = cas_report;
+        else
+            results.psse.coordinated_active_set.trigger = cas_trigger;
+            results.psse.coordinated_active_set.original_control_failure = ...
+                cas_failure;
+        end
+    elseif isfield(results, 'psse')
+        results.psse.coordinated_active_set = cas_report;
+    end
 end
 if success && use_mp_core && isfield(results, 'dcline') && ...
         isfield(results, 'psse') && isfield(results.psse, 'twodc') && ...
@@ -549,7 +615,11 @@ if success && use_mp_core && isfield(results, 'psse') && ...
     end
 end
 
-if success && use_mp_core
+if success && use_mp_core && ...
+        ~(isfield(results, 'psse') && ...
+        isfield(results.psse, 'coordinated_active_set')) && ...
+        ~(isfield(results, 'psse') && ...
+        isfield(results.psse, 'swdev_collapse_fallback'))
     results.om = pf.mm;
 end
 
@@ -623,3 +693,80 @@ if ~has_psse
     mpx{end+1} = mp.xt_psse();
 end
 mpopt.exp.mpx = mpx;
+
+function TorF = psse_solved_snapshot_mode(mpc)
+TorF = 0;
+if ~isfield(mpc, 'psse') || isempty(mpc.bus) || size(mpc.bus, 1) <= 1000
+    return;
+end
+varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', NaN, 0);
+if isnan(varlim) || varlim ~= 0
+    return;
+end
+TorF = isfield(mpc.psse, 'twodc') && isfield(mpc.psse.twodc, 'num') && ...
+    size(mpc.psse.twodc.num, 1) > 1;
+
+function mpc = psse_record_solved_snapshot_detection(mpc)
+% Record solved snapshot diagnostics without changing RAW solver controls.
+if ~isfield(mpc, 'psse') || isempty(mpc.psse)
+    mpc.psse = struct();
+end
+mpc.psse.solved_snapshot_detection = struct( ...
+    'active', 1, ...
+    'reason', 'large_raw_varlim0_saved_solution');
+
+function TorF = psse_genq_needs_deferred_prepare(mpc, mpopt)
+TorF = 0;
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'genq') || ...
+        ~isfield(mpc.psse.genq, 'prepare_mode') || ...
+        ~strcmp(mpc.psse.genq.prepare_mode, 'fixed_q')
+    return;
+end
+try
+    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
+        'pf.enforce_q_lims', 0);
+    auxopt.exp.mpx = {};
+    warn_state = warning;
+    cleanup = onCleanup(@() warning(warn_state));
+    warning('off', 'all');
+    r = runpf(mpc, auxopt);
+    TorF = ~(isstruct(r) && isfield(r, 'success') && r.success);
+catch
+    TorF = 1;
+end
+
+function TorF = psse_swdev_retry_needed(swdev_collapse)
+TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
+    swdev_collapse.active;
+
+function TorF = psse_coordinated_active_set_enabled(mpopt)
+TorF = isfield(mpopt, 'exp') && ...
+    isfield(mpopt.exp, 'psse_coordinated_active_set') && ...
+    ~isempty(mpopt.exp.psse_coordinated_active_set) && ...
+    any(mpopt.exp.psse_coordinated_active_set(:));
+
+function [TorF, trigger] = psse_coordinated_active_set_needed(results, mpc)
+TorF = 0;
+trigger = '';
+if ~isfield(results, 'psse') || ...
+        ~isfield(results.psse, 'control_failure') || ...
+        ~isfield(results.psse.control_failure, 'control') || ...
+        ~strcmp(results.psse.control_failure.control, 'genq')
+    return;
+end
+if ~isfield(results.psse.control_failure, 'stage') || ...
+        ~strcmp(results.psse.control_failure.stage, 'post_control_power_flow')
+    return;
+end
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'genq') || ...
+        ~isfield(mpc.psse, 'twodc') || ~isfield(mpc.psse, 'facts') || ...
+        ~isfield(mpc.psse, 'swshunt')
+    return;
+end
+varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', NaN, 0);
+if ~isnan(varlim) && varlim == 0
+    trigger = 'genq_post_control_power_flow_varlim0';
+else
+    trigger = 'genq_post_control_power_flow';
+end
+TorF = 1;

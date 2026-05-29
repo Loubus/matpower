@@ -17,7 +17,7 @@ function report = psse_genq_report(state)
 %   See https://matpower.org for more info.
 
 report = struct();
-report.enabled = 1;
+report.enabled = state.enabled;
 report.varlim = state.varlim;
 report.varlim_enabled = state.varlim_enabled;
 report.iterations = state.iterations;

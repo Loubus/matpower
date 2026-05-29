@@ -100,6 +100,16 @@ current_b0 = state.current_b;
 [new_b, new_direction] = next_group_b(state, vm);
 changed = state.needs_initial_update || any(abs(new_b - current_b0) > 1e-9);
 state.needs_initial_update = 0;
+if changed
+    candidate = state;
+    candidate.current_b = new_b;
+    if ~probe_candidate(dm.source, candidate, mpopt)
+        state.candidate_rejected = state.candidate_rejected + 1;
+        new_b = current_b0;
+        new_direction(:) = 0;
+        changed = false;
+    end
+end
 
 %% save one voltage/B point per regulated bus for the next sensitivity step
 for kk = 1:length(state.group.reg_bus_idx)
@@ -308,3 +318,28 @@ end
 function sig = state_signature(b)
 % Build a compact key for cycle detection.
 sig = sprintf('%.9g,', round(b(:)' * 1e9) / 1e9);
+
+function ok = probe_candidate(mpc, state, mpopt)
+% Probe with plain runpf so an unstable BINIT move does not poison state.
+ok = false;
+try
+    candidate = mp.psse_swshunt_update(mpc, state);
+    if isfield(candidate, 'order')
+        candidate = rmfield(candidate, 'order');
+    end
+    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
+        'pf.enforce_q_lims', 0);
+    auxopt.exp.mpx = {};
+    warn_state = warning;
+    cleanup = onCleanup(@() warning(warn_state));
+    warning('off', 'all');
+    r = runpf(candidate, auxopt);
+    if isstruct(r) && isfield(r, 'success') && r.success && ...
+            isfield(r, 'bus') && ~isempty(r.bus)
+        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
+        vm = r.bus(:, VM);
+        ok = all(isfinite(vm)) && min(vm) > 0.05 && max(vm) < 5;
+    end
+catch
+    ok = false;
+end

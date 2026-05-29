@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 409;
+num_tests = 420;
 
 t_begin(num_tests, quiet);
 
@@ -279,6 +279,35 @@ else
     end
 end
 
+%% coordinated active-set fallback is explicit and reported for coupled cases
+cas_raw = psse_auditoria_case_file(fullfile( ...
+    'psse_validation_cases_integrated', 'psse_integrated_controls_40bus.raw'));
+if exist(cas_raw, 'file') ~= 2 || isempty(which('lsqnonlin'))
+    t_skip(5, 'coordinated active-set fixture or lsqnonlin missing');
+else
+    mpc = psse2mpc(cas_raw, 0, 34);
+    mpopt_cas = mpopt;
+    mpopt_cas.exp.psse_coordinated_active_set = 1;
+    r = psse_runpf_quiet_singular(mpc, mpopt_cas);
+    has_cas = isfield(r, 'psse') && ...
+        isfield(r.psse, 'coordinated_active_set');
+    t_ok(r.success, 'coordinated active-set integrated 40bus success');
+    t_ok(has_cas && r.psse.coordinated_active_set.attempted == 1, ...
+        'coordinated active-set report attempted');
+    if has_cas
+        cas = r.psse.coordinated_active_set;
+    else
+        cas = struct('trigger', '', 'iterations', 0, 'balance_inf', Inf);
+    end
+    t_ok(strcmp(cas.trigger, 'genq_post_control_power_flow'), ...
+        'coordinated active-set records GENQ trigger');
+    t_ok(cas.iterations > 0 && cas.balance_inf < 1e-6, ...
+        'coordinated active-set converges tightly');
+    t_ok(isfield(cas, 'original_control_failure') && ...
+        isfield(cas.original_control_failure, 'stage'), ...
+        'coordinated active-set preserves original failure diagnostics');
+end
+
 %% MODSW = 1, BINIT = 0, creates a shunt row through data model rebuild
 mpc = psse_case9_swshunt(1, 1, 0, 1.02, 1.01, 9, 0, [2 25], 1);
 r = runpf_psse(mpc, mpopt);
@@ -448,6 +477,24 @@ t_ok(strcmp(r.psse.twodc.control.control_flag{1}, 'NA'), ...
     'TWO DC unsupported active row is reported as not applied');
 t_is(r.dcline(1, [dci.PF dci.PT dci.LOSS0]), base_dcline, 10, ...
     'TWO DC unsupported active row preserves the static dcline equivalent');
+
+%% failed initial PQ probe defers TWODC without marking physical blocking
+mpc = psse_case4_twodc_current_mode(0);
+mpopt_bad_probe = mpoption(mpopt, 'pf.alg', 'NO_SUCH_ALG');
+mpc_prep = mp.psse_twodc_prepare(mpc, mpopt_bad_probe);
+t_ok(strcmp(mpc_prep.psse.twodc.prepare_mode, 'deferred_pq'), ...
+    'TWO DC failed PQ probe uses deferred prepare mode');
+t_is(mpc_prep.psse.twodc.prepare_deferred, 1, 10, ...
+    'TWO DC failed PQ probe records deferred prepare flag');
+t_is(mpc_prep.psse.twodc.pq_model_deferred, 1, 10, ...
+    'TWO DC failed PQ probe records deferred PQ model flag');
+t_is(double(mpc_prep.psse.twodc.initial_blocked), 0, 10, ...
+    'TWO DC failed PQ probe does not mark initial block');
+state_prep = mp.psse_twodc_states(mpc_prep);
+t_is(double(state_prep.initial_blocked), 0, 10, ...
+    'TWO DC state keeps deferred prepare separate from blocking');
+t_is(double(state_prep.apply_model), 1, 10, ...
+    'TWO DC deferred prepare keeps supported row modeled');
 
 %% PSS/E two-terminal DC MDC=1 falls back to current control via VCMOD
 mpc = psse_case4_twodc_mdc2_current_mode(0);
@@ -801,6 +848,40 @@ candidate = fullfile(pwd, 'auditoria_psse_matpower', ...
 if exist(candidate, 'dir') == 7
     genq_dir = candidate;
 end
+
+function case_file = psse_auditoria_case_file(rel_path)
+case_file = '';
+root = fileparts(which('t_mpxt_psse'));
+for k = 1:8
+    candidate = fullfile(root, 'auditoria_psse_matpower', rel_path);
+    if exist(candidate, 'file') == 2
+        case_file = candidate;
+        return;
+    end
+    parent = fileparts(root);
+    if isempty(parent) || strcmp(parent, root)
+        break;
+    end
+    root = parent;
+end
+
+candidate = fullfile(pwd, 'auditoria_psse_matpower', rel_path);
+if exist(candidate, 'file') == 2
+    case_file = candidate;
+end
+
+function r = psse_runpf_quiet_singular(mpc, mpopt)
+warn_nearly = warning('off', 'MATLAB:nearlySingularMatrix');
+warn_singular = warning('off', 'MATLAB:singularMatrix');
+try
+    r = runpf_psse(mpc, mpopt);
+catch err
+    warning(warn_nearly);
+    warning(warn_singular);
+    rethrow(err);
+end
+warning(warn_nearly);
+warning(warn_singular);
 
 function cases = psse_genq_validation_cases()
 cases = cell(9, 1);

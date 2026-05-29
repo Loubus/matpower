@@ -25,7 +25,7 @@ for kk = mapped(:)'
     gi = state.gen_idx(kk);
     mpc.gen(gi, QG) = state.current_q(kk);
     mpc.gen(gi, VG) = state.vs(kk);
-    if state.remote(kk) || state.limited(kk)
+    if state.limited(kk) || state.remote(kk)
         mpc.gen(gi, QMAX) = state.current_q(kk);
         mpc.gen(gi, QMIN) = state.current_q(kk);
     else

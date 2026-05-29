@@ -52,6 +52,11 @@ report.cycle_detected = state.cycle_detected;
 report.cycle_resolved = state.cycle_resolved;
 report.repeated_states = state.repeated_states;
 report.cycle_resolution_changes = state.cycle_resolution_changes;
+if isfield(state, 'candidate_rejected')
+    report.candidate_rejected = state.candidate_rejected;
+else
+    report.candidate_rejected = 0;
+end
 
 idx = find(state.controllable);
 if isempty(idx) || all(isnan(state.last_margin(idx)))

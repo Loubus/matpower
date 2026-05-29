@@ -52,7 +52,7 @@ scale = ones(state.n, 1);
 for kk = find(state.active)'
     bi = state.bus_idx(kk);
     if bi > 0 && bi <= length(vm)
-        scale(kk) = low_voltage_scale(vm(bi), state.pqbrak);
+        scale(kk) = mp.psse_pqbrak_scale(vm(bi), state.pqbrak);
         state.vact(kk) = vm(bi);
     end
 end
@@ -61,6 +61,7 @@ pd = state.pd0 .* scale;
 qd = state.qd0 .* scale;
 changed = false;
 mpc = dm.source;
+state0 = state;
 for kk = find(state.active)'
     bi = state.bus_idx(kk);
     if bi > 0 && bi <= size(mpc.bus, 1)
@@ -78,8 +79,12 @@ state.pd = pd;
 state.qd = qd;
 state.changed_last = changed;
 state.low_voltage = state.active & scale < 1 - eps;
+if changed
+    [mpc, state, changed] = accept_guarded_load_step( ...
+        dm.source, state0, scale, pd, qd, mpopt);
+end
 mpc.psse.pqbrak.control = report_state(state);
-mpc.psse.pqbrak.scale = scale;
+mpc.psse.pqbrak.scale = state.scale;
 mpc.psse.pqbrak.iterations = state.iterations;
 mpc.psse.pqbrak.changed_last = changed;
 
@@ -87,6 +92,62 @@ if changed
     dm_next = task.data_model_build(mpc, task.dmc, mpopt, mpx);
 else
     dm.source = mpc;
+end
+
+function [mpc, state, changed] = accept_guarded_load_step( ...
+        mpc0, state0, target_scale, target_pd, target_qd, mpopt)
+% Backtrack low-voltage load updates that would make the next PF diverge.
+[~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
+changed = false;
+mpc = mpc0;
+for step = [1 0.5 0.25 0.125 0.0625 0.03125]
+    trial = state0;
+    trial.scale = state0.scale + step * (target_scale - state0.scale);
+    trial.pd = state0.pd + step * (target_pd - state0.pd);
+    trial.qd = state0.qd + step * (target_qd - state0.qd);
+    trial.low_voltage = trial.active & trial.scale < 1 - eps;
+    candidate = mpc0;
+    for kk = find(trial.active)'
+        bi = trial.bus_idx(kk);
+        if bi > 0 && bi <= size(candidate.bus, 1)
+            candidate.bus(bi, PD) = candidate.bus(bi, PD) - ...
+                state0.pd(kk) + trial.pd(kk);
+            candidate.bus(bi, QD) = candidate.bus(bi, QD) - ...
+                state0.qd(kk) + trial.qd(kk);
+        end
+    end
+    if probe_candidate(candidate, mpopt)
+        mpc = candidate;
+        state = trial;
+        changed = any(abs(trial.pd - state0.pd) > state0.tol | ...
+            abs(trial.qd - state0.qd) > state0.tol);
+        return;
+    end
+end
+state = state0;
+
+function ok = probe_candidate(mpc, mpopt)
+ok = false;
+try
+    if isfield(mpc, 'order')
+        mpc = rmfield(mpc, 'order');
+    end
+    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
+        'pf.enforce_q_lims', 0);
+    auxopt.exp.mpx = {};
+    auxopt.exp.use_legacy_core = 0;
+    warn_state = warning;
+    cleanup = onCleanup(@() warning(warn_state));
+    warning('off', 'all');
+    r = runpf(mpc, auxopt);
+    if isstruct(r) && isfield(r, 'success') && r.success && ...
+            isfield(r, 'bus') && ~isempty(r.bus)
+        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
+        vm = r.bus(:, VM);
+        ok = all(isfinite(vm)) && min(vm) > 0.05 && max(vm) < 5;
+    end
+catch
+    ok = false;
 end
 
 function state = initialize_state(mpc)
@@ -141,14 +202,6 @@ for kk = 1:length(bus)
     if ~isnan(b) && b > 0 && b <= size(e2i, 1)
         idx(kk) = full(e2i(b));
     end
-end
-
-function scale = low_voltage_scale(vm, pqbrak)
-scale = ones(size(vm));
-low = vm < pqbrak;
-if any(low)
-    x = max(min(vm(low) ./ pqbrak, 1), 0);
-    scale(low) = 3 * x.^2 - 2 * x.^3;
 end
 
 function s = report_state(state)

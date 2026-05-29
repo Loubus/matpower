@@ -49,15 +49,7 @@ else
     mpc.psse.pqbrak.pqbrak = pqbrak;
 end
 
-scale = low_voltage_scale(mpc.bus(:, VM), pqbrak);
+scale = mp.psse_pqbrak_scale(mpc.bus(:, VM), pqbrak);
 mpc.bus(:, PD) = mpc.psse.pqbrak.pd0(:) .* scale;
 mpc.bus(:, QD) = mpc.psse.pqbrak.qd0(:) .* scale;
 mpc.psse.pqbrak.scale = scale;
-
-function scale = low_voltage_scale(vm, pqbrak)
-scale = ones(size(vm));
-low = vm < pqbrak;
-if any(low)
-    x = max(min(vm(low) ./ pqbrak, 1), 0);
-    scale(low) = 3 * x.^2 - 2 * x.^3;
-end

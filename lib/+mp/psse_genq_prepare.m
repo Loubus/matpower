@@ -1,8 +1,9 @@
-function mpc = psse_genq_prepare(mpc)
+function mpc = psse_genq_prepare(mpc, mode)
 % psse_genq_prepare - Prepares PSS/E generator Q control before ext2int.
 % ::
 %
 %   MPC = MP.PSSE_GENQ_PREPARE(MPC)
+%   MPC = MP.PSSE_GENQ_PREPARE(MPC, MODE)
 %
 % Applies the opt-in pre-processing needed before MATPOWER's ext2int()
 % conversion for cases that preserve PSS/E GENERATOR DATA metadata in
@@ -19,6 +20,10 @@ function mpc = psse_genq_prepare(mpc)
 %   This file is part of MATPOWER.
 %   Covered by the 3-clause BSD License (see LICENSE file for details).
 %   See https://matpower.org for more info.
+
+if nargin < 2 || isempty(mode)
+    mode = 'fixed_q';
+end
 
 if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'genq') || ...
         isempty(mpc.psse.genq.num)
@@ -43,6 +48,11 @@ if ~isfield(gq, 'original_qmin') || length(gq.original_qmin) ~= n
 end
 if ~isfield(gq, 'original_bus_type') || length(gq.original_bus_type) ~= n
     gq.original_bus_type = state.base_bus_type;
+end
+
+if strcmpi(mode, 'deferred')
+    mpc = restore_deferred_prepare(mpc, state, gq);
+    return;
 end
 
 mapped = find(state.gen_idx > 0);
@@ -74,6 +84,48 @@ for kk = 1:length(bus_list)
 end
 
 gq.prepared = 1;
+gq.prepare_mode = 'fixed_q';
+gq.prepare_deferred = 0;
 gq.prepared_pq = prepared_pq;
+gq.prepared_q = state.current_q;
+mpc.psse.genq = gq;
+
+function mpc = restore_deferred_prepare(mpc, state, gq)
+% Restore RAW Q limits/bus types when fixed-Q bootstrap is too fragile.
+
+[~, PV, REF, ~, ~, BUS_TYPE] = idx_bus;
+[~, ~, QG, QMAX, QMIN, VG] = idx_gen;
+
+mapped = find(state.gen_idx > 0);
+for kk = mapped(:)'
+    gi = state.gen_idx(kk);
+    mpc.gen(gi, QMAX) = gq.original_qmax(kk);
+    mpc.gen(gi, QMIN) = gq.original_qmin(kk);
+    mpc.gen(gi, VG) = state.vs(kk);
+    if isnan(mpc.gen(gi, QG))
+        mpc.gen(gi, QG) = state.current_q(kk);
+    end
+end
+
+bus_list = unique(state.bus_idx(state.active & state.bus_idx > 0));
+for jj = 1:length(bus_list)
+    b = bus_list(jj);
+    if b <= 0 || b > size(mpc.bus, 1)
+        continue;
+    end
+    at_bus = state.active & state.bus_idx == b;
+    if any(state.swing(at_bus)) || any(gq.original_bus_type(at_bus) == REF)
+        mpc.bus(b, BUS_TYPE) = REF;
+    elseif any(gq.original_bus_type(at_bus) == PV)
+        mpc.bus(b, BUS_TYPE) = PV;
+    else
+        mpc.bus(b, BUS_TYPE) = gq.original_bus_type(find(at_bus, 1));
+    end
+end
+
+gq.prepared = 1;
+gq.prepare_mode = 'deferred';
+gq.prepare_deferred = 1;
+gq.prepared_pq = false(state.n, 1);
 gq.prepared_q = state.current_q;
 mpc.psse.genq = gq;

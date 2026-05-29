@@ -58,11 +58,52 @@ bus = dm.elements.bus;
 vm = bus.tab.vm;
 state = classify_state(state, vm);
 
+if isfield(state, 'cycle_probe_pending') && state.cycle_probe_pending
+    state.cycle_probe_pending = 0;
+    if state.last_violations == 0
+        state.changed_last = 0;
+        state.cycle_resolved = 1;
+        dm.source = mp.psse_xfmr_update(dm.source, state);
+    else
+        tap0 = state.current_tap;
+        state.current_tap = state.best_tap;
+        state.current_raw = state.best_raw;
+        moved = abs(state.current_tap - tap0) > 1e-9;
+        state.changed_last = nnz(moved);
+        state.cycle_resolution_changes = state.cycle_resolution_changes + ...
+            state.changed_last;
+        state.cycle_resolved = 1;
+        if state.changed_last
+            mpc = mp.psse_xfmr_update(dm.source, state);
+            dm_next = task.data_model_build(mpc, task.dmc, mpopt, mpx);
+        else
+            dm.source = mp.psse_xfmr_update(dm.source, state);
+        end
+    end
+    return;
+end
+
 %% detect global tap cycles and finish at the best state already seen
 sig = state_signature(state.current_tap);
 if any(strcmp(state.visited_signatures, sig)) && ~state.cycle_resolved
     state.cycle_detected = 1;
     state.repeated_states = state.repeated_states + 1;
+    [probe_raw, probe_tap, do_probe] = cycle_probe_toward_base(state);
+    if do_probe
+        tap0 = state.current_tap;
+        state.current_tap = probe_tap;
+        state.current_raw = probe_raw;
+        moved = abs(state.current_tap - tap0) > 1e-9;
+        state.changed_last = nnz(moved);
+        state.cycle_resolution_changes = state.cycle_resolution_changes + ...
+            state.changed_last;
+        state.cycle_probe_attempted = 1;
+        state.cycle_probe_pending = 1;
+        state.visited_signatures = {};
+        mpc = mp.psse_xfmr_update(dm.source, state);
+        dm_next = task.data_model_build(mpc, task.dmc, mpopt, mpx);
+        return;
+    end
     if any(abs(state.best_tap - state.current_tap) > 1e-9)
         tap0 = state.current_tap;
         state.current_tap = state.best_tap;
@@ -114,6 +155,37 @@ else
     dm.source = mp.psse_xfmr_update(dm.source, state);
 end
 
+function [probe_raw, probe_tap, do_probe] = cycle_probe_toward_base(state)
+% Try one tap step back toward the RAW tap after a zero-violation cycle.
+probe_raw = state.best_raw;
+probe_tap = state.best_tap;
+do_probe = false;
+if state.best_violations ~= 0 || state.cycle_probe_attempted
+    return;
+end
+
+idx = find(state.controllable & state.reg_bus_idx > 0);
+for kk = 1:length(idx)
+    k = idx(kk);
+    states = state.states_tap{k};
+    raw_states = state.states_raw{k};
+    if isempty(states)
+        continue;
+    end
+    [~, best_pos] = min(abs(states - state.best_tap(k)));
+    [~, base_pos] = min(abs(states - state.base_tap(k)));
+    if best_pos == base_pos
+        continue;
+    end
+    step = sign(base_pos - best_pos);
+    cand = best_pos + step;
+    if cand >= 1 && cand <= length(states)
+        probe_tap(k) = states(cand);
+        probe_raw(k) = raw_states(cand);
+    end
+end
+do_probe = any(abs(probe_tap - state.best_tap) > 1e-9);
+
 function state = classify_state(state, vm)
 % Classify the current regulated-bus voltages for reporting/scoring.
 state.last_vm_final(:) = NaN;
@@ -144,7 +216,9 @@ margin = state.last_margin(idx);
 margin = margin(~isnan(margin));
 state.last_violations = nnz(margin ~= 0);
 state.last_violation_sum = sum(abs(margin));
-state.last_score = state.last_violations * 1e6 + state.last_violation_sum;
+tap_preference = sum(abs(state.current_tap(idx) - state.base_tap(idx)));
+state.last_score = state.last_violations * 1e6 + ...
+    state.last_violation_sum + 1e-3 * tap_preference;
 
 function [new_raw, new_tap] = next_tap_state(state, vm)
 % Select the next discrete tap state for each violating controller.

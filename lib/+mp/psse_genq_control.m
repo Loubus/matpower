@@ -9,6 +9,11 @@ function [dm_next, state] = psse_genq_control(task, ~, ~, dm, mpopt, mpx, state)
 % when VAR limits bind. Remote regulating groups search for total group Q
 % using bracket/secant state, distribute Q by RMPCT with individual limits,
 % and rebuild the data model when QG or bus types change.
+% Deferred solved-snapshot cases guard GENQ transitions with a static AC
+% solve before committing them; if no static transition solves, the target is
+% marked as forced so runpf_psse can hand the coupled case to the opt-in
+% coordinated active-set fallback instead of silently retaining stale GENQ
+% states.
 %
 % See also mp.psse_genq_states, mp.psse_genq_update.
 
@@ -37,7 +42,7 @@ if isempty(state) || ~isstruct(state) || ~isfield(state, 'initialized') || ...
     state = mp.psse_genq_states(dm.source);
 end
 
-if ~any(state.active)
+if ~state.enabled || ~any(state.active)
     dm.source = mp.psse_genq_update(dm.source, state);
     return;
 end
@@ -55,9 +60,14 @@ bus = dm.elements.bus;
 vm = bus.tab.vm;
 solved_q = read_solved_q(dm);
 
-q0 = state.current_q;
+deferred = deferred_prepare_active(dm.source);
+if deferred
+    guard_state0 = state;
+end
 limited0 = state.limited;
 state = sync_solved_state(state, solved_q, vm);
+state0 = state;
+q0 = state0.current_q;
 state = limit_local_gens(state);
 sens = remote_group_sensitivities(dm, mpopt, state, vm);
 state = control_remote_groups(state, vm, sens);
@@ -67,6 +77,17 @@ state = refresh_codes(state);
 controlled = state.remote | state.limited | limited0;
 changed = any(abs(state.current_q(controlled) - q0(controlled)) > state.qtol) || ...
     any(state.limited ~= limited0);
+if changed
+    if deferred
+        state = accept_deferred_candidate(dm.source, guard_state0, state, ...
+            controlled, mpopt);
+        limited0 = guard_state0.limited;
+        q0 = guard_state0.current_q;
+        controlled = state.remote | state.limited | limited0;
+        changed = any(abs(state.current_q(controlled) - q0(controlled)) > state.qtol) || ...
+            any(state.limited ~= limited0);
+    end
+end
 if changed
     q_changed = false(size(state.current_q));
     q_changed(controlled) = abs(state.current_q(controlled) - ...
@@ -78,6 +99,132 @@ if changed
 else
     state.changed_last = 0;
     dm.source = mp.psse_genq_update(dm.source, state);
+end
+
+function TorF = deferred_prepare_active(mpc)
+% True for the fallback path that leaves GENQ remote control active initially.
+TorF = isfield(mpc, 'psse') && isfield(mpc.psse, 'genq') && ...
+    isfield(mpc.psse.genq, 'prepare_deferred') && ...
+    logical(mpc.psse.genq.prepare_deferred);
+
+function accepted = accept_deferred_candidate(mpc, state0, target, controlled, mpopt)
+% Accept only GENQ transitions whose static candidate still solves.
+chunks = candidate_chunks(target, state0, controlled);
+accepted = target;
+accepted.current_q = state0.current_q;
+accepted.limited = state0.limited;
+accepted.at_min = state0.at_min;
+accepted.at_max = state0.at_max;
+accepted.candidate_rejected = 1;
+accepted.candidate_accepted_rows = zeros(0, 1);
+for ii = 1:length(chunks)
+    rows = chunks{ii};
+    for scale = candidate_scales(target, state0, rows)
+        trial = scaled_candidate(accepted, target, rows, scale);
+        if probe_candidate(mpc, trial, mpopt)
+            accepted = trial;
+            accepted.candidate_accepted_rows = unique([ ...
+                accepted.candidate_accepted_rows(:); rows(:)]);
+            break;
+        end
+    end
+end
+if ~isempty(chunks) && isempty(accepted.candidate_accepted_rows)
+    % Do not hide the desired PSS/E state when every static GENQ transition
+    % probe fails. Mark the forced target explicitly; runpf_psse can then
+    % trigger the coordinated active-set fallback for the coupled controls.
+    accepted = target;
+    accepted.candidate_rejected = 1;
+    accepted.candidate_forced = 1;
+end
+accepted = refresh_group_current_q(accepted);
+accepted = score_state(accepted);
+accepted = refresh_codes(accepted);
+
+function scales = candidate_scales(target, state0, rows)
+% Limit transitions are discrete; remote setpoint changes can be damped.
+if any(target.limited(rows) & ~state0.limited(rows))
+    scales = 1;
+else
+    scales = [1 0.5 0.25 0.125 0.0625 0.03125];
+end
+
+function trial = scaled_candidate(base, target, rows, scale)
+trial = base;
+trial.current_q(rows) = base.current_q(rows) + ...
+    scale * (target.current_q(rows) - base.current_q(rows));
+trial.limited(rows) = target.limited(rows);
+trial.at_min(rows) = trial.current_q(rows) <= trial.qmin(rows) + trial.qtol;
+trial.at_max(rows) = trial.current_q(rows) >= trial.qmax(rows) - trial.qtol;
+fixed = target.limited(rows);
+if any(fixed)
+    rr = rows(fixed);
+    trial.current_q(rr) = target.current_q(rr);
+    trial.at_min(rr) = target.at_min(rr);
+    trial.at_max(rr) = target.at_max(rr);
+end
+trial = refresh_group_current_q(trial);
+trial = score_state(trial);
+trial = refresh_codes(trial);
+
+function chunks = candidate_chunks(target, state0, controlled)
+% Build remote groups as units and local rows individually.
+changed_rows = find(controlled(:) & (abs(target.current_q - ...
+    state0.current_q) > target.qtol | target.limited ~= state0.limited));
+chunks = {};
+used = false(size(target.current_q));
+for gg = 1:length(target.group.members)
+    rows = target.group.members{gg}(:);
+    rows = rows(ismember(rows, changed_rows));
+    if ~isempty(rows)
+        chunks{end+1} = rows; %#ok<AGROW>
+        used(rows) = true;
+    end
+end
+for kk = changed_rows(:)'
+    if ~used(kk)
+        chunks{end+1} = kk; %#ok<AGROW>
+    end
+end
+
+function state = refresh_group_current_q(state)
+for gg = 1:length(state.group.members)
+    members = state.group.members{gg};
+    state.group.current_q(gg) = sum(state.current_q(members));
+    movable = members(state.active(members) & ...
+        ~state.swing(members) & ~state.limited(members));
+    if isempty(movable)
+        state.group.all_limited(gg) = 1;
+    else
+        state.group.all_limited(gg) = all(state.limited(movable) | ...
+            state.swing(movable));
+    end
+end
+
+function ok = probe_candidate(mpc, state, mpopt)
+% Probe with plain runpf so a rejected GENQ candidate does not poison state.
+ok = false;
+try
+    candidate = mp.psse_genq_update(mpc, state);
+    if isfield(candidate, 'order')
+        candidate = rmfield(candidate, 'order');
+    end
+    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
+        'pf.enforce_q_lims', 0);
+    auxopt.exp.mpx = {};
+    auxopt.exp.use_legacy_core = 0;
+    warn_state = warning;
+    cleanup = onCleanup(@() warning(warn_state));
+    warning('off', 'all');
+    r = runpf(candidate, auxopt);
+    if isstruct(r) && isfield(r, 'success') && r.success && ...
+            isfield(r, 'bus') && ~isempty(r.bus)
+        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
+        vm = r.bus(:, VM);
+        ok = all(isfinite(vm)) && min(vm) > 0.05 && max(vm) < 5;
+    end
+catch
+    ok = false;
 end
 
 function qg = read_solved_q(dm)
@@ -103,6 +250,18 @@ for kk = idx(:)'
     gi = state.gen_idx(kk);
     if gi > 0 && gi <= length(solved_q) && ~isnan(solved_q(gi))
         state.current_q(kk) = solved_q(gi);
+    end
+    if state.varlim_enabled && ~state.swing(kk)
+        if state.current_q(kk) > state.qmax(kk) + state.qtol
+            state.current_q(kk) = state.qmax(kk);
+            state.limited(kk) = true;
+        elseif state.current_q(kk) < state.qmin(kk) - state.qtol
+            state.current_q(kk) = state.qmin(kk);
+            state.limited(kk) = true;
+        elseif state.limited(kk)
+            state.current_q(kk) = min(max(state.current_q(kk), ...
+                state.qmin(kk)), state.qmax(kk));
+        end
     end
     rb = state.reg_bus_idx(kk);
     if rb > 0 && rb <= length(vm)
@@ -225,6 +384,10 @@ if have_bracket
         (state.group.vhi(gg) - state.group.vlo(gg));
 elseif isfinite(sens) && abs(sens) > eps
     q_next = cur_total + (target - v) / sens;
+elseif target > v + state.vtol
+    q_next = qmax_total;
+elseif target < v - state.vtol
+    q_next = qmin_total;
 else
     q_next = cur_total;
 end

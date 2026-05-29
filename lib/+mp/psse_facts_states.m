@@ -35,6 +35,9 @@ state.num_adjustments = 0;
 state.changed_last = 0;
 state.max_iter_reached = 0;
 state.report = struct();
+state.solved_snapshot_mode = isfield(mpc.psse, 'solved_snapshot_detection') && ...
+    isfield(mpc.psse.solved_snapshot_detection, 'active') && ...
+    mpc.psse.solved_snapshot_detection.active;
 
 %% SYSTEM-WIDE options and tolerances used by iterative PSS/E controls
 state.facts = mp.psse_system_value(mpc, 'solver', 'FACTS', NaN, 0);
@@ -55,6 +58,7 @@ mode_col = psse_col(cols, 'MODE');
 vset_col = psse_col(cols, 'VSET');
 shmx_col = psse_col(cols, 'SHMX');
 trmx_col = psse_col(cols, 'TRMX');
+linx_col = psse_col(cols, 'LINX');
 rmpct_col = psse_col(cols, 'RMPCT');
 fcreg_col = psse_col(cols, 'FCREG');
 
@@ -63,12 +67,15 @@ state.j_col = j_col;
 state.mode_col = mode_col;
 state.vset_col = vset_col;
 state.shmx_col = shmx_col;
+state.linx_col = linx_col;
 state.bus_ext = col_default(num, i_col, 0);
 state.j_ext = col_default(num, j_col, 0);
 state.mode = col_default(num, mode_col, 0);
 state.vset = col_default(num, vset_col, 1);
 state.shmx = col_default(num, shmx_col, 0);
 state.trmx = col_default(num, trmx_col, NaN);
+state.linx = col_default(num, linx_col, 0.05);
+state.linx(isnan(state.linx) | state.linx <= 0) = 0.05;
 state.rmpct = col_default(num, rmpct_col, 100);
 state.rmpct(isnan(state.rmpct) | state.rmpct <= 0) = 100;
 state.fcreg = col_default(num, fcreg_col, 0);
@@ -160,6 +167,7 @@ state.cycle_detected = 0;
 state.cycle_resolved = 0;
 state.repeated_states = 0;
 state.cycle_resolution_changes = 0;
+state.candidate_rejected = 0;
 
 function v = col_default(num, col, default)
 if col && size(num, 2) >= col
