@@ -36,7 +36,7 @@ state.max_iter_reached = 0;
 state.report = struct();
 
 state.varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', 1, 0);
-state.enabled = ~solved_snapshot_bus_vm(mpc);
+state.enabled = ~solved_snapshot_genq_disabled(mpc);
 state.varlim_enabled = isnan(state.varlim) || state.varlim >= 0;
 state.max_iter = mp.psse_system_value(mpc, 'adjust', 'MXTPSS', 99);
 if isnan(state.max_iter) || state.max_iter <= 0
@@ -306,6 +306,22 @@ TorF = isfield(mpc, 'psse') && isfield(mpc.psse, 'solved_snapshot_policy') && ..
     logical(mpc.psse.solved_snapshot_policy.active) && ...
     isfield(mpc.psse.solved_snapshot_policy, 'gen_vg_source') && ...
     strcmp(mpc.psse.solved_snapshot_policy.gen_vg_source, 'bus_vm');
+
+function TorF = solved_snapshot_genq_disabled(mpc)
+TorF = isfield(mpc, 'psse') && ...
+    isfield(mpc.psse, 'solved_snapshot_detection') && ...
+    isstruct(mpc.psse.solved_snapshot_detection) && ...
+    isfield(mpc.psse.solved_snapshot_detection, 'active') && ...
+    logical(mpc.psse.solved_snapshot_detection.active);
+if TorF
+    return;
+end
+TorF = solved_snapshot_bus_vm(mpc);
+if TorF && isfield(mpc.psse, 'solved_snapshot_policy') && ...
+        isfield(mpc.psse.solved_snapshot_policy, 'enable_genq_control') && ...
+        logical(mpc.psse.solved_snapshot_policy.enable_genq_control)
+    TorF = false;
+end
 
 function v = weighted_mean(x, w)
 w(isnan(w) | w <= 0) = 100;

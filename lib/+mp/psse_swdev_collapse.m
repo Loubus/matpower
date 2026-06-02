@@ -24,6 +24,18 @@ if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'swdev') || ...
         isempty(mpc.psse.swdev.branch_idx) || isempty(mpc.bus)
     return;
 end
+if isfield(mpc.psse.swdev, 'collapse_disabled') && ...
+        ~isempty(mpc.psse.swdev.collapse_disabled) && ...
+        any(mpc.psse.swdev.collapse_disabled(:))
+    return;
+end
+if isfield(mpc.psse, 'swdev_collapsed') && ...
+        isfield(mpc.psse.swdev_collapsed, 'active') && ...
+        mpc.psse.swdev_collapsed.active && ...
+        isfield(mpc.psse.swdev_collapsed, 'original_bus')
+    state = mpc.psse.swdev_collapsed;
+    return;
+end
 
 [~, ~, ~, ~, BUS_I, ~, PD, QD, GS, BS] = idx_bus;
 [F_BUS, T_BUS, ~, ~, ~, ~, ~, ~, ~, ~, BR_STATUS] = idx_brch;
@@ -38,9 +50,13 @@ end
 
 nb = size(mpc.bus, 1);
 nbr = size(mpc.branch, 1);
-closed = swdev.status ~= 0 & abs(swdev.x) <= thrshz & ...
+candidate = swdev.status ~= 0 & abs(swdev.x) <= thrshz & ...
     swdev.branch_idx > 0 & swdev.branch_idx <= nbr;
-closed = closed & mpc.branch(swdev.branch_idx, BR_STATUS) ~= 0;
+closed = false(size(candidate));
+if any(candidate)
+    closed(candidate) = mpc.branch(swdev.branch_idx(candidate), ...
+        BR_STATUS) ~= 0;
+end
 if ~any(closed)
     return;
 end

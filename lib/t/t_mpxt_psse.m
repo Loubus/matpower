@@ -12,13 +12,13 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 420;
+num_tests = 438;
 
 t_begin(num_tests, quiet);
 
 [PQ, ~, ~, ~, ~, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
 [~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
-[~, ~, QG] = idx_gen;
+[~, PG, QG] = idx_gen;
 dci = idx_dcline;
 mpopt = mpoption('verbose', 0, 'out.all', 0);
 
@@ -29,6 +29,72 @@ t_ok(r.success, 'runpf_psse(case9) success');
 t_ok(isa(r.task, 'mp.task_pf_psse'), 'runpf_psse uses mp.task_pf_psse');
 t_is(r.bus(:, VM), r0.bus(:, VM), 10, 'runpf_psse matches runpf VM without psse data');
 t_is(r.gen(:, QG), r0.gen(:, QG), 10, 'runpf_psse matches runpf QG without psse data');
+
+%% runcpf_psse uses PSS/E CPF task and preserves native CPF packaging
+[r, success] = runcpf_psse('case9', 'case9target', mpopt);
+t_ok(success, 'runcpf_psse(case9, case9target) success');
+t_ok(isfield(r, 'psse') && isfield(r.psse, 'cpf'), ...
+    'runcpf_psse reports PSS/E CPF metadata');
+t_ok(strcmp(r.psse.cpf.task_class, 'mp.task_cpf_psse'), ...
+    'runcpf_psse uses mp.task_cpf_psse');
+
+%% CPF with PSS/E control callbacks, fixed-lambda warmstarts and trace compaction
+mpc = psse_case2_cpf_pqbrak();
+target = mpc;
+target.bus(2, [PD QD]) = [100 65];
+target.gen(1, PG) = 100;
+mpopt_cpf = mpoption(mpopt, 'cpf.step', 0.15, 'cpf.stop_at', 'FULL');
+[r, success] = runcpf_psse(mpc, target, mpopt_cpf);
+t_ok(success, 'runcpf_psse PSS/E control CPF success');
+t_ok(strcmp(r.psse.cpf.task_class, 'mp.task_cpf_psse'), ...
+    'PSS/E control CPF keeps CPF task class');
+event_names = {};
+if isfield(r, 'cpf') && isfield(r.cpf, 'events')
+    event_names = {r.cpf.events.name};
+end
+t_ok(any(strncmp(event_names, 'PSSE_', 5)), ...
+    'PSS/E control CPF logs PSSE events');
+t_ok(any(abs(diff(r.cpf.lam)) <= 1e-10), ...
+    'PSS/E control CPF repeats lambda for warmstart re-correction');
+has_pqbrak = isfield(r, 'psse') && isfield(r.psse, 'pqbrak') && ...
+    isfield(r.psse.pqbrak, 'control');
+t_ok(has_pqbrak, 'PSS/E control CPF exposes PQBRAK report');
+if has_pqbrak
+    pq = r.psse.pqbrak.control;
+else
+    pq = struct('scale', 1);
+end
+t_ok(any(pq.scale < 1), 'PSS/E control CPF applies low-voltage load scaling');
+t_ok(isfield(r, 'cpf_psse_compact') && ...
+    r.cpf_psse_compact.compaction.removed_points > 0, ...
+    'PSS/E control CPF compact trace removes repeated lambda points');
+t_is(r.psse.cpf.compact_trace.removed_points, ...
+    r.cpf_psse_compact.compaction.removed_points, 10, ...
+    'PSS/E control CPF reports compact trace metadata');
+
+%% CPF target sync preserves active dcline transfer deltas
+base_ref = psse_case4_twodc_current_mode(0);
+base = base_ref;
+base.dcline(1, [dci.PF dci.PT]) = [30 29.9];
+target = base_ref;
+target.dcline(1, [dci.PF dci.PT]) = ...
+    base_ref.dcline(1, [dci.PF dci.PT]) + [7 6.5];
+target = mp.psse_sync_cpf_target(base, target, base_ref);
+t_is(target.dcline(1, [dci.PF dci.PT]), [37 36.4], 10, ...
+    'psse_sync_cpf_target preserves active dcline CPF delta');
+t_is(target.psse.cpf_dcline_delta, [7 6.5], 10, ...
+    'psse_sync_cpf_target records active dcline CPF delta');
+
+%% SWDEV expansion restores CPF voltage traces to original bus topology
+swres = psse_swdev_expand_fixture();
+expanded = mp.psse_swdev_expand(swres.results, swres.state);
+t_is(size(expanded.bus, 1), 3, 10, 'SWDEV expansion restores bus rows');
+t_is(size(expanded.branch, 1), 2, 10, 'SWDEV expansion restores branch rows');
+t_is(size(expanded.cpf.V, 1), 3, 10, 'SWDEV expansion restores cpf.V rows');
+t_is(expanded.cpf.V(3, :), swres.results.cpf.V(2, :), 10, ...
+    'SWDEV expansion maps collapsed cpf.V row');
+t_is(expanded.cpf.V_hat(3, :), swres.results.cpf.V_hat(2, :), 10, ...
+    'SWDEV expansion maps collapsed cpf.V_hat row');
 
 %% PSS/E SYSTEM-WIDE solver option policy report
 mpc = loadcase('case9');
@@ -744,6 +810,72 @@ c = struct( ...
     'at_min', empty, ...
     'at_max', empty ...
 );
+
+function mpc = psse_case2_cpf_pqbrak()
+mpc.version = '2';
+mpc.baseMVA = 100;
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 55 35 0 0 1 0.99 0 230 1 1.1 0.9
+];
+mpc.gen = [
+    1 55 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
+];
+mpc.branch = [
+    1 2 0.02 0.15 0 200 200 200 0 0 1 -360 360
+];
+
+cols = {'I', 'MODSW', 'ADJM', 'STAT', 'VSWHI', 'VSWLO', ...
+    'SWREG', 'RMPCT', 'RMIDNT', 'BINIT', ...
+    'N1', 'B1', 'N2', 'B2', 'N3', 'B3', 'N4', 'B4', ...
+    'N5', 'B5', 'N6', 'B6', 'N7', 'B7', 'N8', 'B8', 'NREG'};
+row = nan(1, 27);
+row([1:8 10:14 27]) = [2 1 0 1 1.03 0.99 2 100 0 2 10 0 0 0];
+mpc.psse.rev = 34;
+mpc.psse.system.solver.SWSHNT = 1;
+mpc.psse.system.adjust.MXTPSS = 20;
+mpc.psse.swshunt = struct( ...
+    'colnames', {cols}, ...
+    'num', row, ...
+    'txt', {cell(1, 27)}, ...
+    'binit_col', 10, ...
+    'status_col', 4 ...
+);
+
+function fx = psse_swdev_expand_fixture()
+[~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
+
+bus0 = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 30 15 0 0 1 0.98 0 230 1 1.1 0.9
+    3 1 10 5 0 0 1 0.97 0 230 1 1.1 0.9
+];
+branch0 = [
+    1 2 0.01 0.10 0 200 200 200 0 0 1 -360 360
+    2 3 0.00 0.00 0 200 200 200 0 0 1 -360 360
+];
+results = struct();
+results.bus = bus0(1:2, :);
+results.bus(2, [BUS_TYPE PD QD GS BS]) = ...
+    bus0(2, [BUS_TYPE PD QD GS BS]);
+results.branch = branch0(1, :);
+results.cpf = struct( ...
+    'V', [1.00 0.99 0.98; 0.98 0.97 0.96], ...
+    'V_hat', [1.01 1.00 0.99; 0.99 0.98 0.97] );
+state = struct( ...
+    'active', true, ...
+    'original_bus', bus0, ...
+    'original_bus_name', [], ...
+    'original_gen', [], ...
+    'original_branch', branch0, ...
+    'original_dcline', [], ...
+    'bus_keep', [1; 2], ...
+    'branch_keep', 1, ...
+    'old_to_new_bus', [1; 2; 2], ...
+    'old_to_new_branch', [1; 0], ...
+    'roots', [1; 2; 2], ...
+    'collapsed_branch_idx', 2 );
+fx = struct('results', results, 'state', state);
 
 function mpc = psse_remap_bus_numbers(mpc, old_bus, new_bus)
 [~, ~, ~, ~, BUS_I] = idx_bus;

@@ -103,19 +103,18 @@ if nargin < 4
 end
 
 %% activate PSS/E power flow extension
-mpopt = psse_mpx_options(mpopt);
+mpopt = mp.psse_mpx_options(mpopt);
 
 %% options
 qlim = mpopt.pf.enforce_q_lims;         %% enforce Q limits on gens?
 dc = strcmpi(mpopt.model, 'DC');        %% use DC formulation?
 
-%% read data and apply PSS/E SYSTEM-WIDE solver options
+%% read data and apply common PSS/E solver/control preparation
 mpc = loadcase(casedata);
-[mpopt, psse_solver_policy, mpc] = mp.psse_solver_options(mpopt, mpc);
-if isfield(mpc, 'psse')
-    mpc.psse.solver_options = psse_solver_policy;
-end
-mpc_psse_source = mpc;
+[mpc, psse_prep, mpopt, mpc_psse_source] = ...
+    mp.psse_prepare_case(mpc, mpopt, 'pf');
+psse_solver_policy = psse_prep.solver_policy;
+swdev_collapse = psse_prep.swdev_collapse;
 
 %% use MP-Core?
 have_mp_core = have_feature('mp_core');
@@ -153,29 +152,6 @@ if ~dc
         case 'NR-IH'
             mpopt = mpoption(mpopt, 'pf.current_balance', 1, 'pf.v_cartesian', 2);
     end
-end
-
-%% prepare PSS/E-specific data
-if psse_solved_snapshot_mode(mpc)
-    mpc = psse_record_solved_snapshot_detection(mpc);
-end
-swdev_collapse = [];
-if ~isempty(which('mp.psse_swdev_collapse'))
-    [mpc, swdev_collapse] = mp.psse_swdev_collapse(mpc);
-end
-if ~isempty(which('mp.psse_pqbrak_prepare'))
-    mpc = mp.psse_pqbrak_prepare(mpc);
-end
-if ~isempty(which('mp.psse_genq_prepare'))
-    mpc = mp.psse_genq_prepare(mpc);
-end
-if ~isempty(which('mp.psse_twodc_prepare'))
-    mpc = mp.psse_twodc_prepare(mpc, mpopt);
-end
-if psse_genq_needs_deferred_prepare(mpc, mpopt)
-    mpc = mp.psse_genq_prepare(mpc, 'deferred');
-    mpc.psse.genq.prepare_fallback_reason = ...
-        'fixed_q_initial_power_flow_failed';
 end
 
 %% add zero columns to branch for flows if needed
@@ -509,7 +485,8 @@ mpc.iterations = its;
 %% convert back to original bus numbering & print results
 results = int2ext(mpc);
 if ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
-        swdev_collapse.active && ~isempty(which('mp.psse_swdev_expand'))
+        swdev_collapse.active && ~psse_keep_swdev_collapsed(mpopt) && ...
+        ~isempty(which('mp.psse_swdev_expand'))
     results = mp.psse_swdev_expand(results, swdev_collapse);
 end
 if isfield(results, 'psse')
@@ -670,74 +647,15 @@ else
     TorF = 0;
 end
 
-function mpopt = psse_mpx_options(mpopt)
-mpopt.exp.use_legacy_core = 0;
-if isfield(mpopt.exp, 'mpx') && ~isempty(mpopt.exp.mpx)
-    if iscell(mpopt.exp.mpx)
-        mpx = mpopt.exp.mpx;
-    else
-        mpx = { mpopt.exp.mpx };
-    end
-else
-    mpx = {};
-end
-
-has_psse = 0;
-for k = 1:length(mpx)
-    if isa(mpx{k}, 'mp.xt_psse')
-        has_psse = 1;
-        break;
-    end
-end
-if ~has_psse
-    mpx{end+1} = mp.xt_psse();
-end
-mpopt.exp.mpx = mpx;
-
-function TorF = psse_solved_snapshot_mode(mpc)
-TorF = 0;
-if ~isfield(mpc, 'psse') || isempty(mpc.bus) || size(mpc.bus, 1) <= 1000
-    return;
-end
-varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', NaN, 0);
-if isnan(varlim) || varlim ~= 0
-    return;
-end
-TorF = isfield(mpc.psse, 'twodc') && isfield(mpc.psse.twodc, 'num') && ...
-    size(mpc.psse.twodc.num, 1) > 1;
-
-function mpc = psse_record_solved_snapshot_detection(mpc)
-% Record solved snapshot diagnostics without changing RAW solver controls.
-if ~isfield(mpc, 'psse') || isempty(mpc.psse)
-    mpc.psse = struct();
-end
-mpc.psse.solved_snapshot_detection = struct( ...
-    'active', 1, ...
-    'reason', 'large_raw_varlim0_saved_solution');
-
-function TorF = psse_genq_needs_deferred_prepare(mpc, mpopt)
-TorF = 0;
-if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'genq') || ...
-        ~isfield(mpc.psse.genq, 'prepare_mode') || ...
-        ~strcmp(mpc.psse.genq.prepare_mode, 'fixed_q')
-    return;
-end
-try
-    auxopt = mpoption(mpopt, 'verbose', 0, 'out.all', 0, ...
-        'pf.enforce_q_lims', 0);
-    auxopt.exp.mpx = {};
-    warn_state = warning;
-    cleanup = onCleanup(@() warning(warn_state));
-    warning('off', 'all');
-    r = runpf(mpc, auxopt);
-    TorF = ~(isstruct(r) && isfield(r, 'success') && r.success);
-catch
-    TorF = 1;
-end
-
 function TorF = psse_swdev_retry_needed(swdev_collapse)
 TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
     swdev_collapse.active;
+
+function TorF = psse_keep_swdev_collapsed(mpopt)
+TorF = isfield(mpopt, 'exp') && ...
+    isfield(mpopt.exp, 'psse_keep_swdev_collapsed') && ...
+    ~isempty(mpopt.exp.psse_keep_swdev_collapsed) && ...
+    any(mpopt.exp.psse_keep_swdev_collapsed(:));
 
 function TorF = psse_coordinated_active_set_enabled(mpopt)
 TorF = isfield(mpopt, 'exp') && ...

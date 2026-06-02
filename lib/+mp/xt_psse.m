@@ -1,13 +1,15 @@
 classdef xt_psse < mp.extension
-% mp.xt_psse - |MATPOWER| extension for PSS/E power flow behavior.
+% mp.xt_psse - |MATPOWER| extension for PSS/E PF/CPF behavior.
 %
-% Replaces the standard legacy power flow task with mp.task_pf_psse,
-% enabling opt-in PSS/E-specific controls through runpf_psse().
+% Replaces the standard legacy power flow and continuation power flow tasks
+% with PSS/E-aware variants, enabling opt-in PSS/E-specific controls through
+% runpf_psse() and runcpf_psse().
 %
 % mp.xt_psse Methods:
-%   * task_class - replace legacy PF task with PSS/E PF task
+%   * task_class - replace legacy PF/CPF tasks with PSS/E task variants
 %
-% See also mp.extension, mp.task_pf_psse, runpf_psse.
+% See also mp.extension, mp.task_pf_psse, mp.task_cpf_psse, runpf_psse,
+% runcpf_psse.
 
 %   MATPOWER
 %   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
@@ -18,10 +20,12 @@ classdef xt_psse < mp.extension
 
     methods
         function task_class = task_class(~, task_class, ~)
-            % Replace legacy PF task with PSS/E PF task.
+            % Replace legacy PF/CPF tasks with PSS/E-aware task variants.
 
             if isequal(task_class, @mp.task_pf_legacy)
                 task_class = @mp.task_pf_psse;
+            elseif isequal(task_class, @mp.task_cpf_legacy)
+                task_class = @mp.task_cpf_psse;
             end
         end
     end     %% methods

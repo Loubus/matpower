@@ -79,3 +79,16 @@ if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...
         ~isempty(state.original_bus_name)
     results.bus_name = state.original_bus_name;
 end
+
+if isfield(results, 'cpf')
+    results.cpf = expand_cpf_voltage_rows(results.cpf, state);
+end
+
+function cpf = expand_cpf_voltage_rows(cpf, state)
+fields = {'V', 'V_hat'};
+for kk = 1:length(fields)
+    name = fields{kk};
+    if isfield(cpf, name) && size(cpf.(name), 1) == length(state.bus_keep)
+        cpf.(name) = cpf.(name)(state.old_to_new_bus(:), :);
+    end
+end
