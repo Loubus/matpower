@@ -189,6 +189,7 @@ tests{end+1} = 't_opf_userfcns';
 tests{end+1} = 't_opf_softlims';
 tests{end+1} = 't_runopf_w_res';
 tests{end+1} = 't_dcline';
+tests{end+1} = 't_vsc_mtdc';
 tests{end+1} = 't_get_losses';
 tests{end+1} = 't_load2disp';
 tests{end+1} = 't_makePTDF';
