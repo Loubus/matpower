@@ -114,6 +114,26 @@ Continuation Power Flow Functions
    functions/cpf_vlim_event_cb
 
 
+VSC-MTDC Functions
+++++++++++++++++++
+
+.. toctree::
+
+   functions/runpf_vsc_mtdc
+   functions/runcpf_vsc_mtdc
+   functions/idx_busdc
+   functions/idx_branchdc
+   functions/idx_vsc
+   functions/makeGdc
+   functions/has_vsc_mtdc
+   functions/make_vsc_hvdc_dispatch_target
+   functions/check_capability_limits
+   functions/check_vsc_capability
+   functions/check_gen_capability
+   functions/vsc_capability_curve
+   functions/gen_capability_curve
+
+
 OPF and Wrapper Functions
 +++++++++++++++++++++++++
 
@@ -371,6 +391,7 @@ Legacy |MATPOWER| Tests
    functions/t_total_load
    functions/t_totcost
    functions/t_vdep_load
+   functions/t_vsc_mtdc
 
 Legacy |MATPOWER| Test Data
 +++++++++++++++++++++++++++

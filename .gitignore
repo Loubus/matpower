@@ -13,3 +13,4 @@ docs/src/MATPOWER-manual/MATPOWER-manual.fdb_latexmk
 docs/src/MATPOWER-manual/MATPOWER-manual.fls
 docs/sphinx/build
 .vs
+/results/

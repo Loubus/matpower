@@ -1,0 +1,1 @@
+../../../../../lib/check_gen_capability.m
