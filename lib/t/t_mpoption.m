@@ -13,9 +13,9 @@ if nargin < 1
     quiet = 0;
 end
 
-v = 25;
+v = 26;
 
-t_begin(152, quiet);
+t_begin(167, quiet);
 
 %% default options struct
 t = 'mpoption() : ';
@@ -108,6 +108,18 @@ t_ok(isempty(mpopt.exp.sys_wide_zip_loads.pw), [t '         isempty(mpopt.exp.sy
 t_ok(isfield(mpopt.exp.sys_wide_zip_loads, 'qw'), [t ' isfield mpopt.exp.sys_wide_zip_loads.qw']);
 t_ok(isempty(mpopt.exp.sys_wide_zip_loads.pw), [t '         isempty(mpopt.exp.sys_wide_zip_loads.pw)']);
 
+t_ok(isfield(mpopt, 'vsc_mtdc'), [t ' isfield mpopt.vsc_mtdc']);
+t_ok(isstruct(mpopt.vsc_mtdc), [t '         isstruct(mpopt.vsc_mtdc)']);
+t_str_match(mpopt.vsc_mtdc.method, 'unified', [t '         mpopt.vsc_mtdc.method = ''unified''']);
+t_ok(isempty(mpopt.vsc_mtdc.max_it), [t '         isempty(mpopt.vsc_mtdc.max_it)']);
+t_is(mpopt.vsc_mtdc.dc_max_it, 20, 12, [t '         mpopt.vsc_mtdc.dc_max_it == 20']);
+t_is(mpopt.vsc_mtdc.cpf_max_it, 200, 12, [t '         mpopt.vsc_mtdc.cpf_max_it == 200']);
+t_is(mpopt.vsc_mtdc.cpf_max_lam, 5, 12, [t '         mpopt.vsc_mtdc.cpf_max_lam == 5']);
+t_is(mpopt.vsc_mtdc.capability_enforce, 0, 12, [t '         mpopt.vsc_mtdc.capability_enforce == 0']);
+t_is(mpopt.vsc_mtdc.capability_max_it, 10, 12, [t '         mpopt.vsc_mtdc.capability_max_it == 10']);
+t_is(mpopt.vsc_mtdc.capability_vsc_vmax, 1.15, 12, [t '         mpopt.vsc_mtdc.capability_vsc_vmax == 1.15']);
+t_is(mpopt.vsc_mtdc.capability_gen_type, 2, 12, [t '         mpopt.vsc_mtdc.capability_gen_type == 2']);
+
 mpopt0 = mpopt;
 
 t = 'mpoption(mpoption(), []) == mpoption_old()';
@@ -148,6 +160,16 @@ mpopt.verbose = 1;
 mpopt.model = 'AC';
 mpopt.opf.dc.solver = 'DEFAULT';
 t_ok(isequal(mpopt, mpopt0), [t 'everything else']);
+
+t = 'mpoption(<vsc_mtdc pairs>) : ';
+mpopt = mpoption('vsc_mtdc.method', 'sequential', ...
+    'vsc_mtdc.capability_enforce', 1, ...
+    'vsc_mtdc.cpf_max_lam', 20);
+t_str_match(mpopt.vsc_mtdc.method, 'sequential', [t 'mpopt.vsc_mtdc.method']);
+t_is(mpopt.vsc_mtdc.capability_enforce, 1, 12, [t 'mpopt.vsc_mtdc.capability_enforce']);
+t_is(mpopt.vsc_mtdc.cpf_max_lam, 20, 12, [t 'mpopt.vsc_mtdc.cpf_max_lam']);
+t_mpoption_expect_error(@() mpoption('vsc_mtdc.not_a_field', 1), ...
+    'not a valid option', [t 'rejects invalid VSC-MTDC option']);
 
 t = 'mpoption(<old-style pairs>) : ';
 mpopt = mpoption('VERBOSE', 0, 'PF_DC', 1, 'OPF_ALG_DC', 250);
@@ -313,3 +335,13 @@ for k = 1:length(pkgs)
 		opt = rmfield(opt, pkgs{k});
 	end
 end
+
+
+function t_mpoption_expect_error(fcn, pattern, msg)
+ok = 0;
+try
+    fcn();
+catch me
+    ok = ~isempty(strfind(me.message, pattern));
+end
+t_ok(ok, msg);

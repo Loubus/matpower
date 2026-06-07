@@ -512,6 +512,9 @@ else                                %% M-file
             fprintf(fd, '];\n');
         end
 
+        %% VSC-MTDC data
+        print_vsc_mtdc(fd, prefix, mpc);
+
         %% execute userfcn callbacks for 'savecase' stage
         if isfield(mpc, 'userfcn')
             run_userfcn(mpc.userfcn, 'savecase', mpc, fd, prefix);
@@ -528,6 +531,167 @@ if nargout > 0
     fname_out = fname;
 end
 
+
+
+function print_vsc_mtdc(fd, prefix, mpc)
+
+if isfield(mpc, 'busdc') || isfield(mpc, 'branchdc') || isfield(mpc, 'vsc')
+    fprintf(fd, '\n%%%%-----  VSC-MTDC Data  -----%%%%');
+end
+
+if isfield(mpc, 'busdc')
+    ncols = size(mpc.busdc, 2);
+    names = {'busdc_i', 'status', 'Vdc', 'baseKVdc', 'Pdc', 'Idc'};
+    fprintf(fd, '\n%%%% DC bus data\n');
+    print_header(fd, names, ncols);
+    print_matrix(fd, sprintf('%sbusdc', prefix), mpc.busdc);
+end
+
+if isfield(mpc, 'branchdc')
+    ncols = size(mpc.branchdc, 2);
+    names = {'fbusdc', 'tbusdc', 'r', 'status', ...
+        'Pfdc', 'Ptdc', 'Ifdc', 'Itdc'};
+    fprintf(fd, '\n%%%% DC branch data\n');
+    print_header(fd, names, ncols);
+    print_matrix(fd, sprintf('%sbranchdc', prefix), mpc.branchdc);
+end
+
+if isfield(mpc, 'vsc')
+    ncols = size(mpc.vsc, 2);
+    names = {'acbus', 'busdc', 'status', 'ac_mode', 'dc_mode', ...
+        'Pac_set', 'Qac_set', 'Vac_set', 'Pdc_set', 'Vdc_set', 'Kdroop', ...
+        'lossA', 'lossB', 'lossC', ...
+        'tr_r', 'tr_x', 'tr_b', 'tr_shift', ...
+        'tr_rateA', 'tr_rateB', 'tr_rateC', ...
+        'filter_g', 'filter_b', ...
+        'reactor_r', 'reactor_x', 'reactor_b', ...
+        'reactor_rateA', 'reactor_rateB', 'reactor_rateC', ...
+        'Pac', 'Qac', 'Pdc', 'Vdc', 'VacPCC', 'VacFilter', ...
+        'VacInternal', 'Ploss', 'PtrLoss', 'PreactorLoss', ...
+        'is_dc_slack', 'filter_bus', 'internal_bus', ...
+        'tr_branch', 'reactor_branch'};
+    fprintf(fd, '\n%%%% VSC converter data\n');
+    print_header(fd, names, ncols);
+    print_matrix(fd, sprintf('%svsc', prefix), mpc.vsc);
+end
+
+if isfield(mpc, 'vsc_capability') && ...
+        is_vsc_capability_case_data(mpc.vsc_capability)
+    fprintf(fd, '\n%%%% VSC capability metadata\n');
+    print_case_value(fd, sprintf('%svsc_capability', prefix), ...
+        mpc.vsc_capability);
+end
+
+if isfield(mpc, 'vsc_hvdc_dispatch')
+    fprintf(fd, '\n%%%% VSC/HVDC dispatch metadata\n');
+    print_case_value(fd, sprintf('%svsc_hvdc_dispatch', prefix), ...
+        mpc.vsc_hvdc_dispatch);
+end
+
+
+function print_header(fd, names, ncols)
+
+fprintf(fd, '%%');
+for k = 1:min(ncols, length(names))
+    fprintf(fd, '\t%s', names{k});
+end
+for k = length(names)+1:ncols
+    fprintf(fd, '\tcol%d', k);
+end
+fprintf(fd, '\n');
+
+
+function print_matrix(fd, varname, A)
+
+ncols = size(A, 2);
+fprintf(fd, '%s = [', varname);
+if ~isempty(A)
+    fprintf(fd, '\n');
+    template = repmat('\t%.9g', 1, ncols);
+    fprintf(fd, [template, ';\n'], A.');
+end
+fprintf(fd, '];\n');
+
+
+function TorF = is_vsc_capability_case_data(v)
+
+TorF = ~(isstruct(v) && isfield(v, 'elements') && ...
+    isfield(v, 'violations'));
+
+
+function ok = print_case_value(fd, varname, val)
+
+if isstruct(val)
+    ok = print_case_struct(fd, varname, val);
+    return;
+end
+
+[ok, code] = case_value_code(val);
+if ok
+    fprintf(fd, '%s = %s;\n', varname, code);
+end
+
+
+function ok = print_case_struct(fd, varname, s)
+
+if ~isscalar(s)
+    ok = 0;
+    warning('savecase: skipping non-scalar struct field ''%s''', varname);
+    return;
+end
+
+ok = 1;
+fprintf(fd, '%s = struct();\n', varname);
+fields = fieldnames(s);
+for k = 1:length(fields)
+    fname = fields{k};
+    ok = print_case_value(fd, sprintf('%s.%s', varname, fname), s.(fname)) && ok;
+end
+
+
+function [ok, code] = case_value_code(val)
+
+ok = 1;
+if isnumeric(val) || islogical(val)
+    code = mat2str(val, 15);
+elseif ischar(val)
+    code = sprintf('''%s''', strrep(val, '''', ''''''));
+elseif iscell(val)
+    [ok, code] = cell_value_code(val);
+else
+    ok = 0;
+    code = '';
+end
+
+
+function [ok, code] = cell_value_code(val)
+
+ok = 1;
+if isempty(val)
+    sz = size(val);
+    if length(sz) == 2
+        code = sprintf('cell(%d, %d)', sz(1), sz(2));
+    else
+        code = '{}';
+    end
+    return;
+end
+if ndims(val) > 2
+    ok = 0;
+    code = '';
+    return;
+end
+
+rows = cell(size(val, 1), 1);
+for i = 1:size(val, 1)
+    cols = cell(1, size(val, 2));
+    for j = 1:size(val, 2)
+        [ok1, cols{j}] = case_value_code(val{i, j});
+        ok = ok && ok1;
+    end
+    rows{i} = strjoin(cols, ', ');
+end
+code = ['{' strjoin(rows, '; ') '}'];
 
 
 function print_sparse(fd, varname, A)

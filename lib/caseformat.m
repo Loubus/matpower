@@ -36,10 +36,11 @@
 %   The OPF is designed to recognize fields named A, l, u, H, Cw, N,
 %   fparm, z0, zl and zu as parameters used to directly extend the OPF
 %   formulation (see OPF for details). Additional standard optional fields
-%   include bus_name, gentype and genfuel. Other user-defined fields may also
-%   be included and will be automatically loaded by the LOADCASE function
-%   and, given an appropriate 'savecase' callback function (see
-%   ADD_USERFCN), saved by the SAVECASE function.
+%   include bus_name, gentype and genfuel. Standard optional VSC-MTDC fields
+%   are busdc, branchdc, vsc, vsc_capability and vsc_hvdc_dispatch. Other
+%   user-defined fields may also be included and will be automatically
+%   loaded by the LOADCASE function and, given an appropriate 'savecase'
+%   callback function (see ADD_USERFCN), saved by the SAVECASE function.
 %
 %   Bus Data Format
 %       1   bus number (positive integer)
@@ -147,8 +148,27 @@
 %       1   i, area number
 %       2   price_ref_bus, reference bus for that area
 %
-% See also loadcase, savecase, idx_bus, idx_brch, idx_gen, idx_area
-% idx_cost.
+%   (+) VSC-MTDC DC Bus Data Format
+%       The optional busdc matrix defines the DC buses for VSC-MTDC power
+%       flow cases. Columns 1-4 are input data and columns 5-6 are added
+%       after power flow solution. See IDX_BUSDC for the column definitions.
+%
+%   (+) VSC-MTDC DC Branch Data Format
+%       The optional branchdc matrix defines the resistive DC branches for
+%       VSC-MTDC power flow cases. Columns 1-4 are input data and columns
+%       5-8 are added after power flow solution. See IDX_BRANCHDC for the
+%       column definitions.
+%
+%   (+) VSC-MTDC Converter Data Format
+%       The optional vsc matrix defines VSC converter controls, loss
+%       coefficients and explicit transformer/filter/reactor station data.
+%       Columns 1-29 are input data and columns 30-44 are added after power
+%       flow solution. Optional vsc_capability and vsc_hvdc_dispatch structs
+%       carry VSC capability and VSC/HVDC dispatch metadata used by PF/CPF
+%       workflows. See IDX_VSC for the column definitions and mode codes.
+%
+% See also loadcase, savecase, idx_bus, idx_brch, idx_gen, idx_area,
+% idx_cost, idx_busdc, idx_branchdc, idx_vsc.
 
 %   MATPOWER
 %   Copyright (c) 1996-2024, Power Systems Engineering Research Center (PSERC)
