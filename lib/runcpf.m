@@ -11,6 +11,10 @@ function [res, suc] = ...
 %   returning a RESULTS struct and SUCCESS flag. Step size can be
 %   fixed or adaptive.
 %
+%   RUNCPF does not solve explicit VSC-MTDC cases. Cases with BUSDC,
+%   BRANCHDC and VSC data should use RUNCPF_PSSE for the project PSS/E-aware
+%   VSC-MTDC workflow.
+%
 %   Inputs (all are optional):
 %       BASECASEDATA : either a MATPOWER case struct or a string containing
 %           the name of the file with the case data defining the base loading
@@ -132,7 +136,7 @@ function [res, suc] = ...
 %       results = runcpf('case9', 'case9target', ...
 %                           mpoption('cpf.stop_at', 'FULL'));
 %
-% See also mpoption, runpf.
+% See also mpoption, runpf, runcpf_psse.
 
 %   MATPOWER
 %   Copyright (c) 1996-2024, Power Systems Engineering Research Center (PSERC)
@@ -172,6 +176,13 @@ if nargin < 5
             end
         end
     end
+end
+
+%% explicit VSC-MTDC cases use the PSS/E-aware wrapper, not RUNCPF
+mpcb_probe = loadcase(basecasedata);
+mpct_probe = loadcase(targetcasedata);
+if has_vsc_mtdc(mpcb_probe) || has_vsc_mtdc(mpct_probe)
+    error('runcpf: VSC-MTDC cases must be solved with runcpf_psse');
 end
 
 %% options

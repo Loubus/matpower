@@ -11,6 +11,9 @@ function [res, suc] = ...
 % This preserves the CPF formulation ``F(x, lambda) = 0`` with the continuation
 % parameterization equation, while routing PSS/E-specific data model
 % iterations through ``mp.task_cpf_psse``.
+% Explicit VSC-MTDC cases with BUSDC, BRANCHDC and VSC data are routed through
+% the VSC-MTDC CPF solver from this PSS/E-aware entry point. The VSC equations
+% are MATPOWER AC/DC/VSC equations, not a full PSS/E VSC HVDC device replica.
 %
 % See also runcpf, runpf_psse, mp.xt_psse, mp.task_cpf_psse.
 
@@ -54,6 +57,80 @@ mpcb = loadcase(basecasedata);
 [mpcb, prep_base, mpopt] = mp.psse_prepare_case(mpcb, mpopt, 'cpf_base');
 mpct = loadcase(targetcasedata);
 [mpct, prep_target] = mp.psse_prepare_case(mpct, mpopt, 'cpf_target');
+
+%% explicit VSC-MTDC cases use the selected VSC-MTDC CPF
+if has_vsc_mtdc(mpcb) || has_vsc_mtdc(mpct)
+    if ~isfield(mpopt, 'vsc_mtdc') || isempty(mpopt.vsc_mtdc)
+        mpopt.vsc_mtdc = struct();
+    end
+    vsc_method = 'unified';
+    if isfield(mpopt.vsc_mtdc, 'method') && ~isempty(mpopt.vsc_mtdc.method)
+        vsc_method = lower(mpopt.vsc_mtdc.method);
+    end
+    if strcmp(vsc_method, 'unified')
+        if isfield(mpopt.vsc_mtdc, 'ac_solver')
+            mpopt.vsc_mtdc = rmfield(mpopt.vsc_mtdc, 'ac_solver');
+        end
+        mpopt.vsc_mtdc.psse_aware = 1;
+        task_class = 'unified_vsc_mtdc';
+        formulation = 'PSS/E-aware unified VSC-MTDC CPF with MATPOWER AC/DC/VSC equations';
+    else
+        mpopt.vsc_mtdc.ac_solver = 'runpf_psse';
+        task_class = 'sequential_vsc_mtdc';
+        formulation = 'Sequential VSC-MTDC CPF with runpf_psse AC subproblem';
+    end
+    [results, success] = runcpf_vsc_mtdc(mpcb, mpct, mpopt, '', '');
+    if ~isfield(results, 'psse') || isempty(results.psse)
+        results.psse = struct();
+    end
+    if isfield(mpcb, 'psse') && isfield(mpcb.psse, 'solver_options')
+        results.psse.solver_options = mpcb.psse.solver_options;
+    end
+    results.psse.cpf = struct( ...
+        'entrypoint', 'runcpf_psse', ...
+        'task_class', task_class, ...
+        'base_prepare', prep_base, ...
+        'target_prepare', prep_target, ...
+        'formulation', formulation);
+    if ~isempty(prep_base.swdev_collapse) && ...
+            isfield(prep_base.swdev_collapse, 'active') && ...
+            prep_base.swdev_collapse.active && ...
+            ~isempty(which('mp.psse_swdev_expand'))
+        results = mp.psse_swdev_expand(results, prep_base.swdev_collapse);
+        results.psse.cpf.output_topology = 'original_swdev_expanded';
+    end
+    if isfield(results, 'cpf') && isfield(results.cpf, 'lam') && ...
+            ~isempty(which('mp.psse_cpf_compact_trace'))
+        results.cpf_psse_compact = mp.psse_cpf_compact_trace(results.cpf);
+        if isfield(results.cpf_psse_compact, 'compaction')
+            results.psse.cpf.compact_trace = ...
+                results.cpf_psse_compact.compaction;
+        end
+    end
+    if fname
+        [fd, msg] = fopen(fname, 'at');
+        if fd == -1
+            error(msg);
+        else
+            if mpopt.out.all == 0
+                printpf(results, fd, mpoption(mpopt, 'out.all', -1));
+            else
+                printpf(results, fd, mpopt);
+            end
+            fclose(fd);
+        end
+    end
+    if ~isempty(solvedcase)
+        savecase(solvedcase, results);
+    end
+    if nargout
+        res = results;
+        if nargout > 1
+            suc = success;
+        end
+    end
+    return;
+end
 
 %% solve the base with PSS/E controls, then carry that active-set into target
 mpcb_ref = mpcb;
@@ -102,7 +179,9 @@ end
 if isfield(results, 'cpf') && isfield(results.cpf, 'lam') && ...
         ~isempty(which('mp.psse_cpf_compact_trace'))
     results.cpf_psse_compact = mp.psse_cpf_compact_trace(results.cpf);
-    results.psse.cpf.compact_trace = results.cpf_psse_compact.compaction;
+    if isfield(results.cpf_psse_compact, 'compaction')
+        results.psse.cpf.compact_trace = results.cpf_psse_compact.compaction;
+    end
 end
 
 if exist('save_after', 'var') && ~isempty(save_after)

@@ -8,6 +8,10 @@ function [MVAbase, bus, gen, branch, success, et] = ...
 %   Runs a power flow using the standard MATPOWER power flow implementation
 %   with the mp.xt_psse extension enabled. This provides PSS/E-specific
 %   control behavior through MP-Core, while leaving RUNPF unchanged.
+%   Explicit VSC-MTDC cases with BUSDC, BRANCHDC and VSC data are routed
+%   through the VSC-MTDC PF solver from this PSS/E-aware entry point; the
+%   VSC equations are MATPOWER AC/DC/VSC equations, not a full PSS/E VSC
+%   HVDC device replica.
 %
 %   Currently, the PSS/E-specific behavior implemented for RUNPF_PSSE is
 %   voltage control for generator Q limits/remote regulation, PSS/E
@@ -115,6 +119,72 @@ mpc = loadcase(casedata);
     mp.psse_prepare_case(mpc, mpopt, 'pf');
 psse_solver_policy = psse_prep.solver_policy;
 swdev_collapse = psse_prep.swdev_collapse;
+
+%% explicit VSC-MTDC cases use the selected VSC-MTDC PF
+if has_vsc_mtdc(mpc)
+    if ~isfield(mpopt, 'vsc_mtdc') || isempty(mpopt.vsc_mtdc)
+        mpopt.vsc_mtdc = struct();
+    end
+    vsc_method = 'unified';
+    if isfield(mpopt.vsc_mtdc, 'method') && ~isempty(mpopt.vsc_mtdc.method)
+        vsc_method = lower(mpopt.vsc_mtdc.method);
+    end
+    if strcmp(vsc_method, 'unified')
+        if isfield(mpopt.vsc_mtdc, 'ac_solver')
+            mpopt.vsc_mtdc = rmfield(mpopt.vsc_mtdc, 'ac_solver');
+        end
+        mpopt.vsc_mtdc.psse_aware = 1;
+        task_class = 'unified_vsc_mtdc';
+        formulation = 'PSS/E-aware unified VSC-MTDC PF with MATPOWER AC/DC/VSC equations';
+    else
+        mpopt.vsc_mtdc.ac_solver = 'runpf_psse';
+        task_class = 'sequential_vsc_mtdc';
+        formulation = 'Sequential VSC-MTDC PF with runpf_psse AC subproblem';
+    end
+    [results, success] = runpf_vsc_mtdc(mpc, mpopt, '', '');
+    if ~isfield(results, 'psse') || isempty(results.psse)
+        results.psse = struct();
+    end
+    if isfield(mpc, 'psse') && isfield(mpc.psse, 'solver_options')
+        results.psse.solver_options = mpc.psse.solver_options;
+    end
+    results.psse.pf = struct( ...
+        'entrypoint', 'runpf_psse', ...
+        'task_class', task_class, ...
+        'prepare', psse_prep, ...
+        'formulation', formulation);
+    if ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
+            swdev_collapse.active && ~psse_keep_swdev_collapsed(mpopt) && ...
+            ~isempty(which('mp.psse_swdev_expand'))
+        results = mp.psse_swdev_expand(results, swdev_collapse);
+        results.psse.pf.output_topology = 'original_swdev_expanded';
+    end
+    if fname
+        [fd, msg] = fopen(fname, 'at');
+        if fd == -1
+            error(msg);
+        else
+            if mpopt.out.all == 0
+                printpf(results, fd, mpoption(mpopt, 'out.all', -1));
+            else
+                printpf(results, fd, mpopt);
+            end
+            fclose(fd);
+        end
+    end
+    printpf(results, 1, mpopt);
+    if ~isempty(solvedcase)
+        savecase(solvedcase, results);
+    end
+    if nargout == 1 || nargout == 2
+        MVAbase = results;
+        bus = success;
+    elseif nargout > 2
+        [MVAbase, bus, gen, branch, et] = ...
+            deal(results.baseMVA, results.bus, results.gen, results.branch, results.et);
+    end
+    return;
+end
 
 %% use MP-Core?
 have_mp_core = have_feature('mp_core');
