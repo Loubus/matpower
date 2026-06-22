@@ -3813,7 +3813,7 @@ end
 
     function finish_outputs()
         if exist('results', 'var') && isstruct(results)
-            if profile_timing.enabled && isfield(results, 'cpf')
+            if profile_is_enabled() && isfield(results, 'cpf')
                 results.cpf.timing = profile_summary();
             end
             if mpopt.verbose && isfield(results, 'cpf') && isfield(results.cpf, 'done_msg')
@@ -4307,7 +4307,7 @@ end
     end
 
     function cleanup = profile_time_scope(name)
-        if profile_timing.enabled
+        if profile_is_enabled()
             tstart = tic;
             cleanup = onCleanup(@() profile_add_time(name, tstart));
         else
@@ -4316,7 +4316,7 @@ end
     end
 
     function profile_add_time(name, tstart)
-        if ~profile_timing.enabled
+        if ~profile_is_enabled()
             return;
         end
         profile_ensure_counter(name);
@@ -4326,7 +4326,7 @@ end
     end
 
     function profile_count(name)
-        if ~profile_timing.enabled
+        if ~profile_is_enabled()
             return;
         end
         profile_ensure_counter(name);
@@ -4334,14 +4334,30 @@ end
     end
 
     function profile_count_by(name, amount)
-        if ~profile_timing.enabled
+        if ~profile_is_enabled()
             return;
         end
         profile_ensure_counter(name);
         profile_timing.count.(name) = profile_timing.count.(name) + amount;
     end
 
+    function enabled = profile_is_enabled()
+        enabled = false;
+        if isstruct(profile_timing) && isfield(profile_timing, 'enabled')
+            raw_enabled = profile_timing.enabled;
+            enabled = isscalar(raw_enabled) && logical(raw_enabled);
+        end
+    end
+
     function profile_ensure_counter(name)
+        if ~isfield(profile_timing, 'total') || ...
+                ~isstruct(profile_timing.total)
+            profile_timing.total = struct();
+        end
+        if ~isfield(profile_timing, 'count') || ...
+                ~isstruct(profile_timing.count)
+            profile_timing.count = struct();
+        end
         if ~isfield(profile_timing.total, name)
             profile_timing.total.(name) = 0;
             profile_timing.count.(name) = 0;

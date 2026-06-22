@@ -22,15 +22,15 @@ entry-point semantics.
 ## Current Metrics
 
 The tracker snapshot was refreshed against the current checkout before writing
-this plan. The current values below reflect the completed CPF-CX-002
-checkpoint after the Phase 8 code slice and Phase 9 documentation alignment.
+this plan, then refreshed again on 2026-06-22 after the later narrow CPF-CX
+fixes. The current values below reflect the live checkout at that refresh.
 
 | Metric | Current value |
 | --- | ---: |
-| Lines in `lib/runcpf_vsc_mtdc.m` | 4,648 |
-| Function definitions | 164 |
-| `if` / `elseif` branch tokens | 420 |
-| `for` / `while` loop tokens | 37 |
+| Lines in `lib/runcpf_vsc_mtdc.m` | 4,544 |
+| Function definitions | 184 |
+| `if` / `elseif` branch tokens | 402 |
+| `for` / `while` loop tokens | 46 |
 
 Before Phase 1, the same checkout snapshot recorded 5,889 lines and 204
 function definitions. The first slice removed four nested event-list helpers
@@ -81,9 +81,10 @@ stage rollback bundle. The helpers intentionally remain nested because they
 restore `mpcb`, `mpct`, `cpf_policy_state`, recorded-event indices, and context
 state in the solver workspace.
 
-The working tree is dirty, including VSC-MTDC files. Any implementation must
-preserve unrelated existing changes and avoid broad formatting or line-ending
-churn.
+Working-tree state is not a durable plan property; check `git status --short`
+at the start of each implementation pass. Future implementation passes must
+preserve any unrelated changes they find and avoid broad formatting or
+line-ending churn.
 
 ## Current Structure
 

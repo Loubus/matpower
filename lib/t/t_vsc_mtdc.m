@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 328;
+num_tests = 330;
 
 t_begin(num_tests, quiet);
 
@@ -764,6 +764,19 @@ t_ok(isstruct(sys_profile_guard) && isfield(sys_profile_guard, 'A') && ...
 t_ok(~isfield(sys_profile_guard, 'timing') && ...
         ~isfield(sys_profile_guard, 'profile_timing'), ...
     'internal CPF system does not expose profiling metadata when disabled');
+mpopt_profile_off = mpopt_cpf;
+mpopt_profile_off.vsc_mtdc.profile = 0;
+[rcpf_profile_off, success_profile_off] = ...
+    runcpf_vsc_mtdc(mpcb, mpct, mpopt_profile_off);
+t_ok(success_profile_off && ~isfield(rcpf_profile_off.cpf, 'timing'), ...
+    'profile-off CPF result does not expose timing metadata');
+mpopt_profile_on = mpopt_cpf;
+mpopt_profile_on.vsc_mtdc.profile = 1;
+[rcpf_profile_on, success_profile_on] = ...
+    runcpf_vsc_mtdc(mpcb, mpct, mpopt_profile_on);
+t_ok(success_profile_on && isfield(rcpf_profile_on.cpf, 'timing') && ...
+        rcpf_profile_on.cpf.timing.enabled, ...
+    'profile-on CPF result exposes enabled timing metadata');
 args_minimal = struct('base', mpcb, 'target', mpct);
 sys_minimal = vsc_cpf_internal_system(args_minimal);
 mpopt_default = mpoption;

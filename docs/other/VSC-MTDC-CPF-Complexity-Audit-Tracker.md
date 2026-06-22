@@ -71,8 +71,9 @@ still be urgent even when they are relatively small.
    finalized after the implementation direction is settled.
 2. `CPF-CX-001` - Profiling-state regression in internal dispatch. Done with
    one localized initialization fix.
-3. `CPF-CX-007` - Profiling hardening. Cross-cutting, but behavior should stay
-   profile-off neutral if the profiling service is made safe by default.
+3. `CPF-CX-007` - Profiling hardening. Done by routing profiling helpers
+   through a safe enabled predicate and guarding profile-off/profile-on result
+   metadata behavior.
 4. `CPF-CX-006` - Internal API cleanup. Done with a nested setup contract for
    the derivative-focused `__cpf_system` seam.
 5. `CPF-CX-011` - Generator freeze regression. Moderate until diagnosed because
@@ -269,6 +270,15 @@ still be urgent even when they are relatively small.
   accepted-point redispatch. `checkcode` passed for edited `.m` files;
   `t_vsc_mtdc(1)`, `t_cpf(1)`, and `git diff --check` passed, with only Git's
   existing LF-to-CRLF dirty-file warnings.
+- 2026-06-22 - CPF-CX-007 Done. Hardened local profiling helpers in
+  `runcpf_vsc_mtdc.m` behind a safe `profile_is_enabled()` predicate, added
+  defensive profile counter initialization, and guarded profile-off/profile-on
+  result metadata in `t_vsc_mtdc(1)`. Solver math, event order/payloads, and
+  internal `__cpf_system` output fields were not changed. `checkcode` passed
+  for `runcpf_vsc_mtdc.m`; `t_vsc_mtdc(1)`, `t_cpf(1)`, `t_mpxt_psse(1)`,
+  `t_psse(1)`, a direct profile-enabled Beerten CPF smoke, and
+  `git diff --check` passed, with only Git's existing LF-to-CRLF working-copy
+  warnings.
 
 ## Validation Gates
 
@@ -322,7 +332,7 @@ Compare at least:
 
 ## Audit Evidence Snapshot
 
-Commands/results from the 2026-06-15 audit:
+Original commands/results from the 2026-06-15 audit:
 
 - `check_matlab_code` on `runcpf_vsc_mtdc.m`: one info-level preallocation note
   in event appending; no blocking analyzer issues.
@@ -335,9 +345,20 @@ Commands/results from the 2026-06-15 audit:
 - CPF-CX-001 focused regression:
   - `t_vsc_mtdc(1)` no longer fails with missing `profile_timing` through
     `runcpf_vsc_mtdc('__cpf_system', args)`.
-- Remaining focused regression:
-  - `t_vsc_mtdc(1)` fails later at line 913 with `Index exceeds array bounds`
-    while asserting the generator capability freeze event.
+- Remaining focused regression at the time:
+  - `t_vsc_mtdc(1)` failed later at line 913 with `Index exceeds array bounds`
+    while asserting the generator capability freeze event. This is now fixed by
+    CPF-CX-011.
 - Profile smoke:
   - profile off: `success=1`, `max_lam=1`, `timing=0`.
   - profile on: `success=1`, `max_lam=1`, `timing=1`, `timing_enabled=1`.
+
+Pre-CPF-CX-007 lightweight refresh on 2026-06-22:
+
+- `git status --short` before the CPF-CX-007 implementation: clean.
+- `git diff --check`: clean.
+- Current `lib/runcpf_vsc_mtdc.m` metrics: 4,544 lines, 184 function
+  definitions, 402 `if`/`elseif` branch tokens, and 46 `for`/`while` loop
+  tokens.
+- Open tracker items at that refresh: CPF-CX-007, CPF-CX-008, and CPF-CX-009.
+- MATLAB validation was not rerun for this documentation-only refresh.
