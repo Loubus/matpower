@@ -6,5 +6,5 @@ if isempty(imp)
 end
 [p, n, e] = fileparts(imp);
 cd(p);
-install_matpower(1, 0, 0);
+install_matpower(1, 0, 0, 1);
 cd(cwd);

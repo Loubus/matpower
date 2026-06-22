@@ -12,6 +12,10 @@ function report = check_gen_capability(results, opt)
 %   is thermal unless OPT.GEN_TYPE supplies a scalar, vector or cell array of
 %   types accepted by GEN_CAPABILITY_CURVE.
 %
+%   Optional MPC.GEN_CAPABILITY metadata fields:
+%       Snom, Smax, smax  scalar/vector apparent-power base
+%       type, gen_type    scalar/vector/cell generator curve type
+%
 %   Optional OPT fields:
 %       GEN_IDX   selected generator rows, default all in-service generators
 %       GEN_TYPE  scalar/vector/cell generator type, default thermal
@@ -32,7 +36,7 @@ end
 mpc = loadcase(results);
 
 [~, ~, REF, ~, BUS_I, BUS_TYPE] = idx_bus;
-[GEN_BUS, PG, QG, ~, ~, ~, MBASE, GEN_STATUS] = idx_gen;
+[GEN_BUS, PG, QG, ~, ~, ~, ~, GEN_STATUS] = idx_gen;
 ng = size(mpc.gen, 1);
 elements = repmat(empty_element(), 0, 1);
 
@@ -47,8 +51,12 @@ for kk = 1:length(idx)
     g = idx(kk);
     P0 = mpc.gen(g, PG);
     Q0 = mpc.gen(g, QG);
-    Smax = option_value(opt, 'gen_smax', g, kk, default_smax(mpc, g, MBASE));
-    type = option_value(opt, 'gen_type', g, kk, 2);
+    Smax = gen_capability_metadata_or_option_value(mpc, opt, ...
+        {'Snom', 'Smax', 'smax'}, {'gen_smax'}, ...
+        g, kk, gen_capability_default_smax(mpc, g), ...
+        'check_gen_capability');
+    type = gen_capability_metadata_or_option_value(mpc, opt, ...
+        {'type', 'gen_type'}, {'gen_type'}, g, kk, 2);
     if is_slack_generator(mpc, g, GEN_BUS, BUS_I, BUS_TYPE, REF)
         [sat, Psat, Qsat, Ssat, info] = ...
             slack_exempt_info(P0, Q0, Smax, type);
@@ -89,13 +97,6 @@ else
 end
 
 
-function Smax = default_smax(mpc, g, MBASE)
-Smax = mpc.gen(g, MBASE);
-if ~isfinite(Smax) || Smax <= 0
-    Smax = mpc.baseMVA;
-end
-
-
 function TorF = is_slack_generator(mpc, g, GEN_BUS, BUS_I, BUS_TYPE, REF)
 row = find(mpc.bus(:, BUS_I) == mpc.gen(g, GEN_BUS), 1);
 TorF = ~isempty(row) && mpc.bus(row, BUS_TYPE) == REF;
@@ -124,37 +125,6 @@ info = struct( ...
     'margin',           Inf, ...
     'projection_norm',  0, ...
     'curve',            struct() );
-
-
-function val = option_value(opt, name, g, kk, default)
-val = default;
-if ~isfield(opt, name) || isempty(opt.(name))
-    return;
-end
-raw = opt.(name);
-if iscell(raw)
-    if isscalar(raw)
-        val = raw{1};
-    elseif numel(raw) >= g
-        val = raw{g};
-    elseif numel(raw) >= kk
-        val = raw{kk};
-    else
-        error('check_gen_capability: option %s has invalid length', name);
-    end
-elseif isnumeric(raw)
-    if isscalar(raw)
-        val = raw;
-    elseif numel(raw) >= g
-        val = raw(g);
-    elseif numel(raw) >= kk
-        val = raw(kk);
-    else
-        error('check_gen_capability: option %s has invalid length', name);
-    end
-else
-    val = raw;
-end
 
 
 function report = build_report(elements)

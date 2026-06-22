@@ -117,6 +117,7 @@ state.current_tap = zeros(state.n, 1);
 state.current_raw = state.windv;
 state.states_raw = cell(state.n, 1);
 state.states_tap = cell(state.n, 1);
+state.initial_tap_normalized = false(state.n, 1);
 state.at_min = false(state.n, 1);
 state.at_max = false(state.n, 1);
 
@@ -137,9 +138,11 @@ for k = 1:state.n
     state.states_raw{k} = raw_states;
     state.states_tap{k} = tap_states;
     if state.controllable(k) && ~isempty(tap_states)
-        [~, jj] = min(abs(tap_states - state.current_tap(k)));
+        jj = nearest_tap_state_idx(tap_states, state.current_tap(k));
         state.current_tap(k) = tap_states(jj);
         state.current_raw(k) = raw_states(jj);
+        state.initial_tap_normalized(k) = ...
+            abs(state.current_tap(k) - state.base_tap(k)) > 1e-9;
     end
 end
 
@@ -309,6 +312,13 @@ raw_states = linspace(lo, hi, state.ntp(k))';
 tap_states = raw_to_tap(state, mpc, k, raw_states);
 [tap_states, ord] = sort(tap_states);
 raw_states = raw_states(ord);
+
+function jj = nearest_tap_state_idx(tap_states, tap)
+dist = abs(tap_states - tap);
+min_dist = min(dist);
+tie_tol = max(1e-12, 1e-10 * max(1, abs(tap)));
+cand = find(dist <= min_dist + tie_tol);
+jj = cand(end);
 
 function tap = raw_to_tap(state, mpc, k, raw)
 [~, T_BUS] = idx_brch;

@@ -37,7 +37,8 @@
 %   fparm, z0, zl and zu as parameters used to directly extend the OPF
 %   formulation (see OPF for details). Additional standard optional fields
 %   include bus_name, gentype and genfuel. Standard optional VSC-MTDC fields
-%   are busdc, branchdc, vsc, vsc_capability and vsc_hvdc_dispatch. Other
+%   are busdc, branchdc, vsc, vsc_capability, gen_capability,
+%   vsc_hvdc_dispatch and cpf_policies. Other
 %   user-defined fields may also be included and will be automatically
 %   loaded by the LOADCASE function and, given an appropriate 'savecase'
 %   callback function (see ADD_USERFCN), saved by the SAVECASE function.
@@ -163,9 +164,10 @@
 %       The optional vsc matrix defines VSC converter controls, loss
 %       coefficients and explicit transformer/filter/reactor station data.
 %       Columns 1-29 are input data and columns 30-44 are added after power
-%       flow solution. Optional vsc_capability and vsc_hvdc_dispatch structs
-%       carry VSC capability and VSC/HVDC dispatch metadata used by PF/CPF
-%       workflows. See IDX_VSC for the column definitions and mode codes.
+%       flow solution. Optional vsc_capability, gen_capability,
+%       vsc_hvdc_dispatch and cpf_policies structs carry VSC/generator
+%       capability and incremental dispatch metadata used by PF/CPF workflows.
+%       See IDX_VSC for the column definitions and mode codes.
 %
 % See also loadcase, savecase, idx_bus, idx_brch, idx_gen, idx_area,
 % idx_cost, idx_busdc, idx_branchdc, idx_vsc.

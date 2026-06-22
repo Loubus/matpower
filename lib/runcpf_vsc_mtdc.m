@@ -37,6 +37,8 @@ function [results, success] = ...
 %   TOL_Q           reactive-power tolerance, default 1e-6
 %   CPF_MAX_IT      maximum continuation points for 'NOSE'/'FULL', default 200
 %   CPF_MAX_LAM     maximum lambda for 'NOSE'/'FULL' without failure, default 5
+%   CPF_POLICIES    incremental CPF load/gen/HVDC redispatch policies,
+%                   usually provided as MPC.CPF_POLICIES in the base case
 %   DISPATCH_POLICY VSC/HVDC dispatch policy passed to
 %                   MAKE_VSC_HVDC_DISPATCH_TARGET before the CPF target is
 %                   validated and interpolated.
@@ -48,6 +50,13 @@ function [results, success] = ...
 %   PSSE_CONTROL_MAX_IT maximum PSS/E active-set iterations, default 20
 %   CAPABILITY_ENFORCE  enable TESIS-style PF/CPF active-set enforcement,
 %                   default 0
+%   CAPABILITY_LIMIT  'stop' (default) or 'freeze'. With 'freeze', CPF
+%                   continues past a capability loading limit by freezing
+%                   the exhausted CPF dispatch at the last feasible point.
+%   CAPABILITY_VSC_LIMIT VSC-specific capability limit behavior override,
+%                   default empty, falling back to CAPABILITY_LIMIT
+%   CAPABILITY_GEN_LIMIT generator-specific capability limit behavior
+%                   override, default empty, falling back to CAPABILITY_LIMIT
 %   CAPABILITY_MAX_IT   max capability active-set iterations, default 10
 %   CAPABILITY_PF_ENFORCE PF-specific capability override, default empty
 %   CAPABILITY_PF_MAX_IT PF-specific max iteration override, default empty
@@ -60,15 +69,20 @@ function [results, success] = ...
 %   CAPABILITY_GEN_SMAX generator capability Smax override, default empty
 %   CAPABILITY_GEN_TYPE generator capability curve type, default 2
 %
+% CPF results include CPF.ACTIVE_SET_FAILURE_POLICY, which reports the
+% declared and observed failure policy for enabled PSS/E, VSC capability,
+% generator capability, and HVDC derating active-set features.
+%
 % Capability enforcement is TESIS-style solve-saturate-continue active-set
 % logic. It is not OPF constraint enforcement and does not optimize
 % redispatch. Capability audits can be run separately with
 % CHECK_CAPABILITY_LIMITS.
 %
-% The base and target cases may also differ in VSC control set points
-% PAC_SET, QAC_SET, VAC_SET, PDC_SET, VDC_SET and KDROOP. The continuation
-% interpolates these values with lambda, allowing an HVDC transfer schedule
-% to share active/reactive loading changes with conventional AC branches.
+% When MPC.CPF_POLICIES is present, lambda scales only the load direction.
+% Generator and HVDC redispatch are accumulated incrementally from the last
+% accepted CPF point with d_lambda. HVDC redispatch acts on PAC_SET/QAC_SET,
+% not PDC_SET. Cases without CPF_POLICIES keep the historical target-case
+% interpolation of generator and VSC set points.
 %
 % See also runcpf, runcpf_psse, runpf_vsc_mtdc,
 % make_vsc_hvdc_dispatch_target, check_capability_limits.
@@ -97,11 +111,16 @@ end
 
 [PQ, ~, REF, ~, BUS_I, BUS_TYPE, PD, QD, GS, BS, ~, VM, VA] = idx_bus;
 [F_BUS, T_BUS, BR_R, BR_X, BR_B, ~, ~, ~, TAP, SHIFT, BR_STATUS] = idx_brch;
-[GEN_BUS, PG, QG, QMAX, QMIN, VG, MBASE, GEN_STATUS] = idx_gen;
+[GEN_BUS, PG, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
 c = idx_vsc;
 bdc = idx_busdc;
 brdc = idx_branchdc;
 vsc_hvdc_dispatch = [];
+gen_dispatch = [];
+cpf_policy_state = struct('enabled', 0);
+vsc_capability_recorded_idx = [];
+gen_capability_recorded_idx = [];
+profile_timing = init_profile_timing(0);
 
 if nargin >= 1 && ischar(basecasedata) && strncmp(basecasedata, '__', 2)
     results = internal_dispatch(basecasedata, targetcasedata, mpopt);
@@ -115,18 +134,35 @@ mpcb = loadcase(basecasedata);
 mpct = loadcase(targetcasedata);
 [mpct, vsc_hvdc_dispatch] = apply_vsc_hvdc_dispatch_policy(mpcb, mpct, mpopt);
 validate_vsc_cpf_cases(mpcb, mpct);
+mpcb_transfer0 = mpcb;
+mpct_transfer0 = mpct;
 
 step = mpopt.cpf.step;
 step_min = mpopt.cpf.step_min;
 step_max = mpopt.cpf.step_max;
 adapt_step = mpopt.cpf.adapt_step;
 stop_at = mpopt.cpf.stop_at;
+full_trace = ischar(stop_at) && strcmpi(stop_at, 'FULL');
+full_trace_target_lam = 0;
 target_lam = [];
 if isnumeric(stop_at)
     target_lam = stop_at;
 end
 opt = vsc_cpf_options(mpopt);
+cpf_policy_state = init_incremental_cpf_policy_state(mpcb, mpct, opt);
+validate_capability_limit_options();
+profile_enabled = isfield(opt, 'profile') && option_is_enabled(opt.profile);
+profile_timing = init_profile_timing(profile_enabled);
 psse_controls_frozen = 0;
+vsc_capability_transfer_frozen = 0;
+vsc_capability_transfer_backoff_count = 0;
+vsc_capability_resaturation_count = 0;
+vsc_slack_q_backoff_count = 0;
+gen_capability_dispatch_frozen = 0;
+unified_context_cache = struct('key', '', 'ctx', [], 'ctxt', [], ...
+    'Sdelta', []);
+vsc_capability_param_cache = struct('key', {}, 'params', {}, ...
+    'policy', {});
 
 if mpopt.verbose > 4
     mpopt_pf = mpoption(mpopt, 'verbose', 2, 'out.all', 0);
@@ -135,6 +171,7 @@ else
 end
 mpopt_pf = mpoption(mpopt_pf, 'pf.enforce_q_lims', mpopt.cpf.enforce_q_lims);
 method = vsc_pf_method(mpopt_pf);
+active_set_policy_config = init_active_set_failure_policy_config();
 
 if mpopt.verbose
     v = mpver('all');
@@ -224,6 +261,7 @@ while isempty(done_msg)
         last_lam = lam;
         last = trial;
         cpf = append_trace(cpf, trial, V, accepted_step, lam);
+        refresh_incremental_policy_anchor(lam);
         if mpopt.verbose > 1
             fprintf('step %3d  : stepsize = %-9.3g lambda = %6.3f, VSC-MTDC iterations = %d\n', ...
                 cont_steps, accepted_step, lam, trial.iterations);
@@ -313,8 +351,8 @@ end
                 'Base case VSC capability re-correction did not converge.');
             return;
         end
-        base_events = append_event(base_events, cap_events);
-        [ctx, ctxt, Sdelta, x, ~, ~, pf_it, base, V, ...
+        base_events = vsc_mtdc_cpf_append_event(base_events, cap_events);
+        [ctx, ctxt, Sdelta, x, ~, lam, ~, pf_it, base, V, ...
             gen_cap_events, gen_cap_ok] = ...
             settle_unified_gen_capability_controls(ctx, ctxt, Sdelta, x, ...
             eval, lam, pf_it, normF, base, base_bus_ids, ...
@@ -326,7 +364,8 @@ end
                 'Base case generator capability re-correction did not converge.');
             return;
         end
-        base_events = append_event(base_events, gen_cap_events);
+        base_events = vsc_mtdc_cpf_append_event(base_events, gen_cap_events);
+        refresh_incremental_policy_anchor(lam);
 
         transfer = vsc_cpf_transfer_norm(mpcb, mpct);
         cpf = initialize_trace(base, V, step, lam);
@@ -357,7 +396,20 @@ end
         nose_tol = mpopt.cpf.nose_tol;
 
         while isempty(done_msg)
+            target_lambda_step = 0;
+            trial_parameterization = mpopt.cpf.parameterization;
             if isempty(target_lam)
+                if full_trace && z(end) < 0 && ...
+                        lam <= full_trace_target_lam + mpopt.cpf.target_lam_tol
+                    done_msg = sprintf(['Traced full VSC-MTDC monolithic ' ...
+                        'continuation curve in %d continuation steps.'], ...
+                        cont_steps);
+                    events = vsc_mtdc_cpf_append_event(events, struct( ...
+                        'k', cont_steps, 'name', 'TARGET_LAM', ...
+                        'idx', 1, 'msg', done_msg, ...
+                        'lambda_event', lam));
+                    break;
+                end
                 if lam >= opt.cpf_max_lam && z(end) > 0
                     done_msg = sprintf('Reached VSC-MTDC monolithic CPF lambda limit %.6g in %d continuation steps.', ...
                         opt.cpf_max_lam, cont_steps);
@@ -369,6 +421,13 @@ end
                     break;
                 end
                 trial_step = curr_step;
+                if full_trace && z(end) < 0 && ...
+                        lam + trial_step * z(end) <= ...
+                        full_trace_target_lam + mpopt.cpf.target_lam_tol
+                    trial_step = lam - full_trace_target_lam;
+                    trial_parameterization = 1;
+                    target_lambda_step = 1;
+                end
             else
                 if lam >= target_lam - mpopt.cpf.target_lam_tol
                     done_msg = sprintf('Reached desired lambda %.6g in %d continuation steps.', ...
@@ -388,13 +447,16 @@ end
                 break;
             end
 
-            xhat = x + trial_step * z(1:end-1);
-            lamhat = lam + trial_step * z(end);
             ctx_hat = ctx;
             Sdelta_hat = Sdelta;
+            xhat = x + trial_step * z(1:end-1);
+            lamhat = lam + trial_step * z(end);
+            if target_lambda_step
+                lamhat = full_trace_target_lam;
+            end
             [xnew, lamnew, evalnew, normFnew, corr_it, ok] = ...
                 unified_cpf_corrector(ctx, Sdelta, xhat, lamhat, x, lam, ...
-                    z, trial_step, mpopt.cpf.parameterization);
+                    z, trial_step, trial_parameterization);
 
             if ok
                 accepted_step = trial_step;
@@ -402,32 +464,18 @@ end
                     corr_it, normFnew);
                 [r, V] = stamp_original_ac_solution(r, base_bus_ids, ...
                     base_branch_count, base_gen_count);
-                ctx0 = ctx;
-                ctxt0 = ctxt;
-                Sdelta0 = Sdelta;
-                mpcb0 = mpcb;
-                mpct0 = mpct;
-                [ctx, ctxt, Sdelta, xnew, ~, ~, corr_it, ...
-                    r, V, control_events, control_ok, control_changed] = ...
-                    settle_unified_psse_controls(ctx, ctxt, Sdelta, xnew, ...
-                    evalnew, lamnew, corr_it, normFnew, r, base_bus_ids, ...
-                    base_branch_count, base_gen_count, cont_steps + 1);
+                active_set_changed = 0;
+                [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, V, control_events, control_ok, ...
+                    ~, retry_step, active_set_changed] = ...
+                    run_active_set_stage('psse', 'PSS/E control', '', ...
+                    ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, base_bus_ids, base_branch_count, ...
+                    base_gen_count, cont_steps + 1, trial_step, step_min, ...
+                    active_set_changed);
                 if ~control_ok
-                    ctx = ctx0;
-                    ctxt = ctxt0;
-                    Sdelta = Sdelta0;
-                    mpcb = mpcb0;
-                    mpct = mpct0;
-                    if trial_step / 2 >= step_min
-                        curr_step = trial_step / 2;
-                        if mpopt.verbose > 1
-                            fprintf(['step %3d  : stepsize = %-9.3g ' ...
-                                'lambda = %6.3f PSS/E control ' ...
-                                're-correction did not converge, ' ...
-                                'retrying with %.3g\n'], ...
-                                cont_steps + 1, trial_step, lamnew, ...
-                                curr_step);
-                        end
+                    if ~isempty(retry_step)
+                        curr_step = retry_step;
                         continue;
                     else
                         failure = struct('lambda', lamnew, ...
@@ -435,13 +483,14 @@ end
                         if isempty(target_lam) && ...
                                 freeze_psse_controls_after_limit()
                             psse_controls_frozen = 1;
-                            curr_step = max(trial_step, step_min);
+                            failure = [];
+                            curr_step = freeze_recovery_step();
                             done_msg = sprintf(['Reached VSC-MTDC ' ...
                                 'monolithic PSS/E control loading limit ' ...
                                 'in %d continuation steps, lambda = %.6g; ' ...
                                 'freezing PSS/E discrete controls and ' ...
                                 'continuing CPF.'], cont_steps, last_lam);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps, ...
                                 'name', 'PSSE_CONTROL_FREEZE', 'idx', 1, ...
                                 'msg', done_msg));
@@ -458,7 +507,7 @@ end
                                 'monolithic PSS/E control loading limit ' ...
                                 'in %d continuation steps, lambda = %.6g.'], ...
                                 cont_steps, last_lam);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps, ...
                                 'name', 'PSSE_CONTROL_LIMIT', 'idx', 1, ...
                                 'msg', done_msg));
@@ -467,7 +516,7 @@ end
                             done_msg = sprintf(['VSC-MTDC monolithic ' ...
                                 'PSS/E control re-correction did not ' ...
                                 'converge at lambda %.6g.'], lamnew);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps + 1, ...
                                 'name', 'PSSE_CONTROL_FAIL', 'idx', 1, ...
                                 'msg', done_msg));
@@ -476,54 +525,216 @@ end
                         break;
                     end
                 end
-                events = append_event(events, control_events);
+                events = vsc_mtdc_cpf_append_event(events, control_events);
 
-                ctx0 = ctx;
-                ctxt0 = ctxt;
-                Sdelta0 = Sdelta;
-                mpcb0 = mpcb;
-                mpct0 = mpct;
-                [ctx, ctxt, Sdelta, xnew, ~, ~, corr_it, ...
-                    r, V, cap_events, cap_ok, cap_changed] = ...
-                    settle_unified_vsc_capability_controls(ctx, ctxt, ...
-                    Sdelta, xnew, evalnew, lamnew, corr_it, normFnew, r, ...
+                [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, V, cap_events, cap_ok, ~, ...
+                    retry_step, active_set_changed] = ...
+                    run_active_set_stage('vsc', 'VSC capability', ...
+                    'vsc_capability_recorr_failed', ctx, ctxt, Sdelta, ...
+                    xnew, evalnew, lamnew, normFnew, corr_it, r, ...
                     base_bus_ids, base_branch_count, base_gen_count, ...
-                    cont_steps + 1);
+                    cont_steps + 1, trial_step, step_min, ...
+                    active_set_changed);
                 if ~cap_ok
-                    ctx = ctx0;
-                    ctxt = ctxt0;
-                    Sdelta = Sdelta0;
-                    mpcb = mpcb0;
-                    mpct = mpct0;
-                    if trial_step / 2 >= step_min
-                        curr_step = trial_step / 2;
-                        if mpopt.verbose > 1
-                            fprintf(['step %3d  : stepsize = %-9.3g ' ...
-                                'lambda = %6.3f VSC capability ' ...
-                                're-correction did not converge, ' ...
-                                'retrying with %.3g\n'], ...
-                                cont_steps + 1, trial_step, lamnew, ...
-                                curr_step);
-                        end
+                    if ~isempty(retry_step)
+                        curr_step = retry_step;
                         continue;
                     else
                         failure = struct('lambda', lamnew, ...
                             'step', trial_step);
+                        if isempty(target_lam) && ...
+                                freeze_vsc_capability_after_limit()
+                            relief_cleanup = profile_time_scope( ...
+                                'vsc_capability_backoff_relief_logic'); %#ok<NASGU>
+                            [freeze_changed, freeze_idx, freeze_cols, ...
+                                backoff_lambda, relief_action, ...
+                                margin_old, margin_new] = ...
+                                resaturate_vsc_capability_at_limit();
+                            if ~freeze_changed
+                                [freeze_changed, freeze_idx, freeze_cols, ...
+                                    backoff_lambda, relief_action, ...
+                                margin_old, margin_new] = ...
+                                    increase_vsc_capability_margin_at_limit();
+                            end
+                            margin_recovery_attempted = freeze_changed && ...
+                                strcmp(relief_action, 'margin_increase');
+                            if ~freeze_changed
+                                [freeze_changed, freeze_idx, freeze_cols, ...
+                                backoff_lambda, relief_action] = ...
+                                    relieve_vsc_dc_slack_ac_support_at_limit();
+                                margin_old = NaN;
+                                margin_new = NaN;
+                            end
+                            if ~freeze_changed && vsc_capability_transfer_frozen
+                                [freeze_changed, freeze_idx, freeze_cols, ...
+                                    backoff_lambda] = ...
+                                    backoff_vsc_hvdc_transfer_at_limit();
+                                relief_action = 'transfer_backoff';
+                                margin_old = NaN;
+                                margin_new = NaN;
+                            elseif ~freeze_changed
+                                [freeze_changed, freeze_idx, freeze_cols] = ...
+                                    freeze_vsc_capability_transfer_at_limit();
+                                backoff_lambda = 0;
+                                relief_action = 'transfer_freeze';
+                                margin_old = NaN;
+                                margin_new = NaN;
+                            end
+                            if freeze_changed
+                                [ctx, ctxt, Sdelta, x, z, freeze_ok] = ...
+                                    rebuild_unified_point_after_freeze( ...
+                                    x, lam, direction);
+                            else
+                                freeze_ok = 0;
+                            end
+                            while freeze_changed && ~freeze_ok && ...
+                                    strcmp(relief_action, 'margin_increase')
+                                [freeze_changed, freeze_idx, freeze_cols, ...
+                                    backoff_lambda, relief_action, ...
+                                    margin_old, margin_new] = ...
+                                    increase_vsc_capability_margin_at_limit();
+                                if freeze_changed
+                                    [ctx, ctxt, Sdelta, x, z, freeze_ok] = ...
+                                        rebuild_unified_point_after_freeze( ...
+                                        x, lam, direction);
+                                end
+                            end
+                            if ~(freeze_changed && freeze_ok) && ...
+                                    margin_recovery_attempted
+                                [freeze_changed, freeze_idx, freeze_cols, ...
+                                    backoff_lambda, relief_action] = ...
+                                    relieve_vsc_dc_slack_ac_support_at_limit();
+                                margin_old = NaN;
+                                margin_new = NaN;
+                                if ~freeze_changed && vsc_capability_transfer_frozen
+                                    [freeze_changed, freeze_idx, freeze_cols, ...
+                                        backoff_lambda] = ...
+                                        backoff_vsc_hvdc_transfer_at_limit();
+                                    relief_action = 'transfer_backoff';
+                                elseif ~freeze_changed
+                                    [freeze_changed, freeze_idx, freeze_cols] = ...
+                                        freeze_vsc_capability_transfer_at_limit();
+                                    backoff_lambda = 0;
+                                    relief_action = 'transfer_freeze';
+                                end
+                                if freeze_changed
+                                    [ctx, ctxt, Sdelta, x, z, freeze_ok] = ...
+                                        rebuild_unified_point_after_freeze( ...
+                                        x, lam, direction);
+                                end
+                            end
+                            clear relief_cleanup;
+                            if freeze_changed && freeze_ok
+                                failure = [];
+                                if any(strcmp(relief_action, ...
+                                        {'transfer_freeze', 'transfer_backoff'}))
+                                    vsc_capability_transfer_frozen = 1;
+                                end
+                                curr_step = freeze_recovery_step();
+                                recovery_event_cleanup = profile_time_scope( ...
+                                    'vsc_capability_recovery_event'); %#ok<NASGU>
+                                if strcmp(relief_action, 'margin_increase')
+                                    event_name = 'VSC_CAPABILITY_MARGIN_INCREASE';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; increasing VSC ' ...
+                                        'saturation margin from %.4g to ' ...
+                                        '%.4g and continuing CPF.'], ...
+                                        cont_steps, last_lam, margin_old, ...
+                                        margin_new);
+                                elseif strcmp(relief_action, 'ac_release')
+                                    event_name = 'VSC_CAPABILITY_AC_RELEASE';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; releasing saturated ' ...
+                                        'DC-slack VSC AC voltage control and ' ...
+                                        'continuing CPF.'], ...
+                                        cont_steps, last_lam);
+                                elseif strcmp(relief_action, 'q_saturate')
+                                    event_name = 'VSC_CAPABILITY_Q_SATURATION';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; saturating DC-slack ' ...
+                                        'VSC Qac on its capability curve and ' ...
+                                        'continuing CPF.'], ...
+                                        cont_steps, last_lam);
+                                elseif strcmp(relief_action, 'resaturate')
+                                    event_name = 'VSC_CAPABILITY_RESATURATION';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; re-saturating VSC ' ...
+                                        'setpoints with the configured ' ...
+                                        'capability margin and continuing ' ...
+                                        'CPF.'], cont_steps, last_lam);
+                                elseif backoff_lambda > 0
+                                    event_name = 'VSC_CAPABILITY_BACKOFF';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; reducing frozen ' ...
+                                        'VSC/HVDC transfer by %.6g lambda ' ...
+                                        'equivalent and continuing CPF.'], ...
+                                        cont_steps, last_lam, backoff_lambda);
+                                else
+                                    event_name = 'VSC_CAPABILITY_FREEZE';
+                                    done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                        'monolithic VSC capability loading ' ...
+                                        'limit in %d continuation steps, ' ...
+                                        'lambda = %.6g; freezing VSC CPF ' ...
+                                        'setpoint transfer and continuing CPF.'], ...
+                                        cont_steps, last_lam);
+                                end
+                                recovery_event = struct( ...
+                                    'k', cont_steps, ...
+                                    'name', event_name, ...
+                                    'idx', 1, 'msg', done_msg, ...
+                                     'lambda_freeze', last_lam, ...
+                                     'backoff_lambda', backoff_lambda, ...
+                                     'relief_action', relief_action, ...
+                                     'margin_old', margin_old, ...
+                                     'margin_new', margin_new, ...
+                                     'frozen_vsc_idx', freeze_idx, ...
+                                     'frozen_vsc_cols', freeze_cols);
+                                if ~vsc_mtdc_cpf_is_duplicate_recovery_event(events, ...
+                                        recovery_event)
+                                    events = vsc_mtdc_cpf_append_event(events, ...
+                                        recovery_event);
+                                end
+                                clear recovery_event_cleanup;
+                                done_msg = '';
+                                if mpopt.verbose > 1
+                                    fprintf(['step %3d  : VSC capability ' ...
+                                        'limit at lambda = %6.3f; ' ...
+                                        'applying %s and retrying with ' ...
+                                        '%.3g\n'], ...
+                                        cont_steps + 1, lamnew, ...
+                                        relief_action, curr_step);
+                                end
+                                continue;
+                            end
+                        end
                         if isempty(target_lam)
                             done_msg = sprintf(['Reached VSC-MTDC ' ...
                                 'monolithic VSC capability loading limit ' ...
                                 'in %d continuation steps, lambda = %.6g.'], ...
                                 cont_steps, last_lam);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps, ...
                                 'name', 'VSC_CAPABILITY_LIMIT', ...
-                                'idx', 1, 'msg', done_msg));
+                                'idx', 1, 'msg', done_msg, ...
+                                'vsc_margin_final', ...
+                                    vsc_capability_current_margin_fraction()));
                             success = 1;
                         else
                             done_msg = sprintf(['VSC-MTDC monolithic ' ...
                                 'VSC capability re-correction did not ' ...
                                 'converge at lambda %.6g.'], lamnew);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps + 1, ...
                                 'name', 'VSC_CAPABILITY_FAIL', ...
                                 'idx', 1, 'msg', done_msg));
@@ -532,45 +743,69 @@ end
                         break;
                     end
                 end
-                events = append_event(events, cap_events);
+                events = vsc_mtdc_cpf_append_event(events, cap_events);
 
-                ctx0 = ctx;
-                ctxt0 = ctxt;
-                Sdelta0 = Sdelta;
-                mpcb0 = mpcb;
-                mpct0 = mpct;
-                [ctx, ctxt, Sdelta, xnew, ~, ~, corr_it, ...
-                    r, V, gen_cap_events, gen_cap_ok, gen_cap_changed] = ...
-                    settle_unified_gen_capability_controls(ctx, ctxt, ...
-                    Sdelta, xnew, evalnew, lamnew, corr_it, normFnew, r, ...
-                    base_bus_ids, base_branch_count, base_gen_count, ...
-                    cont_steps + 1);
+                [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, V, gen_cap_events, gen_cap_ok, ...
+                    gen_cap_changed, retry_step, active_set_changed] = ...
+                    run_active_set_stage('gen', 'generator capability', '', ...
+                    ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, base_bus_ids, base_branch_count, ...
+                    base_gen_count, cont_steps + 1, trial_step, step_min, ...
+                    active_set_changed);
                 if ~gen_cap_ok
-                    ctx = ctx0;
-                    ctxt = ctxt0;
-                    Sdelta = Sdelta0;
-                    mpcb = mpcb0;
-                    mpct = mpct0;
-                    if trial_step / 2 >= step_min
-                        curr_step = trial_step / 2;
-                        if mpopt.verbose > 1
-                            fprintf(['step %3d  : stepsize = %-9.3g ' ...
-                                'lambda = %6.3f generator capability ' ...
-                                're-correction did not converge, ' ...
-                                'retrying with %.3g\n'], ...
-                                cont_steps + 1, trial_step, lamnew, ...
-                                curr_step);
-                        end
+                    if ~isempty(retry_step)
+                        curr_step = retry_step;
                         continue;
                     else
                         failure = struct('lambda', lamnew, ...
                             'step', trial_step);
+                        if isempty(target_lam) && ...
+                                freeze_gen_capability_after_limit()
+                            [freeze_changed, freeze_idx] = ...
+                                freeze_gen_capability_dispatch_at_limit();
+                            if freeze_changed
+                                [ctx, ctxt, Sdelta, x, z, freeze_ok] = ...
+                                    rebuild_unified_point_after_freeze( ...
+                                    x, lam, direction);
+                            else
+                                freeze_ok = 0;
+                            end
+                            if freeze_changed && freeze_ok
+                                failure = [];
+                                gen_capability_dispatch_frozen = 1;
+                                curr_step = freeze_recovery_step();
+                                done_msg = sprintf(['Reached VSC-MTDC ' ...
+                                    'monolithic generator capability ' ...
+                                    'loading limit in %d continuation ' ...
+                                    'steps, lambda = %.6g; freezing ' ...
+                                    'generator CPF redispatch and ' ...
+                                    'continuing CPF.'], cont_steps, ...
+                                    last_lam);
+                                events = vsc_mtdc_cpf_append_event(events, struct( ...
+                                    'k', cont_steps, ...
+                                    'name', 'GEN_CAPABILITY_FREEZE', ...
+                                    'idx', 1, 'msg', done_msg, ...
+                                    'lambda_freeze', last_lam, ...
+                                    'frozen_gen_idx', freeze_idx));
+                                done_msg = '';
+                                if mpopt.verbose > 1
+                                    fprintf(['step %3d  : generator ' ...
+                                        'capability limit at lambda = ' ...
+                                        '%6.3f; freezing generator ' ...
+                                        'redispatch and retrying with ' ...
+                                        '%.3g\n'], cont_steps + 1, ...
+                                        lamnew, curr_step);
+                                end
+                                continue;
+                            end
+                        end
                         if isempty(target_lam)
                             done_msg = sprintf(['Reached VSC-MTDC ' ...
                                 'monolithic generator capability loading ' ...
                                 'limit in %d continuation steps, lambda = ' ...
                                 '%.6g.'], cont_steps, last_lam);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps, ...
                                 'name', 'GEN_CAPABILITY_LIMIT', ...
                                 'idx', 1, 'msg', done_msg));
@@ -579,7 +814,7 @@ end
                             done_msg = sprintf(['VSC-MTDC monolithic ' ...
                                 'generator capability re-correction did ' ...
                                 'not converge at lambda %.6g.'], lamnew);
-                            events = append_event(events, struct( ...
+                            events = vsc_mtdc_cpf_append_event(events, struct( ...
                                 'k', cont_steps + 1, ...
                                 'name', 'GEN_CAPABILITY_FAIL', ...
                                 'idx', 1, 'msg', done_msg));
@@ -588,10 +823,43 @@ end
                         break;
                     end
                 end
-                events = append_event(events, gen_cap_events);
+                events = vsc_mtdc_cpf_append_event(events, gen_cap_events);
+                if gen_cap_changed
+                    accepted_step = abs(lamnew - lam);
+                    xhat = xnew;
+                    lamhat = lamnew;
+                    ctx_hat = ctx;
+                    Sdelta_hat = Sdelta;
+                end
 
-                active_set_changed = control_changed || cap_changed || ...
-                    gen_cap_changed;
+                [ctx, ctxt, Sdelta, xnew, ~, lamnew, ~, ...
+                    corr_it, r, V, hvdc_der_events, hvdc_der_ok, ...
+                    ~, retry_step, active_set_changed] = ...
+                    run_active_set_stage('hvdc', 'HVDC derating', '', ...
+                    ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                    corr_it, r, base_bus_ids, base_branch_count, ...
+                    base_gen_count, cont_steps + 1, trial_step, step_min, ...
+                    active_set_changed);
+                if ~hvdc_der_ok
+                    if ~isempty(retry_step)
+                        curr_step = retry_step;
+                        continue;
+                    else
+                        failure = struct('lambda', lamnew, ...
+                            'step', trial_step);
+                        done_msg = sprintf(['VSC-MTDC monolithic HVDC ' ...
+                            'derating re-correction did not converge at ' ...
+                            'lambda %.6g.'], lamnew);
+                        events = vsc_mtdc_cpf_append_event(events, struct( ...
+                            'k', cont_steps + 1, ...
+                            'name', 'HVDC_DERATING_FAIL', ...
+                            'idx', 1, 'msg', done_msg));
+                        success = 0;
+                        break;
+                    end
+                end
+                events = vsc_mtdc_cpf_append_event(events, hvdc_der_events);
+
                 if active_set_changed || length(z) ~= length(xnew) + 1 || ...
                         length(x) ~= length(xnew)
                     zseed = zeros(length(xnew) + 1, 1);
@@ -600,7 +868,7 @@ end
                         zseed, xnew, lamnew, 1, direction);
                 else
                     znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, z, ...
-                        x, lam, mpopt.cpf.parameterization, direction);
+                        x, lam, trial_parameterization, direction);
                 end
                 nose_event = ~active_set_changed && isempty(target_lam) && ...
                     strcmpi(stop_at, 'NOSE') && ...
@@ -608,7 +876,7 @@ end
                 if nose_event
                     [xnew, lamnew, ~, ~, znew, loc_it] = ...
                         locate_unified_nose(ctx, Sdelta, x, lam, z, ...
-                        xnew, lamnew, znew, mpopt.cpf.parameterization, ...
+                        xnew, lamnew, znew, trial_parameterization, ...
                         direction, nose_tol, accepted_step);
                     corr_it = corr_it + loc_it;
                 end
@@ -627,14 +895,26 @@ end
                         cont_steps, accepted_step, lamnew, corr_it);
                 end
 
-                if nose_event
+                if nose_event && ~full_trace
                     lam = lamnew;
                     last_lam = lam;
                     last = r;
                     done_msg = sprintf('Reached VSC-MTDC monolithic nose point in %d continuation steps, lambda = %.6g.', ...
                         cont_steps, lam);
-                    events = append_event(events, struct('k', cont_steps, ...
+                    events = vsc_mtdc_cpf_append_event(events, struct('k', cont_steps, ...
                         'name', 'NOSE', 'idx', 1, 'msg', done_msg));
+                    break;
+                elseif target_lambda_step
+                    lam = lamnew;
+                    last_lam = lam;
+                    last = r;
+                    done_msg = sprintf(['Traced full VSC-MTDC monolithic ' ...
+                        'continuation curve in %d continuation steps.'], ...
+                        cont_steps);
+                    events = vsc_mtdc_cpf_append_event(events, struct( ...
+                        'k', cont_steps, 'name', 'TARGET_LAM', ...
+                        'idx', 1, 'msg', done_msg, ...
+                        'lambda_event', lam));
                     break;
                 end
 
@@ -642,6 +922,7 @@ end
                 lam = lamnew;
                 last_lam = lam;
                 last = r;
+                refresh_incremental_policy_anchor(lam);
                 z = znew;
                 if adapt_step
                     curr_step = min(curr_step * 1.25, step_max);
@@ -681,6 +962,16 @@ end
     end
 
     function [ctx, ctxt, Sdelta] = build_unified_context_pair()
+        profile_cleanup = profile_time_scope('build_context_pair'); %#ok<NASGU>
+        key = unified_context_pair_signature(mpcb, mpct);
+        if strcmp(unified_context_cache.key, key)
+            profile_count('context_cache_hit');
+            ctx = unified_context_cache.ctx;
+            ctxt = unified_context_cache.ctxt;
+            Sdelta = unified_context_cache.Sdelta;
+            return;
+        end
+        profile_count('context_cache_miss');
         validate_unified_cpf_transfer(mpcb, mpct);
         ctx = runpf_vsc_mtdc_unified('__setup', mpcb, mpopt_pf);
         ctxt = runpf_vsc_mtdc_unified('__setup', mpct, mpopt_pf);
@@ -688,12 +979,94 @@ end
         Sdelta = ctxt.Sbase - ctx.Sbase;
         ctx = attach_unified_cpf_transfer(ctx, mpcb, mpct, Sdelta);
         ctxt = attach_unified_cpf_transfer(ctxt, mpcb, mpct, Sdelta);
+        unified_context_cache.key = key;
+        unified_context_cache.ctx = ctx;
+        unified_context_cache.ctxt = ctxt;
+        unified_context_cache.Sdelta = Sdelta;
+    end
+
+    function stage = active_set_stage_snapshot(ctx, ctxt, Sdelta)
+        stage = struct( ...
+            'ctx', ctx, ...
+            'ctxt', ctxt, ...
+            'Sdelta', Sdelta, ...
+            'mpcb', mpcb, ...
+            'mpct', mpct, ...
+            'cpf_policy_state', cpf_policy_state, ...
+            'vsc_capability_recorded_idx', vsc_capability_recorded_idx, ...
+            'gen_capability_recorded_idx', gen_capability_recorded_idx);
+    end
+
+    function [ctx, ctxt, Sdelta] = restore_active_set_stage_snapshot(stage)
+        ctx = stage.ctx;
+        ctxt = stage.ctxt;
+        Sdelta = stage.Sdelta;
+        mpcb = stage.mpcb;
+        mpct = stage.mpct;
+        cpf_policy_state = stage.cpf_policy_state;
+        vsc_capability_recorded_idx = stage.vsc_capability_recorded_idx;
+        gen_capability_recorded_idx = stage.gen_capability_recorded_idx;
+    end
+
+    function [ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, r, V, ...
+            ev, success, changed_any, retry_step, active_changed] = ...
+            run_active_set_stage(kind, label, failure_profile_count, ...
+            ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, r, ...
+            bus_ids, nbranch, ngen, event_k, trial_step, step_min, ...
+            active_changed)
+        stage0 = active_set_stage_snapshot(ctx, ctxt, Sdelta);
+        switch lower(kind)
+            case 'psse'
+                [ctx, ctxt, Sdelta, x, ~, ~, iterations, r, V, ...
+                    ev, success, changed_any] = settle_unified_psse_controls( ...
+                    ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
+                    bus_ids, nbranch, ngen, event_k);
+            case 'vsc'
+                [ctx, ctxt, Sdelta, x, ~, ~, iterations, r, V, ...
+                    ev, success, changed_any] = ...
+                    settle_unified_vsc_capability_controls(ctx, ctxt, ...
+                    Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+                    nbranch, ngen, event_k);
+            case 'gen'
+                [ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, ...
+                    r, V, ev, success, changed_any] = ...
+                    settle_unified_gen_capability_controls(ctx, ctxt, ...
+                    Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+                    nbranch, ngen, event_k);
+            case 'hvdc'
+                [ctx, ctxt, Sdelta, x, ~, ~, iterations, r, V, ...
+                    ev, success, changed_any] = ...
+                    settle_unified_hvdc_derating_controls(ctx, ctxt, ...
+                    Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+                    nbranch, ngen, event_k);
+            otherwise
+                error('runcpf_vsc_mtdc: unknown active-set stage ''%s''', kind);
+        end
+
+        retry_step = [];
+        active_changed = active_changed || changed_any;
+        if ~success
+            if ~isempty(failure_profile_count)
+                profile_count(failure_profile_count);
+            end
+            [ctx, ctxt, Sdelta] = restore_active_set_stage_snapshot(stage0);
+            if trial_step / 2 >= step_min
+                retry_step = trial_step / 2;
+                if mpopt.verbose > 1
+                    fprintf(['step %3d  : stepsize = %-9.3g ' ...
+                        'lambda = %6.3f %s re-correction did not ' ...
+                        'converge, retrying with %.3g\n'], ...
+                        event_k, trial_step, lam, label, retry_step);
+                end
+            end
+        end
     end
 
     function [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
             ev, success, changed_any] = settle_unified_psse_controls( ...
             ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
             bus_ids, nbranch, ngen, event_k)
+        profile_cleanup = profile_time_scope('settle_psse_controls'); %#ok<NASGU>
         ev = struct('k', {}, 'name', {}, 'idx', {}, 'msg', {});
         success = 1;
         changed_any = 0;
@@ -707,6 +1080,7 @@ end
         visited{1} = psse_active_set_signature(mpcb);
         nvisited = 1;
         for ctrl_it = 1:max_it
+            profile_count('psse_settle_iteration');
             [changed, mpcb_next, mpct_next, ac_controlled, report, ok] = ...
                 unified_psse_control_update(r, lam);
             if ~ok
@@ -715,7 +1089,18 @@ end
                 return;
             end
             if ~changed
+                profile_count('psse_settle_no_change');
                 if psse_report_has_unsatisfied_controls(report)
+                    [locked, lock_msg] = ...
+                        apply_selective_psse_control_lockout(report, lam);
+                    if locked
+                        profile_count('psse_settle_selective_freeze');
+                        ev = vsc_mtdc_cpf_append_event(ev, struct( ...
+                            'k', event_k, 'name', ...
+                            'PSSE_CONTROL_SELECTIVE_FREEZE', ...
+                            'idx', ctrl_it, 'msg', lock_msg));
+                        continue;
+                    end
                     success = 0;
                 end
                 V = original_ac_voltage_for_result(r, bus_ids);
@@ -723,11 +1108,16 @@ end
             end
 
             changed_any = 1;
+            profile_count('psse_settle_changed');
             sig = psse_active_set_signature(mpcb_next);
             if any(strcmp(visited(1:nvisited), sig))
+                profile_count('psse_settle_cycle_check');
                 current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+                cycle_direct_cleanup = profile_time_scope( ...
+                    'psse_cycle_direct_update'); %#ok<NASGU>
                 [direct, direct_report] = ...
                     mp.psse_unified_control_update(current, r.bus);
+                clear cycle_direct_cleanup;
                 if direct_report.supported && ~direct_report.changed && ...
                         psse_control_violations(direct) == 0
                     mpcb = copy_psse_control_fields(mpcb, direct);
@@ -735,6 +1125,7 @@ end
                     V = original_ac_voltage_for_result(r, bus_ids);
                     return;
                 end
+                profile_count('psse_settle_cycle_auxiliary');
                 [aux_changed, aux_b, aux_t, aux_ac, aux_report, aux_ok] = ...
                     auxiliary_psse_control_update(r, lam);
                 if aux_ok
@@ -769,6 +1160,7 @@ end
             visited{nvisited} = sig;     %% schedule this active set as seen
             mpcb = mpcb_next;
             mpct = mpct_next;
+            refresh_incremental_policy_anchor(lam);
             [ctx, ctxt, Sdelta] = build_unified_context_pair();
             x0 = unified_x_from_controlled_ac(ctx, ac_controlled, r);
             [x, eval, normF, it, ok] = ...
@@ -779,13 +1171,14 @@ end
                 '(buses %d, generators %d, branches %d).'], ...
                 lam, report.changed_buses, report.changed_gens, ...
                 report.changed_branches);
-            ev = append_event(ev, struct('k', event_k, ...
+            ev = vsc_mtdc_cpf_append_event(ev, struct('k', event_k, ...
                 'name', 'PSSE_CONTROL', 'idx', ctrl_it, 'msg', msg));
             if ~ok
                 V = original_ac_voltage_for_result(r, bus_ids);
                 success = 0;
                 return;
             end
+            profile_count('psse_settle_recorr_success');
             r = build_unified_cpf_result(ctx, x, eval, lam, it, normF);
             [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
         end
@@ -797,29 +1190,34 @@ end
             ev, success, changed_any] = ...
             settle_unified_vsc_capability_controls(ctx, ctxt, Sdelta, x, ...
             eval, lam, iterations, normF, r, bus_ids, nbranch, ngen, event_k)
+        profile_cleanup = profile_time_scope('settle_vsc_capability'); %#ok<NASGU>
         ev = struct('k', {}, 'name', {}, 'idx', {}, 'msg', {});
         success = 1;
         changed_any = 0;
         if ~unified_vsc_capability_enabled()
+            profile_count('vsc_capability_disabled');
             V = original_ac_voltage_for_result(r, bus_ids);
             return;
         end
-
         max_it = unified_vsc_capability_max_it();
         visited = cell(max_it + 1, 1);
         visited{1} = vsc_capability_active_set_signature(mpcb);
         nvisited = 1;
         for ctrl_it = 1:max_it
+            profile_count('vsc_capability_settle_iteration');
             [changed, mpcb_next, mpct_next, report] = ...
                 unified_vsc_capability_update(r, lam);
             if ~changed
+                profile_count('vsc_capability_settle_no_change');
                 V = original_ac_voltage_for_result(r, bus_ids);
                 return;
             end
 
             changed_any = 1;
+            profile_count('vsc_capability_settle_changed');
             sig = vsc_capability_active_set_signature(mpcb_next);
             if any(strcmp(visited(1:nvisited), sig))
+                profile_count('vsc_capability_settle_cycle');
                 V = original_ac_voltage_for_result(r, bus_ids);
                 return;
             end
@@ -828,25 +1226,58 @@ end
 
             mpcb = mpcb_next;
             mpct = mpct_next;
+            context_cleanup = profile_time_scope( ...
+                'vsc_capability_context_rebuild'); %#ok<NASGU>
+            refresh_incremental_policy_anchor(lam);
             [ctx, ctxt, Sdelta] = build_unified_context_pair();
+            clear context_cleanup;
+            recorr_cleanup = profile_time_scope( ...
+                'vsc_capability_fixed_lambda_recorrection'); %#ok<NASGU>
             x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
             [x, eval, normF, it, ok] = ...
                 solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
+            clear recorr_cleanup;
             iterations = iterations + it;
+            event_cleanup = profile_time_scope( ...
+                'vsc_capability_event_construction'); %#ok<NASGU>
             msg = sprintf(['VSC capability active-set update at ' ...
                 'lambda = %.8g; saturated converters %s; ' ...
                 're-corrected unified VSC-MTDC point at fixed lambda.'], ...
                 lam, mat2str(report.changed_idx(:)'));
-            ev = append_event(ev, vsc_capability_event_record( ...
-                event_k, ctrl_it, msg, report));
+            record_event = any(~ismember(report.changed_idx(:), ...
+                vsc_capability_recorded_idx(:)));
+            if record_event
+                ev = vsc_mtdc_cpf_append_event(ev, vsc_capability_event_record( ...
+                    event_k, ctrl_it, msg, report));
+                vsc_capability_recorded_idx = unique( ...
+                    [vsc_capability_recorded_idx(:); report.changed_idx(:)]);
+                profile_count('vsc_capability_event_appended');
+            end
+            clear event_cleanup;
             if ~ok
+                profile_count('vsc_capability_recorr_failed_inner');
                 V = original_ac_voltage_for_result(r, bus_ids);
                 success = 0;
                 return;
             end
+            profile_count('vsc_capability_recorr_success');
             r = build_unified_cpf_result(ctx, x, eval, lam, it, normF);
             [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
-            ev(end) = complete_vsc_capability_event(ev(end), report, r);
+            complete_event_cleanup = profile_time_scope( ...
+                'vsc_capability_event_completion'); %#ok<NASGU>
+            if record_event
+                ev(end) = complete_vsc_capability_event(ev(end), report, r);
+            elseif ~isempty(ev) && ...
+                    any(ismember(report.changed_idx(:), ...
+                    vsc_capability_recorded_idx(:)))
+                last_vsc_event = find(strcmp({ev.name}, 'VSC_CAPABILITY'), ...
+                    1, 'last');
+                if ~isempty(last_vsc_event)
+                    ev(last_vsc_event) = complete_vsc_capability_event( ...
+                        ev(last_vsc_event), report, r);
+                end
+            end
+            clear complete_event_cleanup;
         end
         V = original_ac_voltage_for_result(r, bus_ids);
         success = 0;
@@ -854,6 +1285,8 @@ end
 
     function [changed, bnext, tnext, report] = ...
             unified_vsc_capability_update(r, lam)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_check_update'); %#ok<NASGU>
         changed = 0;
         current = vsc_cpf_current_mpc(mpcb, mpct, lam);
         bnext = mpcb;
@@ -875,6 +1308,8 @@ end
         end
 
         active = find(current.vsc(:, c.VSC_STATUS) > 0);
+        profile_count_by('vsc_capability_active_rows_checked', ...
+            length(active));
         tol = 1e-8;
         for kk = 1:length(active)
             k = active(kk);
@@ -884,23 +1319,39 @@ end
             P0 = r.vsc(k, c.PAC);
             Q0 = r.vsc(k, c.QAC);
             V0 = vsc_capability_voltage(r.vsc, k);
-            params = vsc_capability_params(current, opt, k, kk);
+            [params, policy] = cached_vsc_capability_params( ...
+                current, k, kk);
             Smax = params.Smax;
-            mode_override = params.mode;
-            policy = vsc_capability_policy(current.vsc(k, :), ...
-                struct('mode', mode_override), k, kk);
             mode = policy.projection_mode;
             Vmax = params.Vmax;
 
+            prefilter_cleanup = profile_time_scope( ...
+                'vsc_capability_prefilter'); %#ok<NASGU>
+            no_action = vsc_capability_definitely_no_action( ...
+                P0, Q0, V0, current.vsc(k, :), params, tol);
+            clear prefilter_cleanup;
+            if no_action
+                profile_count('vsc_capability_prefilter_skipped');
+                continue;
+            end
+
             try
+                limit_cleanup = profile_time_scope( ...
+                    'vsc_capability_limit_detection'); %#ok<NASGU>
                 [sat, Psat, Qsat, ~, info] = vsc_capability_curve( ...
                     P0, Q0, Smax, V0, r.vsc(k, :), mode, Vmax, ...
                     mpcb.baseMVA);
+                clear limit_cleanup;
             catch me
+                clear limit_cleanup;
                 error('runcpf_vsc_mtdc: VSC row %d capability evaluation failed: %s', ...
                     k, me.message);
             end
-            if ~sat
+            if sat
+                profile_count('vsc_capability_limit_saturated');
+                [Psat, Qsat] = apply_vsc_capability_saturation_margin( ...
+                    P0, Q0, Psat, Qsat, policy, k);
+            else
                 continue;
             end
 
@@ -914,6 +1365,14 @@ end
 
             bnext.vsc(k, [c.AC_MODE c.PAC_SET c.QAC_SET]) = new_vals;
             tnext.vsc(k, [c.AC_MODE c.PAC_SET c.QAC_SET]) = new_vals;
+            profile_count('vsc_capability_active_set_update');
+            if incremental_cpf_policies_enabled()
+                freeze_rows = incremental_hvdc_participant_rows();
+                if ~isempty(freeze_rows)
+                    cpf_policy_state.hvdc_frozen(freeze_rows) = 1;
+                    vsc_capability_transfer_frozen = 1;
+                end
+            end
             changed = 1;
             report.changed_idx(end+1, 1) = k;
             report.from_mode(end+1, 1) = from_mode;
@@ -949,76 +1408,123 @@ end
         end
     end
 
+    function [params, policy] = cached_vsc_capability_params(mpc, k, kk)
+        key = vsc_capability_param_cache_key(mpc, k, kk);
+        for ii = 1:length(vsc_capability_param_cache)
+            if strcmp(vsc_capability_param_cache(ii).key, key)
+                profile_count('vsc_capability_param_cache_hit');
+                params = vsc_capability_param_cache(ii).params;
+                policy = vsc_capability_param_cache(ii).policy;
+                return;
+            end
+        end
+        profile_count('vsc_capability_param_cache_miss');
+        params = vsc_capability_params(mpc, opt, k, kk);
+        policy = vsc_capability_policy(mpc.vsc(k, :), ...
+            struct('mode', params.mode), k, kk);
+        vsc_capability_param_cache(end+1) = struct( ...
+            'key', key, 'params', params, 'policy', policy);
+    end
+
+    function key = vsc_capability_param_cache_key(mpc, k, kk)
+        cols = existing_cols([c.AC_MODE c.DC_MODE c.TR_R c.TR_X ...
+            c.REACTOR_R c.REACTOR_X c.TR_RATE_A c.REACTOR_RATE_A], ...
+            mpc.vsc, mpc.vsc);
+        vals = mpc.vsc(k, cols);
+        key = sprintf('%d:%d:%s:%s', k, kk, ...
+            numeric_signature(mpc.baseMVA), numeric_signature(vals));
+    end
+
+    function TorF = vsc_capability_definitely_no_action( ...
+            P, Q, V, vsc_row, params, tol)
+        TorF = 0;
+        [ok, pMax, iMax, qCenter, vRadius] = ...
+            vsc_capability_fast_limits(vsc_row, params, V);
+        if ~ok
+            return;
+        end
+        scale = max(abs([1 pMax iMax qCenter finite_or_zero(vRadius)]));
+        guard = max(tol, 1e-10 * scale);
+        if ~vsc_capability_fast_inside(P, Q, pMax, iMax, ...
+                qCenter, vRadius, guard)
+            return;
+        end
+        TorF = 1;
+    end
+
+    function [ok, pMax, iMax, qCenter, vRadius] = ...
+            vsc_capability_fast_limits(vsc_row, params, V)
+        ok = 0;
+        pMax = NaN;
+        iMax = NaN;
+        qCenter = NaN;
+        vRadius = NaN;
+        if size(vsc_row, 2) < c.REACTOR_RATE_A || ...
+                isempty(V) || ~isfinite(V) || V <= 0 || ...
+                isempty(params.Vmax) || ~isfinite(params.Vmax) || ...
+                params.Vmax <= 0
+            return;
+        end
+        Smax = params.Smax;
+        if isempty(Smax)
+            ratings = vsc_row([c.TR_RATE_A c.REACTOR_RATE_A]);
+            ratings = ratings(isfinite(ratings) & ratings > 0);
+            if isempty(ratings)
+                return;
+            end
+            Smax = min(ratings);
+        end
+        if ~isscalar(Smax) || ~isfinite(Smax) || Smax <= 0
+            return;
+        end
+        xEq_system = abs(vsc_row(c.TR_R) + vsc_row(c.REACTOR_R) + ...
+            1j * (vsc_row(c.TR_X) + vsc_row(c.REACTOR_X)));
+        pMax = Smax;
+        iMax = V * Smax;
+        xEq_element = xEq_system * Smax / mpcb.baseMVA;
+        if isfinite(xEq_element) && xEq_element > 1e-10
+            qCenter = V^2 * mpcb.baseMVA / xEq_system;
+            vRadius = V * params.Vmax * mpcb.baseMVA / xEq_system;
+        else
+            qCenter = 0;
+            vRadius = Inf;
+        end
+        ok = isfinite(pMax) && isfinite(iMax) && isfinite(qCenter) && ...
+            (isfinite(vRadius) || isinf(vRadius));
+    end
+
+    function TorF = vsc_capability_fast_inside(P, Q, pMax, iMax, ...
+            qCenter, vRadius, guard)
+        TorF = abs(P) <= pMax - guard && hypot(P, Q) <= iMax - guard;
+        if TorF && isfinite(vRadius)
+            TorF = hypot(P, Q + qCenter) <= vRadius - guard;
+        end
+    end
+
+    function val = finite_or_zero(val)
+        if ~isfinite(val)
+            val = 0;
+        end
+    end
+
     function ev = vsc_capability_event_record(event_k, event_idx, msg, report)
-        ev = struct('k', event_k, 'name', 'VSC_CAPABILITY', ...
-            'idx', event_idx, 'msg', msg, ...
-            'vsc_idx', report.changed_idx, ...
-            'lambda_event', report.lambda_event, ...
-            'lambda_candidate', report.lambda_candidate, ...
-            'lambda_previous', report.lambda_previous, ...
-            'event_location_method', {report.event_location_method}, ...
-            'P_candidate', report.P, 'Q_candidate', report.Q, ...
-            'V_candidate', report.V, ...
-            'margin_candidate', report.margin_candidate, ...
-            'margin_previous', report.margin_previous, ...
-            'previous_margin_error', {report.previous_margin_error}, ...
-            'margin_event', report.margin_event, ...
-            'active_limit', {report.active_limit}, ...
-            'projection_mode', {report.projection_mode}, ...
-            'policy_reason', {report.policy_reason}, ...
-            'target_ac_mode_if_saturated', ...
-                report.target_ac_mode_if_saturated, ...
-            'P_projected', report.P_saturated, ...
-            'Q_projected', report.Q_saturated, ...
-            'S_projected', report.S_saturated, ...
-            'from_ac_mode', report.from_mode, ...
-            'to_ac_mode', report.to_mode, ...
-            'Smax', report.Smax, 'Vmax', report.Vmax, ...
-            'Smax_source', {report.Smax_source}, ...
-            'Vmax_source', {report.Vmax_source}, ...
-            'mode_source', {report.mode_source}, ...
-            'P_final', [], 'Q_final', [], 'V_final', [], ...
-            'margin_final', [], 'inside_final', [], 'final_error', {{}});
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_event_record'); %#ok<NASGU>
+        ev = vsc_mtdc_cpf_vsc_capability_event('record', ...
+            event_k, event_idx, msg, report);
     end
 
     function ev = complete_vsc_capability_event(ev, report, r)
-        n = length(report.changed_idx);
-        P_final = NaN(n, 1);
-        Q_final = NaN(n, 1);
-        V_final = NaN(n, 1);
-        margin_final = NaN(n, 1);
-        inside_final = false(n, 1);
-        final_error = repmat({''}, n, 1);
-        for ii = 1:n
-            k = report.changed_idx(ii);
-            if size(r.vsc, 1) < k || size(r.vsc, 2) < c.QAC
-                continue;
-            end
-            P_final(ii) = r.vsc(k, c.PAC);
-            Q_final(ii) = r.vsc(k, c.QAC);
-            V_final(ii) = vsc_capability_voltage(r.vsc, k);
-            try
-                [sat_final, ~, ~, ~, info_final] = vsc_capability_curve( ...
-                    P_final(ii), Q_final(ii), report.Smax(ii), ...
-                    V_final(ii), r.vsc(k, :), ...
-                    report.projection_mode{ii}, report.Vmax(ii), ...
-                    mpcb.baseMVA);
-                margin_final(ii) = info_final.margin;
-                inside_final(ii) = ~sat_final;
-            catch me
-                final_error{ii} = me.message;
-            end
-        end
-        ev.P_final = P_final;
-        ev.Q_final = Q_final;
-        ev.V_final = V_final;
-        ev.margin_final = margin_final;
-        ev.inside_final = inside_final;
-        ev.final_error = final_error;
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_event_complete_fields'); %#ok<NASGU>
+        ev = vsc_mtdc_cpf_vsc_capability_event('complete', ...
+            ev, report, r.vsc, mpcb.baseMVA);
     end
 
     function [margin, lam_prev, err] = previous_vsc_capability_margin( ...
             k, ~, Smax, mode, Vmax)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_previous_margin'); %#ok<NASGU>
         margin = NaN;
         lam_prev = NaN;
         err = '';
@@ -1045,21 +1551,11 @@ end
     function [lam_event, margin_event, method] = ...
             vsc_capability_event_lambda(lam_prev, lam_candidate, ...
             margin_prev, margin_candidate)
-        lam_event = lam_candidate;
-        margin_event = margin_candidate;
-        method = 'candidate';
-        if isfinite(lam_prev) && isfinite(lam_candidate) && ...
-                isfinite(margin_prev) && isfinite(margin_candidate) && ...
-                lam_candidate ~= lam_prev && margin_prev >= 0 && ...
-                margin_candidate < 0
-            den = margin_prev - margin_candidate;
-            if den > 0
-                alpha = margin_prev / den;
-                lam_event = lam_prev + alpha * (lam_candidate - lam_prev);
-                margin_event = 0;
-                method = 'linear_margin';
-            end
-        end
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_event_location'); %#ok<NASGU>
+        [lam_event, margin_event, method] = ...
+            vsc_mtdc_cpf_vsc_capability_event('lambda', ...
+            lam_prev, lam_candidate, margin_prev, margin_candidate);
     end
 
     function mode = saturated_vsc_ac_mode(policy, P0, Psat, tol)
@@ -1070,20 +1566,134 @@ end
         end
     end
 
+    function [Psat, Qsat] = apply_vsc_capability_saturation_margin( ...
+            P0, ~, Psat, Qsat, policy, k)
+        margin = vsc_capability_saturation_margin_fraction(k);
+        if margin <= 0
+            return;
+        end
+        margin = min(max(margin, 0), 1);
+        if strcmp(policy.projection_mode, 'preservar_p') && ...
+                abs(Psat - P0) <= 1e-8
+            Qsat = move_toward_origin(Qsat, margin);
+        else
+            Psat = move_toward_origin(Psat, margin);
+            Qsat = move_toward_origin(Qsat, margin);
+        end
+        if abs(Psat) < 1e-10
+            Psat = 0;
+        end
+        if abs(Qsat) < 1e-10
+            Qsat = 0;
+        end
+    end
+
+    function [needs_sat, Qsat] = vsc_q_margin_saturation_setpoint( ...
+            P0, Q0, info, policy, tol, k)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_slack_q_margin_setpoint'); %#ok<NASGU>
+        Qsat = Q0;
+        margin = vsc_capability_saturation_margin_fraction(k);
+        if margin <= 0 || ~strcmp(policy.projection_mode, 'preservar_p')
+            needs_sat = info.margin <= tol;
+            return;
+        end
+
+        if Q0 >= 0
+            Qlim = info.qMax;
+        else
+            Qlim = info.qMin;
+        end
+        if ~isfinite(Qlim)
+            needs_sat = info.margin <= tol;
+            return;
+        end
+
+        [~, Qsat] = apply_vsc_capability_saturation_margin( ...
+            P0, Q0, P0, Qlim, policy, k);
+        if Q0 >= 0
+            needs_sat = info.margin <= tol || Q0 >= Qsat - tol;
+        else
+            needs_sat = info.margin <= tol || Q0 <= Qsat + tol;
+        end
+    end
+
+    function TorF = fixed_vsc_capability_margin_policy()
+        TorF = incremental_cpf_policies_enabled() && ...
+            isfield(cpf_policy_state, 'vsc_capability_margin') && ...
+            isfield(cpf_policy_state.vsc_capability_margin, ...
+            'current_fraction') && ...
+            any(cpf_policy_state.vsc_capability_margin.current_fraction(:) > 0) && ...
+            (~isfield(cpf_policy_state.vsc_capability_margin, 'enabled') || ...
+             ~cpf_policy_state.vsc_capability_margin.enabled);
+    end
+
+    function val = move_toward_origin(val, fraction)
+        val = (1 - fraction) * val;
+    end
+
+    function margin = vsc_capability_saturation_margin_fraction(k)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_margin_fraction'); %#ok<NASGU>
+        margin = 1e-3;
+        if ~incremental_cpf_policies_enabled()
+            return;
+        end
+        if isfield(cpf_policy_state, 'vsc_capability_margin') && ...
+                isfield(cpf_policy_state.vsc_capability_margin, ...
+                'current_fraction')
+            margin = cpf_policy_state.vsc_capability_margin.current_fraction;
+            margin = margin_for_vsc_row(margin, k);
+            return;
+        end
+        p = vsc_mtdc_cpf_policy_state('policy_struct', ...
+            cpf_policy_state.policies, ...
+            {'vsc_capability', 'capability', 'vsc_saturation'});
+        if isempty(p)
+            return;
+        end
+        margin = vsc_mtdc_cpf_policy_state('policy_numeric', p, ...
+            {'saturation_margin_fraction', 'margin_fraction', ...
+             'inward_margin_fraction'}, 0);
+        margin = margin_for_vsc_row(margin, k);
+        validate_vsc_capability_margin_fraction(margin, ...
+            'saturation margin fraction');
+    end
+
+    function margin = margin_for_vsc_row(margin, k)
+        if isempty(margin) || isscalar(margin)
+            return;
+        end
+        margin = margin(:);
+        if k < 1 || k > length(margin)
+            error('runcpf_vsc_mtdc: VSC saturation margin vector has invalid length');
+        end
+        margin = margin(k);
+    end
+
+    function validate_vsc_capability_margin_fraction(margin, label)
+        if margin < 0 || margin > 1
+            error('runcpf_vsc_mtdc: VSC %s must be in [0, 1]', ...
+                label);
+        end
+    end
+
     function V = vsc_capability_voltage(vsc, row)
-        if size(vsc, 2) >= c.VAC_INTERNAL && ...
+        if size(vsc, 2) >= c.VAC_PCC && ...
+                isfinite(vsc(row, c.VAC_PCC)) && vsc(row, c.VAC_PCC) > 0
+            V = vsc(row, c.VAC_PCC);
+        elseif size(vsc, 2) >= c.VAC_INTERNAL && ...
                 isfinite(vsc(row, c.VAC_INTERNAL)) && ...
                 vsc(row, c.VAC_INTERNAL) > 0
             V = vsc(row, c.VAC_INTERNAL);
-        elseif size(vsc, 2) >= c.VAC_PCC && ...
-                isfinite(vsc(row, c.VAC_PCC)) && vsc(row, c.VAC_PCC) > 0
-            V = vsc(row, c.VAC_PCC);
         else
             V = vsc(row, c.VAC_SET);
         end
     end
 
     function sig = vsc_capability_active_set_signature(mpc)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_active_set_signature'); %#ok<NASGU>
         cols = existing_cols([c.AC_MODE c.PAC_SET c.QAC_SET], ...
             mpc.vsc, mpc.vsc);
         vals = reshape(mpc.vsc(:, cols), [], 1);
@@ -1111,16 +1721,25 @@ end
         end
     end
 
-    function [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
+    function [ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, r, V, ...
             ev, success, changed_any] = ...
             settle_unified_gen_capability_controls(ctx, ctxt, Sdelta, x, ...
             eval, lam, iterations, normF, r, bus_ids, nbranch, ngen, event_k)
+        profile_cleanup = profile_time_scope('settle_gen_capability'); %#ok<NASGU>
         ev = struct('k', {}, 'name', {}, 'idx', {}, 'msg', {});
         success = 1;
         changed_any = 0;
         if ~unified_gen_capability_enabled()
             V = original_ac_voltage_for_result(r, bus_ids);
             return;
+        end
+        if gen_capability_dispatch_frozen
+            [changed, ~, ~] = unified_gen_capability_update(r, lam);
+            if changed
+                V = original_ac_voltage_for_result(r, bus_ids);
+                success = 0;
+                return;
+            end
         end
 
         max_it = unified_gen_capability_max_it();
@@ -1144,19 +1763,38 @@ end
             nvisited = nvisited + 1;
             visited{nvisited} = sig;
 
+            [localized, loc_info] = ...
+                locate_unified_gen_capability_event(r, report);
+            if localized
+                report = apply_gen_capability_location_info(report, loc_info);
+            end
+
             mpcb = mpcb_next;
             mpct = mpct_next;
+            refresh_incremental_policy_anchor(lam);
             [ctx, ctxt, Sdelta] = build_unified_context_pair();
             x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
             [x, eval, normF, it, ok] = ...
                 solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
             iterations = iterations + it;
+            if ~ok && localized
+                [ctx, ctxt, Sdelta, x, eval, normF, it_retry, ok, ...
+                    lam, report] = retry_gen_capability_localized_solve( ...
+                    x0, r, lam, report);
+                iterations = iterations + it_retry;
+            end
             msg = sprintf(['Generator capability active-set update at ' ...
                 'lambda = %.8g; saturated generators %s; ' ...
                 're-corrected unified VSC-MTDC point at fixed lambda.'], ...
                 lam, mat2str(report.changed_idx(:)'));
-            ev = append_event(ev, struct('k', event_k, ...
-                'name', 'GEN_CAPABILITY', 'idx', ctrl_it, 'msg', msg));
+            record_event = any(~ismember(report.changed_idx(:), ...
+                gen_capability_recorded_idx(:)));
+            if record_event
+                ev = vsc_mtdc_cpf_append_event(ev, gen_capability_event_record( ...
+                    event_k, ctrl_it, msg, report));
+                gen_capability_recorded_idx = unique( ...
+                    [gen_capability_recorded_idx(:); report.changed_idx(:)]);
+            end
             if ~ok
                 V = original_ac_voltage_for_result(r, bus_ids);
                 success = 0;
@@ -1164,9 +1802,231 @@ end
             end
             r = build_unified_cpf_result(ctx, x, eval, lam, it, normF);
             [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
+            if record_event
+                ev(end) = complete_gen_capability_event(ev(end), report, r);
+            elseif ~isempty(ev) && ...
+                    any(ismember(report.changed_idx(:), ...
+                    gen_capability_recorded_idx(:)))
+                last_gen_event = find(strcmp({ev.name}, 'GEN_CAPABILITY'), ...
+                    1, 'last');
+                if ~isempty(last_gen_event)
+                    ev(last_gen_event) = complete_gen_capability_event( ...
+                        ev(last_gen_event), report, r);
+                end
+            end
         end
         V = original_ac_voltage_for_result(r, bus_ids);
         success = 0;
+    end
+
+    function [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
+            ev, success, changed_any] = ...
+            settle_unified_hvdc_derating_controls(ctx, ctxt, Sdelta, x, ...
+            eval, lam, iterations, normF, r, bus_ids, nbranch, ngen, event_k)
+        ev = struct('k', {}, 'name', {}, 'idx', {}, 'msg', {});
+        success = 1;
+        changed_any = 0;
+        if ~unified_hvdc_derating_enabled()
+            V = original_ac_voltage_for_result(r, bus_ids);
+            return;
+        end
+
+        max_it = unified_hvdc_derating_max_it();
+        visited = cell(max_it + 1, 1);
+        visited{1} = hvdc_derating_active_set_signature(mpcb);
+        nvisited = 1;
+        for ctrl_it = 1:max_it
+            trial_factor = 1;
+            trial_ok = 0;
+            while trial_factor >= 1 / 64
+                stage0 = active_set_stage_snapshot(ctx, ctxt, Sdelta);
+                [changed, mpcb_next, mpct_next, report] = ...
+                    unified_hvdc_derating_update(r, lam, trial_factor);
+                if ~changed
+                    V = original_ac_voltage_for_result(r, bus_ids);
+                    return;
+                end
+
+                sig = hvdc_derating_active_set_signature(mpcb_next);
+                if any(strcmp(visited(1:nvisited), sig))
+                    cpf_policy_state.hvdc.derating.enabled = 0;
+                    msg = sprintf(['HVDC dynamic derating skipped at ' ...
+                        'lambda = %.8g; Pac/Qac backoff repeated an ' ...
+                        'active-set signature, so the derating policy was ' ...
+                        'disabled and CPF continues.'], lam);
+                    ev = vsc_mtdc_cpf_append_event(ev, ...
+                        vsc_mtdc_cpf_hvdc_derating('skipped_record', ...
+                            event_k, ctrl_it, msg, lam, ...
+                            report.max_utilization, report.limiting_vsc, ...
+                            report.backoff_lambda));
+                    V = original_ac_voltage_for_result(r, bus_ids);
+                    return;
+                end
+
+                mpcb = mpcb_next;
+                mpct = mpct_next;
+                refresh_incremental_policy_anchor(lam);
+                [ctx, ctxt, Sdelta] = build_unified_context_pair();
+                x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
+                [x_trial, eval_trial, normF_trial, it, ok] = ...
+                    solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
+                iterations = iterations + it;
+                if ok
+                    x = x_trial;
+                    eval = eval_trial;
+                    normF = normF_trial;
+                    trial_ok = 1;
+                    break;
+                end
+
+                [ctx, ctxt, Sdelta] = ...
+                    restore_active_set_stage_snapshot(stage0);
+                trial_factor = trial_factor / 2;
+            end
+            if ~trial_ok
+                cpf_policy_state.hvdc.derating.enabled = 0;
+                msg = sprintf(['HVDC dynamic derating skipped at lambda = ' ...
+                    '%.8g; no fractional Pac/Qac backoff converged, so ' ...
+                    'the derating policy was disabled and CPF continues ' ...
+                    'from the last converged point.'], lam);
+                ev = vsc_mtdc_cpf_append_event(ev, ...
+                    vsc_mtdc_cpf_hvdc_derating('skipped_record', ...
+                        event_k, ctrl_it, msg, lam, ...
+                        report.max_utilization, report.limiting_vsc, ...
+                        report.backoff_lambda));
+                V = original_ac_voltage_for_result(r, bus_ids);
+                return;
+            end
+
+            if ~changed
+                V = original_ac_voltage_for_result(r, bus_ids);
+                return;
+            end
+
+            changed_any = 1;
+            nvisited = nvisited + 1;
+            visited{nvisited} = sig;
+            msg = sprintf(['HVDC dynamic derating at lambda = %.8g; ' ...
+                'limiting VSC %d utilization %.4f; reduced Pac/Qac ' ...
+                'toward the base transfer by %.4g lambda-equivalent.'], ...
+                lam, report.limiting_vsc, report.max_utilization, ...
+                report.backoff_lambda);
+            ev = vsc_mtdc_cpf_append_event(ev, ...
+                vsc_mtdc_cpf_hvdc_derating('record', ...
+                    event_k, ctrl_it, msg, report));
+            r = build_unified_cpf_result(ctx, x, eval, lam, 0, normF);
+            [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
+            ev(end) = vsc_mtdc_cpf_hvdc_derating('complete', ...
+                ev(end), report, r, ...
+                vsc_cpf_current_mpc(mpcb, mpct, report.lambda_event), ...
+                cpf_policy_state.hvdc.derating, opt, mpcb.baseMVA);
+        end
+        cpf_policy_state.hvdc.derating.enabled = 0;
+        ev = vsc_mtdc_cpf_append_event(ev, ...
+            vsc_mtdc_cpf_hvdc_derating('skipped_record', event_k, ...
+                max_it, sprintf(['HVDC dynamic derating skipped at ' ...
+                'lambda = %.8g; maximum derating iterations were ' ...
+                'reached, so the derating policy was disabled and CPF ' ...
+                'continues.'], lam), lam, NaN, NaN, 0));
+        V = original_ac_voltage_for_result(r, bus_ids);
+    end
+
+    function [changed, bnext, tnext, report] = ...
+            unified_hvdc_derating_update(r, lam, trial_factor)
+        if nargin < 3 || isempty(trial_factor)
+            trial_factor = 1;
+        end
+        changed = 0;
+        current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+        bnext = mpcb;
+        tnext = mpct;
+        h = cpf_policy_state.hvdc;
+        d = h.derating;
+        report = vsc_mtdc_cpf_hvdc_derating('empty_report', d);
+
+        if ~isfield(current, 'vsc') || isempty(current.vsc) || ...
+                ~isfield(r, 'vsc') || isempty(r.vsc)
+            return;
+        end
+
+        util_report = vsc_mtdc_cpf_hvdc_derating( ...
+            'utilization_report', r, current, d, opt, mpcb.baseMVA);
+        report = vsc_mtdc_cpf_hvdc_derating( ...
+            'copy_utilization_report', report, util_report);
+        if isempty(util_report.idx) || ...
+                util_report.max_utilization <= d.start_utilization
+            return;
+        end
+
+        report.backoff_lambda = vsc_mtdc_cpf_hvdc_derating( ...
+            'backoff_lambda', util_report.max_utilization, d) * ...
+            trial_factor;
+        if report.backoff_lambda <= 0
+            return;
+        end
+
+        rows = incremental_hvdc_participant_rows();
+        rows = rows(:);
+        if isempty(rows)
+            return;
+        end
+        cols = [c.PAC_SET c.QAC_SET];
+        base = cpf_policy_state.structural_base.vsc;
+        old_vsc = current.vsc;
+        next_vsc = current.vsc;
+
+        transfer = abs(h.transfer_mw_per_lambda) * report.backoff_lambda;
+        next_vsc(h.source_idx, c.PAC_SET) = move_toward( ...
+            next_vsc(h.source_idx, c.PAC_SET), ...
+            base(h.source_idx, c.PAC_SET), transfer);
+        next_vsc(h.sink_idx, c.PAC_SET) = move_toward( ...
+            next_vsc(h.sink_idx, c.PAC_SET), ...
+            base(h.sink_idx, c.PAC_SET), transfer);
+        for kk = 1:length(h.qac_idx)
+            row = h.qac_idx(kk);
+            qstep = abs(h.qac_gain(row) * ...
+                cpf_policy_state.total_pd_per_lam * ...
+                report.backoff_lambda);
+            next_vsc(row, c.QAC_SET) = move_toward( ...
+                next_vsc(row, c.QAC_SET), ...
+                base(row, c.QAC_SET), qstep);
+        end
+
+        next_vsc(rows, cols) = vsc_mtdc_cpf_hvdc_derating( ...
+            'apply_floor', old_vsc(rows, cols), ...
+            next_vsc(rows, cols), base(rows, cols), ...
+            d.min_transfer_scale);
+        delta = abs(next_vsc(rows, cols) - old_vsc(rows, cols));
+        changed_rows = rows(any(delta > 1e-10, 2));
+        if isempty(changed_rows)
+            return;
+        end
+
+        bnext.vsc(rows, cols) = next_vsc(rows, cols);
+        tnext.vsc(rows, cols) = next_vsc(rows, cols);
+        changed = 1;
+        report.changed_idx = changed_rows(:);
+        report.old_pac_set = old_vsc(changed_rows, c.PAC_SET);
+        report.new_pac_set = next_vsc(changed_rows, c.PAC_SET);
+        report.old_qac_set = old_vsc(changed_rows, c.QAC_SET);
+        report.new_qac_set = next_vsc(changed_rows, c.QAC_SET);
+        report.lambda_event = lam;
+    end
+
+    function TorF = unified_hvdc_derating_enabled()
+        TorF = incremental_cpf_policies_enabled() && ...
+            cpf_policy_state.hvdc.enabled && ...
+            isfield(cpf_policy_state.hvdc, 'derating') && ...
+            cpf_policy_state.hvdc.derating.enabled;
+    end
+
+    function max_it = unified_hvdc_derating_max_it()
+        max_it = cpf_policy_state.hvdc.derating.max_it;
+    end
+
+    function sig = hvdc_derating_active_set_signature(mpc)
+        sig = vsc_mtdc_cpf_hvdc_derating( ...
+            'active_set_signature', mpc);
     end
 
     function [changed, bnext, tnext, report] = ...
@@ -1177,7 +2037,13 @@ end
         tnext = mpct;
         report = struct('changed_idx', [], 'bus', [], ...
             'active_limit', {{}}, 'P', [], 'Q', [], ...
-            'P_saturated', [], 'Q_saturated', []);
+            'margin_candidate', [], 'margin_previous', [], ...
+            'lambda_previous', [], 'lambda_candidate', [], ...
+            'lambda_event', [], 'margin_event', [], ...
+            'event_location_method', {{}}, 'previous_margin_error', {{}}, ...
+            'P_saturated', [], 'Q_saturated', [], 'S_saturated', [], ...
+            'Smax', [], 'gen_type_code', [], 'gen_type', {{}}, ...
+            'bisection_iterations', [], 'location_error', {{}});
 
         ng = size(current.gen, 1);
         if ng == 0
@@ -1195,10 +2061,13 @@ end
 
             P0 = r.gen(g, PG);
             Q0 = r.gen(g, QG);
-            Smax = gen_capability_option_value('capability_gen_smax', ...
-                g, g, default_gen_smax(current, g));
-            type = gen_capability_option_value('capability_gen_type', ...
-                g, g, 2);
+            Smax = gen_capability_metadata_or_option_value(current, opt, ...
+                {'Snom', 'Smax', 'smax'}, {'capability_gen_smax'}, ...
+                g, g, gen_capability_default_smax(current, g), ...
+                'runcpf_vsc_mtdc');
+            type = gen_capability_metadata_or_option_value(current, opt, ...
+                {'type', 'gen_type'}, {'capability_gen_type'}, ...
+                g, g, 2, 'runcpf_vsc_mtdc');
             try
                 [sat, Psat, Qsat, ~, info] = ...
                     gen_capability_curve(P0, Q0, Smax, type);
@@ -1224,6 +2093,10 @@ end
 
             bnext.gen(g, [PG QG QMAX QMIN]) = new_vals;
             tnext.gen(g, [PG QG QMAX QMIN]) = new_vals;
+            if incremental_cpf_policies_enabled() && ...
+                    any(cpf_policy_state.gen.gen_idx == g)
+                cpf_policy_state.gen_frozen(g) = 1;
+            end
             if q_changed
                 bnext = set_gen_bus_type(bnext, g, PQ);
                 tnext = set_gen_bus_type(tnext, g, PQ);
@@ -1235,21 +2108,268 @@ end
             report.active_limit{end+1, 1} = info.active_limit;
             report.P(end+1, 1) = P0;
             report.Q(end+1, 1) = Q0;
+            report.margin_candidate(end+1, 1) = info.margin;
+            [prev_margin, prev_lam, prev_err] = ...
+                previous_gen_capability_margin(g, Smax, type);
+            report.margin_previous(end+1, 1) = prev_margin;
+            report.lambda_previous(end+1, 1) = prev_lam;
+            report.previous_margin_error{end+1, 1} = prev_err;
+            [lam_event, margin_event, method] = ...
+                vsc_capability_event_lambda(prev_lam, lam, ...
+                prev_margin, info.margin);
+            report.lambda_candidate(end+1, 1) = lam;
+            report.lambda_event(end+1, 1) = lam_event;
+            report.margin_event(end+1, 1) = margin_event;
+            report.event_location_method{end+1, 1} = method;
             report.P_saturated(end+1, 1) = Psat;
             report.Q_saturated(end+1, 1) = Qsat;
+            report.S_saturated(end+1, 1) = abs(Psat + 1j * Qsat);
+            report.Smax(end+1, 1) = info.Smax;
+            report.gen_type_code(end+1, 1) = info.gen_type_code;
+            report.gen_type{end+1, 1} = info.gen_type;
+            report.bisection_iterations(end+1, 1) = 0;
+            report.location_error{end+1, 1} = '';
+        end
+    end
+
+    function [localized, loc] = locate_unified_gen_capability_event(r, report)
+        localized = 0;
+        loc = empty_gen_capability_location();
+        if isempty(report.changed_idx)
+            return;
+        end
+
+        margin_tol = gen_capability_location_margin_tol(report.Smax);
+        candidate_tol = 1e-8;
+        row = find(report.margin_previous >= -margin_tol & ...
+            report.margin_candidate < -candidate_tol & ...
+            isfinite(report.lambda_previous) & ...
+            isfinite(report.lambda_candidate) & ...
+            report.lambda_previous ~= report.lambda_candidate, 1);
+        if isempty(row)
+            return;
+        end
+
+        g = report.changed_idx(row);
+        if size(r.gen, 1) < g
+            return;
+        end
+
+        low_lam = report.lambda_previous(row);
+        high_lam = report.lambda_candidate(row);
+        high_margin = report.margin_candidate(row);
+        if ~(exist('last', 'var') && isstruct(last) && ...
+                isfield(last, 'gen') && size(last.gen, 1) >= g)
+            return;
+        end
+        low_P = last.gen(g, PG);
+        low_Q = last.gen(g, QG);
+        high_P = report.P(row);
+        high_Q = report.Q(row);
+        target_margin = 0.75 * high_margin;
+        lam_tol = max(1e-6, max(step_min, ...
+            1e-7 * max(abs([low_lam high_lam 1]))));
+        max_loc_it = 12;
+        best_err = '';
+        loc_count = 0;
+
+        for kk = 1:max_loc_it
+            if abs(high_lam - low_lam) <= lam_tol
+                break;
+            end
+            loc_count = kk;
+            mid_lam = 0.5 * (low_lam + high_lam);
+            alpha = (mid_lam - low_lam) / (high_lam - low_lam);
+            Pmid = low_P + alpha * (high_P - low_P);
+            Qmid = low_Q + alpha * (high_Q - low_Q);
+            [~, margin_mid, err_mid] = gen_capability_margin_from_result( ...
+                struct('gen', set_gen_probe_row(r.gen, g, Pmid, Qmid)), ...
+                g, report.Smax(row), report.gen_type_code(row));
+            if ~isempty(err_mid)
+                best_err = err_mid;
+                break;
+            end
+            if margin_mid < target_margin
+                high_lam = mid_lam;
+                high_P = Pmid;
+                high_Q = Qmid;
+                high_margin = margin_mid;
+            else
+                low_lam = mid_lam;
+                low_P = Pmid;
+                low_Q = Qmid;
+            end
+        end
+
+        if high_margin < 0 && isfinite(high_lam) && ...
+                abs(high_lam - report.lambda_candidate(row)) < ...
+                abs(report.lambda_candidate(row) - report.lambda_previous(row))
+            localized = 1;
+            loc.gen_idx = g;
+            loc.lambda_event = high_lam;
+            loc.margin_event = high_margin;
+            loc.method = 'bisection_margin';
+            loc.iterations = loc_count;
+            loc.error = best_err;
+        end
+    end
+
+    function gen = set_gen_probe_row(gen, g, P, Q)
+        gen(g, PG) = P;
+        gen(g, QG) = Q;
+    end
+
+    function loc = empty_gen_capability_location()
+        loc = struct('gen_idx', [], 'lambda_event', [], ...
+            'margin_event', [], 'method', '', 'iterations', 0, ...
+            'error', '');
+    end
+
+    function tol = gen_capability_location_margin_tol(Smax)
+        tol = max(1e-8, 1e-2 * max(abs(Smax(:))));
+    end
+
+    function report = apply_gen_capability_location_info(report, loc)
+        if isempty(loc.gen_idx) || isempty(report.changed_idx)
+            return;
+        end
+        rows = find(report.changed_idx == loc.gen_idx);
+        for ii = 1:length(rows)
+            row = rows(ii);
+            report.lambda_event(row, 1) = loc.lambda_event;
+            report.margin_event(row, 1) = loc.margin_event;
+            report.event_location_method{row, 1} = loc.method;
+            report.bisection_iterations(row, 1) = loc.iterations;
+            report.location_error{row, 1} = loc.error;
+        end
+    end
+
+    function [ctx, ctxt, Sdelta, x, eval, normF, iterations, ok, ...
+            lam, report] = retry_gen_capability_localized_solve(x0, r, ...
+            lam, report)
+        iterations = 0;
+        ok = 0;
+        ctx = [];
+        ctxt = [];
+        Sdelta = [];
+        x = x0;
+        eval = [];
+        normF = Inf;
+        if isempty(report.lambda_candidate) || ...
+                ~isfinite(report.lambda_candidate(1)) || ...
+                report.lambda_candidate(1) == lam
+            return;
+        end
+        low_lam = lam;
+        high_lam = report.lambda_candidate(1);
+        max_retry = 6;
+        for kk = 1:max_retry
+            lam_try = 0.5 * (low_lam + high_lam);
+            refresh_incremental_policy_anchor(lam_try);
+            [ctx_try, ctxt_try, Sdelta_try] = build_unified_context_pair();
+            x0_try = unified_x_from_controlled_ac(ctx_try, r.ac, r);
+            [x_try, eval_try, normF_try, it, ok_try] = ...
+                solve_unified_pf_at_lambda(ctx_try, x0_try, lam_try, ...
+                Sdelta_try);
+            iterations = iterations + it;
+            if ok_try
+                ctx = ctx_try;
+                ctxt = ctxt_try;
+                Sdelta = Sdelta_try;
+                x = x_try;
+                eval = eval_try;
+                normF = normF_try;
+                lam = lam_try;
+                ok = 1;
+                report.lambda_event(:) = lam_try;
+                report.margin_event(:) = NaN;
+                report.event_location_method(:) = ...
+                    repmat({'bisection_margin_retry'}, ...
+                    size(report.event_location_method));
+                report.location_error(:) = repmat({''}, ...
+                    size(report.location_error));
+                return;
+            end
+            low_lam = lam_try;
+        end
+        refresh_incremental_policy_anchor(high_lam);
+        [ctx_try, ctxt_try, Sdelta_try] = build_unified_context_pair();
+        x0_try = unified_x_from_controlled_ac(ctx_try, r.ac, r);
+        [x_try, eval_try, normF_try, it, ok_try] = ...
+            solve_unified_pf_at_lambda(ctx_try, x0_try, high_lam, ...
+            Sdelta_try);
+        iterations = iterations + it;
+        if ok_try
+            ctx = ctx_try;
+            ctxt = ctxt_try;
+            Sdelta = Sdelta_try;
+            x = x_try;
+            eval = eval_try;
+            normF = normF_try;
+            lam = high_lam;
+            ok = 1;
+            report.lambda_event(:) = high_lam;
+            report.margin_event(:) = report.margin_candidate(:);
+            report.event_location_method(:) = ...
+                repmat({'bisection_margin_fallback'}, ...
+                size(report.event_location_method));
+            report.location_error(:) = repmat({''}, ...
+                size(report.location_error));
+        end
+    end
+
+    function [sat, margin, err, Psat, Qsat, Ssat, info] = ...
+            gen_capability_margin_from_result(r, g, Smax, type)
+        sat = 0;
+        margin = NaN;
+        err = '';
+        Psat = NaN;
+        Qsat = NaN;
+        Ssat = NaN;
+        info = struct();
+        if size(r.gen, 1) < g
+            err = 'result does not contain requested generator row';
+            return;
+        end
+        try
+            [sat, Psat, Qsat, Ssat, info] = gen_capability_curve( ...
+                r.gen(g, PG), r.gen(g, QG), Smax, type);
+            margin = info.margin;
+        catch me
+            err = me.message;
+        end
+    end
+
+    function ev = gen_capability_event_record(event_k, event_idx, msg, report)
+        ev = vsc_mtdc_cpf_gen_capability_event('record', ...
+            event_k, event_idx, msg, report);
+    end
+
+    function ev = complete_gen_capability_event(ev, report, r)
+        ev = vsc_mtdc_cpf_gen_capability_event('complete', ...
+            ev, report, r.bus, r.gen);
+    end
+
+    function [margin, lam_prev, err] = previous_gen_capability_margin( ...
+            g, Smax, type)
+        margin = NaN;
+        lam_prev = NaN;
+        err = '';
+        if ~(exist('last', 'var') && isstruct(last) && ...
+                isfield(last, 'gen') && size(last.gen, 1) >= g && ...
+                exist('last_lam', 'var') && isfinite(last_lam))
+            return;
+        end
+        [~, margin, err] = gen_capability_margin_from_result(last, g, ...
+            Smax, type);
+        if isempty(err)
+            lam_prev = last_lam;
         end
     end
 
     function TorF = is_slack_gen(mpc, g)
         row = find(mpc.bus(:, BUS_I) == mpc.gen(g, GEN_BUS), 1);
         TorF = ~isempty(row) && mpc.bus(row, BUS_TYPE) == REF;
-    end
-
-    function Smax = default_gen_smax(mpc, g)
-        Smax = mpc.gen(g, MBASE);
-        if ~isfinite(Smax) || Smax <= 0
-            Smax = mpc.baseMVA;
-        end
     end
 
     function mpc = set_gen_bus_type(mpc, g, type)
@@ -1262,37 +2382,6 @@ end
     function TorF = gen_bus_is_pq(mpc, g)
         row = find(mpc.bus(:, BUS_I) == mpc.gen(g, GEN_BUS), 1);
         TorF = ~isempty(row) && mpc.bus(row, BUS_TYPE) == PQ;
-    end
-
-    function val = gen_capability_option_value(name, g, kk, default)
-        val = default;
-        if ~isfield(opt, name) || isempty(opt.(name))
-            return;
-        end
-        raw = opt.(name);
-        if iscell(raw)
-            if isscalar(raw)
-                val = raw{1};
-            elseif numel(raw) >= g
-                val = raw{g};
-            elseif numel(raw) >= kk
-                val = raw{kk};
-            else
-                error('runcpf_vsc_mtdc: option %s has invalid length', name);
-            end
-        elseif isnumeric(raw)
-            if isscalar(raw)
-                val = raw;
-            elseif numel(raw) >= g
-                val = raw(g);
-            elseif numel(raw) >= kk
-                val = raw(kk);
-            else
-                error('runcpf_vsc_mtdc: option %s has invalid length', name);
-            end
-        else
-            val = raw;
-        end
     end
 
     function sig = gen_capability_active_set_signature(mpc)
@@ -1324,22 +2413,8 @@ end
     end
 
     function sig = psse_active_set_signature(mpc)
-        [~, ~, ~, ~, ~, BUS_TYPE2, PD2, QD2, GS2, BS2] = idx_bus;
-        [~, ~, ~, QMAX2, QMIN2, VG2, ~, GEN_STATUS2] = idx_gen;
-        [~, ~, BR_R2, BR_X2, BR_B2, RATE_A2, RATE_B2, RATE_C2, ...
-            TAP2, SHIFT2, BR_STATUS2] = idx_brch;
-        bus_cols = existing_cols([BUS_TYPE2 PD2 QD2 GS2 BS2], ...
-            mpc.bus, mpc.bus);
-        gen_cols = existing_cols([QMAX2 QMIN2 VG2 GEN_STATUS2], ...
-            mpc.gen, mpc.gen);
-        branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
-            RATE_C2 TAP2 SHIFT2 BR_STATUS2], mpc.branch, mpc.branch);
-        vals = [
-            reshape(mpc.bus(:, bus_cols), [], 1);
-            reshape(mpc.gen(:, gen_cols), [], 1);
-            reshape(mpc.branch(:, branch_cols), [], 1)
-        ];
-        sig = sprintf('%.9g,', round(vals(:)' * 1e9) / 1e9);
+        profile_cleanup = profile_time_scope('psse_active_set_signature'); %#ok<NASGU>
+        sig = mp.psse_unified_active_set('signature', mpc);
     end
 
     function TorF = unified_psse_controls_enabled()
@@ -1355,19 +2430,529 @@ end
             strcmpi(opt.psse_control_limit, 'freeze');
     end
 
-    function TorF = has_psse_control_data(mpc)
-        TorF = 0;
-        if ~isfield(mpc, 'psse') || isempty(mpc.psse)
+    function s = freeze_recovery_step()
+        s = min(max(step, step_min), step_max);
+    end
+
+    function TorF = freeze_vsc_capability_after_limit()
+        TorF = strcmpi(capability_limit_mode('vsc'), 'freeze');
+    end
+
+    function margin = vsc_capability_current_margin_fraction()
+        margin = NaN;
+        if incremental_cpf_policies_enabled() && ...
+                isfield(cpf_policy_state, 'vsc_capability_margin') && ...
+                isfield(cpf_policy_state.vsc_capability_margin, ...
+                'current_fraction')
+            margin = cpf_policy_state.vsc_capability_margin.current_fraction;
+        end
+    end
+
+    function TorF = freeze_gen_capability_after_limit()
+        TorF = strcmpi(capability_limit_mode('gen'), 'freeze');
+    end
+
+    function mode = capability_limit_mode(kind)
+        specific_name = ['capability_' lower(kind) '_limit'];
+        mode = opt.capability_limit;
+        if isfield(opt, specific_name) && ~isempty(opt.(specific_name))
+            mode = opt.(specific_name);
+        end
+    end
+
+    function validate_capability_limit_options()
+        validate_capability_limit_option('capability_limit');
+        validate_capability_limit_option('capability_vsc_limit');
+        validate_capability_limit_option('capability_gen_limit');
+    end
+
+    function validate_capability_limit_option(name)
+        if ~isfield(opt, name) || isempty(opt.(name))
             return;
         end
-        families = {'pqbrak', 'xfmr', 'genq', 'twodc', 'swshunt', 'facts'};
-        for ff = 1:length(families)
-            if isfield(mpc.psse, families{ff}) && ...
-                    ~isempty(mpc.psse.(families{ff}))
-                TorF = 1;
-                return;
+        val = opt.(name);
+        if ~ischar(val) || ...
+                ~(strcmpi(val, 'stop') || strcmpi(val, 'freeze'))
+            error(['runcpf_vsc_mtdc: vsc_mtdc.%s must be ''stop'' ' ...
+                'or ''freeze'''], name);
+        end
+    end
+
+    function [changed, rows, cols, backoff_lam, action, margin_old, ...
+            margin_new] = increase_vsc_capability_margin_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_margin_increase'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.AC_MODE c.PAC_SET c.QAC_SET];
+        backoff_lam = 0;
+        action = '';
+        margin_old = NaN;
+        margin_new = NaN;
+        if ~incremental_cpf_policies_enabled() || ...
+                ~isfield(cpf_policy_state, 'vsc_capability_margin') || ...
+                ~cpf_policy_state.vsc_capability_margin.enabled || ...
+                ~isfield(last, 'vsc') || isempty(last.vsc)
+            return;
+        end
+
+        margin_state = cpf_policy_state.vsc_capability_margin;
+        margin_old = margin_state.current_fraction;
+        if margin_old + 1e-12 >= margin_state.max_fraction
+            return;
+        end
+        margin_new = min(margin_state.max_fraction, ...
+            margin_old + margin_state.step_fraction);
+        if margin_new <= margin_old + 1e-12
+            return;
+        end
+
+        cpf_policy_state.vsc_capability_margin.current_fraction = ...
+            margin_new;
+        [changed, bnext, tnext, report] = ...
+            unified_vsc_capability_update(last, last_lam);
+        if ~changed
+            rows = [];
+            changed = 1;
+            action = 'margin_increase';
+            return;
+        end
+
+        mpcb = bnext;
+        mpct = tnext;
+        rows = report.changed_idx(:);
+        refresh_incremental_policy_anchor(last_lam);
+        action = 'margin_increase';
+    end
+
+    function [changed, rows, cols, backoff_lam, action, margin_old, ...
+            margin_new] = resaturate_vsc_capability_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_resaturate'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.AC_MODE c.PAC_SET c.QAC_SET];
+        backoff_lam = 0;
+        action = '';
+        margin_old = NaN;
+        margin_new = NaN;
+        if ~fixed_vsc_capability_margin_policy() || ...
+                ~isfield(mpcb, 'vsc') || isempty(mpcb.vsc) || ...
+                ~isfield(last, 'vsc') || isempty(last.vsc)
+            return;
+        end
+        max_resaturations = 1000;
+        if vsc_capability_resaturation_count >= max_resaturations
+            return;
+        end
+
+        current = vsc_cpf_current_mpc(mpcb, mpct, last_lam);
+        candidate = vsc_capability_failed_candidate_result();
+        if ~isfield(candidate, 'vsc') || isempty(candidate.vsc)
+            return;
+        end
+        active = find(current.vsc(:, c.VSC_STATUS) > 0 & ...
+            (current.vsc(:, c.AC_MODE) == c.VSC_AC_Q | ...
+             current.vsc(:, c.AC_MODE) == c.VSC_AC_PQ));
+        active = active(ismember(active, vsc_capability_recorded_idx(:)));
+        if isempty(active)
+            return;
+        end
+
+        tol = 1e-8;
+        next_vsc = current.vsc;
+        rows = zeros(length(active), 1);
+        nrows = 0;
+        for kk = 1:length(active)
+            k = active(kk);
+            if size(candidate.vsc, 1) < k || size(candidate.vsc, 2) < c.QAC
+                continue;
+            end
+            P0 = candidate.vsc(k, c.PAC);
+            Q0 = candidate.vsc(k, c.QAC);
+            V0 = vsc_capability_voltage(candidate.vsc, k);
+            params = vsc_capability_params(current, opt, k, k);
+            policy = vsc_capability_policy(current.vsc(k, :), ...
+                struct('mode', params.mode), k, k);
+            [sat, Psat, Qsat, ~, info] = vsc_capability_curve( ...
+                P0, Q0, params.Smax, V0, candidate.vsc(k, :), ...
+                policy.projection_mode, params.Vmax, mpcb.baseMVA);
+            if ~sat && info.margin > tol
+                continue;
+            end
+            [Psat, Qsat] = apply_vsc_capability_saturation_margin( ...
+                P0, Q0, Psat, Qsat, policy, k);
+            to_mode = saturated_vsc_ac_mode(policy, P0, Psat, tol);
+            new_vals = [to_mode Psat Qsat];
+            if all(abs(current.vsc(k, cols) - new_vals) <= tol)
+                continue;
+            end
+            next_vsc(k, cols) = new_vals;
+            nrows = nrows + 1;
+            rows(nrows) = k;
+        end
+        rows = rows(1:nrows);
+        if isempty(rows)
+            return;
+        end
+
+        mpcb.vsc(rows, cols) = next_vsc(rows, cols);
+        mpct.vsc(rows, cols) = next_vsc(rows, cols);
+        if incremental_cpf_policies_enabled()
+            cpf_policy_state.anchor_mpc.vsc(rows, cols) = ...
+                next_vsc(rows, cols);
+            hvdc_rows = incremental_hvdc_participant_rows();
+            freeze_rows = intersect(rows(:), hvdc_rows(:));
+            if ~isempty(freeze_rows)
+                cpf_policy_state.hvdc_frozen(freeze_rows) = 1;
+                vsc_capability_transfer_frozen = 1;
             end
         end
+        refresh_incremental_policy_anchor(last_lam);
+        vsc_capability_resaturation_count = ...
+            vsc_capability_resaturation_count + 1;
+        changed = 1;
+        action = 'resaturate';
+    end
+
+    function [changed, rows, cols, backoff_lam, action] = ...
+            relieve_vsc_dc_slack_ac_support_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_slack_ac_support'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.AC_MODE c.PAC_SET c.QAC_SET];
+        backoff_lam = 0;
+        action = '';
+        if ~isfield(mpcb, 'vsc') || isempty(mpcb.vsc)
+            return;
+        end
+
+        [changed, rows, cols] = release_vsc_dc_slack_ac_control_at_limit();
+        if changed
+            action = 'ac_release';
+            return;
+        end
+
+        [changed, rows, cols, backoff_lam] = ...
+            saturate_vsc_dc_slack_q_at_limit();
+        if changed
+            action = 'q_saturate';
+        end
+    end
+
+    function [changed, rows, cols] = ...
+            release_vsc_dc_slack_ac_control_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_ac_release'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.AC_MODE c.PAC_SET c.QAC_SET];
+        if ~isfield(last, 'vsc') || isempty(last.vsc)
+            return;
+        end
+        current = vsc_cpf_current_mpc(mpcb, mpct, last_lam);
+        active = find(current.vsc(:, c.VSC_STATUS) > 0 & ...
+            current.vsc(:, c.DC_MODE) == c.VSC_DC_VDC & ...
+            (current.vsc(:, c.AC_MODE) == c.VSC_AC_V | ...
+             current.vsc(:, c.AC_MODE) == c.VSC_AC_PV));
+        if isempty(active)
+            return;
+        end
+
+        tol = 1e-8;
+        rows = zeros(length(active), 1);
+        nrows = 0;
+        for kk = 1:length(active)
+            k = active(kk);
+            if size(last.vsc, 1) < k || size(last.vsc, 2) < c.QAC
+                continue;
+            end
+            P0 = last.vsc(k, c.PAC);
+            Q0 = last.vsc(k, c.QAC);
+            V0 = vsc_capability_voltage(last.vsc, k);
+            params = vsc_capability_params(current, opt, k, k);
+            policy = vsc_capability_policy(current.vsc(k, :), ...
+                struct('mode', params.mode), k, k);
+            [~, Psat, Qsat, ~, info] = vsc_capability_curve( ...
+                P0, Q0, params.Smax, V0, last.vsc(k, :), ...
+                policy.projection_mode, params.Vmax, mpcb.baseMVA);
+            if info.margin > tol
+                continue;
+            end
+            [Psat, Qsat] = apply_vsc_capability_saturation_margin( ...
+                P0, Q0, Psat, Qsat, policy, k);
+            new_vals = [c.VSC_AC_Q Psat Qsat];
+            old_vals = current.vsc(k, cols);
+            if all(abs(old_vals - new_vals) <= tol)
+                continue;
+            end
+            mpcb.vsc(k, cols) = new_vals;
+            mpct.vsc(k, cols) = new_vals;
+            if incremental_cpf_policies_enabled()
+                cpf_policy_state.anchor_mpc.vsc(k, cols) = new_vals;
+                if any(incremental_hvdc_participant_rows() == k)
+                    cpf_policy_state.hvdc_frozen(k) = 1;
+                end
+            end
+            nrows = nrows + 1;
+            rows(nrows) = k;
+            changed = 1;
+        end
+        rows = rows(1:nrows);
+        if changed
+            refresh_incremental_policy_anchor(last_lam);
+        end
+    end
+
+    function [changed, rows, cols, backoff_lam] = ...
+            saturate_vsc_dc_slack_q_at_limit()
+        profile_cleanup = profile_time_scope('vsc_slack_q_relief'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.AC_MODE c.QAC_SET];
+        backoff_lam = 0;
+        if ~incremental_cpf_policies_enabled() || ...
+                ~isfield(cpf_policy_state, 'vsc_slack_q_relief') || ...
+                ~cpf_policy_state.vsc_slack_q_relief.enabled || ...
+                ~isfield(last, 'vsc') || isempty(last.vsc)
+            return;
+        end
+        relief = cpf_policy_state.vsc_slack_q_relief;
+        if vsc_slack_q_backoff_count >= relief.max_saturations
+            return;
+        end
+        current = vsc_cpf_current_mpc(mpcb, mpct, last_lam);
+        candidates = relief.vsc_idx(:);
+        candidates = candidates(current.vsc(candidates, c.VSC_STATUS) > 0 & ...
+            current.vsc(candidates, c.DC_MODE) == c.VSC_DC_VDC & ...
+            current.vsc(candidates, c.AC_MODE) == c.VSC_AC_Q);
+        if isempty(candidates)
+            return;
+        end
+
+        tol = 1e-8;
+        backoff_lam = min(max(step, step_min), step_max);
+        candidate = vsc_capability_failed_candidate_result();
+
+        next_vsc = cpf_policy_state.anchor_mpc.vsc;
+        old_vsc = next_vsc;
+        rows = zeros(length(candidates), 1);
+        nrows = 0;
+        for kk = 1:length(candidates)
+            k = candidates(kk);
+            if size(last.vsc, 1) < k || size(last.vsc, 2) < c.QAC
+                continue;
+            end
+            P0 = candidate.vsc(k, c.PAC);
+            Q0 = candidate.vsc(k, c.QAC);
+            V0 = vsc_capability_voltage(candidate.vsc, k);
+            params = vsc_capability_params(current, opt, k, k);
+            policy = vsc_capability_policy(current.vsc(k, :), ...
+                struct('mode', params.mode), k, k);
+            [~, ~, ~, ~, info] = vsc_capability_curve( ...
+                P0, Q0, params.Smax, V0, candidate.vsc(k, :), ...
+                policy.projection_mode, params.Vmax, mpcb.baseMVA);
+            [needs_sat, Qsat] = vsc_q_margin_saturation_setpoint( ...
+                P0, Q0, info, policy, tol, k);
+            if ~needs_sat
+                continue;
+            end
+            next_vsc(k, c.AC_MODE) = c.VSC_AC_Q;
+            next_vsc(k, c.QAC_SET) = Qsat;
+            nrows = nrows + 1;
+            rows(nrows) = k;
+        end
+        rows = rows(1:nrows);
+        rows = unique(rows);
+        if isempty(rows) || ...
+                all(all(abs(next_vsc(rows, cols) - old_vsc(rows, cols)) <= tol))
+            backoff_lam = 0;
+            rows = [];
+            return;
+        end
+
+        cpf_policy_state.anchor_mpc.vsc(rows, cols) = next_vsc(rows, cols);
+        mpcb.vsc(rows, cols) = next_vsc(rows, cols);
+        mpct.vsc(rows, cols) = next_vsc(rows, cols);
+        refresh_incremental_policy_anchor(last_lam);
+        vsc_slack_q_backoff_count = vsc_slack_q_backoff_count + 1;
+        changed = 1;
+    end
+
+    function candidate = vsc_capability_failed_candidate_result()
+        candidate = last;
+        if exist('r', 'var') && isstruct(r) && isfield(r, 'vsc') && ...
+                ~isempty(r.vsc) && size(r.vsc, 2) >= c.QAC
+            candidate = r;
+        end
+    end
+
+    function [changed, rows, cols] = freeze_vsc_capability_transfer_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_transfer_freeze'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = vsc_setpoint_transfer_cols();
+        if ~isfield(mpcb, 'vsc') || isempty(mpcb.vsc)
+            return;
+        end
+        if incremental_cpf_policies_enabled()
+            rows = incremental_hvdc_participant_rows();
+            if isempty(rows) || vsc_capability_transfer_frozen
+                return;
+            end
+            cpf_policy_state.hvdc_frozen(rows) = 1;
+            refresh_incremental_policy_anchor(last_lam);
+            changed = 1;
+            return;
+        end
+        current = vsc_cpf_current_mpc(mpcb, mpct, last_lam);
+        tol = 1e-10;
+        delta = abs(mpct_transfer0.vsc(:, cols) - ...
+            mpcb_transfer0.vsc(:, cols)) > tol;
+        active = mpcb.vsc(:, c.VSC_STATUS) > 0;
+        rows = find(active & any(delta, 2));
+        if isempty(rows)
+            return;
+        end
+        if all(all(abs(mpcb.vsc(rows, cols) - current.vsc(rows, cols)) <= tol)) && ...
+                all(all(abs(mpct.vsc(rows, cols) - current.vsc(rows, cols)) <= tol))
+            return;
+        end
+        mpcb.vsc(rows, cols) = current.vsc(rows, cols);
+        mpct.vsc(rows, cols) = current.vsc(rows, cols);
+        changed = 1;
+    end
+
+    function [changed, rows, cols, backoff_lam] = ...
+            backoff_vsc_hvdc_transfer_at_limit()
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_transfer_backoff'); %#ok<NASGU>
+        changed = 0;
+        rows = [];
+        cols = [c.PAC_SET c.QAC_SET];
+        backoff_lam = 0;
+        if ~incremental_cpf_policies_enabled() || ...
+                ~cpf_policy_state.hvdc.enabled
+            return;
+        end
+        max_backoff = 80;
+        if vsc_capability_transfer_backoff_count >= max_backoff
+            return;
+        end
+        h = cpf_policy_state.hvdc;
+        rows = incremental_hvdc_participant_rows();
+        rows = rows(:);
+        if isempty(rows)
+            return;
+        end
+        backoff_lam = min(max(step, step_min), step_max);
+        base = cpf_policy_state.structural_base.vsc;
+        next_vsc = cpf_policy_state.anchor_mpc.vsc;
+        old_vsc = next_vsc;
+        transfer = h.transfer_mw_per_lambda * backoff_lam;
+
+        next_vsc(h.source_idx, c.PAC_SET) = move_toward( ...
+            next_vsc(h.source_idx, c.PAC_SET), ...
+            base(h.source_idx, c.PAC_SET), transfer);
+        next_vsc(h.sink_idx, c.PAC_SET) = move_toward( ...
+            next_vsc(h.sink_idx, c.PAC_SET), ...
+            base(h.sink_idx, c.PAC_SET), transfer);
+        for kk = 1:length(h.qac_idx)
+            row = h.qac_idx(kk);
+            qstep = abs(h.qac_gain(row) * ...
+                cpf_policy_state.total_pd_per_lam * backoff_lam);
+            next_vsc(row, c.QAC_SET) = move_toward( ...
+                next_vsc(row, c.QAC_SET), ...
+                base(row, c.QAC_SET), qstep);
+        end
+        if all(all(abs(next_vsc(rows, cols) - old_vsc(rows, cols)) <= 1e-10))
+            backoff_lam = 0;
+            return;
+        end
+
+        cpf_policy_state.anchor_mpc.vsc(rows, cols) = next_vsc(rows, cols);
+        mpcb.vsc(rows, cols) = next_vsc(rows, cols);
+        mpct.vsc(rows, cols) = next_vsc(rows, cols);
+        cpf_policy_state.hvdc_frozen(rows) = 1;
+        vsc_capability_transfer_backoff_count = ...
+            vsc_capability_transfer_backoff_count + 1;
+        changed = 1;
+    end
+
+    function val = move_toward(val, target, amount)
+        if amount <= 0 || abs(val - target) <= 1e-10
+            return;
+        end
+        if val < target
+            val = min(val + amount, target);
+        else
+            val = max(val - amount, target);
+        end
+    end
+
+    function [changed, rows] = freeze_gen_capability_dispatch_at_limit()
+        changed = 0;
+        rows = [];
+        if ~isfield(mpcb, 'gen') || isempty(mpcb.gen)
+            return;
+        end
+        if incremental_cpf_policies_enabled()
+            rows = incremental_gen_participant_rows();
+            rows = rows(~cpf_policy_state.gen_frozen(rows));
+            if isempty(rows)
+                return;
+            end
+            cpf_policy_state.gen_frozen(rows) = 1;
+            refresh_incremental_policy_anchor(last_lam);
+            changed = 1;
+            return;
+        end
+        current = vsc_cpf_current_mpc(mpcb, mpct, last_lam);
+        tol = 1e-10;
+        for g = 1:size(mpcb.gen, 1)
+            if mpcb.gen(g, GEN_STATUS) <= 0 || isload(mpcb.gen(g, :)) || ...
+                    is_slack_gen(mpcb, g)
+                continue;
+            end
+            if abs(mpct_transfer0.gen(g, PG) - ...
+                    mpcb_transfer0.gen(g, PG)) > tol
+                rows(end+1, 1) = g; %#ok<AGROW>
+            end
+        end
+        if isempty(rows)
+            return;
+        end
+        if all(abs(mpcb.gen(rows, PG) - current.gen(rows, PG)) <= tol) && ...
+                all(abs(mpct.gen(rows, PG) - current.gen(rows, PG)) <= tol)
+            return;
+        end
+        mpcb.gen(rows, PG) = current.gen(rows, PG);
+        mpct.gen(rows, PG) = current.gen(rows, PG);
+        changed = 1;
+    end
+
+    function [ctx, ctxt, Sdelta, x1, z, ok] = ...
+            rebuild_unified_point_after_freeze(x0, lam0, dir0)
+        profile_cleanup = profile_time_scope( ...
+            'vsc_capability_relief_context_rebuild'); %#ok<NASGU>
+        [ctx, ctxt, Sdelta] = build_unified_context_pair();
+        [x1, ~, ~, ~, ok] = solve_unified_pf_at_lambda( ...
+            ctx, x0, lam0, Sdelta);
+        if ~ok
+            z = [];
+            return;
+        end
+        zseed = zeros(length(x1) + 1, 1);
+        zseed(end) = dir0;
+        z = unified_cpf_tangent(ctx, x1, lam0, Sdelta, zseed, ...
+            x1, lam0, 1, dir0);
+    end
+
+    function TorF = has_psse_control_data(mpc)
+        TorF = mp.psse_unified_active_set('has_control_data', mpc, ...
+            'raw');
     end
 
     function max_it = unified_psse_control_max_it()
@@ -1380,35 +2965,96 @@ end
 
     function [changed, mpcb_next, mpct_next, ac_controlled, report, ok] = ...
             unified_psse_control_update(r, lam)
+        profile_cleanup = profile_time_scope('unified_psse_control_update'); %#ok<NASGU>
         ok = 1;
         mpcb_next = mpcb;
         mpct_next = mpct;
 
+        current_cleanup = profile_time_scope('psse_current_mpc'); %#ok<NASGU>
         current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+        clear current_cleanup;
+        direct_cleanup = profile_time_scope('psse_direct_update'); %#ok<NASGU>
         [direct, direct_report] = mp.psse_unified_control_update( ...
             current, r.bus);
+        clear direct_cleanup;
         if direct_report.supported
+            profile_count('psse_direct_supported');
             ac_controlled = psse_control_case_from_unified_result(r);
             ac_controlled = copy_original_active_set_to_ac( ...
                 ac_controlled, direct);
             [changed, report] = psse_active_set_changed( ...
                 current, ac_controlled);
-            if changed || (~has_auxiliary_psse_control_data(current) && ...
-                    ~psse_report_has_unsatisfied_controls(report))
+            report = merge_psse_direct_report(report, direct_report);
+            has_aux = has_auxiliary_psse_control_data(current, r.bus);
+            needs_aux = direct_report_requires_auxiliary_pf(direct_report);
+            if has_aux
+                profile_count('psse_direct_blocked_by_aux_family');
+            elseif needs_aux
+                profile_count('psse_direct_blocked_by_requires_aux');
+            end
+            if changed || (~has_aux && ~needs_aux && ...
+                    (~psse_report_has_unsatisfied_controls(report) || ...
+                    direct_report_has_blocked_controls(direct_report)))
                 if changed
                     [mpcb_next, mpct_next] = apply_psse_active_set_update( ...
                         current, ac_controlled);
+                else
+                    mpcb = copy_psse_control_fields(mpcb, ac_controlled);
+                    mpct = copy_psse_control_fields(mpct, ac_controlled);
+                    profile_count('psse_direct_only_fast_path');
                 end
+                profile_count('psse_direct_return');
                 return;
             end
+            if psse_report_has_unsatisfied_controls(report)
+                profile_count('psse_direct_blocked_by_unsatisfied_controls');
+                if isfield(direct_report, 'xfmr_control_violations') && ...
+                        direct_report.xfmr_control_violations > 0
+                    profile_count('psse_direct_blocked_by_xfmr');
+                end
+                if isfield(direct_report, 'swshunt_control_violations') && ...
+                        direct_report.swshunt_control_violations > 0
+                    profile_count('psse_direct_blocked_by_swshunt');
+                end
+            end
+        else
+            profile_count('psse_direct_unsupported');
         end
 
+        profile_count('psse_auxiliary_called');
         [changed, mpcb_next, mpct_next, ac_controlled, report, ok] = ...
             auxiliary_psse_control_update(r, lam);
     end
 
+    function TorF = direct_report_requires_auxiliary_pf(report)
+        TorF = isfield(report, 'requires_auxiliary_pf') && ...
+            option_is_enabled(report.requires_auxiliary_pf);
+    end
+
+    function TorF = direct_report_has_blocked_controls(report)
+        TorF = isfield(report, 'blocked_violations') && ...
+            report.blocked_violations > 0;
+    end
+
+    function report = merge_psse_direct_report(report, direct_report)
+        names = {'blocked_violations', ...
+            'xfmr_blocked_violations', 'xfmr_blocked_low', ...
+            'xfmr_blocked_high', 'xfmr_locked_out', ...
+            'xfmr_locked_count', ...
+            'swshunt_blocked_violations', 'swshunt_blocked_low', ...
+            'swshunt_blocked_high', 'swshunt_locked_out', ...
+            'swshunt_locked_count'};
+        for kk = 1:length(names)
+            name = names{kk};
+            if isfield(direct_report, name)
+                report.(name) = direct_report.(name);
+            end
+        end
+    end
+
     function [changed, mpcb_next, mpct_next, ac_controlled, report, ok] = ...
             auxiliary_psse_control_update(r, lam)
+        profile_cleanup = profile_time_scope('auxiliary_psse_control_update'); %#ok<NASGU>
         changed = 0;
         ok = 1;
         mpcb_next = mpcb;
@@ -1422,10 +3068,16 @@ end
             return;
         end
 
+        opt_cleanup = profile_time_scope('psse_control_mpopt'); %#ok<NASGU>
         control_opt = psse_control_mpopt();
+        clear opt_cleanup;
         try
+            runpf_cleanup = profile_time_scope('psse_aux_runpf_psse'); %#ok<NASGU>
             [ac_controlled, ok] = runpf_psse(ac_case, control_opt);
+            clear runpf_cleanup;
         catch
+            clear runpf_cleanup;
+            profile_count('psse_aux_runpf_exception');
             ok = 0;
             return;
         end
@@ -1434,7 +3086,9 @@ end
             return;
         end
 
+        current_cleanup = profile_time_scope('psse_current_mpc'); %#ok<NASGU>
         current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+        clear current_cleanup;
         [changed, report] = psse_active_set_changed(current, ac_controlled);
         if changed
             [mpcb_next, mpct_next] = apply_psse_active_set_update( ...
@@ -1442,12 +3096,20 @@ end
         end
     end
 
-    function TorF = has_auxiliary_psse_control_data(mpc)
+    function TorF = has_auxiliary_psse_control_data(mpc, unified_bus)
+        if nargin < 2
+            unified_bus = [];
+        end
         TorF = 0;
-        families = {'pqbrak', 'genq', 'twodc', 'facts'};
         if ~isfield(mpc, 'psse') || isempty(mpc.psse)
             return;
         end
+        if psse_family_present(mpc, 'pqbrak') && ...
+                pqbrak_auxiliary_active(mpc, unified_bus)
+            TorF = 1;
+            return;
+        end
+        families = {'genq', 'twodc', 'facts'};
         for kk = 1:length(families)
             if psse_family_present(mpc, families{kk})
                 TorF = 1;
@@ -1456,40 +3118,46 @@ end
         end
     end
 
-    function ac = psse_control_case_from_unified_result(r)
-        ac = r.ac;
-        drop = {'busdc', 'branchdc', 'vsc', 'vsc_state', 'cpf', ...
-            'om', 'order', 'et', 'success', 'iterations', 'convergence'};
-        for dd = 1:length(drop)
-            if isfield(ac, drop{dd})
-                ac = rmfield(ac, drop{dd});
+    function TorF = pqbrak_auxiliary_active(mpc, unified_bus)
+        TorF = 1;
+        pq = mpc.psse.pqbrak;
+        if isfield(pq, 'scale') && ~isempty(pq.scale) && ...
+                any(abs(pq.scale(:) - 1) > 1e-10)
+            return;
+        end
+        if ~isfield(pq, 'pqbrak') || isempty(pq.pqbrak) || ...
+                isnan(pq.pqbrak) || pq.pqbrak <= 0
+            TorF = 0;
+            return;
+        end
+        vm = psse_unified_vm_for_mpc(mpc, unified_bus);
+        TorF = any(vm < pq.pqbrak - 1e-10);
+    end
+
+    function vm = psse_unified_vm_for_mpc(mpc, unified_bus)
+        [~, ~, ~, ~, BUS_I2, ~, ~, ~, ~, ~, ~, VM2] = idx_bus;
+        vm = mpc.bus(:, VM2);
+        if isempty(unified_bus)
+            return;
+        end
+        for kk = 1:size(mpc.bus, 1)
+            row = find(unified_bus(:, BUS_I2) == mpc.bus(kk, BUS_I2), 1);
+            if ~isempty(row)
+                vm(kk) = unified_bus(row, VM2);
             end
         end
     end
 
-    function ac = copy_original_active_set_to_ac(ac, mpc)
-        [~, ~, ~, ~, ~, BUS_TYPE2, PD2, QD2, GS2, BS2, ~, ~, ~] = idx_bus;
-        [~, ~, QG2, QMAX2, QMIN2, VG2, ~, GEN_STATUS2] = idx_gen;
-        [~, ~, BR_R2, BR_X2, BR_B2, RATE_A2, RATE_B2, RATE_C2, ...
-            TAP2, SHIFT2, BR_STATUS2] = idx_brch;
+    function ac = psse_control_case_from_unified_result(r)
+        profile_cleanup = profile_time_scope('psse_case_from_result'); %#ok<NASGU>
+        ac = mp.psse_unified_active_set( ...
+            'control_case_from_unified_result', r);
+    end
 
-        for kk = 1:size(mpc.bus, 1)
-            row = find(ac.bus(:, BUS_I) == mpc.bus(kk, BUS_I), 1);
-            if ~isempty(row)
-                cols = existing_cols([BUS_TYPE2 PD2 QD2 GS2 BS2], ...
-                    ac.bus, mpc.bus);
-                ac.bus(row, cols) = mpc.bus(kk, cols);
-            end
-        end
-        ng = min(size(mpc.gen, 1), size(ac.gen, 1));
-        gen_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
-            ac.gen, mpc.gen);
-        ac.gen(1:ng, gen_cols) = mpc.gen(1:ng, gen_cols);
-        nb = min(size(mpc.branch, 1), size(ac.branch, 1));
-        branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
-            RATE_C2 TAP2 SHIFT2 BR_STATUS2], ac.branch, mpc.branch);
-        ac.branch(1:nb, branch_cols) = mpc.branch(1:nb, branch_cols);
-        ac = copy_psse_control_fields(ac, mpc);
+    function ac = copy_original_active_set_to_ac(ac, mpc)
+        profile_cleanup = profile_time_scope('psse_copy_active_set_to_ac'); %#ok<NASGU>
+        ac = mp.psse_unified_active_set( ...
+            'copy_original_active_set_to_ac', ac, mpc);
     end
 
     function control_opt = psse_control_mpopt()
@@ -1501,6 +3169,7 @@ end
     end
 
     function [changed, report] = psse_active_set_changed(current, ac)
+        profile_cleanup = profile_time_scope('psse_active_set_changed'); %#ok<NASGU>
         [~, ~, ~, ~, ~, BUS_TYPE2, PD2, QD2, GS2, BS2] = idx_bus;
         [~, ~, ~, QMAX2, QMIN2, VG2, ~, GEN_STATUS2] = idx_gen;
         [~, ~, BR_R2, BR_X2, BR_B2, RATE_A2, RATE_B2, RATE_C2, ...
@@ -1542,8 +3211,98 @@ end
     end
 
     function TorF = psse_report_has_unsatisfied_controls(report)
-        TorF = isfield(report, 'control_violations') && ...
-            report.control_violations > 0;
+        TorF = mp.psse_unified_active_set( ...
+            'report_has_unsatisfied_controls', report);
+    end
+
+    function [changed, msg] = apply_selective_psse_control_lockout(report, lam)
+        changed = 0;
+        msg = '';
+        if ~freeze_psse_controls_after_limit()
+            return;
+        end
+        [xf_changed, xf_detail] = lockout_blocked_psse_family( ...
+            'xfmr', report);
+        [sw_changed, sw_detail] = lockout_blocked_psse_family( ...
+            'swshunt', report);
+        changed = xf_changed || sw_changed;
+        if ~changed
+            return;
+        end
+        details = {};
+        if xf_changed
+            details{end+1} = xf_detail;
+        end
+        if sw_changed
+            details{end+1} = sw_detail;
+        end
+        msg = sprintf(['Selective PSS/E control freeze at lambda = %.8g; ' ...
+            'locked %s at blocked control limit and continuing remaining ' ...
+            'PSS/E discrete controls.'], lam, strjoin(details, ', '));
+    end
+
+    function [changed, detail] = lockout_blocked_psse_family(family, report)
+        changed = 0;
+        detail = '';
+        rows = blocked_psse_rows(family, report);
+        if isempty(rows)
+            return;
+        end
+        mpcb = set_psse_control_lockout(mpcb, family, rows);
+        mpct = set_psse_control_lockout(mpct, family, rows);
+        changed = 1;
+        row_txt = strtrim(sprintf('%d ', rows));
+        detail = sprintf('%s rows [%s]', family, row_txt);
+    end
+
+    function rows = blocked_psse_rows(family, report)
+        rows = [];
+        low_name = [family '_blocked_low'];
+        high_name = [family '_blocked_high'];
+        mask = [];
+        if isfield(report, low_name)
+            mask = logical(report.(low_name)(:));
+        end
+        if isfield(report, high_name)
+            high = logical(report.(high_name)(:));
+            if isempty(mask)
+                mask = high;
+            else
+                n = min(length(mask), length(high));
+                mask(1:n) = mask(1:n) | high(1:n);
+                if length(high) > length(mask)
+                    mask(end+1:length(high)) = high(length(mask)+1:end);
+                end
+            end
+        end
+        if ~isempty(mask)
+            rows = find(mask);
+            rows = rows(:).';
+        end
+    end
+
+    function mpc = set_psse_control_lockout(mpc, family, rows)
+        if isempty(rows)
+            return;
+        end
+        if ~isfield(mpc, 'psse') || isempty(mpc.psse)
+            mpc.psse = struct();
+        end
+        if ~isfield(mpc.psse, 'control_lockout') || ...
+                isempty(mpc.psse.control_lockout)
+            mpc.psse.control_lockout = struct();
+        end
+        n = max(rows);
+        if isfield(mpc.psse.control_lockout, family)
+            locked = logical(mpc.psse.control_lockout.(family)(:));
+            if length(locked) < n
+                locked(n, 1) = false;
+            end
+        else
+            locked = false(n, 1);
+        end
+        locked(rows) = true;
+        mpc.psse.control_lockout.(family) = locked;
     end
 
     function n = psse_control_violations(mpc)
@@ -1559,16 +3318,12 @@ end
     end
 
     function n = psse_control_report_count(mpc, family, field)
-        n = 0;
-        if isfield(mpc, 'psse') && isfield(mpc.psse, family) && ...
-                isfield(mpc.psse.(family), 'control') && ...
-                isfield(mpc.psse.(family).control, field)
-            val = mpc.psse.(family).control.(field);
-            n = nnz(val);
-        end
+        n = mp.psse_unified_active_set('control_report_count', mpc, ...
+            family, field);
     end
 
     function [bnext, tnext] = apply_psse_active_set_update(current, ac)
+        profile_cleanup = profile_time_scope('psse_apply_active_set_update'); %#ok<NASGU>
         [~, ~, ~, ~, ~, BUS_TYPE2, PD2, QD2, GS2, BS2, ~, VM2, VA2] = idx_bus;
         [~, ~, QG2, QMAX2, QMIN2, VG2, ~, GEN_STATUS2] = idx_gen;
         [~, ~, BR_R2, BR_X2, BR_B2, RATE_A2, RATE_B2, RATE_C2, ...
@@ -1616,72 +3371,19 @@ end
     end
 
     function TorF = psse_load_equiv_changed(ac)
-        TorF = 0;
-        if ~isfield(ac, 'psse') || isempty(ac.psse)
-            return;
-        end
-        if isfield(ac.psse, 'pqbrak') && isfield(ac.psse.pqbrak, 'scale') && ...
-                any(abs(ac.psse.pqbrak.scale(:) - 1) > 1e-10)
-            TorF = 1;
-            return;
-        end
-        if isfield(ac.psse, 'pqbrak') && ...
-                isfield(ac.psse.pqbrak, 'changed_last') && ...
-                any(ac.psse.pqbrak.changed_last(:))
-            TorF = 1;
-            return;
-        end
-        if isfield(ac.psse, 'facts')
-            if isfield(ac.psse.facts, 'qinj') && ...
-                    any(abs(ac.psse.facts.qinj(:)) > 1e-10)
-                TorF = 1;
-                return;
-            elseif isfield(ac.psse.facts, 'control') && ...
-                    isfield(ac.psse.facts.control, 'qinj') && ...
-                    any(abs(ac.psse.facts.control.qinj(:)) > 1e-10)
-                TorF = 1;
-                return;
-            end
-        end
-        if isfield(ac.psse, 'twodc') && isfield(ac.psse.twodc, 'control')
-            ctrl = ac.psse.twodc.control;
-            if (isfield(ctrl, 'apply_model') && any(ctrl.apply_model(:))) || ...
-                    (isfield(ctrl, 'apply_q') && any(ctrl.apply_q(:)))
-                TorF = 1;
-                return;
-            end
-        end
+        TorF = mp.psse_unified_active_set('load_equiv_changed', ac);
     end
 
     function TorF = has_psse_genq_control(mpc)
-        TorF = isfield(mpc, 'psse') && psse_family_present(mpc, 'genq');
+        TorF = mp.psse_unified_active_set('has_genq_control', mpc);
     end
 
     function TorF = psse_family_present(mpc, name)
-        TorF = isfield(mpc, 'psse') && isfield(mpc.psse, name) && ...
-            ~isempty(mpc.psse.(name));
-        if TorF && isstruct(mpc.psse.(name)) && ...
-                isfield(mpc.psse.(name), 'num') && isempty(mpc.psse.(name).num)
-            TorF = 0;
-        end
+        TorF = mp.psse_unified_active_set('family_present', mpc, name);
     end
 
     function mpc = copy_psse_control_fields(mpc, ac)
-        if ~isfield(ac, 'psse') || isempty(ac.psse)
-            return;
-        end
-        if ~isfield(mpc, 'psse') || isempty(mpc.psse)
-            mpc.psse = struct();
-        end
-        families = {'xfmr', 'genq', 'twodc', 'swshunt', 'facts', ...
-            'pqbrak', 'solver_options', 'control_failure', ...
-            'coordinated_active_set'};
-        for ff = 1:length(families)
-            name = families{ff};
-            if isfield(ac.psse, name)
-                mpc.psse.(name) = ac.psse.(name);
-            end
-        end
+        mpc = mp.psse_unified_active_set('copy_control_fields', mpc, ac);
     end
 
     function cols = existing_cols(cols, a, b)
@@ -1724,12 +3426,14 @@ end
 
     function [x, eval, normF, iterations, success] = ...
             solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta)
+        profile_cleanup = profile_time_scope('solve_pf_at_lambda'); %#ok<NASGU>
         x = x0;
         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
         normF = norm(F, Inf);
         success = normF < ctx.opt.tol;
         iterations = 0;
-        while ~success && iterations < ctx.opt.max_it
+        max_it = max(ctx.opt.max_it, 30);
+        while ~success && iterations < max_it
             if isempty(eval) || ~isfinite(normF)
                 break;
             end
@@ -1745,7 +3449,7 @@ end
     function [x, F, eval, normF, ctx_lam] = unified_accept_pf_step( ...
             ctx, lam, Sdelta, x0, dx, normF0)
         alpha = 1;
-        while alpha >= 1/64
+        while alpha >= 1/1024
             xt = x0 + alpha * dx;
             [Ft, evalt, ctx_t] = unified_eval_at_lambda(ctx, xt, lam, Sdelta);
             normFt = norm(Ft, Inf);
@@ -1767,6 +3471,7 @@ end
     function [x, lam, eval, normF, iterations, success] = ...
             unified_cpf_corrector(ctx, Sdelta, xhat, lamhat, xprev, ...
             lamprev, z, h, parm)
+        profile_cleanup = profile_time_scope('cpf_corrector'); %#ok<NASGU>
         x = xhat;
         lam = lamhat;
         iterations = 0;
@@ -1795,6 +3500,7 @@ end
 
     function z = unified_cpf_tangent(ctx, x, lam, Sdelta, zprv, xprev, ...
             lamprev, parm, direction)
+        profile_cleanup = profile_time_scope('cpf_tangent'); %#ok<NASGU>
         [~, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
         J = runpf_vsc_mtdc_unified('__jacobian', ctx_lam, eval, []);
         dF_dlam = unified_dF_dlam(ctx, Sdelta, x, lam);
@@ -1896,11 +3602,14 @@ end
     end
 
     function [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta)
+        profile_cleanup = profile_time_scope('eval_at_lambda'); %#ok<NASGU>
         ctx_lam = unified_context_at_lambda(ctx, lam);
-        [F, eval] = unified_eval(ctx_lam, x, ctx.Sbase + lam * Sdelta);
+        [F, eval] = unified_eval(ctx_lam, x, unified_Sbase_at_lambda(ctx, ...
+            ctx_lam, lam, Sdelta));
     end
 
     function [F, eval] = unified_eval(ctx, x, Sbase)
+        profile_cleanup = profile_time_scope('mismatch_eval'); %#ok<NASGU>
         [F, eval] = runpf_vsc_mtdc_unified('__mismatch', ctx, x, Sbase);
     end
 
@@ -1912,10 +3621,28 @@ end
         end
     end
 
+    function S = unified_Sbase_at_lambda(ctx, ctx_lam, lam, Sdelta)
+        profile_cleanup = profile_time_scope('sbase_at_lambda'); %#ok<NASGU>
+        if incremental_cpf_policies_enabled()
+            [S, ok] = fast_unified_Sbase(ctx, ctx_lam.mpc);
+            if ~ok
+                profile_count('fast_sbase_fallback');
+                ctx_eff = runpf_vsc_mtdc_unified('__setup', ctx_lam.mpc, ...
+                    mpopt_pf);
+                S = ctx_eff.Sbase;
+            else
+                profile_count('fast_sbase_hit');
+            end
+        else
+            S = ctx.Sbase + lam * Sdelta;
+        end
+    end
+
     function dF = unified_dF_dlam(ctx, Sdelta, x, lam)
         model = ctx.model;
         dF = zeros(length(ctx.x0), 1);
-        if unified_has_vsc_setpoint_transfer(ctx)
+        if incremental_cpf_policies_enabled() || ...
+                unified_has_vsc_setpoint_transfer(ctx)
             h = 1e-6 * max(1, abs(lam));
             Fp = unified_eval_at_lambda(ctx, x, lam + h, Sdelta);
             Fm = unified_eval_at_lambda(ctx, x, lam - h, Sdelta);
@@ -1926,6 +3653,85 @@ end
         row_q = length(row_p) + (1:length(model.qeq));
         dF(row_p) = -real(Sdelta(model.nonref));
         dF(row_q) = -imag(Sdelta(model.qeq));
+    end
+
+    function key = unified_context_pair_signature(b, t)
+        key = [unified_context_signature(b) '|' unified_context_signature(t)];
+    end
+
+    function sig = unified_context_signature(mpc)
+        parts = {
+            numeric_signature(mpc.baseMVA);
+            numeric_signature(mpc.bus);
+            numeric_signature(mpc.branch);
+            numeric_signature(mpc.gen);
+            numeric_signature(mpc.busdc);
+            numeric_signature(mpc.branchdc);
+            numeric_signature(mpc.vsc)
+        };
+        sig = strjoin(parts, ';');
+    end
+
+    function sig = numeric_signature(x)
+        if isempty(x)
+            sig = '[]';
+        else
+            vals = round(full(x(:)') * 1e9) / 1e9;
+            sig = sprintf('%dx%d:', size(x, 1), size(x, 2));
+            sig = [sig sprintf('%.9g,', vals)];
+        end
+    end
+
+    function [S, ok] = fast_unified_Sbase(ctx, mpc)
+        profile_cleanup = profile_time_scope('fast_sbase'); %#ok<NASGU>
+        ok = 0;
+        S = [];
+        if ~isfield(ctx, 'ac') || ~isfield(ctx.ac, 'order') || ...
+                ~isfield(ctx.ac.order, 'bus') || ...
+                ~isfield(ctx.ac.order.bus, 'i2e')
+            return;
+        end
+        if ~fast_sbase_vsc_compatible(ctx.mpc, mpc)
+            return;
+        end
+        ac = ctx.ac;
+        ext_bus = ac.order.bus.i2e(:);
+        bus_cols = existing_cols([PD QD GS BS], ac.bus, mpc.bus);
+        for kk = 1:size(mpc.bus, 1)
+            row = find(ext_bus == mpc.bus(kk, BUS_I), 1);
+            if isempty(row)
+                return;
+            end
+            ac.bus(row, bus_cols) = mpc.bus(kk, bus_cols);
+        end
+        if ~isfield(ac.order, 'gen') || ~isfield(ac.order.gen, 'i2e')
+            return;
+        end
+        gen_ext = ac.order.gen.i2e(:);
+        gen_cols = existing_cols([PG QG GEN_STATUS], ac.gen, mpc.gen);
+        for kk = 1:length(gen_ext)
+            g = gen_ext(kk);
+            if g < 1 || g > size(mpc.gen, 1)
+                return;
+            end
+            ac.gen(kk, gen_cols) = mpc.gen(g, gen_cols);
+        end
+        S = makeSbus(ac.baseMVA, ac.bus, ac.gen, ctx.mpopt);
+        ok = 1;
+    end
+
+    function TorF = fast_sbase_vsc_compatible(a, b)
+        TorF = isfield(a, 'vsc') && isfield(b, 'vsc') && ...
+            size(a.vsc, 1) == size(b.vsc, 1) && ...
+            size(a.bus, 1) == size(b.bus, 1) && ...
+            size(a.gen, 1) == size(b.gen, 1);
+        if ~TorF
+            return;
+        end
+        cols = existing_cols([c.VSC_STATUS c.VSC_BUS c.BUSDC c.AC_MODE ...
+            c.FILTER_G c.FILTER_B], a.vsc, b.vsc);
+        TorF = isequal(round(a.vsc(:, cols) * 1e9), ...
+            round(b.vsc(:, cols) * 1e9));
     end
 
     function TorF = unified_has_vsc_setpoint_transfer(ctx)
@@ -1974,6 +3780,7 @@ end
     end
 
     function r = build_unified_cpf_result(ctx, x, eval, lam, iterations, normF)
+        profile_cleanup = profile_time_scope('build_cpf_result'); %#ok<NASGU>
         mpc = vsc_cpf_current_mpc(mpcb, mpct, lam);
         r = runpf_vsc_mtdc_unified('__results', ctx, eval, mpc);
         r.success = 1;
@@ -2006,6 +3813,9 @@ end
 
     function finish_outputs()
         if exist('results', 'var') && isstruct(results)
+            if profile_timing.enabled && isfield(results, 'cpf')
+                results.cpf.timing = profile_summary();
+            end
             if mpopt.verbose && isfield(results, 'cpf') && isfield(results.cpf, 'done_msg')
                 fprintf('CPF TERMINATION: %s\n', results.cpf.done_msg);
             end
@@ -2051,6 +3861,163 @@ end
     function r = attach_vsc_hvdc_dispatch(r)
         if ~isempty(vsc_hvdc_dispatch) && isfield(r, 'cpf')
             r.cpf.vsc_hvdc_dispatch = vsc_hvdc_dispatch;
+        end
+        if ~isempty(gen_dispatch) && isfield(r, 'cpf')
+            r.cpf.gen_dispatch = gen_dispatch;
+        end
+        if incremental_cpf_policies_enabled() && isfield(r, 'cpf')
+            r.cpf.cpf_policies = cpf_policy_state.policies;
+            r.cpf.lambda_definition = incremental_lambda_definition();
+            r.cpf.redispatch_basis = ...
+                'incremental_from_previous_accepted_cpf_point';
+        end
+        if isfield(r, 'cpf')
+            r.cpf.active_set_failure_policy = ...
+                active_set_failure_policy_report(r.cpf.events);
+        end
+    end
+
+    function cfg = init_active_set_failure_policy_config()
+        cfg = struct( ...
+            'psse_control', active_set_policy_record('psse_control', ...
+                'PSS/E discrete controls', psse_control_feature_enabled(), ...
+                psse_control_declared_policy(), ...
+                'vsc_mtdc.psse_control_limit'), ...
+            'vsc_capability', active_set_policy_record('vsc_capability', ...
+                'VSC capability', unified_active_set_stages_enabled() && ...
+                unified_vsc_capability_enabled(), ...
+                capability_declared_policy('vsc'), ...
+                'vsc_mtdc.capability_vsc_limit'), ...
+            'gen_capability', active_set_policy_record('gen_capability', ...
+                'generator capability', unified_active_set_stages_enabled() && ...
+                unified_gen_capability_enabled(), ...
+                capability_declared_policy('gen'), ...
+                'vsc_mtdc.capability_gen_limit'), ...
+            'hvdc_derating', active_set_policy_record('hvdc_derating', ...
+                'HVDC dynamic derating', unified_active_set_stages_enabled() && ...
+                unified_hvdc_derating_enabled(), ...
+                hvdc_derating_declared_policy(), ...
+                'cpf_policies.hvdc.vsc_derating') );
+    end
+
+    function rec = active_set_policy_record(id, feature, enabled, policy, source)
+        if ~enabled
+            policy = 'not-enabled';
+        end
+        rec = struct( ...
+            'id', id, ...
+            'feature', feature, ...
+            'enabled', logical(enabled), ...
+            'declared_policy', lower(policy), ...
+            'observed_policy', 'not-triggered', ...
+            'source', source, ...
+            'event_count', 0, ...
+            'last_event', '' );
+    end
+
+    function policy = psse_control_declared_policy()
+        policy = 'stop';
+        if isfield(opt, 'psse_control_limit') && ...
+                ischar(opt.psse_control_limit) && ...
+                strcmpi(opt.psse_control_limit, 'freeze')
+            policy = 'freeze';
+        end
+    end
+
+    function policy = capability_declared_policy(kind)
+        policy = lower(capability_limit_mode(kind));
+    end
+
+    function policy = hvdc_derating_declared_policy()
+        if unified_hvdc_derating_enabled()
+            policy = 'warn-and-disable';
+        else
+            policy = 'not-enabled';
+        end
+    end
+
+    function TorF = psse_control_feature_enabled()
+        TorF = unified_active_set_stages_enabled() && ...
+            isfield(mpopt_pf, 'vsc_mtdc') && ...
+            isfield(mpopt_pf.vsc_mtdc, 'psse_aware') && ...
+            any(mpopt_pf.vsc_mtdc.psse_aware) && ...
+            has_psse_control_data(mpcb_transfer0);
+    end
+
+    function TorF = unified_active_set_stages_enabled()
+        TorF = strcmp(method, 'unified');
+    end
+
+    function report = active_set_failure_policy_report(ev)
+        report = active_set_policy_config;
+        report.psse_control = active_set_policy_observed_record( ...
+            report.psse_control, ev, {'PSSE_CONTROL'}, ...
+            {'PSSE_CONTROL_LIMIT', 'PSSE_CONTROL_FAIL'}, ...
+            {'PSSE_CONTROL_FREEZE', 'PSSE_CONTROL_SELECTIVE_FREEZE'}, ...
+            {}, {});
+        report.vsc_capability = active_set_policy_observed_record( ...
+            report.vsc_capability, ev, {'VSC_CAPABILITY'}, ...
+            {'VSC_CAPABILITY_LIMIT', 'VSC_CAPABILITY_FAIL'}, ...
+            {'VSC_CAPABILITY_FREEZE'}, {}, ...
+            {'VSC_CAPABILITY_MARGIN_INCREASE', ...
+             'VSC_CAPABILITY_AC_RELEASE', ...
+             'VSC_CAPABILITY_Q_SATURATION', ...
+             'VSC_CAPABILITY_RESATURATION'});
+        report.gen_capability = active_set_policy_observed_record( ...
+            report.gen_capability, ev, {'GEN_CAPABILITY'}, ...
+            {'GEN_CAPABILITY_LIMIT', 'GEN_CAPABILITY_FAIL'}, ...
+            {'GEN_CAPABILITY_FREEZE'}, {}, {});
+        report.hvdc_derating = active_set_policy_observed_record( ...
+            report.hvdc_derating, ev, {'HVDC_DERATING'}, ...
+            {'HVDC_DERATING_FAIL'}, {}, {'HVDC_DERATING_SKIPPED'}, {});
+    end
+
+    function rec = active_set_policy_observed_record(rec, ev, enforce_names, ...
+            stop_names, freeze_names, warn_disable_names, experimental_names)
+        all_names = [enforce_names(:); stop_names(:); freeze_names(:); ...
+            warn_disable_names(:); experimental_names(:)];
+        rec.event_count = active_set_event_count(ev, all_names);
+        rec.last_event = active_set_last_event(ev, all_names);
+        if ~rec.enabled
+            rec.observed_policy = 'not-enabled';
+        elseif active_set_has_event(ev, warn_disable_names)
+            rec.observed_policy = 'warn-and-disable';
+        elseif active_set_has_event(ev, experimental_names)
+            rec.observed_policy = 'experimental';
+        elseif active_set_has_event(ev, freeze_names)
+            rec.observed_policy = 'freeze';
+        elseif active_set_has_event(ev, stop_names)
+            rec.observed_policy = 'stop';
+        elseif active_set_has_event(ev, enforce_names)
+            rec.observed_policy = 'enforce';
+        end
+    end
+
+    function TorF = active_set_has_event(ev, wanted)
+        TorF = active_set_event_count(ev, wanted) > 0;
+    end
+
+    function count = active_set_event_count(ev, wanted)
+        count = 0;
+        if isempty(ev) || isempty(wanted) || ~isfield(ev, 'name')
+            return;
+        end
+        names = {ev.name};
+        for kk = 1:length(wanted)
+            count = count + sum(strcmp(names, wanted{kk}));
+        end
+    end
+
+    function name = active_set_last_event(ev, wanted)
+        name = '';
+        if isempty(ev) || isempty(wanted) || ~isfield(ev, 'name')
+            return;
+        end
+        for kk = length(ev):-1:1
+            if any(strcmp(ev(kk).name, wanted))
+                name = ev(kk).name;
+                return;
+            end
         end
     end
 
@@ -2155,7 +4122,11 @@ end
 
     function opt = vsc_cpf_options(o)
         opt = struct('cpf_max_it', 200, 'cpf_max_lam', 5, ...
+            'cpf_policies', [], 'profile', 0, ...
+            'psse_control_limit', 'stop', 'psse_control_max_it', 20, ...
             'capability_enforce', 0, 'capability_max_it', 10, ...
+            'capability_limit', 'stop', 'capability_vsc_limit', [], ...
+            'capability_gen_limit', [], ...
             'capability_vsc_smax', [], 'capability_vsc_vmax', 1.15, ...
             'capability_vsc_mode', [], 'capability_gen_enforce', [], ...
             'capability_gen_max_it', [], 'capability_gen_smax', [], ...
@@ -2171,7 +4142,54 @@ end
         end
     end
 
+    function st = init_incremental_cpf_policy_state(b, t, o)
+        [st, gen_dispatch0, vsc_hvdc_dispatch0] = ...
+            vsc_mtdc_cpf_policy_state('init', b, t, o);
+        if isfield(st, 'enabled') && st.enabled
+            gen_dispatch = gen_dispatch0;
+            vsc_hvdc_dispatch = vsc_hvdc_dispatch0;
+        end
+    end
+
+    function TorF = incremental_cpf_policies_enabled()
+        TorF = isstruct(cpf_policy_state) && ...
+            isfield(cpf_policy_state, 'enabled') && cpf_policy_state.enabled;
+    end
+
+    function refresh_incremental_policy_anchor(lam)
+        if ~incremental_cpf_policies_enabled()
+            return;
+        end
+        cpf_policy_state.anchor_mpc = incremental_cpf_current_mpc( ...
+            mpcb, mpct, lam);
+        cpf_policy_state.anchor_lam = lam;
+    end
+
+    function mpc = incremental_cpf_current_mpc(b, ~, lam)
+        mpc = vsc_mtdc_cpf_policy_state('current_mpc', ...
+            b, lam, cpf_policy_state);
+    end
+
+    function rows = incremental_gen_participant_rows()
+        rows = vsc_mtdc_cpf_policy_state( ...
+            'gen_participant_rows', cpf_policy_state);
+    end
+
+    function rows = incremental_hvdc_participant_rows()
+        rows = vsc_mtdc_cpf_policy_state( ...
+            'hvdc_participant_rows', cpf_policy_state);
+    end
+
+    function s = incremental_lambda_definition()
+        s = vsc_mtdc_cpf_policy_state( ...
+            'lambda_definition', cpf_policy_state);
+    end
+
     function mpc = vsc_cpf_current_mpc(b, t, l)
+        if incremental_cpf_policies_enabled()
+            mpc = incremental_cpf_current_mpc(b, t, l);
+            return;
+        end
         mpc = b;
         mpc.bus(:, PD) = b.bus(:, PD) + l * (t.bus(:, PD) - b.bus(:, PD));
         mpc.bus(:, QD) = b.bus(:, QD) + l * (t.bus(:, QD) - b.bus(:, QD));
@@ -2230,6 +4248,8 @@ end
             'steps',       0, ...
             'iterations',  0, ...
             'max_lam',     l, ...
+            'bus',         r.bus, ...
+            'branch',      r.branch, ...
             'gen',         r.gen, ...
             'busdc',       r.busdc, ...
             'branchdc',    r.branchdc, ...
@@ -2239,11 +4259,14 @@ end
     end
 
     function cpf = append_trace(cpf, r, V, s, l)
+        profile_cleanup = profile_time_scope('append_trace'); %#ok<NASGU>
         cpf.V_hat = [cpf.V_hat V];
         cpf.lam_hat = [cpf.lam_hat l];
         cpf.V = [cpf.V V];
         cpf.lam = [cpf.lam l];
         cpf.steps = [cpf.steps s];
+        cpf.bus = cat(3, cpf.bus, r.bus);
+        cpf.branch = cat(3, cpf.branch, r.branch);
         cpf.gen = cat(3, cpf.gen, r.gen);
         cpf.busdc = cat(3, cpf.busdc, r.busdc);
         cpf.branchdc = cat(3, cpf.branchdc, r.branchdc);
@@ -2267,36 +4290,85 @@ end
         A = [A col];
     end
 
-    function ev = append_event(ev, add)
-        if isempty(add)
-            return;
-        end
-        if ~isempty(ev)
-            ev = add_missing_event_fields(ev, fieldnames(add));
-            add = add_missing_event_fields(add, fieldnames(ev));
-            add = orderfields(add, ev);
-        end
-        if isempty(ev)
-            ev = add;
-        else
-            ev(end+1:end+length(add)) = add;
-        end
-    end
-
-    function ev = add_missing_event_fields(ev, names)
-        for kk = 1:length(names)
-            if ~isfield(ev, names{kk})
-                [ev.(names{kk})] = deal([]);
-            end
-        end
-    end
-
     function cpf = finalize_trace(cpf, it, msg, ev, fail)
+        profile_cleanup = profile_time_scope('finalize_trace'); %#ok<NASGU>
         cpf.iterations = it;
         cpf.max_lam = max(cpf.lam);
         cpf.done_msg = msg;
         cpf.events = ev;
         cpf.failure = fail;
+    end
+
+    function timing = init_profile_timing(enabled)
+        timing = struct( ...
+            'enabled', logical(enabled), ...
+            'total', struct(), ...
+            'count', struct() );
+    end
+
+    function cleanup = profile_time_scope(name)
+        if profile_timing.enabled
+            tstart = tic;
+            cleanup = onCleanup(@() profile_add_time(name, tstart));
+        else
+            cleanup = [];
+        end
+    end
+
+    function profile_add_time(name, tstart)
+        if ~profile_timing.enabled
+            return;
+        end
+        profile_ensure_counter(name);
+        profile_timing.total.(name) = profile_timing.total.(name) + ...
+            toc(tstart);
+        profile_timing.count.(name) = profile_timing.count.(name) + 1;
+    end
+
+    function profile_count(name)
+        if ~profile_timing.enabled
+            return;
+        end
+        profile_ensure_counter(name);
+        profile_timing.count.(name) = profile_timing.count.(name) + 1;
+    end
+
+    function profile_count_by(name, amount)
+        if ~profile_timing.enabled
+            return;
+        end
+        profile_ensure_counter(name);
+        profile_timing.count.(name) = profile_timing.count.(name) + amount;
+    end
+
+    function profile_ensure_counter(name)
+        if ~isfield(profile_timing.total, name)
+            profile_timing.total.(name) = 0;
+            profile_timing.count.(name) = 0;
+        end
+    end
+
+    function out = profile_summary()
+        names = fieldnames(profile_timing.total);
+        total = zeros(length(names), 1);
+        count = zeros(length(names), 1);
+        for kk = 1:length(names)
+            total(kk) = profile_timing.total.(names{kk});
+            count(kk) = profile_timing.count.(names{kk});
+        end
+        if isempty(names)
+            average = zeros(0, 1);
+            order = [];
+        else
+            average = total ./ max(count, 1);
+            [~, order] = sort(total, 'descend');
+        end
+        out = struct( ...
+            'enabled', profile_timing.enabled, ...
+            'names', {names(order)}, ...
+            'total', total(order), ...
+            'count', count(order), ...
+            'average', average(order) );
     end
 
     function cpf = empty_cpf_results(msg)
@@ -2346,6 +4418,45 @@ end
     end
 
     function out = internal_cpf_system(args, default_mpopt)
+        setup = internal_cpf_setup(args, default_mpopt);
+
+        [F, eval, ctx_lam] = unified_eval_at_lambda(setup.ctx, ...
+            setup.x, setup.lam, setup.Sdelta);
+        J = runpf_vsc_mtdc_unified('__jacobian', ctx_lam, eval, []);
+        dF_dlam = unified_dF_dlam(setup.ctx, setup.Sdelta, setup.x, ...
+            setup.lam);
+        P = unified_cpf_p(setup.parameterization, setup.h, setup.z, ...
+            setup.x, setup.lam, setup.xprev, setup.lamprev);
+        [dPdx, dPdlam] = unified_cpf_p_jac(setup.parameterization, ...
+            setup.z, setup.x, setup.lam, setup.xprev, setup.lamprev);
+
+        out = struct( ...
+            'ctx',              setup.ctx, ...
+            'ctxt',             setup.ctxt, ...
+            'Sdelta',           setup.Sdelta, ...
+            'x',                setup.x, ...
+            'lam',              setup.lam, ...
+            'z',                setup.z, ...
+            'h',                setup.h, ...
+            'xprev',            setup.xprev, ...
+            'lamprev',          setup.lamprev, ...
+            'parameterization', setup.parameterization, ...
+            'F',                F, ...
+            'P',                P, ...
+            'eval',             eval, ...
+            'J',                J, ...
+            'dF_dlam',          dF_dlam, ...
+            'dPdx',             dPdx, ...
+            'dPdlam',           dPdlam, ...
+            'vsc_hvdc_dispatch', setup.vsc_hvdc_dispatch, ...
+            'A',                [J dF_dlam; dPdx dPdlam], ...
+            'F_aug',            [F; P] );
+    end
+
+    function setup = internal_cpf_setup(args, default_mpopt)
+        % Contract for internal derivative tests only:
+        % required args: base, target.
+        % optional args: mpopt, x, lam, parameterization, z, h, xprev, lamprev.
         if ~isfield(args, 'base') || ~isfield(args, 'target')
             error('runcpf_vsc_mtdc: __cpf_system requires base and target cases');
         end
@@ -2365,6 +4476,11 @@ end
         b = loadcase(args.base);
         t = loadcase(args.target);
         [t, dispatch] = apply_vsc_hvdc_dispatch_policy(b, t, opt0);
+        opt = vsc_cpf_options(opt0);
+        cpf_policy_state = init_incremental_cpf_policy_state(b, t, opt);
+        if ~isempty(vsc_hvdc_dispatch)
+            dispatch = vsc_hvdc_dispatch;
+        end
         validate_vsc_cpf_cases(b, t);
         validate_unified_cpf_transfer(b, t);
         ctx = runpf_vsc_mtdc_unified('__setup', b, opt_pf);
@@ -2374,51 +4490,20 @@ end
         ctx = attach_unified_cpf_transfer(ctx, b, t, Sdelta);
         ctxt = attach_unified_cpf_transfer(ctxt, b, t, Sdelta);
 
-        if isfield(args, 'x') && ~isempty(args.x)
-            x = args.x;
-        else
-            x = ctx.x0;
-        end
-        if isfield(args, 'lam') && ~isempty(args.lam)
-            lam = args.lam;
-        else
-            lam = 0;
-        end
-        if isfield(args, 'parameterization') && ~isempty(args.parameterization)
-            parm = args.parameterization;
-        else
-            parm = opt0.cpf.parameterization;
-        end
-        if isfield(args, 'z') && ~isempty(args.z)
-            z = args.z;
-        else
+        x = internal_arg_or_default(args, 'x', ctx.x0);
+        lam = internal_arg_or_default(args, 'lam', 0);
+        parameterization = internal_arg_or_default(args, ...
+            'parameterization', opt0.cpf.parameterization);
+        z = internal_arg_or_default(args, 'z', []);
+        if isempty(z)
             z = zeros(length(x) + 1, 1);
             z(end) = 1;
         end
-        if isfield(args, 'h') && ~isempty(args.h)
-            h = args.h;
-        else
-            h = opt0.cpf.step;
-        end
-        if isfield(args, 'xprev') && ~isempty(args.xprev)
-            xprev = args.xprev;
-        else
-            xprev = x - h * z(1:end-1);
-        end
-        if isfield(args, 'lamprev') && ~isempty(args.lamprev)
-            lamprev = args.lamprev;
-        else
-            lamprev = lam - h * z(end);
-        end
+        h = internal_arg_or_default(args, 'h', opt0.cpf.step);
+        xprev = internal_arg_or_default(args, 'xprev', x - h * z(1:end-1));
+        lamprev = internal_arg_or_default(args, 'lamprev', lam - h * z(end));
 
-        [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
-        J = runpf_vsc_mtdc_unified('__jacobian', ctx_lam, eval, []);
-        dF_dlam = unified_dF_dlam(ctx, Sdelta, x, lam);
-        P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
-        [dPdx, dPdlam] = unified_cpf_p_jac(parm, z, x, lam, ...
-            xprev, lamprev);
-
-        out = struct( ...
+        setup = struct( ...
             'ctx',              ctx, ...
             'ctxt',             ctxt, ...
             'Sdelta',           Sdelta, ...
@@ -2428,17 +4513,16 @@ end
             'h',                h, ...
             'xprev',            xprev, ...
             'lamprev',          lamprev, ...
-            'parameterization', parm, ...
-            'F',                F, ...
-            'P',                P, ...
-            'eval',             eval, ...
-            'J',                J, ...
-            'dF_dlam',          dF_dlam, ...
-            'dPdx',             dPdx, ...
-            'dPdlam',           dPdlam, ...
-            'vsc_hvdc_dispatch', dispatch, ...
-            'A',                [J dF_dlam; dPdx dPdlam], ...
-            'F_aug',            [F; P] );
+            'parameterization', parameterization, ...
+            'vsc_hvdc_dispatch', dispatch );
+    end
+
+    function val = internal_arg_or_default(args, name, default)
+        if isfield(args, name) && ~isempty(args.(name))
+            val = args.(name);
+        else
+            val = default;
+        end
     end
 
 end

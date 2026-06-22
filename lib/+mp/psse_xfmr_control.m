@@ -172,6 +172,10 @@ for kk = 1:length(idx)
     if isempty(states)
         continue;
     end
+    if isfield(state, 'initial_tap_normalized') && ...
+            state.initial_tap_normalized(k)
+        continue;
+    end
     [~, best_pos] = min(abs(states - state.best_tap(k)));
     [~, base_pos] = min(abs(states - state.base_tap(k)));
     if best_pos == base_pos
@@ -244,11 +248,10 @@ for kk = 1:length(idx)
     if isempty(states)
         continue;
     end
-    [~, cur] = min(abs(states - state.current_tap(k)));
     if tap_dir > 0
-        cand = find(states > states(cur) + 1e-9, 1);
+        cand = find(states > state.current_tap(k) + 1e-9, 1);
     else
-        cand = find(states < states(cur) - 1e-9, 1, 'last');
+        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
     end
     if ~isempty(cand)
         new_tap(k) = states(cand);

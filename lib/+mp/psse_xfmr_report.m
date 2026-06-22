@@ -51,6 +51,32 @@ report.final_tap = state.current_tap;
 report.final_windv = state.current_raw;
 report.at_min = nnz(state.controllable & state.at_min);
 report.at_max = nnz(state.controllable & state.at_max);
+if isfield(state, 'locked_out')
+    report.locked_out = nnz(state.locked_out);
+    report.locked_rows = find(state.locked_out);
+else
+    report.locked_out = 0;
+    report.locked_rows = [];
+end
+if isfield(state, 'blocked_low')
+    report.blocked_low = nnz(state.blocked_low);
+    report.blocked_low_rows = find(state.blocked_low);
+else
+    report.blocked_low = 0;
+    report.blocked_low_rows = [];
+end
+if isfield(state, 'blocked_high')
+    report.blocked_high = nnz(state.blocked_high);
+    report.blocked_high_rows = find(state.blocked_high);
+else
+    report.blocked_high = 0;
+    report.blocked_high_rows = [];
+end
+if isfield(state, 'blocked_violations')
+    report.blocked_violations = state.blocked_violations;
+else
+    report.blocked_violations = 0;
+end
 
 idx = find(state.controllable);
 if isempty(idx) || all(isnan(state.last_margin(idx)))

@@ -15,7 +15,7 @@ end
 
 v = 26;
 
-t_begin(167, quiet);
+t_begin(171, quiet);
 
 %% default options struct
 t = 'mpoption() : ';
@@ -115,7 +115,9 @@ t_ok(isempty(mpopt.vsc_mtdc.max_it), [t '         isempty(mpopt.vsc_mtdc.max_it)
 t_is(mpopt.vsc_mtdc.dc_max_it, 20, 12, [t '         mpopt.vsc_mtdc.dc_max_it == 20']);
 t_is(mpopt.vsc_mtdc.cpf_max_it, 200, 12, [t '         mpopt.vsc_mtdc.cpf_max_it == 200']);
 t_is(mpopt.vsc_mtdc.cpf_max_lam, 5, 12, [t '         mpopt.vsc_mtdc.cpf_max_lam == 5']);
+t_ok(isempty(mpopt.vsc_mtdc.cpf_policies), [t '         isempty(mpopt.vsc_mtdc.cpf_policies)']);
 t_is(mpopt.vsc_mtdc.capability_enforce, 0, 12, [t '         mpopt.vsc_mtdc.capability_enforce == 0']);
+t_str_match(mpopt.vsc_mtdc.capability_limit, 'stop', [t '         mpopt.vsc_mtdc.capability_limit = ''stop''']);
 t_is(mpopt.vsc_mtdc.capability_max_it, 10, 12, [t '         mpopt.vsc_mtdc.capability_max_it == 10']);
 t_is(mpopt.vsc_mtdc.capability_vsc_vmax, 1.15, 12, [t '         mpopt.vsc_mtdc.capability_vsc_vmax == 1.15']);
 t_is(mpopt.vsc_mtdc.capability_gen_type, 2, 12, [t '         mpopt.vsc_mtdc.capability_gen_type == 2']);
@@ -164,10 +166,14 @@ t_ok(isequal(mpopt, mpopt0), [t 'everything else']);
 t = 'mpoption(<vsc_mtdc pairs>) : ';
 mpopt = mpoption('vsc_mtdc.method', 'sequential', ...
     'vsc_mtdc.capability_enforce', 1, ...
-    'vsc_mtdc.cpf_max_lam', 20);
+    'vsc_mtdc.capability_limit', 'freeze', ...
+    'vsc_mtdc.cpf_max_lam', 20, ...
+    'vsc_mtdc.cpf_policies', struct('lambda_definition', 'load'));
 t_str_match(mpopt.vsc_mtdc.method, 'sequential', [t 'mpopt.vsc_mtdc.method']);
 t_is(mpopt.vsc_mtdc.capability_enforce, 1, 12, [t 'mpopt.vsc_mtdc.capability_enforce']);
+t_str_match(mpopt.vsc_mtdc.capability_limit, 'freeze', [t 'mpopt.vsc_mtdc.capability_limit']);
 t_is(mpopt.vsc_mtdc.cpf_max_lam, 20, 12, [t 'mpopt.vsc_mtdc.cpf_max_lam']);
+t_str_match(mpopt.vsc_mtdc.cpf_policies.lambda_definition, 'load', [t 'mpopt.vsc_mtdc.cpf_policies']);
 t_mpoption_expect_error(@() mpoption('vsc_mtdc.not_a_field', 1), ...
     'not a valid option', [t 'rejects invalid VSC-MTDC option']);
 

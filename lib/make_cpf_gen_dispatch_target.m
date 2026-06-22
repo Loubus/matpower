@@ -7,8 +7,8 @@ function [target, dispatch] = make_cpf_gen_dispatch_target(base, target, policy)
 %
 %   Applies a scheduled active-power generator redispatch policy to a CPF
 %   target case. This helper is independent of VSC/HVDC data and only
-%   modifies TARGET.GEN(:, PG). It does not solve an OPF, enforce PMIN/PMAX,
-%   or apply AGC/saturation logic.
+%   modifies TARGET.GEN(:, PG). It does not solve an OPF or apply
+%   limit/saturation logic.
 %
 %   POLICY can be a string or a struct with a POLICY or MODE field:
 %

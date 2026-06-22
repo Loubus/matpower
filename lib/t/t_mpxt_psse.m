@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 438;
+num_tests = 442;
 
 t_begin(num_tests, quiet);
 
@@ -470,6 +470,16 @@ t_ok(r.success, 'COD=1 transformer tap success');
 t_is(r.branch(1, TAP), 0.95, 10, 'COD=1 transformer tap moves one step');
 t_is(r.psse.xfmr.two.num(1, 24), 0.95, 10, 'COD=1 transformer WINDV updated');
 t_ok(r.psse.xfmr.control.inside_band == 1, 'COD=1 transformer reaches voltage band');
+
+mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.95, 1.1, 0.9, 10, 0, 0);
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'in-band off-grid transformer tap success');
+t_is(r.branch(1, TAP), 1.011111111111111, 10, ...
+    'in-band off-grid transformer tap snaps to grid');
+t_is(r.psse.xfmr.two.num(1, 24), 1.011111111111111, 10, ...
+    'in-band off-grid transformer WINDV snaps to grid');
+t_ok(r.psse.xfmr.control.inside_band == 1, ...
+    'in-band snapped transformer reports inside band');
 
 mpc = psse_case2_xfmr_tab();
 r = runpf_psse(mpc, mpopt);

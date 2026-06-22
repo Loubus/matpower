@@ -314,20 +314,7 @@ history = history(1:nhistory);
 
 
 function sig = psse_active_set_signature(mpc)
-[~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
-[~, ~, ~, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
-[~, ~, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, ...
-    TAP, SHIFT, BR_STATUS] = idx_brch;
-bus_cols = existing_cols([BUS_TYPE PD QD GS BS], mpc.bus, mpc.bus);
-gen_cols = existing_cols([QMAX QMIN VG GEN_STATUS], mpc.gen, mpc.gen);
-branch_cols = existing_cols([BR_R BR_X BR_B RATE_A RATE_B RATE_C ...
-    TAP SHIFT BR_STATUS], mpc.branch, mpc.branch);
-vals = [
-    reshape(mpc.bus(:, bus_cols), [], 1);
-    reshape(mpc.gen(:, gen_cols), [], 1);
-    reshape(mpc.branch(:, branch_cols), [], 1)
-];
-sig = sprintf('%.9g,', round(vals(:)' * 1e9) / 1e9);
+sig = mp.psse_unified_active_set('signature', mpc);
 
 
 function TorF = unified_pf_psse_controls_enabled(mpc, opt)
@@ -336,26 +323,12 @@ TorF = isfield(opt, 'psse_aware') && any(opt.psse_aware) && ...
 
 
 function TorF = has_psse_control_data(mpc)
-TorF = 0;
-if ~isfield(mpc, 'psse') || isempty(mpc.psse)
-    return;
-end
-families = {'pqbrak', 'xfmr', 'genq', 'twodc', 'swshunt', 'facts'};
-for ff = 1:length(families)
-    if psse_family_present(mpc, families{ff})
-        TorF = 1;
-        return;
-    end
-end
+TorF = mp.psse_unified_active_set('has_control_data', mpc, ...
+    'family_present');
 
 
 function TorF = psse_family_present(mpc, name)
-TorF = isfield(mpc, 'psse') && isfield(mpc.psse, name) && ...
-    ~isempty(mpc.psse.(name));
-if TorF && isstruct(mpc.psse.(name)) && ...
-        isfield(mpc.psse.(name), 'num') && isempty(mpc.psse.(name).num)
-    TorF = 0;
-end
+TorF = mp.psse_unified_active_set('family_present', mpc, name);
 
 
 function [changed, mpc_next, ac_controlled, report, ok] = ...
@@ -371,13 +344,13 @@ ok = 1;
 if direct_report.supported
     ac_controlled = psse_control_case_from_unified_result(r);
     ac_controlled = copy_original_active_set_to_ac(ac_controlled, direct);
-    [changed, report] = psse_active_set_changed(mpc, ac_controlled);
+    [changed, report] = psse_active_set_changed(mpc, direct);
     if changed || (~has_auxiliary_psse_control_data(mpc) && ...
             ~psse_report_has_unsatisfied_controls(report))
         if changed
-            mpc_next = apply_psse_active_set_update(mpc, ac_controlled);
+            mpc_next = direct;
         else
-            mpc_next = copy_psse_control_fields(mpc_next, ac_controlled);
+            mpc_next = copy_psse_control_fields(mpc_next, direct);
         end
         return;
     end
@@ -428,39 +401,12 @@ end
 
 
 function ac = psse_control_case_from_unified_result(r)
-ac = r.ac;
-drop = {'busdc', 'branchdc', 'vsc', 'vsc_state', 'cpf', ...
-    'om', 'order', 'et', 'success', 'iterations', 'convergence'};
-for dd = 1:length(drop)
-    if isfield(ac, drop{dd})
-        ac = rmfield(ac, drop{dd});
-    end
-end
+ac = mp.psse_unified_active_set('control_case_from_unified_result', r);
 
 
 function ac = copy_original_active_set_to_ac(ac, mpc)
-[~, ~, ~, ~, BUS_I2, BUS_TYPE2, PD2, QD2, GS2, BS2] = idx_bus;
-[~, ~, QG2, QMAX2, QMIN2, VG2, ~, GEN_STATUS2] = idx_gen;
-[~, ~, BR_R2, BR_X2, BR_B2, RATE_A2, RATE_B2, RATE_C2, ...
-    TAP2, SHIFT2, BR_STATUS2] = idx_brch;
-
-for kk = 1:size(mpc.bus, 1)
-    row = find(ac.bus(:, BUS_I2) == mpc.bus(kk, BUS_I2), 1);
-    if ~isempty(row)
-        bus_cols = existing_cols([BUS_TYPE2 PD2 QD2 GS2 BS2], ...
-            ac.bus, mpc.bus);
-        ac.bus(row, bus_cols) = mpc.bus(kk, bus_cols);
-    end
-end
-ng = min(size(mpc.gen, 1), size(ac.gen, 1));
-gen_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
-    ac.gen, mpc.gen);
-ac.gen(1:ng, gen_cols) = mpc.gen(1:ng, gen_cols);
-nb = min(size(mpc.branch, 1), size(ac.branch, 1));
-branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
-    RATE_C2 TAP2 SHIFT2 BR_STATUS2], ac.branch, mpc.branch);
-ac.branch(1:nb, branch_cols) = mpc.branch(1:nb, branch_cols);
-ac = copy_psse_control_fields(ac, mpc);
+ac = mp.psse_unified_active_set('copy_original_active_set_to_ac', ...
+    ac, mpc);
 
 
 function [changed, report] = psse_active_set_changed(mpc, ac)
@@ -504,8 +450,8 @@ changed = report.changed_buses || report.changed_gens || ...
 
 
 function TorF = psse_report_has_unsatisfied_controls(report)
-TorF = isfield(report, 'control_violations') && ...
-    report.control_violations > 0;
+TorF = mp.psse_unified_active_set('report_has_unsatisfied_controls', ...
+    report);
 
 
 function n = psse_control_violations(mpc)
@@ -521,13 +467,7 @@ n = psse_control_report_count(mpc, 'xfmr', 'cycle_detected') + ...
 
 
 function n = psse_control_report_count(mpc, family, field)
-n = 0;
-if isfield(mpc, 'psse') && isfield(mpc.psse, family) && ...
-        isfield(mpc.psse.(family), 'control') && ...
-        isfield(mpc.psse.(family).control, field)
-    val = mpc.psse.(family).control.(field);
-    n = nnz(val);
-end
+n = mp.psse_unified_active_set('control_report_count', mpc, family, field);
 
 
 function mpc_next = apply_psse_active_set_update(mpc, ac)
@@ -573,62 +513,15 @@ mpc_next = copy_psse_control_fields(mpc_next, ac);
 
 
 function TorF = psse_load_equiv_changed(ac)
-TorF = 0;
-if ~isfield(ac, 'psse') || isempty(ac.psse)
-    return;
-end
-if isfield(ac.psse, 'pqbrak') && isfield(ac.psse.pqbrak, 'scale') && ...
-        any(abs(ac.psse.pqbrak.scale(:) - 1) > 1e-10)
-    TorF = 1;
-    return;
-end
-if isfield(ac.psse, 'pqbrak') && ...
-        isfield(ac.psse.pqbrak, 'changed_last') && ...
-        any(ac.psse.pqbrak.changed_last(:))
-    TorF = 1;
-    return;
-end
-if isfield(ac.psse, 'facts')
-    if isfield(ac.psse.facts, 'qinj') && ...
-            any(abs(ac.psse.facts.qinj(:)) > 1e-10)
-        TorF = 1;
-        return;
-    elseif isfield(ac.psse.facts, 'control') && ...
-            isfield(ac.psse.facts.control, 'qinj') && ...
-            any(abs(ac.psse.facts.control.qinj(:)) > 1e-10)
-        TorF = 1;
-        return;
-    end
-end
-if isfield(ac.psse, 'twodc') && isfield(ac.psse.twodc, 'control')
-    ctrl = ac.psse.twodc.control;
-    if (isfield(ctrl, 'apply_model') && any(ctrl.apply_model(:))) || ...
-            (isfield(ctrl, 'apply_q') && any(ctrl.apply_q(:)))
-        TorF = 1;
-    end
-end
+TorF = mp.psse_unified_active_set('load_equiv_changed', ac);
 
 
 function TorF = has_psse_genq_control(mpc)
-TorF = isfield(mpc, 'psse') && psse_family_present(mpc, 'genq');
+TorF = mp.psse_unified_active_set('has_genq_control', mpc);
 
 
 function mpc = copy_psse_control_fields(mpc, ac)
-if ~isfield(ac, 'psse') || isempty(ac.psse)
-    return;
-end
-if ~isfield(mpc, 'psse') || isempty(mpc.psse)
-    mpc.psse = struct();
-end
-families = {'xfmr', 'genq', 'twodc', 'swshunt', 'facts', ...
-    'pqbrak', 'solver_options', 'control_failure', ...
-    'coordinated_active_set'};
-for ff = 1:length(families)
-    name = families{ff};
-    if isfield(ac.psse, name)
-        mpc.psse.(name) = ac.psse.(name);
-    end
-end
+mpc = mp.psse_unified_active_set('copy_control_fields', mpc, ac);
 
 
 function cols = existing_cols(cols, a, b)

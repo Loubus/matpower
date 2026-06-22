@@ -582,10 +582,22 @@ if isfield(mpc, 'vsc_capability') && ...
         mpc.vsc_capability);
 end
 
+if isfield(mpc, 'gen_capability') && ...
+        is_gen_capability_case_data(mpc.gen_capability)
+    fprintf(fd, '\n%%%% generator capability metadata\n');
+    print_case_value(fd, sprintf('%sgen_capability', prefix), ...
+        mpc.gen_capability);
+end
+
 if isfield(mpc, 'vsc_hvdc_dispatch')
     fprintf(fd, '\n%%%% VSC/HVDC dispatch metadata\n');
     print_case_value(fd, sprintf('%svsc_hvdc_dispatch', prefix), ...
         mpc.vsc_hvdc_dispatch);
+end
+if isfield(mpc, 'cpf_policies')
+    fprintf(fd, '\n%%%% CPF incremental policy metadata\n');
+    print_case_value(fd, sprintf('%scpf_policies', prefix), ...
+        mpc.cpf_policies);
 end
 
 
@@ -614,6 +626,12 @@ fprintf(fd, '];\n');
 
 
 function TorF = is_vsc_capability_case_data(v)
+
+TorF = ~(isstruct(v) && isfield(v, 'elements') && ...
+    isfield(v, 'violations'));
+
+
+function TorF = is_gen_capability_case_data(v)
 
 TorF = ~(isstruct(v) && isfield(v, 'elements') && ...
     isfield(v, 'violations'));
