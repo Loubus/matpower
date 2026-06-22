@@ -10,8 +10,10 @@ steps needed to make the CPF algorithm easier to reason about again.
 
 ## Current State
 
-- `runcpf_vsc_mtdc.m` has been reduced to 4,648 lines and 164 local
-  functions after the completed CPF-CX-002 decomposition checkpoint.
+- `runcpf_vsc_mtdc.m` currently has 4,535 lines and 186 function definitions
+  after the completed CPF-CX-002 decomposition checkpoint, later narrow CPF-CX
+  fixes, CPF-CX-009 event-builder centralization, and CPF-CX-008
+  research-policy boundary extraction.
 - The unified VSC-MTDC CPF path now combines continuation logic, PSS/E
   active-set settling, VSC capability, generator capability, HVDC derating,
   full-curve tracing, profiling, event packaging, and internal test dispatch.
@@ -34,6 +36,7 @@ steps needed to make the CPF algorithm easier to reason about again.
 - CPF-CX-013 is fixed: incremental CPF policy cases now evaluate loads as
   direct multiplicative functions of lambda and apply generator/HVDC redispatch
   from accepted-point active-load changes.
+- All CPF complexity tracker items are now marked Done.
 
 ## Status Legend
 
@@ -53,9 +56,9 @@ steps needed to make the CPF algorithm easier to reason about again.
 | CPF-CX-004 | Done | P1 | Semantics | Enabled active-set features now report explicit failure semantics without changing event payloads or solver behavior. | `cpf.active_set_failure_policy` reports each unified active-set feature's `declared_policy`, `observed_policy`, `enabled` flag, source option/policy, event count, and last matching event. PSS/E, VSC capability, and generator capability declare `stop` or `freeze`; VSC experimental relief tails report `experimental` when their events occur; HVDC derating declares `warn-and-disable` and reports it when `HVDC_DERATING_SKIPPED` disables the derating policy. | Result metadata makes the active-set policy contract explicit while preserving the local `run_active_set_stage` boundary, event order/payloads, and regular `NOSE`/`FULL` CPF tracing. |
 | CPF-CX-005 | Done | P1 | FULL Trace | `cpf.stop_at = 'FULL'` now follows regular CPF semantics instead of a VSC-specific arc/voltage/decreasing-lambda state machine. | Removed the hidden FULL state variables, deleted `lib/vsc_mtdc_cpf_full_trace_state.m`, dropped `NOSE_STALL`/`FULL_SWITCH_*`/`FULL_TRACE_LIMIT` events, and removed custom `parameterization_mode`/`voltage_bus` trace fields. The paper-control FULL stress case now follows the ordinary arc-length trace to the configured step limit instead of force-closing the lower branch. | `cpf.stop_at = 'NOSE'` reports the localized `NOSE` event; `cpf.stop_at = 'FULL'` continues with ordinary CPF arc-length tracing and uses the regular target-lambda closure only when the trace reaches lambda zero. |
 | CPF-CX-006 | Done | P2 | Internal API | Internal `__cpf_system` dispatch now has an explicit nested setup contract without moving production CPF orchestration. | `internal_cpf_setup` requires only base and target cases, accepts optional `mpopt`, `x`, `lam`, `parameterization`, `z`, `h`, `xprev`, and `lamprev`, and owns the internal seam's option normalization, dispatch policy application, incremental policy-state initialization, transfer validation, context setup, and derivative defaults. Focused tests cover both dispatch-policy propagation and base/target-only defaults. | Internal derivative/test helpers have a documented, minimal dependency contract while production solver behavior remains unchanged. |
-| CPF-CX-007 | Open | P2 | Profiling | Profiling instrumentation is cross-cutting and now touches many helper paths, including internal test helpers. | `profile_time_scope()` is called throughout solver, active-set, event, and mismatch helpers. | Profiling becomes optional, safe by default, and cannot change profile-off behavior or test-only helper behavior. |
-| CPF-CX-008 | Open | P2 | Research Policy | Experiment-specific relief policies are embedded in the solver loop. | VSC capability limit relief can increase saturation margin, release AC control, saturate slack Q, freeze transfer, or back off frozen transfer. | Keep research policies available, but route them through an explicit policy layer outside the core CPF iteration. |
-| CPF-CX-009 | Open | P2 | Events | Event construction and deduplication are scattered across the loop and active-set helpers. | `append_event`, `is_duplicate_event`, `is_duplicate_recovery_event`, and many ad hoc event structs live in the same file. | Central event builders provide stable fields for PSS/E, VSC, generator, HVDC derating, `NOSE`, and `TARGET_LAM`. |
+| CPF-CX-007 | Done | P2 | Profiling | Profiling instrumentation is cross-cutting and now touches many helper paths, including internal test helpers. | `profile_time_scope()`, `profile_count()`, `profile_count_by()`, result timing attachment, and profile summaries now route through a safe `profile_is_enabled()` predicate and defensive counter initialization. Focused tests cover profile-off results, profile-on results, and internal helper metadata isolation. | Profiling is optional, safe by default, and cannot change profile-off behavior or test-only helper behavior. |
+| CPF-CX-008 | Done | P2 | Research Policy | Experiment-specific VSC capability relief choice now has an explicit local policy boundary while the core loop still owns recovery rebuilds, event emission, and continuation decisions. | Added local `apply_vsc_capability_relief_policy` and `apply_vsc_capability_nonmargin_relief_policy` helpers in `runcpf_vsc_mtdc.m`. The helpers preserve the current relief order and behavior: resaturation, saturation margin increase, AC-control release, slack-Q saturation, transfer freeze, and frozen-transfer backoff. `runcpf_vsc_mtdc.m` changed from 4,540 to 4,535 lines and from 184 to 186 function definitions. Profile-enabled Beerten paper-control comparison matched the post-CPF-CX-009 snapshot exactly: `success = 1`, `cpf.max_lam = 4.32238796176`, 5,137 iterations, 5,138 CPF points, 29 events, same event order/full payload structs, same touched CPF report fields, and zero final AC/DC/VSC matrix diff. | Research relief policy selection is separated from the accepted-point recovery loop without changing the mathematical VSC-MTDC formulation, solver stepping, active-set policies, event timing, or any validated research behavior. |
+| CPF-CX-009 | Done | P2 | Events | Simple event construction now routes through `vsc_mtdc_cpf_event` while the existing append/dedup helpers and rich VSC/generator/HVDC payload helpers remain unchanged. | Added `lib/vsc_mtdc_cpf_event.m` and routed PSS/E, VSC recovery/limit/fail, generator freeze/limit/fail, HVDC derating fail, terminal `VSC_MTDC_*`, `NOSE`, and `TARGET_LAM` simple event records through it. `runcpf_vsc_mtdc.m` changed from 4,544 to 4,540 lines and remains at 184 function definitions. Profile-enabled Beerten paper-control comparison matched exactly: `success = 1`, `cpf.max_lam = 4.32238796176`, 5,137 iterations, 5,138 CPF points, 29 events, same event order/full payload structs, same touched CPF report fields, and zero final AC/DC/VSC matrix diff. | Stable event construction is centralized for simple event records without changing append/dedup behavior, event payload semantics, solver math, stepping, active-set policies, or event timing. |
 | CPF-CX-010 | Done | P3 | Documentation | The architecture doc needed to distinguish the supported PSS/E-aware entry points from the lower-level unified CPF solver and its implementation helper boundaries. | `VSC-MTDC-Architecture-Decision.md` now records the completed CPF-CX-002 helper boundaries and the solver-local responsibilities that remain internal implementation details. | Documentation matches the final CPF-CX-002 architecture. |
 | CPF-CX-011 | Done | P0 | Regression | Generator capability freeze regression blocked the focused suite after CPF-CX-001. | Diagnosed as a fixture/semantics mismatch: `Snom = 70` now triggers base-point generator capability re-correction before CPF starts, so no CPF events exist. Raising the focused fixture to `Snom = 90` keeps the base point feasible and still records `GEN_CAPABILITY_FREEZE` with `frozen_gen_idx = 2`. | The expected `GEN_CAPABILITY_FREEZE` event is recorded with the intended generator redispatch participant. |
 | CPF-CX-012 | Done | P0 | Regression | Focused suite exposed downstream FULL CPF and PSS/E control assertion drift after CPF-CX-011. | Targeted probes showed current semantics are consistent: paper-control FULL CPF follows the regular arc-length trace until the configured bound; unified CPF switched shunt uses the monolithic-voltage active set `BS/BINIT = 6` while standalone PF still uses AC-only `BS/BINIT = 9`; stop-mode PSS/E loading limit now localizes at `max_lam = 1.34315939841` with `BS = 15` and tap `0.95`. | Focused assertions match the current validated trace semantics without changing solver behavior. |
@@ -79,8 +82,9 @@ still be urgent even when they are relatively small.
 5. `CPF-CX-011` - Generator freeze regression. Moderate until diagnosed because
    the failure is localized, but the missing event may reflect changed
    semantics in accepted-point handling.
-6. `CPF-CX-009` - Event builders and deduplication. Mostly structural cleanup,
-   with moderate regression risk around expected event fields and order.
+6. `CPF-CX-009` - Event builders and deduplication. Done by routing simple
+   event records through a small helper while preserving event fields, order,
+   append/dedup behavior, and trace payloads.
 7. `CPF-CX-004` - Active-set failure semantics. Requires policy decisions and
    result metadata design before implementation.
 8. `CPF-CX-003` - Shared active-set stage runner. Done with a nested runner
@@ -89,10 +93,13 @@ still be urgent even when they are relatively small.
 9. `CPF-CX-005` - FULL trace state machine removal. Done by deleting the custom
    arc/voltage/decreasing-lambda path and preserving regular CPF `FULL`
    target-lambda closure when the trace reaches lambda zero.
-10. `CPF-CX-008` - Research policy layer. High complexity because it separates
-   domain-specific relief behavior from the core solver without changing
-   validated traces.
-11. `CPF-CX-002` - Monolith decomposition. Highest complexity because it is the
+10. `CPF-CX-013` - Incremental CPF policy semantics. Done by making policy
+   loads direct multiplicative functions of lambda and applying accepted-point
+   active-load-change redispatch for generator/HVDC/QAC policies.
+11. `CPF-CX-008` - Research policy layer. Done by adding a local policy-choice
+   boundary for VSC capability relief while preserving validated traces and
+   research behavior.
+12. `CPF-CX-002` - Monolith decomposition. Highest complexity because it is the
     umbrella refactor that depends on the smaller extractions above. Phase 1
     completed the generic event-list utility extraction; Phase 2a shared pure
     PSS/E active-set/report helpers with PF; Phase 3a extracted pure VSC
@@ -108,16 +115,45 @@ still be urgent even when they are relatively small.
 
 1. Treat CPF-CX-002 as complete for the current decomposition checkpoint and
    use its helper boundaries as the baseline for future solver work.
-2. Extract or harden profiling state before changing algorithm behavior.
-3. Deepen the active-set stage abstraction only when it can own solve/re-correct
-   timing without changing event order or traces.
-4. Keep `cpf.stop_at = 'FULL'` aligned with regular CPF target-lambda
+2. Centralize event builders only where payload/order comparisons can prove no
+   trace drift.
+3. Keep `cpf.stop_at = 'FULL'` aligned with regular CPF target-lambda
    semantics; do not reintroduce VSC-specific FULL transition modes.
-5. Move experimental relief/derating policy behavior behind explicit policy
+4. Move experimental relief/derating policy behavior behind explicit policy
    functions and document their result semantics.
 
 ## Resolution Log
 
+- 2026-06-22 - CPF-CX-009 Done. Added
+  `lib/vsc_mtdc_cpf_event.m` for simple CPF event construction and routed the
+  remaining simple PSS/E, VSC recovery/limit/fail, generator freeze/limit/fail,
+  HVDC derating fail, `NOSE`, `TARGET_LAM`, and terminal `VSC_MTDC_*` events
+  in `runcpf_vsc_mtdc.m` through it. Rich VSC, generator, and HVDC payload
+  helpers, append/dedup behavior, solver math, stepping, active-set policies,
+  and event timing stayed unchanged. `runcpf_vsc_mtdc.m` is now 4,540 lines
+  with 184 function definitions. `checkcode`, `t_vsc_mtdc(1)`, `t_cpf(1)`,
+  `t_mpxt_psse(1)`, `t_psse(1)`, and `git diff --check` passed. The
+  profile-enabled Beerten paper-control before/after comparison matched
+  exactly: `success = 1`, `cpf.max_lam = 4.32238796176`, 5,137 iterations,
+  5,138 CPF points, 29 events ending at `TARGET_LAM`, identical event
+  order/full payload structs, identical touched CPF report fields, and zero
+  final AC/DC/VSC matrix diff.
+- 2026-06-22 - CPF-CX-008 Done. Added local
+  `apply_vsc_capability_relief_policy` and
+  `apply_vsc_capability_nonmargin_relief_policy` helpers in
+  `runcpf_vsc_mtdc.m` so experiment-specific VSC capability relief selection
+  is behind an explicit policy boundary. The helpers preserve the current
+  resaturation, saturation-margin-increase, AC-control-release, slack-Q
+  saturation, transfer-freeze, and frozen-transfer-backoff order and behavior;
+  the core loop still owns recovery rebuilds, duplicate-safe event emission,
+  retry timing, and continuation decisions. `runcpf_vsc_mtdc.m` is now 4,535
+  lines with 186 function definitions. `checkcode`, `t_vsc_mtdc(1)`,
+  `t_cpf(1)`, `t_mpxt_psse(1)`, `t_psse(1)`, and `git diff --check` passed.
+  The profile-enabled Beerten paper-control comparison against the post-CX-009
+  snapshot matched exactly: `success = 1`, `cpf.max_lam = 4.32238796176`,
+  5,137 iterations, 5,138 CPF points, 29 events ending at `TARGET_LAM`,
+  identical event order/full payload structs, identical touched CPF report
+  fields, and zero final AC/DC/VSC matrix diff.
 - 2026-06-15 - CPF-CX-001 Done. Initialized disabled `profile_timing` before
   internal dispatch in `runcpf_vsc_mtdc.m`; analyzer remains clean except for
   the existing preallocation info note; profile-off/profile-on smoke passes;
