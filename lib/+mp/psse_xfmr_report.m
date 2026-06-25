@@ -68,6 +68,16 @@ else
     report.locked_out = 0;
     report.locked_rows = [];
 end
+if isfield(state, 'rebuild_rejected')
+    report.rebuild_rejected = state.rebuild_rejected;
+else
+    report.rebuild_rejected = 0;
+end
+if isfield(state, 'rebuild_rejected_rows')
+    report.rebuild_rejected_rows = state.rebuild_rejected_rows;
+else
+    report.rebuild_rejected_rows = [];
+end
 if isfield(state, 'blocked_low')
     report.blocked_low = nnz(state.blocked_low);
     report.blocked_low_rows = find(state.blocked_low);
@@ -86,6 +96,16 @@ if isfield(state, 'blocked_violations')
     report.blocked_violations = state.blocked_violations;
 else
     report.blocked_violations = 0;
+end
+if isfield(state, 'locked_violations')
+    report.locked_violations = state.locked_violations;
+else
+    report.locked_violations = 0;
+end
+if isfield(state, 'locked_violation_sum')
+    report.locked_violation_sum = state.locked_violation_sum;
+else
+    report.locked_violation_sum = 0;
 end
 
 idx = find(state.controllable);

@@ -120,6 +120,8 @@ state.controllable = state.enabled & state.active & state.cod == 1 & ...
     (state.tab == 0 | state.tab_applied);
 
 state.side_sign = tap_side_sign(state);
+state.control_bus_i2e = psse_bus_i2e(mpc);
+state.control_branch_on = psse_branch_on(mpc);
 
 state.base_tap = zeros(state.n, 1);
 state.current_tap = zeros(state.n, 1);
@@ -129,6 +131,9 @@ state.states_tap = cell(state.n, 1);
 state.initial_tap_normalized = false(state.n, 1);
 state.at_min = false(state.n, 1);
 state.at_max = false(state.n, 1);
+state.locked_out = false(state.n, 1);
+state.rebuild_rejected = 0;
+state.rebuild_rejected_rows = [];
 
 for k = 1:state.n
     if state.branch_idx(k) > 0
@@ -155,11 +160,38 @@ for k = 1:state.n
     end
 end
 
+if isfield(xf, 'control_current_tap') && ...
+        numel(xf.control_current_tap) == state.n && ...
+        isfield(xf, 'control_current_raw') && ...
+        numel(xf.control_current_raw) == state.n
+    state.current_tap = xf.control_current_tap(:);
+    state.current_raw = xf.control_current_raw(:);
+    state.initial_tap_normalized = state.controllable & ...
+        abs(state.current_tap - state.base_tap) > 1e-9;
+end
+if isfield(xf, 'control_locked_out') && ...
+        numel(xf.control_locked_out) == state.n
+    state.locked_out = logical(xf.control_locked_out(:));
+end
+if isfield(xf, 'control') && isstruct(xf.control)
+    if isfield(xf.control, 'rebuild_rejected') && ...
+            ~isempty(xf.control.rebuild_rejected)
+        state.rebuild_rejected = xf.control.rebuild_rejected;
+    end
+    if isfield(xf.control, 'rebuild_rejected_rows')
+        state.rebuild_rejected_rows = xf.control.rebuild_rejected_rows;
+    end
+end
+
 state.needs_initial_update = state.enabled && any(state.controllable & ...
     abs(state.current_tap - state.base_tap) > 1e-9);
 
 state.last_vm_final = NaN(state.n, 1);
 state.last_margin = NaN(state.n, 1);
+state.locked_vm_final = NaN(state.n, 1);
+state.locked_margin = NaN(state.n, 1);
+state.locked_violations = 0;
+state.locked_violation_sum = 0;
 state.last_score = Inf;
 state.last_violations = 0;
 state.last_violation_sum = 0;
@@ -407,7 +439,30 @@ idx = zeros(size(bus));
 if isempty(bus)
     return;
 end
-if isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
+        isfield(mpc.psse.xfmr, 'control_bus_i2e') && ...
+        ~isempty(mpc.psse.xfmr.control_bus_i2e) && ...
+        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
+    i2e = mpc.psse.xfmr.control_bus_i2e(:);
+    e2i = sparse(i2e, ones(length(i2e), 1), (1:length(i2e))', max(i2e), 1);
+    for kk = 1:length(bus)
+        b = abs(bus(kk));
+        if ~isnan(b) && b > 0 && b <= size(e2i, 1)
+            idx(kk) = full(e2i(b));
+        end
+    end
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+        isfield(mpc.order.bus, 'i2e') && ~isempty(mpc.order.bus.i2e) && ...
+        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
+    i2e = mpc.order.bus.i2e(:);
+    e2i = sparse(i2e, ones(length(i2e), 1), (1:length(i2e))', max(i2e), 1);
+    for kk = 1:length(bus)
+        b = abs(bus(kk));
+        if ~isnan(b) && b > 0 && b <= size(e2i, 1)
+            idx(kk) = full(e2i(b));
+        end
+    end
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
         isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
     e2i = mpc.order.bus.e2i;
     for kk = 1:length(bus)
@@ -433,7 +488,19 @@ idx = zeros(size(branch));
 if isempty(branch)
     return;
 end
-if isfield(mpc, 'order') && isfield(mpc.order, 'branch') && ...
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
+        isfield(mpc.psse.xfmr, 'control_branch_on') && ...
+        ~isempty(mpc.psse.xfmr.control_branch_on)
+    on = mpc.psse.xfmr.control_branch_on(:);
+    e2i = zeros(max(on), 1);
+    e2i(on) = (1:length(on))';
+    for kk = 1:length(branch)
+        b = branch(kk);
+        if ~isnan(b) && b > 0 && b <= length(e2i)
+            idx(kk) = e2i(b);
+        end
+    end
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'branch') && ...
         isfield(mpc.order.branch, 'status') && ...
         isfield(mpc.order.branch.status, 'on')
     on = mpc.order.branch.status.on;
@@ -451,4 +518,34 @@ if isfield(mpc, 'order') && isfield(mpc.order, 'branch') && ...
 else
     idx = branch;
     idx(isnan(idx)) = 0;
+end
+
+function i2e = psse_bus_i2e(mpc)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+i2e = [];
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
+        isfield(mpc.psse.xfmr, 'control_bus_i2e') && ...
+        ~isempty(mpc.psse.xfmr.control_bus_i2e)
+    i2e = mpc.psse.xfmr.control_bus_i2e(:);
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+        isfield(mpc.order.bus, 'i2e') && ~isempty(mpc.order.bus.i2e) && ...
+        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
+    i2e = mpc.order.bus.i2e(:);
+elseif ~isempty(mpc.bus)
+    i2e = mpc.bus(:, BUS_I);
+end
+
+function on = psse_branch_on(mpc)
+on = [];
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
+        isfield(mpc.psse.xfmr, 'control_branch_on') && ...
+        ~isempty(mpc.psse.xfmr.control_branch_on)
+    on = mpc.psse.xfmr.control_branch_on(:);
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'branch') && ...
+        isfield(mpc.order.branch, 'status') && ...
+        isfield(mpc.order.branch.status, 'on') && ...
+        ~isempty(mpc.order.branch.status.on)
+    on = mpc.order.branch.status.on(:);
+elseif isfield(mpc, 'branch') && ~isempty(mpc.branch)
+    on = (1:size(mpc.branch, 1))';
 end

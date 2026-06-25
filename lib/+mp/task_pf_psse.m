@@ -48,6 +48,7 @@ classdef task_pf_psse < mp.task_pf_legacy
         psse_stop_after_rollback = false   % stop controls after rollback solve
         psse_pending_control = ''      % control family awaiting PF acceptance
         psse_pending_source = []       % source MPC for pending control family
+        psse_pending_xfmr_state = []   % accepted xfmr state before pending move
         psse_failed_control = ''       % control family whose rebuild failed
         psse_failed_after_rollback = false  % true after a failed control rollback
     end
@@ -66,6 +67,16 @@ classdef task_pf_psse < mp.task_pf_legacy
                     ~isempty(obj.psse_last_success_source)
                 obj.psse_failed_control = obj.psse_pending_control;
                 src = obj.psse_last_success_source;
+                if strcmp(obj.psse_pending_control, 'xfmr')
+                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src);
+                    if rejected
+                        obj.psse_pending_control = '';
+                        obj.psse_pending_source = [];
+                        obj.psse_pending_xfmr_state = [];
+                        dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
+                        return;
+                    end
+                end
                 if ~isfield(src, 'psse') || isempty(src.psse)
                     src.psse = struct();
                 end
@@ -78,6 +89,7 @@ classdef task_pf_psse < mp.task_pf_legacy
                 obj.psse_failed_after_rollback = true;
                 obj.psse_pending_control = '';
                 obj.psse_pending_source = [];
+                obj.psse_pending_xfmr_state = [];
                 dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
                 return;
             end
@@ -95,6 +107,7 @@ classdef task_pf_psse < mp.task_pf_legacy
             obj.psse_last_success_source = dm0.source;
             obj.psse_pending_control = '';
             obj.psse_pending_source = [];
+            obj.psse_pending_xfmr_state = [];
             if obj.psse_stop_after_rollback
                 obj.psse_stop_after_rollback = false;
                 if obj.psse_failed_after_rollback
@@ -172,6 +185,7 @@ classdef task_pf_psse < mp.task_pf_legacy
         function dm = apply_control(obj, name, mm, nm, dm0, mpopt, mpx)
             % Run one PSS/E control family.
 
+            accepted_xfmr_state = [];
             switch name
                 case 'pqbrak'
                     dm = [];
@@ -180,6 +194,12 @@ classdef task_pf_psse < mp.task_pf_legacy
                             obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
                     end
                 case 'xfmr'
+                    accepted_xfmr_state = obj.psse_xfmr;
+                    if isempty(accepted_xfmr_state) && ...
+                            isfield(dm0.source, 'psse') && ...
+                            isfield(dm0.source.psse, 'xfmr')
+                        accepted_xfmr_state = mp.psse_xfmr_states(dm0.source);
+                    end
                     [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
                 case 'genq'
@@ -209,6 +229,11 @@ classdef task_pf_psse < mp.task_pf_legacy
             if ~isempty(dm)
                 obj.psse_pending_control = name;
                 obj.psse_pending_source = dm.source;
+                if strcmp(name, 'xfmr')
+                    obj.psse_pending_xfmr_state = accepted_xfmr_state;
+                else
+                    obj.psse_pending_xfmr_state = [];
+                end
             end
         end
 
@@ -362,6 +387,61 @@ classdef task_pf_psse < mp.task_pf_legacy
                 va = va - va(obj.ref0) + obj.va_ref0;
                 nm.soln.v = vm .* exp(1j * va);
             end
+        end
+
+        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src)
+            % Reject a transformer tap candidate whose rebuilt PF failed.
+
+            rejected = false;
+            candidate = obj.psse_xfmr;
+            state = obj.psse_pending_xfmr_state;
+            if isempty(state) || ~isstruct(state) || ...
+                    isempty(candidate) || ~isstruct(candidate) || ...
+                    ~isfield(src, 'psse') || ~isfield(src.psse, 'xfmr')
+                return;
+            end
+            if ~isfield(candidate, 'current_tap') || ...
+                    numel(candidate.current_tap) ~= state.n || ...
+                    ~isfield(candidate, 'current_raw') || ...
+                    numel(candidate.current_raw) ~= state.n
+                return;
+            end
+
+            moved = abs(candidate.current_tap(:) - state.current_tap(:)) > 1e-9;
+            moved = moved & state.controllable(:);
+            if ~any(moved)
+                return;
+            end
+
+            if ~isfield(state, 'locked_out') || isempty(state.locked_out)
+                state.locked_out = false(state.n, 1);
+            end
+            state.locked_out = state.locked_out(:) | moved;
+            state.changed_last = 0;
+            state.control_failed = 0;
+            state.failure_reason = '';
+            state.visited_signatures = {};
+            state.best_score = Inf;
+            state.best_tap = state.current_tap;
+            state.best_raw = state.current_raw;
+            state.best_violations = 0;
+            state.best_violation_sum = 0;
+            state.cycle_detected = 0;
+            state.cycle_resolved = 0;
+            state.repeated_states = 0;
+            state.cycle_resolution_changes = 0;
+            state.cycle_probe_attempted = 0;
+            state.cycle_probe_pending = 0;
+            if ~isfield(state, 'rebuild_rejected') || isempty(state.rebuild_rejected)
+                state.rebuild_rejected = 0;
+            end
+            state.rebuild_rejected = state.rebuild_rejected + 1;
+            state.rebuild_rejected_rows = find(moved);
+            state.report = mp.psse_xfmr_report(state);
+
+            src = mp.psse_xfmr_update(src, state);
+            obj.psse_xfmr = state;
+            rejected = true;
         end
     end     %% methods
 end         %% classdef

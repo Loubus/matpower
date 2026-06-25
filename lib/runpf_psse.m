@@ -259,6 +259,7 @@ if use_mp_core
     pf = task_class();
     pf.run(mpc, mpopt, mpx);
     [mpc, success] = pf.legacy_post_run(mpopt);
+    mpc = psse_sync_task_reports(mpc, pf);
     if dc
         its = 1;
     elseif pf.nm.np ~= 0
@@ -787,6 +788,13 @@ TorF = isfield(mpopt, 'exp') && ...
     isfield(mpopt.exp, 'psse_keep_branch_collapsed') && ...
     ~isempty(mpopt.exp.psse_keep_branch_collapsed) && ...
     any(mpopt.exp.psse_keep_branch_collapsed(:));
+
+function mpc = psse_sync_task_reports(mpc, pf)
+if isprop(pf, 'psse_xfmr') && ~isempty(pf.psse_xfmr) && ...
+        isstruct(pf.psse_xfmr) && isfield(mpc, 'psse') && ...
+        isfield(mpc.psse, 'xfmr')
+    mpc.psse.xfmr.control = mp.psse_xfmr_report(pf.psse_xfmr);
+end
 
 function TorF = psse_coordinated_active_set_enabled(mpopt)
 TorF = isfield(mpopt, 'exp') && ...

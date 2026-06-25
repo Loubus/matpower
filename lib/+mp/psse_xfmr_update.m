@@ -51,4 +51,15 @@ for kk = 1:state.n
         mpc.psse.xfmr.three.num(row, col) = state.current_raw(kk);
     end
 end
+if isfield(state, 'control_bus_i2e') && ~isempty(state.control_bus_i2e)
+    mpc.psse.xfmr.control_bus_i2e = state.control_bus_i2e;
+end
+if isfield(state, 'control_branch_on') && ~isempty(state.control_branch_on)
+    mpc.psse.xfmr.control_branch_on = state.control_branch_on;
+end
+if isfield(state, 'locked_out') && ~isempty(state.locked_out)
+    mpc.psse.xfmr.control_locked_out = state.locked_out;
+end
+mpc.psse.xfmr.control_current_tap = state.current_tap;
+mpc.psse.xfmr.control_current_raw = state.current_raw;
 mpc.psse.xfmr.control = mp.psse_xfmr_report(state);

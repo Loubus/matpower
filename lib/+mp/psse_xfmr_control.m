@@ -168,7 +168,7 @@ if state.best_violations ~= 0 || state.cycle_probe_attempted
     return;
 end
 
-idx = find(state.controllable & state.reg_bus_idx > 0);
+idx = find(active_control_idx(state));
 for kk = 1:length(idx)
     k = idx(kk);
     states = state.states_tap{k};
@@ -198,9 +198,15 @@ function state = classify_state(state, vm)
 % Classify the current regulated-bus voltages for reporting/scoring.
 state.last_vm_final(:) = NaN;
 state.last_margin(:) = NaN;
+if isfield(state, 'locked_vm_final')
+    state.locked_vm_final(:) = NaN;
+end
+if isfield(state, 'locked_margin')
+    state.locked_margin(:) = NaN;
+end
 state.at_min(:) = false;
 state.at_max(:) = false;
-idx = find(state.controllable & state.reg_bus_idx > 0);
+idx = find(active_control_idx(state));
 for kk = 1:length(idx)
     k = idx(kk);
     v = vm(state.reg_bus_idx(k));
@@ -220,10 +226,37 @@ for kk = 1:length(idx)
     end
     state.last_vm_final(k) = v;
 end
+locked_idx = locked_control_idx(state);
+for kk = 1:length(locked_idx)
+    k = locked_idx(kk);
+    v = vm(state.reg_bus_idx(k));
+    lo = min(state.vmi(k), state.vma(k));
+    hi = max(state.vmi(k), state.vma(k));
+    if ~isfield(state, 'locked_margin') || isempty(state.locked_margin)
+        state.locked_margin = NaN(state.n, 1);
+    end
+    if ~isfield(state, 'locked_vm_final') || isempty(state.locked_vm_final)
+        state.locked_vm_final = NaN(state.n, 1);
+    end
+    if v < lo - state.vtol
+        state.locked_margin(k) = v - lo;
+    elseif v > hi + state.vtol
+        state.locked_margin(k) = v - hi;
+    else
+        state.locked_margin(k) = 0;
+    end
+    state.locked_vm_final(k) = v;
+end
 margin = state.last_margin(idx);
 margin = margin(~isnan(margin));
 state.last_violations = nnz(margin ~= 0);
 state.last_violation_sum = sum(abs(margin));
+if isfield(state, 'locked_margin') && ~isempty(state.locked_margin)
+    locked_margin = state.locked_margin(locked_idx);
+    locked_margin = locked_margin(~isnan(locked_margin));
+    state.locked_violations = nnz(locked_margin ~= 0);
+    state.locked_violation_sum = sum(abs(locked_margin));
+end
 tap_preference = sum(abs(state.current_tap(idx) - state.base_tap(idx)));
 state.last_score = state.last_violations * 1e6 + ...
     state.last_violation_sum + 1e-3 * tap_preference;
@@ -232,7 +265,7 @@ function [new_raw, new_tap] = next_tap_state(state, vm)
 % Select the next discrete tap state for each violating controller.
 new_raw = state.current_raw;
 new_tap = state.current_tap;
-idx = find(state.controllable & state.reg_bus_idx > 0);
+idx = find(active_control_idx(state));
 for kk = 1:length(idx)
     k = idx(kk);
     v = vm(state.reg_bus_idx(k));
@@ -266,3 +299,16 @@ end
 function sig = state_signature(tap)
 % Build a compact key for cycle detection.
 sig = sprintf('%.9g,', round(tap(:)' * 1e9) / 1e9);
+
+function idx = active_control_idx(state)
+idx = state.controllable & state.reg_bus_idx > 0;
+if isfield(state, 'locked_out') && ~isempty(state.locked_out)
+    idx = idx & ~state.locked_out;
+end
+
+function idx = locked_control_idx(state)
+if isfield(state, 'locked_out') && ~isempty(state.locked_out)
+    idx = find(state.controllable & state.reg_bus_idx > 0 & state.locked_out);
+else
+    idx = [];
+end
