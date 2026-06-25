@@ -592,6 +592,29 @@ if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse)
         end
     end
 end
+if ~success && use_mp_core && ...
+        psse_twodc_aux_voltage_retry_needed(results, mpopt)
+    retry_mpopt = mpopt;
+    retry_mpopt.exp.psse_twodc_coupled_voltage = 0;
+    retry_results = runpf_psse(mpc_psse_source, retry_mpopt);
+    if isstruct(retry_results) && isfield(retry_results, 'success') && ...
+            retry_results.success
+        results = retry_results;
+        success = 1;
+        if ~isfield(results, 'psse') || isempty(results.psse)
+            results.psse = struct();
+        end
+        results.psse.twodc_coupled_voltage_fallback = struct( ...
+            'attempted', 1, ...
+            'accepted', 1, ...
+            'reason', 'mixed_control_nonsettlement');
+    elseif isfield(results, 'psse')
+        results.psse.twodc_coupled_voltage_fallback = struct( ...
+            'attempted', 1, ...
+            'accepted', 0, ...
+            'reason', 'mixed_control_nonsettlement');
+    end
+end
 cas_needed = 0;
 cas_trigger = '';
 if ~success && use_mp_core
@@ -732,6 +755,26 @@ end
 function TorF = psse_swdev_retry_needed(swdev_collapse)
 TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
     swdev_collapse.active;
+
+function TorF = psse_twodc_aux_voltage_retry_needed(results, mpopt)
+TorF = 0;
+if isfield(mpopt, 'exp') && isfield(mpopt.exp, 'psse_twodc_coupled_voltage') && ...
+        ~isempty(mpopt.exp.psse_twodc_coupled_voltage) && ...
+        ~any(mpopt.exp.psse_twodc_coupled_voltage(:))
+    return;
+end
+if ~isfield(results, 'psse') || ~isfield(results.psse, 'twodc') || ...
+        ~isfield(results.psse.twodc, 'control') || ...
+        ~isfield(results.psse.twodc.control, 'ac_pf_status') || ...
+        ~strcmp(results.psse.twodc.control.ac_pf_status, 'coupled_solution')
+    return;
+end
+if ~isfield(results.psse, 'control_failure') || ...
+        ~isfield(results.psse.control_failure, 'stage') || ...
+        ~strcmp(results.psse.control_failure.stage, 'control_settlement')
+    return;
+end
+TorF = 1;
 
 function TorF = psse_keep_swdev_collapsed(mpopt)
 TorF = isfield(mpopt, 'exp') && ...

@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 481;
+num_tests = 486;
 
 t_begin(num_tests, quiet);
 
@@ -884,6 +884,33 @@ t_is(r.bus(4, QD), r.psse.twodc.control.qaci_mvar(1), 8, ...
 t_is(r.dcline(1, [dci.QF dci.QT]), ...
     -[r.psse.twodc.control.qacr_mvar(1) r.psse.twodc.control.qaci_mvar(1)], 8, ...
     'TWO DC V26p active reports converter Q on dcline');
+
+twodc_30_raw = psse_auditoria_case_file(fullfile( ...
+    'psse_validation_suite', 'suite_m_integrated_30bus_nominal.raw'));
+if exist(twodc_30_raw, 'file') ~= 2
+    t_skip(3, 'integrated 30bus TWO DC fixture missing');
+else
+    mpc = psse2mpc(twodc_30_raw, 0, 34);
+    r = runpf_psse(mpc, mpopt);
+    t_ok(r.success, 'TWO DC integrated 30bus coupled-voltage success');
+    t_ok(strcmp(r.psse.twodc.control.ac_pf_status, 'coupled_solution'), ...
+        'TWO DC integrated 30bus uses coupled AC voltage');
+    psse_is_close(r.psse.twodc.control.qacr_mvar(1), 71.6, 0.2, ...
+        'TWO DC integrated 30bus rectifier Q matches PSS/E');
+end
+
+twodc_14_raw = psse_auditoria_case_file(fullfile( ...
+    'psse_validation_suite', 'suite_m_integrated_14bus_nominal.raw'));
+if exist(twodc_14_raw, 'file') ~= 2
+    t_skip(2, 'integrated 14bus TWO DC fallback fixture missing');
+else
+    mpc = psse2mpc(twodc_14_raw, 0, 34);
+    r = runpf_psse(mpc, mpopt);
+    t_ok(r.success, 'TWO DC integrated 14bus fallback success');
+    t_ok(isfield(r.psse, 'twodc_coupled_voltage_fallback') && ...
+        r.psse.twodc_coupled_voltage_fallback.accepted == 1, ...
+        'TWO DC integrated 14bus records accepted voltage-source fallback');
+end
 
 mpc = psse_case5_twodc_v26p_inverter_power();
 r = runpf_psse(mpc, mpopt);

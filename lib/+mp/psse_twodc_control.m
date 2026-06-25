@@ -69,7 +69,13 @@ if ~isempty(nm) && isobject(nm) && isprop(nm, 'soln') && ...
     vm = abs(nm.soln.v);
 end
 state0 = state;
-[vm, state] = mp.psse_twodc_ac_vm(dm.source, state, vm, mpopt);
+if solved_snapshot_mode(state) || ~twodc_coupled_voltage_enabled(mpopt)
+    [vm, state] = mp.psse_twodc_ac_vm(dm.source, state, vm, mpopt);
+else
+    state.ac_pf_success = 0;
+    state.ac_pf_status = 'coupled_solution';
+    state.ac_pf_message = '';
+end
 state = mp.psse_twodc_lcc_states(state, vm);
 
 ctrl_tol = 1e-8;
@@ -114,3 +120,10 @@ end
 
 function tf = solved_snapshot_mode(state)
 tf = isfield(state, 'solved_snapshot_mode') && state.solved_snapshot_mode;
+
+function tf = twodc_coupled_voltage_enabled(mpopt)
+tf = true;
+if isfield(mpopt, 'exp') && isfield(mpopt.exp, 'psse_twodc_coupled_voltage') && ...
+        ~isempty(mpopt.exp.psse_twodc_coupled_voltage)
+    tf = any(mpopt.exp.psse_twodc_coupled_voltage(:));
+end
