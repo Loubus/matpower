@@ -123,10 +123,10 @@ switch name
         target = 'mp.psse_pqbrak_prepare';
         reason = 'Used by the PSS/E low-voltage load scaling helper.';
     case 'THRSHZ'
-        category = 'fallback';
-        status = 'deferred';
+        category = 'applied';
+        status = 'control';
         target = 'branch zero-impedance handling';
-        reason = 'PSS/E zero-impedance threshold is reported; runpf_psse leaves the current MATPOWER branch model unchanged.';
+        reason = 'Used to collapse low-impedance PSS/E branches during runpf_psse case preparation.';
     otherwise
         category = 'ignored';
         status = 'unrecognized';

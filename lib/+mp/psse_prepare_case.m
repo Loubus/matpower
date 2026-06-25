@@ -25,7 +25,8 @@ if nargin < 3
 end
 
 prep = struct('mode', mode, 'solver_policy', [], ...
-    'swdev_collapse', [], 'source_prepared', false);
+    'swdev_collapse', [], 'branch_collapse', [], ...
+    'source_prepared', false);
 
 [mpopt, prep.solver_policy, mpc] = mp.psse_solver_options(mpopt, mpc);
 if isfield(mpc, 'psse')
@@ -38,6 +39,9 @@ if psse_solved_snapshot_mode(mpc)
 end
 if ~isempty(which('mp.psse_swdev_collapse'))
     [mpc, prep.swdev_collapse] = mp.psse_swdev_collapse(mpc);
+end
+if ~isempty(which('mp.psse_branch_collapse'))
+    [mpc, prep.branch_collapse] = mp.psse_branch_collapse(mpc);
 end
 if ~isempty(which('mp.psse_pqbrak_prepare'))
     mpc = mp.psse_pqbrak_prepare(mpc);
