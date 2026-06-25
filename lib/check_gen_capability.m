@@ -34,6 +34,10 @@ if nargin < 2 || isempty(opt)
     opt = struct();
 end
 mpc = loadcase(results);
+tol = 1e-8;
+if isfield(opt, 'tol') && ~isempty(opt.tol)
+    tol = opt.tol;
+end
 
 [~, ~, REF, ~, BUS_I, BUS_TYPE] = idx_bus;
 [GEN_BUS, PG, QG, ~, ~, ~, ~, GEN_STATUS] = idx_gen;
@@ -63,6 +67,12 @@ for kk = 1:length(idx)
     else
         [sat, Psat, Qsat, Ssat, info] = ...
             gen_capability_curve(P0, Q0, Smax, type);
+    end
+    if sat && isfield(info, 'projection_norm') && ...
+            info.projection_norm <= tol
+        sat = 0;
+        info.sat = 0;
+        info.margin = 0;
     end
     elements(kk) = struct( ...
         'type',          'gen', ...

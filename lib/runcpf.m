@@ -337,6 +337,16 @@ if ~done.flag
         bb = find(b2ref | b2pq);
         mpct.bus(bb, BUS_TYPE) = mpcb.bus(bb, BUS_TYPE);
     end
+    if isfield(mpopt, 'exp') && ...
+            isfield(mpopt.exp, 'psse_sync_cpf_bus_types') && ...
+            mpopt.exp.psse_sync_cpf_bus_types
+        mpct.bus(:, BUS_TYPE) = mpcb.bus(:, BUS_TYPE);
+        if size(mpct.gen, 1) == size(mpcb.gen, 1)
+            cols = intersect([QG QMAX QMIN VG GEN_STATUS], ...
+                1:size(mpcb.gen, 2));
+            mpct.gen(:, cols) = mpcb.gen(:, cols);
+        end
+    end
     if any(mpcb.bus(:, BUS_TYPE) ~= mpct.bus(:, BUS_TYPE))
         error('runcpf: BUS_TYPE of all buses must be the same in base and target cases');
     end
@@ -353,6 +363,22 @@ if ~done.flag
     for k = 1:length(ref)
         refgen = find(gbus == ref(k));
         mpct.gen(ong(refgen), PG) = mpcb.gen(ong(refgen), PG);
+    end
+    if isfield(mpopt, 'exp') && ...
+            isfield(mpopt.exp, 'psse_sync_cpf_bus_types') && ...
+            mpopt.exp.psse_sync_cpf_bus_types && ...
+            isfield(mpcb, 'psse') && isfield(mpcb.psse, 'gen_capability') && ...
+            size(mpct.gen, 1) == size(mpcb.gen, 1)
+        state = mpcb.psse.gen_capability;
+        if isfield(state, 'frozen_p') && ~isempty(state.frozen_p)
+            frozen = find(state.frozen_p(:));
+        elseif isfield(state, 'frozen') && ~isempty(state.frozen)
+            frozen = find(state.frozen(:));
+        else
+            frozen = [];
+        end
+        frozen = frozen(frozen <= size(mpct.gen, 1));
+        mpct.gen(frozen, PG) = mpcb.gen(frozen, PG);
     end
 
     %% zero transfers for gens that exceed PMAX limits, if necessary

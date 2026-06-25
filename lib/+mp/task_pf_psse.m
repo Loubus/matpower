@@ -42,6 +42,7 @@ classdef task_pf_psse < mp.task_pf_legacy
         psse_twodc = []     % PSS/E two-terminal DC control state/report
         psse_facts = []     % PSS/E FACTS device control state/report
         psse_swshunt = []   % PSS/E switched shunt control state/report
+        psse_gen_capability = []   % generator capability state/report
         psse_last_success_source = []  % last converged source MPC
         psse_rollback_done = false     % true after one rollback attempt
         psse_stop_after_rollback = false   % stop controls after rollback solve
@@ -110,6 +111,18 @@ classdef task_pf_psse < mp.task_pf_legacy
                 if ~isempty(dm)
                     return;
                 end
+                if obj.control_failed(order{k})
+                    obj.success = false;
+                    obj.message = sprintf(['PSS/E %s control failed to ' ...
+                        'settle'], order{k});
+                    obj.psse_failed_control = order{k};
+                    if isfield(dm0.source, 'psse')
+                        dm0.source.psse.control_failure = ...
+                            obj.control_failure_report(order{k});
+                    end
+                    obj.psse_last_success_source = dm0.source;
+                    return;
+                end
             end
         end
 
@@ -119,6 +132,9 @@ classdef task_pf_psse < mp.task_pf_legacy
             default_order = {'pqbrak', 'xfmr', 'genq', 'twodc', ...
                 'swshunt', 'facts'};
             order = default_order;
+            if psse_gen_capability_requested(mpopt)
+                order = [order {'gen_capability'}];
+            end
             if nargin >= 3 && isfield(mpc, 'psse') && ...
                     isfield(mpc.psse, 'twodc') && ...
                     ((isfield(mpc.psse.twodc, 'pq_model_deferred') && ...
@@ -135,13 +151,21 @@ classdef task_pf_psse < mp.task_pf_legacy
             end
 
             order = parse_control_order(mpopt.exp.psse_control_order);
-            if length(order) ~= length(default_order) || ...
-                    ~all(ismember(default_order, order)) || ...
+            if psse_gen_capability_requested(mpopt) && ...
+                    ~any(strcmp(order, 'gen_capability'))
+                order = [order {'gen_capability'}];
+            end
+            valid_order = default_order;
+            if psse_gen_capability_requested(mpopt)
+                valid_order = [valid_order {'gen_capability'}];
+            end
+            if length(order) ~= length(valid_order) || ...
+                    ~all(ismember(valid_order, order)) || ...
                     length(unique(order)) ~= length(order)
                 error(['mp.task_pf_psse.invalid_control_order: ' ...
                     'mpopt.exp.psse_control_order must contain each ' ...
-                    'PSS/E control exactly once: %s'], ...
-                    strjoin(default_order, ', '));
+                    'enabled PSS/E control exactly once: %s'], ...
+                    strjoin(valid_order, ', '));
             end
         end
 
@@ -173,6 +197,11 @@ classdef task_pf_psse < mp.task_pf_legacy
                 case 'facts'
                     [dm, obj.psse_facts] = mp.psse_facts_control( ...
                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_facts);
+                case 'gen_capability'
+                    [dm, obj.psse_gen_capability] = ...
+                        mp.psse_gen_capability_control( ...
+                        obj, mm, nm, dm0, mpopt, mpx, ...
+                        obj.psse_gen_capability);
                 otherwise
                     error(['mp.task_pf_psse.unknown_control: ' ...
                         'Unknown PSS/E control family ''%s''.'], name);
@@ -183,10 +212,96 @@ classdef task_pf_psse < mp.task_pf_legacy
             end
         end
 
+        function TorF = control_failed(obj, name)
+            % Return true when a PSS/E control family exhausted unsuccessfully.
+
+            TorF = false;
+            state = obj.control_state(name);
+            if isempty(state) || ~isstruct(state)
+                return;
+            end
+            if isfield(state, 'control_failed') && ...
+                    ~isempty(state.control_failed) && ...
+                    any(state.control_failed(:))
+                TorF = true;
+                return;
+            end
+            if ~isfield(state, 'report') || isempty(state.report)
+                return;
+            end
+            report = state.report;
+            TorF = isfield(report, 'control_failed') && ...
+                ~isempty(report.control_failed) && any(report.control_failed(:));
+        end
+
+        function failure = control_failure_report(obj, name)
+            % Build a compact, machine-readable control failure marker.
+
+            state = obj.control_state(name);
+            reason = '';
+            max_iter_reached = [];
+            last_violations = [];
+            if ~isempty(state) && isstruct(state)
+                if isfield(state, 'failure_reason')
+                    reason = state.failure_reason;
+                end
+                if isfield(state, 'max_iter_reached')
+                    max_iter_reached = state.max_iter_reached;
+                end
+                if isfield(state, 'last_violations')
+                    last_violations = state.last_violations;
+                end
+            end
+            if ~isempty(state) && isstruct(state) && ...
+                    isfield(state, 'report') && ~isempty(state.report)
+                report = state.report;
+                if isfield(report, 'failure_reason')
+                    reason = report.failure_reason;
+                end
+                if isfield(report, 'max_iter_reached')
+                    max_iter_reached = report.max_iter_reached;
+                end
+                if isfield(report, 'last_violations')
+                    last_violations = report.last_violations;
+                end
+            end
+            failure = struct( ...
+                'control', name, ...
+                'stage', 'control_settlement', ...
+                'success', 0, ...
+                'reason', reason, ...
+                'max_iter_reached', max_iter_reached, ...
+                'last_violations', last_violations);
+        end
+
+        function state = control_state(obj, name)
+            % Fetch the stored state/report for a PSS/E control family.
+
+            switch name
+                case 'pqbrak'
+                    state = obj.psse_pqbrak;
+                case 'xfmr'
+                    state = obj.psse_xfmr;
+                case 'genq'
+                    state = obj.psse_genq;
+                case 'twodc'
+                    state = obj.psse_twodc;
+                case 'swshunt'
+                    state = obj.psse_swshunt;
+                case 'facts'
+                    state = obj.psse_facts;
+                case 'gen_capability'
+                    state = obj.psse_gen_capability;
+                otherwise
+                    state = [];
+            end
+        end
+
         function dm = sync_source_solution(obj, dm, nm)
             % Use the previous solved voltage as the initial point for rebuilds.
 
             [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, VM, VA] = idx_bus;
+            [~, PG, QG] = idx_gen;
             if obj.dc || isempty(dm) || ~isfield(dm.source, 'bus') || ...
                     isempty(dm.source.bus)
                 return;
@@ -197,6 +312,25 @@ classdef task_pf_psse < mp.task_pf_legacy
                 v = nm.soln.v;
                 dm.source.bus(:, VM) = abs(v);
                 dm.source.bus(:, VA) = angle(v) * 180 / pi;
+            end
+            if isfield(dm.source, 'gen') && ~isempty(dm.source.gen) && ...
+                    isfield(dm.elements, 'gen') && ...
+                    isprop(dm.elements.gen, 'tab')
+                tab = dm.elements.gen.tab;
+                if all(ismember({'pg', 'qg'}, tab.Properties.VariableNames))
+                    n = min(size(dm.source.gen, 1), height(tab));
+                    pg = tab.pg(1:n);
+                    qg = tab.qg(1:n);
+                    if isfield(dm.source, 'baseMVA') && ...
+                            dm.source.baseMVA > 0 && ...
+                            max(abs(pg)) < 10 && ...
+                            max(abs(dm.source.gen(1:n, PG))) > 10
+                        pg = pg * dm.source.baseMVA;
+                        qg = qg * dm.source.baseMVA;
+                    end
+                    dm.source.gen(1:n, PG) = pg;
+                    dm.source.gen(1:n, QG) = qg;
+                end
             end
         end
 
@@ -253,4 +387,21 @@ end
 
 keep = ~cellfun(@isempty, order);
 order = lower(strtrim(order(keep)));
+end
+
+function TorF = psse_gen_capability_requested(mpopt)
+% Return true when generator capability control is explicitly enabled.
+
+TorF = false;
+if ~isfield(mpopt, 'vsc_mtdc') || ...
+        ~isfield(mpopt.vsc_mtdc, 'capability_gen_enforce') || ...
+        isempty(mpopt.vsc_mtdc.capability_gen_enforce)
+    return;
+end
+raw = mpopt.vsc_mtdc.capability_gen_enforce;
+if islogical(raw) || isnumeric(raw)
+    TorF = any(raw(:) ~= 0);
+elseif ischar(raw) || isstring(raw)
+    TorF = any(strcmpi(char(raw), {'1', 'true', 'on', 'yes'}));
+end
 end

@@ -27,6 +27,8 @@ classdef task_cpf_psse < mp.task_cpf_legacy
         psse_twodc = []     % PSS/E two-terminal DC control state/report
         psse_facts = []     % PSS/E FACTS device control state/report
         psse_swshunt = []   % PSS/E switched shunt control state/report
+        psse_gen_redispatch = []   % CPF generator redispatch state/report
+        psse_gen_capability = []   % generator capability state/report
         psse_last_success_source = []  % last converged source MPC
         psse_rollback_done = false     % true after one rollback attempt
         psse_stop_after_rollback = false   % stop controls after rollback solve
@@ -41,6 +43,9 @@ classdef task_cpf_psse < mp.task_cpf_legacy
         psse_reorient_plam = NaN       % previous CPF lambda for tangent orientation
         psse_reorient_zp = []          % previous CPF tangent for tangent orientation
         psse_last_control_lambda = NaN % last CPF lambda where cycle memory was reset
+        psse_redispatch_base_source = []   % CPF segment base for redispatch
+        psse_redispatch_lambda = NaN       % accepted lambda for redispatch
+        psse_gen_pq_trace = []             % optional accepted-point P/Q trace
     end
 
     methods
@@ -117,8 +122,9 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                 obj.warmstart = ws;
 
                 %% rebuild CPF base/target with the new PSS/E active set
-                dm = obj.data_model_build( ...
-                    obj.psse_pending_source, obj.dmc, mpopt, mpx);
+                pending_source = obj.rebase_pending_source_for_cpf();
+                dm = obj.data_model_build(pending_source, obj.dmc, ...
+                    mpopt, mpx);
                 nm = obj.network_model_build(dm, mpopt, mpx);
                 obj.dm = dm;
                 obj.nm = nm;
@@ -193,7 +199,15 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                 ~, mm, nm, dm, mpopt)
             % Evaluate PSS/E controls at accepted CPF points.
 
-            if k <= 0 || obj.dc || s.done || s.rollback || ...
+            if k < 0
+                obj.write_gen_pq_trace(mpopt);
+                return;
+            elseif k == 0
+                obj.reset_gen_pq_trace(mpopt);
+                return;
+            end
+
+            if obj.dc || s.rollback || ...
                     ~isempty(s.warmstart)
                 return;
             end
@@ -201,9 +215,12 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             psse_warmstart = obj.psse_reorient_after_warmstart;
             if psse_warmstart
                 nx = obj.reorient_after_psse_warmstart(nx, mm, nm);
+                [nx, s] = obj.suppress_warmstart_nose_event(nx, s);
             end
 
             [dm0, nm0] = obj.cpf_control_context(nx, mm, nm, dm, mpopt);
+            obj.record_gen_pq_trace(k, nx, mm, nm, dm0.source, mpopt, ...
+                psse_warmstart);
             obj.psse_last_success_source = dm0.source;
             obj.psse_pending_control = '';
             obj.psse_pending_source = [];
@@ -213,16 +230,38 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
 
             mpx = obj.psse_mpx_from_options(mpopt);
-            order = obj.control_order(mpopt, dm0.source);
+            if s.done
+                order = {};
+                if psse_gen_redispatch_requested(mpopt, dm0.source)
+                    order = [order {'gen_redispatch'}];
+                end
+                if psse_gen_capability_requested(mpopt)
+                    order = [order {'gen_capability'}];
+                end
+            else
+                order = obj.control_order(mpopt, dm0.source);
+            end
             for kk = 1:length(order)
+                dm_eval = dm0;
+                if strcmp(order{kk}, 'gen_redispatch')
+                    obj.psse_redispatch_base_source = dm0.source;
+                    obj.psse_redispatch_lambda = nx.x(end);
+                    dm_eval = dm0.copy();
+                    dm_eval.source = obj.cpf_current_source_solution( ...
+                        nx, mm, nm, dm_eval.source, mpopt);
+                elseif strcmp(order{kk}, 'gen_capability')
+                    dm_eval = dm0.copy();
+                    dm_eval.source = obj.cpf_current_source_solution( ...
+                        nx, mm, nm, dm_eval.source, mpopt);
+                end
                 dm_next = obj.apply_control( ...
-                    order{kk}, mm, nm0, dm0, mpopt, mpx);
+                    order{kk}, mm, nm0, dm_eval, mpopt, mpx);
                 if ~isempty(dm_next)
                     obj.psse_pending_control = order{kk};
                     obj.psse_pending_source = dm_next.source;
                     obj.psse_pending_lambda = nx.x(end);
                     [ev_idx, detail] = psse_control_change_summary( ...
-                        order{kk}, dm0.source, dm_next.source);
+                        order{kk}, dm_eval.source, dm_next.source);
                     msg = sprintf(['PSS/E %s control update at ' ...
                         'lambda = %.8g; CPF will re-correct at the ' ...
                         'same loading point.'], order{kk}, nx.x(end));
@@ -249,6 +288,12 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             default_order = {'pqbrak', 'xfmr', 'genq', 'twodc', ...
                 'swshunt', 'facts'};
             order = default_order;
+            if psse_gen_redispatch_requested(mpopt, mpc)
+                order = [{'gen_redispatch'} order];
+            end
+            if psse_gen_capability_requested(mpopt)
+                order = [order {'gen_capability'}];
+            end
             if nargin >= 3 && isfield(mpc, 'psse') && ...
                     isfield(mpc.psse, 'twodc') && ...
                     ((isfield(mpc.psse.twodc, 'pq_model_deferred') && ...
@@ -265,13 +310,28 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
 
             order = parse_control_order(mpopt.exp.psse_control_order);
-            if length(order) ~= length(default_order) || ...
-                    ~all(ismember(default_order, order)) || ...
+            if psse_gen_redispatch_requested(mpopt, mpc) && ...
+                    ~any(strcmp(order, 'gen_redispatch'))
+                order = [{'gen_redispatch'} order];
+            end
+            if psse_gen_capability_requested(mpopt) && ...
+                    ~any(strcmp(order, 'gen_capability'))
+                order = [order {'gen_capability'}];
+            end
+            valid_order = default_order;
+            if psse_gen_redispatch_requested(mpopt, mpc)
+                valid_order = [{'gen_redispatch'} valid_order];
+            end
+            if psse_gen_capability_requested(mpopt)
+                valid_order = [valid_order {'gen_capability'}];
+            end
+            if length(order) ~= length(valid_order) || ...
+                    ~all(ismember(valid_order, order)) || ...
                     length(unique(order)) ~= length(order)
                 error(['mp.task_cpf_psse.invalid_control_order: ' ...
                     'mpopt.exp.psse_control_order must contain each ' ...
-                    'PSS/E control exactly once: %s'], ...
-                    strjoin(default_order, ', '));
+                    'enabled PSS/E control exactly once: %s'], ...
+                    strjoin(valid_order, ', '));
             end
         end
 
@@ -307,6 +367,16 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                 case 'facts'
                     [dm, obj.psse_facts] = mp.psse_facts_control( ...
                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_facts);
+                case 'gen_redispatch'
+                    [dm, obj.psse_gen_redispatch] = ...
+                        mp.psse_gen_redispatch_control( ...
+                        obj, mm, nm, dm0, mpopt, mpx, ...
+                        obj.psse_gen_redispatch);
+                case 'gen_capability'
+                    [dm, obj.psse_gen_capability] = ...
+                        mp.psse_gen_capability_control( ...
+                        obj, mm, nm, dm0, mpopt, mpx, ...
+                        obj.psse_gen_capability);
                 otherwise
                     error(['mp.task_cpf_psse.unknown_control: ' ...
                         'Unknown PSS/E control family ''%s''.'], name);
@@ -328,6 +398,53 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             nm0 = obj.network_model_update(mm, nm0);
             dm0 = mm.data_model_update(nm0, dm0, mpopt);
             dm0 = obj.sync_source_solution(dm0, nm0);
+        end
+
+        function source = cpf_current_source_solution(obj, nx, mm, nm, ...
+                source, mpopt)
+            % Reconstruct CPF-implied generator P/Q for control policies.
+            %
+            % MP-Core CPF keeps generator injections in the continuation
+            % transfer rather than as solved data-model table values. Use
+            % the same PF solution update as legacy CPF result packaging so
+            % capability controls see the P/Q that users see in results.gen.
+
+            if obj.dc || isempty(source) || isempty(obj.psse_target_source) || ...
+                    ~isfield(source, 'bus') || ~isfield(source, 'gen') || ...
+                    ~isfield(source, 'branch')
+                return;
+            end
+            target = obj.psse_target_source;
+            if ~isfield(target, 'bus') || ~isfield(target, 'gen') || ...
+                    ~isfield(target, 'branch') || ...
+                    size(source.bus, 1) ~= size(target.bus, 1) || ...
+                    size(source.gen, 1) ~= size(target.gen, 1)
+                return;
+            end
+
+            [~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
+            [~, PG] = idx_gen;
+            lam = nx.x(end);
+            try
+                [V, ~] = mm.convert_x_m2n_cpf(nx.x, nm);
+                current = source;
+                current.bus(:, [PD QD]) = source.bus(:, [PD QD]) + ...
+                    lam * (target.bus(:, [PD QD]) - source.bus(:, [PD QD]));
+                current.gen(:, PG) = source.gen(:, PG) + ...
+                    lam * (target.gen(:, PG) - source.gen(:, PG));
+                [ref, pv, pq] = bustypes(current.bus, current.gen);
+                [Ybus, Yf, Yt] = makeYbus(current.baseMVA, ...
+                    current.bus, current.branch);
+                [current.bus, current.gen, current.branch] = pfsoln( ...
+                    current.baseMVA, current.bus, current.gen, ...
+                    current.branch, Ybus, Yf, Yt, V, ref, pv, pq, mpopt);
+                source.bus = current.bus;
+                source.gen = current.gen;
+                source.branch = current.branch;
+            catch
+                %% Fall back to data-model values if the reconstructed
+                %% current case is unavailable for an unusual extension.
+            end
         end
 
         function nx = reorient_after_psse_warmstart(obj, nx, mm, nm)
@@ -355,6 +472,37 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
             nx.z = psse_pne_tangent(mm, nx.x, xp, zp, parm, 1);
             nx.parm = parm;
+        end
+
+        function [nx, s] = suppress_warmstart_nose_event(~, nx, s)
+            % Ignore NOSE detections from the fixed-lambda correction step.
+
+            if ~isfield(nx, 'step') || nx.step ~= 0 || ...
+                    ~isfield(s, 'events') || isempty(s.events)
+                return;
+            end
+            names = {s.events.name};
+            zero = [s.events.zero] ~= 0;
+            nose = strcmp(names, 'NOSE') & zero;
+            if ~any(nose)
+                return;
+            end
+
+            for kk = find(nose)
+                eidx = s.events(kk).eidx;
+                if eidx > 0 && isfield(nx, 'efv') && length(nx.efv) >= eidx
+                    nx.efv{eidx}(:) = nx.z(end);
+                end
+            end
+            s.events(nose) = [];
+            if isempty(s.events)
+                s.events = psse_no_event();
+            end
+            if isfield(s, 'done') && s.done && isfield(s, 'done_msg') && ...
+                    contains(s.done_msg, 'Nose point eliminated')
+                s.done = 0;
+                s.done_msg = '';
+            end
         end
 
         function nx = append_psse_event(~, nx, k, name, msg, idx)
@@ -435,6 +583,52 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
         end
 
+        function source = rebase_pending_source_for_cpf(obj)
+            % Keep PSS/E active-set rebuilds on the original CPF loading scale.
+
+            source = obj.psse_pending_source;
+            if isempty(source) || isempty(obj.psse_target_source) || ...
+                    isnan(obj.psse_pending_lambda) || ...
+                    ~any(strcmp(obj.psse_pending_control, ...
+                    {'gen_capability', 'gen_redispatch'}))
+                return;
+            end
+
+            lam = obj.psse_pending_lambda;
+            target = obj.psse_target_source;
+            [~, ~, ~, ~, ~, ~, PD, QD] = idx_bus;
+            if isfield(source, 'bus') && isfield(target, 'bus') && ...
+                    size(source.bus, 1) == size(target.bus, 1) && ...
+                    abs(1 - lam) > 1e-10
+                source.bus(:, [PD QD]) = ...
+                    (source.bus(:, [PD QD]) - ...
+                    lam * target.bus(:, [PD QD])) / (1 - lam);
+            end
+
+            dci = idx_dcline;
+            if isfield(source, 'dcline') && ~isempty(source.dcline) && ...
+                    isfield(target, 'dcline') && ...
+                    size(source.dcline, 1) == size(target.dcline, 1) && ...
+                    size(source.dcline, 2) >= dci.PT && ...
+                    size(target.dcline, 2) >= dci.PT && ...
+                    abs(1 - lam) > 1e-10
+                source.dcline(:, [dci.PF dci.PT]) = ...
+                    (source.dcline(:, [dci.PF dci.PT]) - ...
+                    lam * target.dcline(:, [dci.PF dci.PT])) / ...
+                    (1 - lam);
+            end
+
+            [~, PG] = idx_gen;
+            if strcmp(obj.psse_pending_control, 'gen_redispatch') && ...
+                    isfield(source, 'gen') && isfield(target, 'gen') && ...
+                    size(source.gen, 1) == size(target.gen, 1) && ...
+                    size(source.gen, 2) >= PG && size(target.gen, 2) >= PG && ...
+                    abs(1 - lam) > 1e-10
+                source.gen(:, PG) = (source.gen(:, PG) - ...
+                    lam * target.gen(:, PG)) / (1 - lam);
+            end
+        end
+
         function reset_control_cycle_window(obj, lam)
             % Clear per-loading-point PSS/E control cycle memory.
             %
@@ -451,6 +645,82 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             obj.psse_last_control_lambda = lam;
             obj.psse_xfmr = psse_reset_cycle_state(obj.psse_xfmr);
             obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
+        end
+
+        function reset_gen_pq_trace(obj, mpopt)
+            % Initialize optional generator P/Q trace capture.
+
+            obj.psse_gen_pq_trace = [];
+            trace_file = psse_gen_pq_trace_file(mpopt);
+            if isempty(trace_file) || exist(trace_file, 'file') ~= 2
+                return;
+            end
+            delete(trace_file);
+        end
+
+        function record_gen_pq_trace(obj, k, nx, mm, nm, source, mpopt, ...
+                psse_warmstart)
+            % Capture the solved generator P/Q point for this lambda.
+
+            trace_file = psse_gen_pq_trace_file(mpopt);
+            if isempty(trace_file) || obj.dc || isempty(source) || ...
+                    ~isfield(source, 'gen') || isempty(source.gen)
+                return;
+            end
+
+            source = obj.cpf_current_source_solution( ...
+                nx, mm, nm, source, mpopt);
+            [GEN_BUS, PG, QG, QMAX, QMIN, ~, ~, GEN_STATUS, ...
+                PMAX, PMIN] = idx_gen;
+            ng = size(source.gen, 1);
+            gen_idx = (1:ng)';
+            if isfield(source, 'order') && isfield(source.order, 'gen') && ...
+                    isfield(source.order.gen, 'status') && ...
+                    isfield(source.order.gen.status, 'on')
+                on = source.order.gen.status.on(:);
+                if numel(on) == ng
+                    gen_idx = on;
+                end
+            end
+
+            rec = struct( ...
+                'k', k, ...
+                'lambda', nx.x(end), ...
+                'step', nx.step, ...
+                'warmstart', logical(psse_warmstart), ...
+                'gen_idx', gen_idx, ...
+                'bus', source.gen(:, GEN_BUS), ...
+                'PG', source.gen(:, PG), ...
+                'QG', source.gen(:, QG), ...
+                'QMAX', source.gen(:, QMAX), ...
+                'QMIN', source.gen(:, QMIN), ...
+                'PMAX', source.gen(:, PMAX), ...
+                'PMIN', source.gen(:, PMIN), ...
+                'GEN_STATUS', source.gen(:, GEN_STATUS) );
+            if isempty(obj.psse_gen_pq_trace)
+                obj.psse_gen_pq_trace = rec;
+            else
+                obj.psse_gen_pq_trace(end+1) = rec;
+            end
+        end
+
+        function write_gen_pq_trace(obj, mpopt)
+            % Save optional generator P/Q trace capture to disk.
+
+            trace_file = psse_gen_pq_trace_file(mpopt);
+            if isempty(trace_file)
+                return;
+            end
+            [trace_dir, ~, ~] = fileparts(trace_file);
+            if ~isempty(trace_dir) && exist(trace_dir, 'dir') ~= 7
+                mkdir(trace_dir);
+            end
+            gen_pq_trace = obj.psse_gen_pq_trace;
+            trace_info = struct( ...
+                'created_by', 'mp.task_cpf_psse', ...
+                'description', ['Solved generator P/Q values captured at ' ...
+                    'accepted CPF callback points.'] );
+            save(trace_file, 'gen_pq_trace', 'trace_info', '-v7.3');
         end
     end     %% methods
 end         %% classdef
@@ -476,6 +746,63 @@ end
 
 keep = ~cellfun(@isempty, order);
 order = lower(strtrim(order(keep)));
+end
+
+function ev = psse_no_event()
+% Return the MP-Opt-Model PNE no-event placeholder.
+
+ev = struct( ...
+    'eidx', 0, ...
+    'zero', 0, ...
+    'step_scale', 1, ...
+    'log', 0, ...
+    'name', '', ...
+    'idx', 0, ...
+    'msg', '');
+end
+
+function TorF = psse_gen_capability_requested(mpopt)
+% Return true when generator capability control is explicitly enabled.
+
+TorF = false;
+if ~isfield(mpopt, 'vsc_mtdc') || ...
+        ~isfield(mpopt.vsc_mtdc, 'capability_gen_enforce') || ...
+        isempty(mpopt.vsc_mtdc.capability_gen_enforce)
+    return;
+end
+raw = mpopt.vsc_mtdc.capability_gen_enforce;
+if islogical(raw) || isnumeric(raw)
+    TorF = any(raw(:) ~= 0);
+elseif ischar(raw) || isstring(raw)
+    TorF = any(strcmpi(char(raw), {'1', 'true', 'on', 'yes'}));
+end
+end
+
+function TorF = psse_gen_redispatch_requested(mpopt, mpc)
+% Return true when dynamic CPF generator redispatch is explicitly enabled.
+
+if nargin < 2
+    mpc = [];
+end
+TorF = cpf_gen_redispatch_policy_state('enabled', mpc, mpc, mpopt);
+end
+
+function trace_file = psse_gen_pq_trace_file(mpopt)
+% Return optional generator P/Q trace output file.
+
+trace_file = '';
+if ~isfield(mpopt, 'exp') || ...
+        ~isfield(mpopt.exp, 'psse_gen_pq_trace_file') || ...
+        isempty(mpopt.exp.psse_gen_pq_trace_file)
+    return;
+end
+trace_file = mpopt.exp.psse_gen_pq_trace_file;
+if isstring(trace_file)
+    trace_file = char(trace_file);
+end
+if ~ischar(trace_file)
+    trace_file = '';
+end
 end
 
 function restore_mm_soln(mm, soln)
@@ -539,7 +866,55 @@ switch lower(name)
         [idx, detail] = psse_xfmr_change_summary(before, after);
     case 'swshunt'
         [idx, detail] = psse_swshunt_change_summary(before, after);
+    case 'gen_redispatch'
+        [idx, detail] = psse_gen_redispatch_change_summary(before, after);
+    case 'gen_capability'
+        [idx, detail] = psse_gen_capability_change_summary(before, after);
 end
+end
+
+function [idx, detail] = psse_gen_redispatch_change_summary(before, after)
+% Summarize accepted-point generator redispatch by generator row.
+
+[~, PG] = idx_gen;
+idx = [];
+detail = '';
+if ~isstruct(before) || ~isstruct(after) || ...
+        ~isfield(before, 'gen') || ~isfield(after, 'gen') || ...
+        isempty(before.gen) || isempty(after.gen)
+    return;
+end
+n = min(size(before.gen, 1), size(after.gen, 1));
+if size(before.gen, 2) < PG || size(after.gen, 2) < PG
+    return;
+end
+delta = abs(after.gen(1:n, PG) - before.gen(1:n, PG));
+idx = find(delta > 1e-8).';
+detail = psse_change_list('Changed redispatch PG', ...
+    'gen', idx, before.gen(idx, PG), after.gen(idx, PG));
+end
+
+function [idx, detail] = psse_gen_capability_change_summary(before, after)
+% Summarize generator capability freezes by generator row.
+
+[~, PG, QG, QMAX, QMIN] = idx_gen;
+idx = [];
+detail = '';
+if ~isstruct(before) || ~isstruct(after) || ...
+        ~isfield(before, 'gen') || ~isfield(after, 'gen') || ...
+        isempty(before.gen) || isempty(after.gen)
+    return;
+end
+n = min(size(before.gen, 1), size(after.gen, 1));
+cols = [PG QG QMAX QMIN];
+if size(before.gen, 2) < max(cols) || size(after.gen, 2) < max(cols)
+    return;
+end
+delta = abs(after.gen(1:n, cols) - before.gen(1:n, cols));
+rows = find(any(delta > 1e-8, 2));
+idx = rows.';
+detail = psse_change_list('Changed generator capability point', ...
+    'gen', idx, before.gen(rows, PG), after.gen(rows, PG));
 end
 
 function [idx, detail] = psse_xfmr_change_summary(before, after)

@@ -54,6 +54,11 @@ if isfield(base, 'gen') && isfield(target, 'gen') && ...
     cols = intersect([QG QMAX QMIN VG GEN_STATUS], 1:size(base.gen, 2));
     target.gen(:, cols) = base.gen(:, cols);
     target.gen(:, keep_cols) = keep;
+    frozen = psse_gen_capability_frozen_p_rows(base);
+    frozen = frozen(frozen <= size(target.gen, 1));
+    if ~isempty(frozen)
+        target.gen(frozen, PG) = base.gen(frozen, PG);
+    end
 end
 
 if isfield(base, 'branch') && isfield(target, 'branch') && ...
@@ -78,7 +83,8 @@ if isfield(base, 'psse')
         target.psse = base.psse;
     else
         families = {'xfmr', 'genq', 'twodc', 'swshunt', 'facts', ...
-            'pqbrak', 'solver_options', 'control_failure'};
+            'pqbrak', 'gen_capability', 'solver_options', ...
+            'control_failure'};
         for k = 1:length(families)
             name = families{k};
             if isfield(base.psse, name)
@@ -93,6 +99,26 @@ end
 if exist('dcline_delta', 'var') && ~isempty(dcline_delta) && ...
         isfield(target, 'psse')
     target.psse.cpf_dcline_delta = dcline_delta;
+end
+
+function idx = psse_gen_capability_frozen_p_rows(mpc)
+idx = [];
+if ~isfield(mpc, 'psse') || ~isfield(mpc.psse, 'gen_capability') || ...
+        ~isstruct(mpc.psse.gen_capability)
+    return;
+end
+state = mpc.psse.gen_capability;
+if isfield(state, 'frozen_p') && ~isempty(state.frozen_p)
+    idx = find(state.frozen_p(:));
+elseif isfield(state, 'frozen') && ~isempty(state.frozen)
+    idx = find(state.frozen(:));
+end
+if ~isempty(idx) && isfield(mpc, 'order') && ...
+        isfield(mpc.order, 'gen') && ...
+        isfield(mpc.order.gen, 'status') && ...
+        isfield(mpc.order.gen.status, 'on') && ...
+        numel(mpc.order.gen.status.on) >= max(idx)
+    idx = mpc.order.gen.status.on(idx);
 end
 
 function load_delta = psse_cpf_load_delta(base_ref, target)

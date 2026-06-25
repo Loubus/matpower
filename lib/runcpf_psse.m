@@ -160,6 +160,7 @@ else
     mpct = mp.psse_sync_cpf_target(mpcb, mpct, mpcb_ref);
 
     %% run the standard CPF machinery with the PSS/E task extension enabled
+    mpopt.exp.psse_sync_cpf_bus_types = 1;
     save_after = solvedcase;
     [results, success] = runcpf(mpcb, mpct, mpopt, fname, '');
 end
