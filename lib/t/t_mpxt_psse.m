@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 477;
+num_tests = 481;
 
 t_begin(num_tests, quiet);
 
@@ -322,8 +322,8 @@ t_ok(psse_policy_has(policy.fallback, 'newton', 'TOLN'), ...
     'solver_options classifies NEWTON.TOLN as fallback');
 t_ok(psse_policy_has(policy.ignored, 'newton', 'ACCN'), ...
     'solver_options classifies NEWTON.ACCN as ignored');
-t_ok(psse_policy_has(policy.ignored, 'adjust', 'ADJTHR'), ...
-    'solver_options classifies ADJUST.ADJTHR as ignored');
+t_ok(psse_policy_has(policy.applied, 'adjust', 'ADJTHR'), ...
+    'solver_options classifies ADJUST.ADJTHR as applied');
 t_ok(psse_policy_has(policy.ignored, 'adjust', 'ACCTAP'), ...
     'solver_options classifies ADJUST.ACCTAP as ignored');
 t_ok(psse_policy_has(policy.ignored, 'adjust', 'TAPLIM'), ...
@@ -432,8 +432,8 @@ t_ok(psse_policy_has(policy_default.fallback, 'newton', 'TOLN'), ...
     'solver_options classifies default NEWTON.TOLN as fallback');
 t_ok(psse_policy_has(policy_default.unsupported, 'newton', 'DVLIM'), ...
     'solver_options classifies default NEWTON.DVLIM as unsupported');
-t_ok(psse_policy_has(policy_default.ignored, 'adjust', 'ADJTHR'), ...
-    'solver_options classifies default ADJUST.ADJTHR as ignored');
+t_ok(psse_policy_has(policy_default.fallback, 'adjust', 'ADJTHR'), ...
+    'solver_options classifies default ADJUST.ADJTHR as fallback');
 t_ok(psse_policy_has(policy_default.unsupported, 'adjust', 'MXSWIM'), ...
     'solver_options classifies default ADJUST.MXSWIM as unsupported');
 t_ok(psse_policy_has(policy_default.applied, 'newton', 'VCTOLV'), ...
@@ -660,6 +660,25 @@ t_ok(r.success, 'TAB transformer correction success');
 t_is(r.branch(1, TAP), 0.95, 10, 'TAB transformer tap moves one step');
 t_is(r.branch(1, [BR_R BR_X]), [0.0095 0.095], 10, 'TAB updates branch R/X from corrected tap');
 t_is(r.psse.xfmr.control.tab_corrected, 1, 10, 'TAB correction reported');
+
+raw3w_tab = psse_auditoria_case_file(fullfile('psse_validation_suite', ...
+    'suite_u_ultc_3w_tab.raw'));
+raw3w_tab_cw2 = psse_auditoria_case_file(fullfile('psse_validation_suite', ...
+    'suite_u_ultc_3w_tab_cw2.raw'));
+if isempty(raw3w_tab) || isempty(raw3w_tab_cw2)
+    t_skip(4, '3-winding TAB validation fixtures missing');
+else
+    [mpc, ~] = psse2mpc(raw3w_tab, 0, 34);
+    r = runpf_psse(mpc, mpopt);
+    t_ok(r.success, '3-winding W1 TAB transformer tap success');
+    t_is(r.psse.xfmr.control.final_tap(1), 0.90, 10, ...
+        '3-winding W1 TAB transformer tap matches PSS/E direction');
+    [mpc, ~] = psse2mpc(raw3w_tab_cw2, 0, 34);
+    r = runpf_psse(mpc, mpopt);
+    t_ok(r.success, '3-winding W1 TAB CW=2 transformer tap success');
+    t_is(r.psse.xfmr.control.final_windv(1), 207, 10, ...
+        '3-winding W1 TAB CW=2 WINDV matches PSS/E direction');
+end
 
 mpc = psse_case3_xfmr_tap_remote();
 r = runpf_psse(mpc, mpopt);

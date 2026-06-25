@@ -42,6 +42,13 @@ state.vtol = mp.psse_system_value(mpc, 'newton', 'VCTOLV', 1e-5);
 if isnan(state.vtol) || state.vtol <= 0
     state.vtol = 1e-5;
 end
+adjthr = mp.psse_system_value(mpc, 'adjust', 'ADJTHR', NaN, 0);
+if isnan(adjthr) && coupled_control_case(mpc)
+    adjthr = mp.psse_system_value(mpc, 'adjust', 'ADJTHR', NaN);
+end
+if ~isnan(adjthr) && adjthr > 0
+    state.vtol = max(state.vtol, adjthr);
+end
 
 state.kind = [];
 state.raw_row = [];
@@ -282,6 +289,32 @@ else
 end
 v(isnan(v)) = default;
 
+function TorF = coupled_control_case(mpc)
+% Use the PSS/E adjustment deadband when other external controls can move
+% transformer regulated voltages after a tap pass.
+TorF = false;
+sws = mp.psse_system_value(mpc, 'solver', 'SWSHNT', NaN, 0);
+facts = mp.psse_system_value(mpc, 'solver', 'FACTS', NaN, 0);
+dct = mp.psse_system_value(mpc, 'solver', 'DCTAPS', NaN, 0);
+varlim = mp.psse_system_value(mpc, 'solver', 'VARLIM', NaN, 0);
+if ~isnan(sws) && sws ~= 0 && psse_family_present(mpc, 'swshunt')
+    TorF = true;
+elseif ~isnan(facts) && facts ~= 0 && psse_family_present(mpc, 'facts')
+    TorF = true;
+elseif ~isnan(dct) && dct ~= 0 && psse_family_present(mpc, 'twodc')
+    TorF = true;
+elseif ~isnan(varlim) && varlim >= 0 && psse_family_present(mpc, 'genq')
+    TorF = true;
+end
+
+function TorF = psse_family_present(mpc, name)
+TorF = isfield(mpc, 'psse') && isfield(mpc.psse, name) && ...
+    ~isempty(mpc.psse.(name));
+if TorF && isstruct(mpc.psse.(name)) && ...
+        isfield(mpc.psse.(name), 'num') && isempty(mpc.psse.(name).num)
+    TorF = false;
+end
+
 function cang = angle_col(w, c)
 switch w
     case 1
@@ -303,6 +336,10 @@ remote = k & ~terminal & ~own_terminal;
 side(terminal) = -1;
 side(own_terminal) = sign(state.cont(own_terminal));
 side(remote) = -sign(state.cont(remote));
+% W1 of a three-winding transformer uses the opposite branch orientation
+% from W2/W3 for remote voltage regulation.
+three_w1_remote = remote & state.kind == 3 & state.winding == 1;
+side(three_w1_remote) = sign(state.cont(three_w1_remote));
 
 function [raw_states, tap_states] = tap_states_for_control(state, mpc, k)
 raw_states = [];

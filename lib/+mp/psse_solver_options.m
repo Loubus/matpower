@@ -276,10 +276,10 @@ switch name
         target = 'PSS/E iterative control helpers';
         reason = 'Used as the maximum number of PSS/E external-control adjustment cycles.';
     case 'ADJTHR'
-        category = 'ignored';
-        status = 'deferred';
+        category = 'applied';
+        status = 'active';
         target = 'tap/shunt adjustment threshold';
-        reason = 'Adjustment threshold mapping is deferred until small PSS/E cases establish trajectory semantics.';
+        reason = 'Used as the PSS/E transformer tap voltage adjustment deadband.';
     case 'ACCTAP'
         category = 'ignored';
         status = 'deferred';
@@ -343,6 +343,12 @@ for k = 1:length(defs)
         reason = ['PSS/E CLI effective default is reported as 100; ' ...
             'manual RAW/default evidence may show 99, and explicit RAW ' ...
             'MXTPSS always takes priority.'];
+    elseif strcmpi(d.section, 'adjust') && strcmpi(d.name, 'ADJTHR')
+        category = 'fallback';
+        status = 'deferred';
+        reason = ['PSS/E CLI effective default is reported; runpf_psse ' ...
+            'uses ADJTHR for transformer control only when RAW explicitly ' ...
+            'declares it.'];
     end
     policy = add_entry(policy, category, d.section, d.name, d.value, ...
         d.origin, status, target, reason, true);
