@@ -68,7 +68,7 @@ classdef task_pf_psse < mp.task_pf_legacy
                 obj.psse_failed_control = obj.psse_pending_control;
                 src = obj.psse_last_success_source;
                 if strcmp(obj.psse_pending_control, 'xfmr')
-                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src);
+                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src, mpopt);
                     if rejected
                         obj.psse_pending_control = '';
                         obj.psse_pending_source = [];
@@ -389,7 +389,7 @@ classdef task_pf_psse < mp.task_pf_legacy
             end
         end
 
-        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src)
+        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src, mpopt)
             % Reject a transformer tap candidate whose rebuilt PF failed.
 
             rejected = false;
@@ -416,28 +416,8 @@ classdef task_pf_psse < mp.task_pf_legacy
             if ~isfield(state, 'locked_out') || isempty(state.locked_out)
                 state.locked_out = false(state.n, 1);
             end
-            state.locked_out = state.locked_out(:) | moved;
-            state.changed_last = 0;
-            state.control_failed = 0;
-            state.failure_reason = '';
-            state.visited_signatures = {};
-            state.best_score = Inf;
-            state.best_tap = state.current_tap;
-            state.best_raw = state.current_raw;
-            state.best_violations = 0;
-            state.best_violation_sum = 0;
-            state.cycle_detected = 0;
-            state.cycle_resolved = 0;
-            state.repeated_states = 0;
-            state.cycle_resolution_changes = 0;
-            state.cycle_probe_attempted = 0;
-            state.cycle_probe_pending = 0;
-            if ~isfield(state, 'rebuild_rejected') || isempty(state.rebuild_rejected)
-                state.rebuild_rejected = 0;
-            end
-            state.rebuild_rejected = state.rebuild_rejected + 1;
-            state.rebuild_rejected_rows = find(moved);
-            state.report = mp.psse_xfmr_report(state);
+            state = mp.psse_xfmr_guard_candidate(src, state, candidate, ...
+                mpopt);
 
             src = mp.psse_xfmr_update(src, state);
             obj.psse_xfmr = state;

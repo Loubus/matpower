@@ -12,7 +12,7 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 486;
+num_tests = 491;
 
 t_begin(num_tests, quiet);
 
@@ -721,6 +721,25 @@ mpc = psse_case2_xfmr_tap(1, 1, -2, 0.90, 1.09, 1.08, 1.1, 0.9, 5, 100, 50);
 r = runpf_psse(mpc, mpopt);
 t_is(r.branch(1, TAP), 0.90, 10, 'transformer tap lower limit is respected');
 t_is(r.psse.xfmr.control.at_min, 1, 10, 'transformer lower limit reported');
+
+mpc = psse_case3_two_xfmr_guard();
+state0 = mp.psse_xfmr_states(mpc);
+target = state0;
+target.current_tap(1) = 0.95;
+target.current_raw(1) = 0.95;
+target.current_tap(2) = 1e6;
+target.current_raw(2) = 1e6;
+accepted = mp.psse_xfmr_guard_candidate(mpc, state0, target, mpopt);
+t_is(accepted.current_tap(1), 0.95, 10, ...
+    'guarded transformer candidate accepts valid tap row');
+t_is(accepted.current_tap(2), 1.00, 10, ...
+    'guarded transformer candidate restores rejected tap row');
+t_ok(ismember(1, accepted.rebuild_replay_accepted_rows), ...
+    'guarded transformer candidate reports accepted row');
+t_ok(ismember(2, accepted.rebuild_replay_rejected_rows), ...
+    'guarded transformer candidate reports rejected row');
+t_ok(accepted.locked_out(2), ...
+    'guarded transformer candidate locks rejected singleton row');
 
 %% PSS/E two-terminal DC MDC=0 remains blocked
 mpc = psse_case4_twodc_blocked();
@@ -1589,6 +1608,25 @@ mpc.branch = [
     2 3 0.01 0.08 0 250 250 250 0 0 1 -360 360
 ];
 mpc.psse.xfmr.two.num(1, 1:2) = [2 1];
+
+function mpc = psse_case3_two_xfmr_guard()
+mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 100 50 0 0 1 1.00 0 115 1 1.1 0.9
+    3 1 100 50 0 0 1 1.00 0 115 1 1.1 0.9
+];
+mpc.gen(1, 2) = 200;
+mpc.gen(1, 9) = 300;
+mpc.branch = [
+    1 2 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
+    1 3 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
+];
+mpc.psse.xfmr.two.num = repmat(mpc.psse.xfmr.two.num, 2, 1);
+mpc.psse.xfmr.two.num(2, 2) = 3;
+mpc.psse.xfmr.two.num(2, 40) = -3;
+mpc.psse.xfmr.two.txt = cell(2, size(mpc.psse.xfmr.two.num, 2));
+mpc.psse.xfmr.two.branch_idx = [1; 2];
 
 function mpc = psse_case3_xfmr_tap_remote_limit()
 mpc = psse_case3_xfmr_tap_remote();

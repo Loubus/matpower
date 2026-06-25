@@ -78,6 +78,142 @@ if isfield(state, 'rebuild_rejected_rows')
 else
     report.rebuild_rejected_rows = [];
 end
+if isfield(state, 'rebuild_replay_attempted')
+    report.rebuild_replay_attempted = state.rebuild_replay_attempted;
+else
+    report.rebuild_replay_attempted = 0;
+end
+if isfield(state, 'rebuild_replay_attempts')
+    report.rebuild_replay_attempts = state.rebuild_replay_attempts;
+else
+    report.rebuild_replay_attempts = 0;
+end
+if isfield(state, 'rebuild_replay_candidate_rows')
+    report.rebuild_replay_candidate_rows = state.rebuild_replay_candidate_rows;
+else
+    report.rebuild_replay_candidate_rows = [];
+end
+if isfield(state, 'rebuild_replay_accepted_rows')
+    report.rebuild_replay_accepted_rows = state.rebuild_replay_accepted_rows;
+else
+    report.rebuild_replay_accepted_rows = [];
+end
+if isfield(state, 'rebuild_replay_rejected_rows')
+    report.rebuild_replay_rejected_rows = state.rebuild_replay_rejected_rows;
+else
+    report.rebuild_replay_rejected_rows = [];
+end
+if isfield(state, 'rebuild_replay_attempt_rows')
+    report.rebuild_replay_attempt_rows = state.rebuild_replay_attempt_rows;
+else
+    report.rebuild_replay_attempt_rows = {};
+end
+if isfield(state, 'rebuild_replay_attempt_success')
+    report.rebuild_replay_attempt_success = ...
+        state.rebuild_replay_attempt_success;
+else
+    report.rebuild_replay_attempt_success = false(0, 1);
+end
+if isfield(state, 'rebuild_replay_from_tap')
+    report.rebuild_replay_from_tap = state.rebuild_replay_from_tap;
+else
+    report.rebuild_replay_from_tap = [];
+end
+if isfield(state, 'rebuild_replay_to_tap')
+    report.rebuild_replay_to_tap = state.rebuild_replay_to_tap;
+else
+    report.rebuild_replay_to_tap = [];
+end
+if isfield(state, 'rebuild_replay_from_windv')
+    report.rebuild_replay_from_windv = state.rebuild_replay_from_windv;
+else
+    report.rebuild_replay_from_windv = [];
+end
+if isfield(state, 'rebuild_replay_to_windv')
+    report.rebuild_replay_to_windv = state.rebuild_replay_to_windv;
+else
+    report.rebuild_replay_to_windv = [];
+end
+if isfield(state, 'rebuild_replay_kind')
+    report.rebuild_replay_kind = state.rebuild_replay_kind;
+else
+    report.rebuild_replay_kind = [];
+end
+if isfield(state, 'rebuild_replay_raw_row')
+    report.rebuild_replay_raw_row = state.rebuild_replay_raw_row;
+else
+    report.rebuild_replay_raw_row = [];
+end
+if isfield(state, 'rebuild_replay_winding')
+    report.rebuild_replay_winding = state.rebuild_replay_winding;
+else
+    report.rebuild_replay_winding = [];
+end
+if isfield(state, 'rebuild_replay_branch_idx')
+    report.rebuild_replay_branch_idx = state.rebuild_replay_branch_idx;
+else
+    report.rebuild_replay_branch_idx = [];
+end
+if isfield(state, 'rebuild_replay_branch_ext')
+    report.rebuild_replay_branch_ext = state.rebuild_replay_branch_ext;
+else
+    report.rebuild_replay_branch_ext = [];
+end
+if isfield(state, 'rebuild_replay_reg_bus_idx')
+    report.rebuild_replay_reg_bus_idx = state.rebuild_replay_reg_bus_idx;
+else
+    report.rebuild_replay_reg_bus_idx = [];
+end
+if isfield(state, 'rebuild_replay_cod')
+    report.rebuild_replay_cod = state.rebuild_replay_cod;
+else
+    report.rebuild_replay_cod = [];
+end
+if isfield(state, 'rebuild_replay_cont')
+    report.rebuild_replay_cont = state.rebuild_replay_cont;
+else
+    report.rebuild_replay_cont = [];
+end
+if isfield(state, 'rebuild_replay_cw')
+    report.rebuild_replay_cw = state.rebuild_replay_cw;
+else
+    report.rebuild_replay_cw = [];
+end
+if isfield(state, 'rebuild_replay_windv')
+    report.rebuild_replay_windv = state.rebuild_replay_windv;
+else
+    report.rebuild_replay_windv = [];
+end
+if isfield(state, 'rebuild_replay_rma')
+    report.rebuild_replay_rma = state.rebuild_replay_rma;
+else
+    report.rebuild_replay_rma = [];
+end
+if isfield(state, 'rebuild_replay_rmi')
+    report.rebuild_replay_rmi = state.rebuild_replay_rmi;
+else
+    report.rebuild_replay_rmi = [];
+end
+if isfield(state, 'rebuild_replay_vma')
+    report.rebuild_replay_vma = state.rebuild_replay_vma;
+else
+    report.rebuild_replay_vma = [];
+end
+if isfield(state, 'rebuild_replay_vmi')
+    report.rebuild_replay_vmi = state.rebuild_replay_vmi;
+else
+    report.rebuild_replay_vmi = [];
+end
+if isfield(state, 'rebuild_replay_ntp')
+    report.rebuild_replay_ntp = state.rebuild_replay_ntp;
+else
+    report.rebuild_replay_ntp = [];
+end
+if isfield(state, 'rebuild_replay_tab')
+    report.rebuild_replay_tab = state.rebuild_replay_tab;
+else
+    report.rebuild_replay_tab = [];
+end
 if isfield(state, 'blocked_low')
     report.blocked_low = nnz(state.blocked_low);
     report.blocked_low_rows = find(state.blocked_low);
