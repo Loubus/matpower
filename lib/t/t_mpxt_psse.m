@@ -12,13 +12,13 @@ if nargin < 1
     quiet = 0;
 end
 
-num_tests = 442;
+num_tests = 477;
 
 t_begin(num_tests, quiet);
 
 [PQ, ~, ~, ~, ~, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
 [~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
-[~, PG, QG] = idx_gen;
+[GEN_BUS, PG, QG, ~, ~, ~, ~, GEN_STATUS, PMAX, PMIN] = idx_gen;
 dci = idx_dcline;
 mpopt = mpoption('verbose', 0, 'out.all', 0);
 
@@ -72,6 +72,146 @@ t_is(r.psse.cpf.compact_trace.removed_points, ...
     r.cpf_psse_compact.compaction.removed_points, 10, ...
     'PSS/E control CPF reports compact trace metadata');
 
+%% PSS/E CPF generator redispatch uses dynamic technology participation
+mpcr = loadcase('case9');
+mpcr.gen = [mpcr.gen; mpcr.gen(2, :); mpcr.gen(2, :)];
+mpcr.gen(:, GEN_BUS) = [1; 2; 3; 5; 6];
+mpcr.gen(:, PG) = [80; 40; 50; 20; 30];
+mpcr.gen(:, PMAX) = [250; 100; 50; 70; 200];
+mpcr.gen(:, PMIN) = 0;
+mpcr.gen(:, GEN_STATUS) = 1;
+mpcr.bus(5, BUS_TYPE) = 2;
+mpcr.bus(6, BUS_TYPE) = 2;
+targetr = mpcr;
+targetr.bus(:, PD) = targetr.bus(:, PD) + 10;
+currentr = mpcr;
+currentr.bus(:, PD) = mpcr.bus(:, PD) + ...
+    0.1 * (targetr.bus(:, PD) - mpcr.bus(:, PD));
+tech = repmat({'thermal'}, size(mpcr.gen, 1), 1);
+tech([2 3 4 5]) = {'hydraulic'; 'combined_cycle'; 'thermal'; 'wind'};
+mpcr.cpf_policies.gen = struct( ...
+    'policy', 'technology_dynamic_participation', ...
+    'rho', 0.40, ...
+    'gens', [2; 3; 4; 5], ...
+    'technology', {tech}, ...
+    'technology_weights', struct('hydraulic', 0.40, ...
+        'combined_cycle', 0.35, 'thermal', 0.15, ...
+        'gas_small', 0.10, 'wind', 0), ...
+    'exclude_technologies', {{'wind'}});
+[srcr, ~, str, changed, changed_idx] = ...
+    cpf_gen_redispatch_policy_state('apply', ...
+    mpcr, currentr, targetr, mpopt, [], 0.1);
+delta_pg = srcr.gen(:, PG) - currentr.gen(:, PG);
+expected_delta = zeros(size(mpcr.gen, 1), 1);
+expected_delta(2) = 3.6 * 0.40 / (0.40 + 0.15);
+expected_delta(4) = 3.6 * 0.15 / (0.40 + 0.15);
+t_ok(changed, 'CPF technology redispatch helper changes PG');
+t_is(changed_idx, [2; 4], 12, ...
+    'CPF technology redispatch skips exhausted and wind technologies');
+t_is(str.last_report.dP_load, 9, 12, ...
+    'CPF technology redispatch uses accepted active-load increment');
+t_is(str.last_report.scheduled_mw, 3.6, 12, ...
+    'CPF technology redispatch applies rho to load increment');
+t_is(delta_pg, expected_delta, 12, ...
+    'CPF technology redispatch reallocates by available technology');
+
+mpcm = loadcase('case9');
+mpcm.gen = [mpcm.gen; mpcm.gen(2, :); mpcm.gen(2, :)];
+mpcm.gencost = [mpcm.gencost; mpcm.gencost(2, :); mpcm.gencost(2, :)];
+mpcm.gen(:, GEN_BUS) = [1; 2; 3; 5; 6];
+mpcm.gen(:, PG) = [80; 40; 0; 20; 20];
+mpcm.gen(:, PMAX) = [250; 100; 50; 100; 100];
+mpcm.gen(:, PMIN) = 0;
+mpcm.gen(:, GEN_STATUS) = [1; 1; 0; 1; 1];
+mpcm.bus(5, BUS_TYPE) = 2;
+mpcm.bus(6, BUS_TYPE) = 2;
+targetm = mpcm;
+targetm.bus(:, PD) = targetm.bus(:, PD) + 10;
+currentm = mpcm;
+currentm.bus(:, PD) = mpcm.bus(:, PD) + ...
+    0.1 * (targetm.bus(:, PD) - mpcm.bus(:, PD));
+mpcm.cpf_policies.gen = struct( ...
+    'policy', 'technology_dynamic_participation', ...
+    'rho', 0.40, ...
+    'technology', {{'slack'; 'hydraulic'; 'thermal'; ...
+        'wind'; 'thermal'}}, ...
+    'technology_weights', struct('slack', 0, 'hydraulic', 0.40, ...
+        'thermal', 0.15, 'wind', 0), ...
+    'exclude_technologies', {{'wind'}});
+targetm.cpf_policies = mpcm.cpf_policies;
+currentm.cpf_policies = mpcm.cpf_policies;
+mpcm_i = ext2int(mpcm);
+currentm_i = ext2int(currentm);
+targetm_i = ext2int(targetm);
+[srcm_i, ~, ~, changed, changed_idx] = ...
+    cpf_gen_redispatch_policy_state('apply', ...
+    mpcm_i, currentm_i, targetm_i, mpopt, [], 0.1);
+on = mpcm_i.order.gen.status.on(mpcm_i.order.gen.i2e);
+wind_i = find(on == 4);
+thermal_i = find(on == 5);
+t_ok(changed, ...
+    'CPF technology redispatch ext2int remapping applies redispatch');
+t_ok(~ismember(wind_i, changed_idx) && ismember(thermal_i, changed_idx), ...
+    'CPF technology redispatch ext2int remapping keeps wind excluded');
+t_is(srcm_i.gen(wind_i, PG), currentm_i.gen(wind_i, PG), 12, ...
+    'CPF technology redispatch ext2int remapping leaves wind PG fixed');
+
+mpcr = loadcase('case9');
+targetr = loadcase('case9target');
+targetr.gen(:, PG) = mpcr.gen(:, PG);
+mpcr.cpf_policies.gen = struct( ...
+    'policy', 'technology_dynamic_participation', ...
+    'rho', 0.40, ...
+    'gens', [2; 3], ...
+    'technology', {{'slack'; 'hydraulic'; 'wind'}}, ...
+    'technology_weights', struct('hydraulic', 0.40, ...
+        'combined_cycle', 0.35, 'thermal', 0.15, ...
+        'gas_small', 0.10, 'wind', 0), ...
+    'exclude_technologies', {{'wind'}});
+targetr.cpf_policies = mpcr.cpf_policies;
+mpopt_redisp = mpoption(mpopt, 'cpf.stop_at', 0.1, ...
+    'cpf.step', 0.05, 'cpf.step_max', 0.05, 'cpf.adapt_step', 0);
+[rredisp, success] = runcpf_psse(mpcr, targetr, mpopt_redisp);
+event_names = {rredisp.cpf.events.name};
+t_ok(success, 'runcpf_psse technology redispatch CPF succeeds');
+t_ok(any(strcmp(event_names, 'PSSE_GEN_REDISPATCH')), ...
+    'runcpf_psse logs generator redispatch events');
+t_is(rredisp.psse.gen_redispatch.last_report.rho, 0.40, 12, ...
+    'runcpf_psse generator redispatch reports rho');
+t_is(rredisp.gen(3, PG), mpcr.gen(3, PG), 10, ...
+    'runcpf_psse generator redispatch leaves wind PG fixed');
+t_is(rredisp.gen(2, PG) - mpcr.gen(2, PG), ...
+    rredisp.psse.gen_redispatch.applied_total_mw, 8, ...
+    'runcpf_psse generator redispatch reports applied PG');
+t_ok(rredisp.psse.gen_redispatch.applied_total_mw > 0, ...
+    'runcpf_psse generator redispatch moves eligible generation');
+
+%% Non-VSC CPF generator capability separates P and Q freezes
+mpcg = loadcase('case9');
+targetg = loadcase('case9target');
+mpcg.gen_capability.Snom = [999; 220; 999];
+targetg.gen_capability.Snom = mpcg.gen_capability.Snom;
+mpcg.gen_capability.type = {'thermal'; 'thermal'; 'thermal'};
+targetg.gen_capability.type = mpcg.gen_capability.type;
+mpopt_gcap = mpoption(mpopt, 'cpf.stop_at', 'FULL', ...
+    'cpf.step', 0.02, 'cpf.step_max', 0.02, ...
+    'cpf.enforce_q_lims', 0);
+mpopt_gcap.vsc_mtdc.capability_gen_enforce = 1;
+[rgcap, success] = runcpf_psse(mpcg, targetg, mpopt_gcap);
+gcap_state = rgcap.psse.gen_capability;
+t_ok(success, ...
+    'runcpf_psse non-VSC gen capability traces FULL continuation');
+t_ok(gcap_state.frozen_p(2), ...
+    'runcpf_psse non-VSC gen capability freezes active dispatch at P limit');
+t_ok(gcap_state.frozen_q(2), ...
+    'runcpf_psse non-VSC gen capability later freezes reactive dispatch at Q limit');
+t_is(rgcap.gen(2, PG), 176, 8, ...
+    'runcpf_psse non-VSC gen capability clamps PG at P boundary');
+t_is(rgcap.gen(2, QG), 132, 8, ...
+    'runcpf_psse non-VSC gen capability clamps QG at Q boundary');
+t_ok(rgcap.bus(2, BUS_TYPE) == PQ, ...
+    'gen capability Q-limited bus is converted to PQ');
+
 %% CPF target sync preserves active dcline transfer deltas
 base_ref = psse_case4_twodc_current_mode(0);
 base = base_ref;
@@ -95,6 +235,26 @@ t_is(expanded.cpf.V(3, :), swres.results.cpf.V(2, :), 10, ...
     'SWDEV expansion maps collapsed cpf.V row');
 t_is(expanded.cpf.V_hat(3, :), swres.results.cpf.V_hat(2, :), 10, ...
     'SWDEV expansion maps collapsed cpf.V_hat row');
+
+%% General THRSHZ branch collapse solves internally and expands for reporting
+mpc = psse_case3_low_z_branch();
+r = runpf_psse(mpc, mpopt);
+t_ok(r.success, 'runpf_psse succeeds with FLATST after THRSHZ branch collapse');
+t_is(size(r.bus, 1), 3, 10, 'branch collapse expansion restores bus rows');
+t_is(size(r.branch, 1), 2, 10, 'branch collapse expansion restores branch rows');
+t_ok(isfield(r.psse, 'branch_collapsed') && r.psse.branch_collapsed.active, ...
+    'runpf_psse reports THRSHZ branch collapse');
+t_is(r.bus(2, VM), r.bus(3, VM), 10, ...
+    'collapsed low-impedance buses share solved voltage after expansion');
+
+mpc = psse_case3_low_z_branch_with_xfmr_bus();
+[mpc2, collapse_state] = mp.psse_branch_collapse(mpc);
+t_ok(~collapse_state.active, ...
+    'branch collapse skips low-Z branches touching transformer metadata buses');
+t_is(size(mpc2.bus, 1), 3, 10, ...
+    'transformer-protected low-Z branch does not remove bus rows');
+t_is(size(mpc2.branch, 1), 2, 10, ...
+    'transformer-protected low-Z branch does not remove branch rows');
 
 %% PSS/E SYSTEM-WIDE solver option policy report
 mpc = loadcase('case9');
@@ -256,8 +416,8 @@ t_is(mp.psse_system_value(mpc_default, 'solver', 'ACTAPS', NaN, 0), 0, 12, ...
 mpc_default.psse.system.adjust.MXTPSS = 25;
 t_is(mp.psse_system_value(mpc_default, 'adjust', 'MXTPSS', 99), 25, 12, ...
     'psse_system_value keeps explicit RAW priority');
-t_ok(psse_policy_has(policy_default.fallback, 'general', 'THRSHZ'), ...
-    'solver_options classifies default GENERAL.THRSHZ as fallback');
+t_ok(psse_policy_has(policy_default.applied, 'general', 'THRSHZ'), ...
+    'solver_options classifies default GENERAL.THRSHZ as applied');
 t_ok(psse_policy_has(policy_default.fallback, 'solver', 'ACTAPS'), ...
     'solver_options classifies default SOLVER.ACTAPS as fallback');
 t_ok(psse_policy_has(policy_default.fallback, 'solver', 'DCTAPS'), ...
@@ -471,6 +631,19 @@ t_is(r.branch(1, TAP), 0.95, 10, 'COD=1 transformer tap moves one step');
 t_is(r.psse.xfmr.two.num(1, 24), 0.95, 10, 'COD=1 transformer WINDV updated');
 t_ok(r.psse.xfmr.control.inside_band == 1, 'COD=1 transformer reaches voltage band');
 
+mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.10, 1.08, 1.2, 0.8, 9, 100, 50);
+mpc.psse.system.adjust.MXTPSS = 1;
+r = runpf_psse(mpc, mpopt);
+t_ok(~r.success, 'unsettled transformer tap control fails runpf_psse');
+t_ok(r.psse.xfmr.control.control_failed, 'unsettled transformer control reported failed');
+t_ok(strcmp(r.psse.xfmr.control.failure_reason, 'max_iter_unresolved_violations'), ...
+    'unsettled transformer control reports max-iteration reason');
+t_ok(isfield(r.psse, 'control_failure') && ...
+    strcmp(r.psse.control_failure.stage, 'control_settlement'), ...
+    'unsettled transformer control records control-settlement failure');
+t_ok(r.psse.control_failure.last_violations > 0, ...
+    'unsettled transformer control reports remaining violations');
+
 mpc = psse_case2_xfmr_tap(1, 1, -2, 1.00, 1.03, 0.95, 1.1, 0.9, 10, 0, 0);
 r = runpf_psse(mpc, mpopt);
 t_ok(r.success, 'in-band off-grid transformer tap success');
@@ -507,6 +680,13 @@ mpc = psse_case2_xfmr_tap(1, 1, 2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
 r = runpf_psse(mpc, mpopt);
 t_is(r.branch(1, TAP), 0.95, 10, 'positive CONT terminal transformer tap matches PSS/E direction');
 t_ok(r.psse.xfmr.control.inside_band == 1, 'positive CONT terminal transformer reaches voltage band');
+
+mpc = psse_case2_xfmr_tap(1, 1, 2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
+mpc.branch(1, 1:2) = [2 1];
+mpc.psse.xfmr.two.num(1, 1:2) = [2 1];
+r = runpf_psse(mpc, mpopt);
+t_is(r.branch(1, TAP), 1.05, 10, 'positive CONT own-side transformer tap matches PSS/E direction');
+t_ok(r.psse.xfmr.control.inside_band == 1, 'positive CONT own-side transformer reaches voltage band');
 
 mpc = psse_case2_xfmr_tap(0, 1, -2, 1.00, 1.03, 0.97, 1.1, 0.9, 5, 100, 50);
 r = runpf_psse(mpc, mpopt);
@@ -851,6 +1031,35 @@ mpc.psse.swshunt = struct( ...
     'binit_col', 10, ...
     'status_col', 4 ...
 );
+
+function mpc = psse_case3_low_z_branch()
+mpc.version = '2';
+mpc.baseMVA = 100;
+mpc.bus = [
+    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
+    2 1 55 30 0 0 1 0.92 -20 230 1 1.1 0.9
+    3 2 0 0 0 0 1 0.985 15 230 1 1.1 0.9
+];
+mpc.gen = [
+    1 20 0 300 -300 1.00 100 1 300 -300 0 0 0 0 0 0 0 0 0 0 0
+    3 35 0 300 -300 0.985 100 1 300 -300 0 0 0 0 0 0 0 0 0 0 0
+];
+mpc.branch = [
+    1 2 0.02 0.15 0 200 200 200 0 0 1 -360 360
+    2 3 0 0.0001 0 200 200 200 0 0 1 -360 360
+];
+mpc.psse.rev = 34;
+mpc.psse.system.general.THRSHZ = 0.0001;
+mpc.psse.system.solver = struct('METHOD', 'FNSL', 'FLATST', 1);
+mpc.psse.system.newton.ITMXN = 40;
+
+function mpc = psse_case3_low_z_branch_with_xfmr_bus()
+mpc = psse_case3_low_z_branch();
+mpc.psse.xfmr.two = struct( ...
+    'branch_idx', 1, ...
+    'num', [2 1 0], ...
+    'col', struct('i', 1, 'j', 2, 'cont1', 3) );
+mpc.psse.xfmr.three = struct('branch_idx', [], 'num', [], 'col', struct());
 
 function fx = psse_swdev_expand_fixture()
 [~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
