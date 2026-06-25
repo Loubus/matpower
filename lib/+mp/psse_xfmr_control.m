@@ -45,18 +45,22 @@ if ~state.enabled || ~any(state.controllable)
     return;
 end
 
+bus = dm.elements.bus;
+vm = bus.tab.vm;
+
 %% stop after the PSS/E tap/shunt adjustment iteration limit
 state.iterations = state.iterations + 1;
+state = classify_state(state, vm);
 if state.iterations > state.max_iter
     state.max_iter_reached = 1;
     state.changed_last = 0;
+    if state.last_violations ~= 0
+        state.control_failed = 1;
+        state.failure_reason = 'max_iter_unresolved_violations';
+    end
     dm.source = mp.psse_xfmr_update(dm.source, state);
     return;
 end
-
-bus = dm.elements.bus;
-vm = bus.tab.vm;
-state = classify_state(state, vm);
 
 if isfield(state, 'cycle_probe_pending') && state.cycle_probe_pending
     state.cycle_probe_pending = 0;

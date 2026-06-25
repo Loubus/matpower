@@ -28,6 +28,8 @@ state.iterations = 0;
 state.num_adjustments = 0;
 state.changed_last = 0;
 state.max_iter_reached = 0;
+state.control_failed = 0;
+state.failure_reason = '';
 state.report = struct();
 
 state.actaps = mp.psse_system_value(mpc, 'solver', 'ACTAPS', NaN, 0);
@@ -294,10 +296,12 @@ function side = tap_side_sign(state)
 % Determine MATPOWER tap movement direction for PSS/E voltage control.
 side = ones(state.n, 1);
 side(state.cont < 0) = -1;
-k = state.kind == 2 & state.cont ~= 0;
-terminal = k & abs(state.cont) == state.other_bus_ext;
-remote = k & ~terminal;
+k = (state.kind == 2 | state.kind == 3) & state.cont ~= 0;
+terminal = state.kind == 2 & k & abs(state.cont) == state.other_bus_ext;
+own_terminal = k & abs(state.cont) == state.winding_bus_ext;
+remote = k & ~terminal & ~own_terminal;
 side(terminal) = -1;
+side(own_terminal) = sign(state.cont(own_terminal));
 side(remote) = -sign(state.cont(remote));
 
 function [raw_states, tap_states] = tap_states_for_control(state, mpc, k)

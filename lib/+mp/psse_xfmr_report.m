@@ -22,6 +22,16 @@ report.actaps = state.actaps;
 report.iterations = state.iterations;
 report.max_iter = state.max_iter;
 report.max_iter_reached = state.max_iter_reached;
+if isfield(state, 'control_failed')
+    report.control_failed = state.control_failed;
+else
+    report.control_failed = 0;
+end
+if isfield(state, 'failure_reason')
+    report.failure_reason = state.failure_reason;
+else
+    report.failure_reason = '';
+end
 report.changed_last = state.changed_last;
 report.num_adjustments = state.num_adjustments;
 report.last_violations = state.last_violations;
