@@ -1,0 +1,14 @@
+--- before/matpower/lib/savecase.m
++++ matpower/lib/savecase.m
+@@ -580,6 +580,11 @@
+     print_case_value(fd, sprintf('%svsc_loss', prefix), mpc.vsc_loss);
+ end
+ 
++if isfield(mpc, 'vsc_current_limit')
++    fprintf(fd, '\n%%%% Active converter current constraints (system p.u.; zero inactive)\n');
++    print_case_value(fd, sprintf('%svsc_current_limit', prefix), mpc.vsc_current_limit);
++end
++
+ if isfield(mpc, 'vsc_capability') && ...
+         is_vsc_capability_case_data(mpc.vsc_capability)
+     fprintf(fd, '\n%%%% VSC capability metadata\n');

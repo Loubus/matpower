@@ -1,0 +1,7 @@
+{
+  "lambda_exact": true,
+  "bus_exact": true,
+  "gen_exact": true,
+  "vsc_exact": true,
+  "termination_exact": true
+}

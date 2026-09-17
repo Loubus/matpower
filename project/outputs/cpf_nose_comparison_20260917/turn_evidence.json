@@ -1,0 +1,82 @@
+[
+  {
+    "variant": "baseline",
+    "step": 0.1,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": 3.7167890609060562E-6,
+    "crossings": []
+  },
+  {
+    "variant": "baseline",
+    "step": 0.05,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": 0.17595690003761472,
+    "crossings": []
+  },
+  {
+    "variant": "coupled_current",
+    "step": 0.1,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": 8.5329195789463428E-8,
+    "crossings": []
+  },
+  {
+    "variant": "coupled_current",
+    "step": 0.05,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": 9.1721984557122912E-8,
+    "crossings": []
+  },
+  {
+    "variant": "augmented_tangent",
+    "step": 0.1,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": -0.29844887670367831,
+    "crossings": 22,
+    "crossing_lambda_before": 1.233154566414661,
+    "crossing_lambda_after": 1.2437849196001964,
+    "tangent_before": 0.24064968444123053,
+    "tangent_after": -0.034876693173892227,
+    "bus6_type_before": 2,
+    "bus6_type_after": 1
+  },
+  {
+    "variant": "augmented_tangent",
+    "step": 0.05,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": -0.29841812537679563,
+    "crossings": 43,
+    "crossing_lambda_before": 1.2427016203538925,
+    "crossing_lambda_after": 1.2441256814009576,
+    "tangent_before": 0.19288619500466925,
+    "tangent_after": -0.029713948408624794,
+    "bus6_type_before": 2,
+    "bus6_type_after": 1
+  },
+  {
+    "variant": "combined",
+    "step": 0.1,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": -0.3158971388909152,
+    "crossings": 22,
+    "crossing_lambda_before": 1.2349272572213204,
+    "crossing_lambda_after": 1.2434893578440083,
+    "tangent_before": 0.22589987978191667,
+    "tangent_after": -0.069638836615262309,
+    "bus6_type_before": 2,
+    "bus6_type_after": 1
+  },
+  {
+    "variant": "combined",
+    "step": 0.05,
+    "nose_tolerance": 1E-5,
+    "final_loading_tangent": -0.315876137898271,
+    "crossings": 43,
+    "crossing_lambda_before": 1.2438606139852098,
+    "crossing_lambda_after": 1.2439024557524645,
+    "tangent_before": 0.17755428571776935,
+    "tangent_after": -0.063465810212620544,
+    "bus6_type_before": 2,
+    "bus6_type_after": 1
+  }
+]

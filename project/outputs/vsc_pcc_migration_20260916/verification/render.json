@@ -1,0 +1,16 @@
+{
+  "desktop": {
+    "width": 1280,
+    "scroll": 1280,
+    "svg": 16,
+    "images": true,
+    "rawMath": false
+  },
+  "mobile": {
+    "width": 390,
+    "scroll": 390
+  },
+  "missing_links": [],
+  "errors": [],
+  "passed": true
+}

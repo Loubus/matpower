@@ -131,9 +131,15 @@ state.states_tap = cell(state.n, 1);
 state.initial_tap_normalized = false(state.n, 1);
 state.at_min = false(state.n, 1);
 state.at_max = false(state.n, 1);
+state.blocked_low = false(state.n, 1);
+state.blocked_high = false(state.n, 1);
+state.blocked_violations = 0;
 state.locked_out = false(state.n, 1);
+state.study_locked_rows = [];
+state.study_lock_label = '';
 state.rebuild_rejected = 0;
 state.rebuild_rejected_rows = [];
+initial_tap_snap_tol = 1e-5;
 
 for k = 1:state.n
     if state.branch_idx(k) > 0
@@ -153,10 +159,14 @@ for k = 1:state.n
     state.states_tap{k} = tap_states;
     if state.controllable(k) && ~isempty(tap_states)
         jj = nearest_tap_state_idx(tap_states, state.current_tap(k));
-        state.current_tap(k) = tap_states(jj);
-        state.current_raw(k) = raw_states(jj);
-        state.initial_tap_normalized(k) = ...
-            abs(state.current_tap(k) - state.base_tap(k)) > 1e-9;
+        if abs(tap_states(jj) - state.base_tap(k)) <= initial_tap_snap_tol
+            state.current_tap(k) = state.base_tap(k);
+            state.current_raw(k) = state.windv(k);
+        else
+            state.current_tap(k) = tap_states(jj);
+            state.current_raw(k) = raw_states(jj);
+            state.initial_tap_normalized(k) = true;
+        end
     end
 end
 
@@ -167,11 +177,22 @@ if isfield(xf, 'control_current_tap') && ...
     state.current_tap = xf.control_current_tap(:);
     state.current_raw = xf.control_current_raw(:);
     state.initial_tap_normalized = state.controllable & ...
-        abs(state.current_tap - state.base_tap) > 1e-9;
+        abs(state.current_tap - state.base_tap) > initial_tap_snap_tol;
 end
 if isfield(xf, 'control_locked_out') && ...
         numel(xf.control_locked_out) == state.n
     state.locked_out = logical(xf.control_locked_out(:));
+end
+if isfield(xf, 'control_study_locked_rows') && ...
+        ~isempty(xf.control_study_locked_rows)
+    rows = unique(xf.control_study_locked_rows(:));
+    rows = rows(rows >= 1 & rows <= state.n);
+    state.study_locked_rows = rows;
+    state.locked_out(rows) = true;
+end
+if isfield(xf, 'control_study_lock_label') && ...
+        ~isempty(xf.control_study_lock_label)
+    state.study_lock_label = char(xf.control_study_lock_label);
 end
 if isfield(xf, 'control') && isstruct(xf.control)
     if isfield(xf.control, 'rebuild_rejected') && ...
@@ -183,7 +204,11 @@ if isfield(xf, 'control') && isstruct(xf.control)
     end
 end
 
-state.needs_initial_update = state.enabled && any(state.controllable & ...
+initial_update_idx = state.controllable;
+if ~isempty(state.locked_out)
+    initial_update_idx = initial_update_idx & ~state.locked_out;
+end
+state.needs_initial_update = state.enabled && any(initial_update_idx & ...
     abs(state.current_tap - state.base_tap) > 1e-9);
 
 state.last_vm_final = NaN(state.n, 1);
@@ -394,7 +419,7 @@ cand = find(dist <= min_dist + tie_tol);
 jj = cand(end);
 
 function tap = raw_to_tap(state, mpc, k, raw)
-[~, T_BUS] = idx_brch;
+[F_BUS, T_BUS] = idx_brch;
 [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
 if state.kind(k) == 2
     w2 = state.windv2(k);
@@ -405,6 +430,9 @@ if state.kind(k) == 2
     if state.cw(k) == 2
         f = state.bus_idx(k);
         br = state.branch_idx(k);
+        if f <= 0
+            f = branch_bus_row(mpc, br, F_BUS);
+        end
         if isfield(mpc, 'order') && isfield(mpc.order, 'bus')
             t = mpc.branch(br, T_BUS);
         else
@@ -423,6 +451,10 @@ if state.kind(k) == 2
 else
     tap = raw;
     f = state.bus_idx(k);
+    br = state.branch_idx(k);
+    if f <= 0
+        f = branch_bus_row(mpc, br, F_BUS);
+    end
     if state.cw(k) == 2 && f > 0
         tap = tap ./ mpc.bus(f, BASE_KV);
     elseif state.cw(k) == 3
@@ -431,6 +463,26 @@ else
             tap = tap .* n1;
         end
     end
+end
+
+function row = branch_bus_row(mpc, br, col)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+row = 0;
+if br <= 0 || br > size(mpc.branch, 1)
+    return;
+end
+b = mpc.branch(br, col);
+if isnan(b) || b <= 0
+    return;
+end
+nb = size(mpc.bus, 1);
+if b <= nb && abs(b - round(b)) < 1e-9 && mpc.bus(b, BUS_I) == b
+    row = b;
+else
+    row = psse_bus_map(mpc, b);
+end
+if row <= 0 && b <= nb && abs(b - round(b)) < 1e-9
+    row = b;
 end
 
 function idx = psse_bus_map(mpc, bus)

@@ -68,6 +68,18 @@ else
     report.locked_out = 0;
     report.locked_rows = [];
 end
+if isfield(state, 'study_locked_rows')
+    report.study_locked_rows = state.study_locked_rows;
+    report.study_locked = numel(state.study_locked_rows);
+else
+    report.study_locked_rows = [];
+    report.study_locked = 0;
+end
+if isfield(state, 'study_lock_label')
+    report.study_lock_label = state.study_lock_label;
+else
+    report.study_lock_label = '';
+end
 if isfield(state, 'rebuild_rejected')
     report.rebuild_rejected = state.rebuild_rejected;
 else

@@ -1,0 +1,16 @@
+{
+  "tool": "MATLAB MCP check_matlab_code",
+  "files": [
+    {"path": "tests/t_control_acceptance_batch1.m", "code_issues": []},
+    {"path": "tests/fixtures/controls/cleanup_batch1_vsc_case.m", "code_issues": []},
+    {"path": "outputs/algorithm_cleanup_batch1_20260910/investigate_boundaries.m", "code_issues": []},
+    {
+      "path": "outputs/algorithm_cleanup_batch1_20260910/probe_vsc.m",
+      "code_issues": [
+        {"line": 12, "variable": "prep", "severity": "warning", "description": "Value assigned to variable might be unused."},
+        {"line": 12, "variable": "op", "severity": "warning", "description": "Value assigned to variable might be unused."}
+      ],
+      "explanation": "These preparation outputs are intentionally retained in the full saved diagnostic workspace. No numerical warnings are suppressed."
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+--- outputs\cpf_solution_experiments_20260917\coupled_limit\exa_cpf.m
++++ ng1_cpf.m
+@@ -1,6 +1,6 @@
+ function [results, success] = ...
+-    exa_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+-% exa_cpf - Runs an AC/DC VSC-MTDC continuation PF.
++    ng1_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++% ng1_cpf - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+ %   RESULTS = RUNCPF_VSC_MTDC(BASECASEDATA, TARGETCASEDATA, MPOPT)
+@@ -398,6 +398,7 @@
+         failure = [];
+         curr_step = step;
+         nose_tol = mpopt.cpf.nose_tol;
++        ng_history={};ng_stop=[];ng_checkpoint=[];
+ 
+         while isempty(done_msg)
+             target_lambda_step = 0;
+@@ -450,6 +451,13 @@
+                 break;
+             end
+ 
++            % Isolated NOSE guard: checkpoint before ANY trial control mutation.
++            ng_stage=active_set_stage_snapshot(ctx,ctxt,Sdelta);
++            ng_events=events;
++            ng_misc={psse_controls_frozen,vsc_capability_transfer_frozen, ...
++                vsc_capability_transfer_backoff_count,vsc_capability_resaturation_count, ...
++                vsc_slack_q_backoff_count,gen_capability_dispatch_frozen, ...
++                unified_context_cache,vsc_capability_param_cache,psse_diagnostic};
+             ctx_hat = ctx;
+             Sdelta_hat = Sdelta;
+             xhat = x + trial_step * z(1:end-1);
+@@ -467,6 +475,7 @@
+                     corr_it, normFnew);
+                 [r, V] = stamp_original_ac_solution(r, base_bus_ids, ...
+                     base_branch_count, base_gen_count);
++                ng_raw_lam=lamnew;ng_raw_q=r.gen(2,QG);ng_raw_x=xnew;
+                 active_set_changed = 0;
+                 [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                     corr_it, r, V, control_events, control_ok, ...
+@@ -834,6 +843,50 @@
+                     znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, z, ...
+                         x, lam, trial_parameterization, direction);
+                 end
++                % Guard against silently crossing a turn during a control switch,
++                % or reversing the full-state direction to force increasing lambda.
++                ng_oldkeys=ng_state_keys(ng_stage.ctx); ng_newkeys=ng_state_keys(ctx);
++                ng_zmap=zeros(numel(xnew)+1,1); ng_zmap(end)=z(end);
++                [ng_match,ng_where]=ismember(ng_newkeys,ng_oldkeys);
++                ng_zmap(find(ng_match))=z(ng_where(ng_match)); %#ok<FNDSB>
++                ng_dot=dot(ng_zmap,znew)/max(norm(ng_zmap),eps);
++                ng_alarm=active_set_changed && z(end)>0 && ...
++                    (znew(end)<=0 || ng_dot<0);
++                if strcmpi(stop_at,'NOSE') && ng_alarm
++                    ng_rec=struct('last_lambda',lam,'pre_control_lambda',ng_raw_lam, ...
++                        'post_control_lambda',lamnew,'trial_step',trial_step, ...
++                        'tangent_before',z(end),'tangent_after',znew(end), ...
++                        'orientation_dot',ng_dot,'G2_Q_before',last.gen(2,QG), ...
++                        'G2_Q_pre_control',ng_raw_q,'G2_mode_before',last.bus(6,BUS_TYPE), ...
++                        'G2_mode_after',r.bus(6,BUS_TYPE));
++                    ng_history{end+1}=ng_rec;
++                    % Restore every mutable study/control/cache field touched here.
++                    [ctx,ctxt,Sdelta]=restore_active_set_stage_snapshot(ng_stage);
++                    events=ng_events;
++                    psse_controls_frozen=ng_misc{1};vsc_capability_transfer_frozen=ng_misc{2};
++                    vsc_capability_transfer_backoff_count=ng_misc{3};vsc_capability_resaturation_count=ng_misc{4};
++                    vsc_slack_q_backoff_count=ng_misc{5};gen_capability_dispatch_frozen=ng_misc{6};
++                    unified_context_cache=ng_misc{7};vsc_capability_param_cache=ng_misc{8};psse_diagnostic=ng_misc{9};
++                    ng_restored=isequaln(mpcb,ng_stage.mpcb)&&isequaln(mpct,ng_stage.mpct) ...
++                        &&isequaln(cpf_policy_state,ng_stage.cpf_policy_state)&&isequaln(events,ng_events);
++                    assert(ng_restored,'NOSE guard rollback mismatch');
++                    ng_history{end}.rollback_verified=ng_restored;
++                    if trial_step/2>=step_min && abs(ng_raw_lam-lam)>nose_tol
++                        curr_step=trial_step/2;
++                        continue;
++                    end
++                    ng_stop=struct('classification','control_transition_turn_bracket', ...
++                        'lambda_low',lam,'lambda_high',ng_raw_lam, ...
++                        'bracket_width',abs(ng_raw_lam-lam),'event_tolerance',nose_tol, ...
++                        'within_event_tolerance',abs(ng_raw_lam-lam)<=nose_tol, ...
++                        'refinements',numel(ng_history),'local_nose_certified',false);
++                    ng_checkpoint=struct('stage',ng_stage,'x',x,'z',z,'last',last, ...
++                        'lambda',lam,'raw_candidate_x',ng_raw_x,'raw_candidate_lambda',ng_raw_lam);
++                    done_msg='Possible control-induced turn bracketed; smooth NOSE not certified.';
++                    events=vsc_mtdc_cpf_append_event(events,vsc_mtdc_cpf_event( ...
++                        'NOSE_SKIP_GUARD',cont_steps,1,done_msg));
++                    failure=[];success=0;break;
++                end
+                 nose_event = ~active_set_changed && isempty(target_lam) && ...
+                     strcmpi(stop_at, 'NOSE') && ...
+                     unified_nose_event(z, znew, nose_tol);
+@@ -952,6 +1005,9 @@
+         results.cpf.ac_solver = 'unified';
+         results.cpf.formulation = 'monolithic';
+         results.cpf.jacobian = 'analytic';
++        results.cpf.guard_history=ng_history;
++        results.cpf.guard_stop=ng_stop;
++        results.cpf.guard_checkpoint=ng_checkpoint;
+     end
+ 
+     function r = annotate_unified_termination(r)
+@@ -1007,6 +1063,10 @@
+             'last_accepted_index', numel(trace.lam), ...
+             'nose_detected', nose, 'max_lam_scope', 'accepted_trace_maximum', ...
+             'stability_margin_validated', false);
++        if isfield(trace,'guard_stop') && ~isempty(trace.guard_stop)
++            r.cpf.termination.cause='control_transition_turn_bracket';
++            r.cpf.termination.success_scope='guard_stop_not_certified_nose';
++        end
+         if ~accepted && contains(trace.done_msg, 'PSS/E control') && ...
+                 ~isempty(fieldnames(psse_diagnostic))
+             r.cpf.termination.cause = psse_diagnostic.cause;
+@@ -1094,7 +1154,7 @@
+                     Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+                     nbranch, ngen, event_k);
+             otherwise
+-                error('exa_cpf: unknown active-set stage ''%s''', kind);
++                error('ng1_cpf: unknown active-set stage ''%s''', kind);
+         end
+ 
+         retry_step = [];
+@@ -1474,7 +1534,7 @@
+                 clear limit_cleanup;
+             catch me
+                 clear limit_cleanup;
+-                error('exa_cpf: VSC row %d capability evaluation failed: %s', ...
++                error('ng1_cpf: VSC row %d capability evaluation failed: %s', ...
+                     k, me.message);
+             end
+             if sat
+@@ -1756,14 +1816,14 @@
+         end
+         margin = margin(:);
+         if k < 1 || k > length(margin)
+-            error('exa_cpf: VSC saturation margin vector has invalid length');
++            error('ng1_cpf: VSC saturation margin vector has invalid length');
+         end
+         margin = margin(k);
+     end
+ 
+     function validate_vsc_capability_margin_fraction(margin, label)
+         if margin < 0 || margin > 1
+-            error('exa_cpf: VSC %s must be in [0, 1]', ...
++            error('ng1_cpf: VSC %s must be in [0, 1]', ...
+                 label);
+         end
+     end
+@@ -2179,15 +2239,15 @@
+             Smax = gen_capability_metadata_or_option_value(current, opt, ...
+                 {'Snom', 'Smax', 'smax'}, {'capability_gen_smax'}, ...
+                 g, g, gen_capability_default_smax(current, g), ...
+-                'exa_cpf');
++                'ng1_cpf');
+             type = gen_capability_metadata_or_option_value(current, opt, ...
+                 {'type', 'gen_type'}, {'capability_gen_type'}, ...
+-                g, g, 2, 'exa_cpf');
++                g, g, 2, 'ng1_cpf');
+             try
+                 [sat, Psat, Qsat, ~, info] = ...
+                     gen_capability_curve(P0, Q0, Smax, type);
+             catch me
+-                error('exa_cpf: generator row %d capability evaluation failed: %s', ...
++                error('ng1_cpf: generator row %d capability evaluation failed: %s', ...
+                     g, me.message);
+             end
+             if ~sat
+@@ -2588,7 +2648,7 @@
+         val = opt.(name);
+         if ~ischar(val) || ...
+                 ~(strcmpi(val, 'stop') || strcmpi(val, 'freeze'))
+-            error(['exa_cpf: vsc_mtdc.%s must be ''stop'' ' ...
++            error(['ng1_cpf: vsc_mtdc.%s must be ''stop'' ' ...
+                 'or ''freeze'''], name);
+         end
+     end
+@@ -3709,6 +3769,12 @@
+         z = z / norm(z);
+     end
+ 
++    function keys=ng_state_keys(cc)
++        m=cc.model;
++        keys=["va:"+string(m.nonref(:));"vm:"+string(m.vm_vars(:)); ...
++            "pac:"+string(m.pac_vars(:));"dc:"+string(m.dc_var(:))];
++    end
++
+     function tf = unified_nose_event(z0, z1, tol)
+         tf = z0(end) > 0 && (z1(end) <= 0 || abs(z1(end)) <= tol);
+     end
+@@ -3951,7 +4017,7 @@
+         elseif parm == 3
+             P = z' * ([x; lam] - [xprev; lamprev]) - h;
+         else
+-            error('exa_cpf: unknown CPF parameterization %d', parm);
++            error('ng1_cpf: unknown CPF parameterization %d', parm);
+         end
+     end
+ 
+@@ -3974,7 +4040,7 @@
+             dPdx = z(1:end-1)';
+             dPdlam = z(end);
+         else
+-            error('exa_cpf: unknown CPF parameterization %d', parm);
++            error('ng1_cpf: unknown CPF parameterization %d', parm);
+         end
+     end
+ 
+@@ -4243,10 +4309,10 @@
+ 
+     function validate_vsc_cpf_cases(b, t)
+         if ~has_vsc_mtdc(b) || ~has_vsc_mtdc(t)
+-            error('exa_cpf: base and target cases must both contain busdc, branchdc and vsc fields');
++            error('ng1_cpf: base and target cases must both contain busdc, branchdc and vsc fields');
+         end
+         if b.baseMVA ~= t.baseMVA
+-            error('exa_cpf: base and target baseMVA values must match');
++            error('ng1_cpf: base and target baseMVA values must match');
+         end
+         same_size('bus', b.bus, t.bus);
+         same_size('gen', b.gen, t.gen);
+@@ -4258,53 +4324,53 @@
+         [~,~,loss_b] = vsc_loss_coefficients(b.vsc, zeros(size(b.vsc,1),1), b);
+         [~,~,loss_t] = vsc_loss_coefficients(t.vsc, zeros(size(t.vsc,1),1), t);
+         if ~isequal(loss_b,loss_t)
+-            error('exa_cpf: base and target VSC directional loss data must match');
++            error('ng1_cpf: base and target VSC directional loss data must match');
+         end
+ 
+         if any(b.bus(:, BUS_I) ~= t.bus(:, BUS_I)) || ...
+                 any(b.bus(:, BUS_TYPE) ~= t.bus(:, BUS_TYPE))
+-            error('exa_cpf: base and target AC bus numbers/types must match');
++            error('ng1_cpf: base and target AC bus numbers/types must match');
+         end
+         if any(b.gen(:, GEN_BUS) ~= t.gen(:, GEN_BUS)) || ...
+                 any(b.gen(:, GEN_STATUS) ~= t.gen(:, GEN_STATUS))
+-            error('exa_cpf: base and target generator buses/statuses must match');
++            error('ng1_cpf: base and target generator buses/statuses must match');
+         end
+         if any(any(b.branch(:, [F_BUS T_BUS BR_STATUS]) ~= ...
+                 t.branch(:, [F_BUS T_BUS BR_STATUS])))
+-            error('exa_cpf: base and target AC branch topology/status must match');
++            error('ng1_cpf: base and target AC branch topology/status must match');
+         end
+         if any(any(b.busdc(:, [bdc.BUSDC_I bdc.BUSDC_STATUS]) ~= ...
+                 t.busdc(:, [bdc.BUSDC_I bdc.BUSDC_STATUS])))
+-            error('exa_cpf: base and target DC bus numbers/statuses must match');
++            error('ng1_cpf: base and target DC bus numbers/statuses must match');
+         end
+         if any(any(b.branchdc(:, [brdc.F_BUSDC brdc.T_BUSDC brdc.BRDC_STATUS]) ~= ...
+                 t.branchdc(:, [brdc.F_BUSDC brdc.T_BUSDC brdc.BRDC_STATUS])))
+-            error('exa_cpf: base and target DC branch topology/status must match');
++            error('ng1_cpf: base and target DC branch topology/status must match');
+         end
+         fixed_vsc_cols = [c.VSC_BUS c.BUSDC c.VSC_STATUS c.AC_MODE c.DC_MODE ...
+             c.LOSS_A:c.REACTOR_RATE_C];
+         if any(any(b.vsc(:, fixed_vsc_cols) ~= t.vsc(:, fixed_vsc_cols)))
+-            error('exa_cpf: base and target VSC topology, modes and loss/station data must match');
++            error('ng1_cpf: base and target VSC topology, modes and loss/station data must match');
+         end
+     end
+ 
+     function validate_unified_cpf_transfer(b, t)
+         tol = 1e-12;
+         if any(any(abs(b.bus(:, [GS BS VM]) - t.bus(:, [GS BS VM])) > tol))
+-            error('exa_cpf: unified monolithic CPF requires constant bus shunts and voltage set points');
++            error('ng1_cpf: unified monolithic CPF requires constant bus shunts and voltage set points');
+         end
+         if any(abs(b.gen(:, VG) - t.gen(:, VG)) > tol)
+-            error('exa_cpf: unified monolithic CPF requires constant generator voltage set points');
++            error('ng1_cpf: unified monolithic CPF requires constant generator voltage set points');
+         end
+         if any(any(abs(b.branch(:, [BR_R BR_X BR_B TAP SHIFT]) - ...
+                 t.branch(:, [BR_R BR_X BR_B TAP SHIFT])) > tol))
+-            error('exa_cpf: unified monolithic CPF requires constant AC branch admittances');
++            error('ng1_cpf: unified monolithic CPF requires constant AC branch admittances');
+         end
+         if any(abs(b.branchdc(:, brdc.BRDC_R) - t.branchdc(:, brdc.BRDC_R)) > tol)
+-            error('exa_cpf: unified monolithic CPF requires constant DC branch resistances');
++            error('ng1_cpf: unified monolithic CPF requires constant DC branch resistances');
+         end
+         if any(abs(b.busdc(:, bdc.VDC) - t.busdc(:, bdc.VDC)) > tol)
+-            error('exa_cpf: unified monolithic CPF requires constant initial DC voltages');
++            error('ng1_cpf: unified monolithic CPF requires constant initial DC voltages');
+         end
+     end
+ 
+@@ -4316,10 +4382,10 @@
+         same_vector('unified Pac variables', ctx.model.pac_vars, ctxt.model.pac_vars);
+         same_vector('unified DC voltage variables', ctx.model.dc_var, ctxt.model.dc_var);
+         if norm(full(ctx.Ybus - ctxt.Ybus), Inf) > 1e-10
+-            error('exa_cpf: unified monolithic CPF base and target AC admittance matrices differ');
++            error('ng1_cpf: unified monolithic CPF base and target AC admittance matrices differ');
+         end
+         if norm(full(ctx.Gdc - ctxt.Gdc), Inf) > 1e-10
+-            error('exa_cpf: unified monolithic CPF base and target DC conductance matrices differ');
++            error('ng1_cpf: unified monolithic CPF base and target DC conductance matrices differ');
+         end
+     end
+ 
+@@ -4336,13 +4402,13 @@
+ 
+     function same_vector(name, a, b)
+         if length(a) ~= length(b) || any(a(:) ~= b(:))
+-            error('exa_cpf: base and target %s must match', name);
++            error('ng1_cpf: base and target %s must match', name);
+         end
+     end
+ 
+     function same_size(name, a, b)
+         if size(a, 1) ~= size(b, 1) || size(a, 2) ~= size(b, 2)
+-            error('exa_cpf: base and target %s matrices must have the same size', name);
++            error('ng1_cpf: base and target %s matrices must have the same size', name);
+         end
+     end
+ 
+@@ -4655,7 +4721,7 @@
+             case '__cpf_system'
+                 out = internal_cpf_system(args, default_mpopt);
+             otherwise
+-                error('exa_cpf: unknown internal operation ''%s''', op);
++                error('ng1_cpf: unknown internal operation ''%s''', op);
+         end
+     end
+ 
+@@ -4700,7 +4766,7 @@
+         % required args: base, target.
+         % optional args: mpopt, x, lam, parameterization, z, h, xprev, lamprev.
+         if ~isfield(args, 'base') || ~isfield(args, 'target')
+-            error('exa_cpf: __cpf_system requires base and target cases');
++            error('ng1_cpf: __cpf_system requires base and target cases');
+         end
+         if isfield(args, 'mpopt') && ~isempty(args.mpopt)
+             opt0 = args.mpopt;

@@ -1,0 +1,511 @@
+1..508
+ok 1 - runpf_psse(case9) success
+ok 2 - runpf_psse uses mp.task_pf_psse
+ok 3 - runpf_psse matches runpf VM without psse data
+ok 4 - runpf_psse matches runpf QG without psse data
+ok 5 - runcpf_psse(case9, case9target) success
+ok 6 - runcpf_psse reports PSS/E CPF metadata
+ok 7 - runcpf_psse uses mp.task_cpf_psse
+ok 8 - runcpf_psse PSS/E control CPF success
+ok 9 - PSS/E control CPF keeps CPF task class
+ok 10 - PSS/E control CPF logs PSSE events
+ok 11 - PSS/E control CPF repeats lambda for warmstart re-correction
+ok 12 - PSS/E control CPF exposes PQBRAK report
+ok 13 - PSS/E control CPF applies low-voltage load scaling
+ok 14 - PSS/E control CPF compact trace removes repeated lambda points
+ok 15 - PSS/E control CPF reports compact trace metadata
+ok 16 - CPF technology redispatch helper changes PG
+ok 17 - CPF technology redispatch skips exhausted and wind technologies
+ok 18 - CPF technology redispatch uses accepted active-load increment
+ok 19 - CPF technology redispatch applies rho to load increment
+ok 20 - CPF technology redispatch reallocates by available technology
+ok 21 - CPF technology redispatch ext2int remapping applies redispatch
+ok 22 - CPF technology redispatch ext2int remapping keeps wind excluded
+ok 23 - CPF technology redispatch ext2int remapping leaves wind PG fixed
+ok 24 - runcpf_psse technology redispatch CPF succeeds
+ok 25 - runcpf_psse logs generator redispatch events
+ok 26 - runcpf_psse generator redispatch reports rho
+ok 27 - runcpf_psse generator redispatch leaves wind PG fixed
+ok 28 - runcpf_psse generator redispatch reports applied PG
+ok 29 - runcpf_psse generator redispatch moves eligible generation
+ok 30 - runcpf_psse non-VSC gen capability traces FULL continuation
+ok 31 - runcpf_psse non-VSC gen capability freezes active dispatch at P limit
+ok 32 - runcpf_psse non-VSC gen capability later freezes reactive dispatch at Q limit
+ok 33 - runcpf_psse non-VSC gen capability clamps PG at P boundary
+ok 34 - runcpf_psse non-VSC gen capability clamps QG at Q boundary
+ok 35 - gen capability Q-limited bus is converted to PQ
+ok 36 - psse_sync_cpf_target preserves active dcline CPF delta
+ok 37 - psse_sync_cpf_target records active dcline CPF delta
+ok 38 - SWDEV expansion restores bus rows
+ok 39 - SWDEV expansion restores branch rows
+ok 40 - SWDEV expansion restores cpf.V rows
+ok 41 - SWDEV expansion maps collapsed cpf.V row
+ok 42 - SWDEV expansion maps collapsed cpf.V_hat row
+ok 43 - runpf_psse succeeds with FLATST after THRSHZ branch collapse
+ok 44 - branch collapse expansion restores bus rows
+ok 45 - branch collapse expansion restores branch rows
+ok 46 - runpf_psse reports THRSHZ branch collapse
+ok 47 - collapsed low-impedance buses share solved voltage after expansion
+ok 48 - branch collapse skips low-Z branches touching transformer metadata buses
+ok 49 - transformer-protected low-Z branch does not remove bus rows
+ok 50 - transformer-protected low-Z branch does not remove branch rows
+ok 51 - runpf_psse reports PSS/E SYSTEM-WIDE solver options
+ok 52 - solver_options preserves raw sections
+ok 53 - solver_options raw SOLVER.SWSHNT
+ok 54 - solver_options raw NEWTON.ITMXN
+ok 55 - solver_options raw ADJUST.MXTPSS
+ok 56 - solver_options reports effective PSS/E SYSTEM-WIDE parameters
+ok 57 - solver_options effective includes GENERAL.THRSHZ default
+ok 58 - solver_options effective GENERAL.THRSHZ default value
+ok 59 - solver_options effective NEWTON.TOLN uses RAW explicit value
+ok 60 - solver_options effective ADJUST.MXTPSS uses RAW explicit value
+ok 61 - solver_options effective marks explicit RAW origin
+ok 62 - solver_options effective marks PSS/E default origin
+ok 63 - solver_options classifies SOLVER.FNSL as applied
+ok 64 - solver_options classifies SOLVER.ACTAPS as applied
+ok 65 - solver_options classifies SOLVER.AREAIN=0 as applied inactive
+ok 66 - solver_options classifies SOLVER.PHSHFT=0 as applied inactive
+ok 67 - solver_options classifies SOLVER.DCTAPS as applied
+ok 68 - solver_options classifies SOLVER.SWSHNT as applied
+ok 69 - solver_options classifies SOLVER.FLATST=0 as applied
+ok 70 - solver_options classifies SOLVER.VARLIM as applied
+ok 71 - solver_options classifies SOLVER.NONDIV=0 as applied inactive
+ok 72 - solver_options classifies NEWTON.VCTOLV as applied
+ok 73 - solver_options classifies NEWTON.VCTOLQ as applied
+ok 74 - solver_options classifies ADJUST.MXTPSS as applied
+ok 75 - solver_options classifies NEWTON.ITMXN as applied
+ok 76 - solver_options classifies NEWTON.TOLN as fallback
+ok 77 - solver_options classifies NEWTON.ACCN as ignored
+ok 78 - solver_options classifies ADJUST.ADJTHR as applied
+ok 79 - solver_options classifies ADJUST.ACCTAP as ignored
+ok 80 - solver_options classifies ADJUST.TAPLIM as ignored
+ok 81 - solver_options classifies ADJUST.SWVBND as ignored
+ok 82 - solver_options classifies NEWTON.DVLIM as unsupported
+ok 83 - solver_options classifies NEWTON.NDVFCT as unsupported
+ok 84 - solver_options classifies ADJUST.MXSWIM as unsupported
+ok 85 - solver_options classifies active PHSHFT as unsupported
+ok 86 - solver_options classifies active AREAIN as unsupported
+ok 87 - solver_options classifies FLATST=1 as applied
+ok 88 - solver_options classifies active NONDIV as unsupported
+ok 89 - solver_options maps SOLVER.FNSL to NR
+ok 90 - solver_options maps NEWTON.ITMXN to pf.nr.max_it
+ok 91 - solver_options FLATST=1 zeros initial voltage angles
+ok 92 - solver_options FLATST=1 uses 1.0 pu for PQ buses
+ok 93 - solver_options FLATST=1 preserves voltage-controlled magnitudes
+ok 94 - psse_system_defaults documents ADJUST.MXTPSS CLI default
+ok 95 - psse_system_defaults documents GENERAL.PQBRAK default
+ok 96 - solver_options defaults appear without RAW SYSTEM-WIDE records
+ok 97 - solver_options default NEWTON.ACCN
+ok 98 - solver_options default SOLVER.ACTAPS
+ok 99 - solver_options default NEWTON.ITMXN
+ok 100 - solver_options default NEWTON.TOLN
+ok 101 - solver_options default NEWTON.DVLIM
+ok 102 - solver_options effective ADJUST.MXTPSS runner default
+ok 103 - solver_options default ADJUST.MXTPSS origin
+ok 104 - psse_system_value uses effective ADJUST.MXTPSS default
+ok 105 - psse_system_value uses effective NEWTON.VCTOLV default
+ok 106 - psse_system_value uses effective NEWTON.VCTOLQ default
+ok 107 - psse_system_value can skip effective default for sensitive gates
+ok 108 - psse_system_value raw-only mode keeps explicit sensitive gate value
+ok 109 - psse_system_value keeps explicit RAW priority
+ok 110 - solver_options classifies default GENERAL.THRSHZ as applied
+ok 111 - solver_options classifies default SOLVER.ACTAPS as fallback
+ok 112 - solver_options classifies default SOLVER.DCTAPS as fallback
+ok 113 - solver_options classifies default SOLVER.SWSHNT as fallback
+ok 114 - solver_options classifies default SOLVER.VARLIM as fallback
+ok 115 - solver_options classifies default NEWTON.ACCN as ignored
+ok 116 - solver_options classifies default NEWTON.TOLN as fallback
+ok 117 - solver_options classifies default NEWTON.DVLIM as unsupported
+ok 118 - solver_options classifies default ADJUST.ADJTHR as fallback
+ok 119 - solver_options classifies default ADJUST.MXSWIM as unsupported
+ok 120 - solver_options classifies default NEWTON.VCTOLV as applied
+ok 121 - solver_options classifies default ADJUST.MXTPSS as applied
+ok 122 - switched shunt state uses effective ADJUST.MXTPSS default
+ok 123 - switched shunt state keeps explicit ADJUST.MXTPSS value
+ok 124 - GENQ PSS/E validation directory exists
+ok 125 - GENQ 3bus local inband success
+ok 126 - GENQ 3bus local inband VM matches PSS/E (abs tol 0.0005)
+ok 127 - GENQ 3bus local inband VA matches PSS/E (abs tol 0.15)
+ok 128 - GENQ 3bus local inband exposes results.psse.genq.control
+ok 129 - GENQ 3bus local inband genq control fields
+ok 130 - GENQ 3bus local inband control bus_ext
+ok 131 - GENQ 3bus local inband regulated bus
+ok 132 - GENQ 3bus local inband final CODE
+ok 133 - GENQ 3bus local inband PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 134 - GENQ 3bus local inband control QGEN (abs tol 0.5)
+ok 135 - GENQ 3bus local inband Q limits (abs tol 0.15)
+ok 136 - GENQ 3bus local inband VSCHED (abs tol 0.0005)
+ok 137 - GENQ 3bus local inband VACT (abs tol 0.0005)
+ok 138 - GENQ 3bus local inband RMPCT (abs tol 1e-10)
+ok 139 - GENQ 3bus local inband PCT Q (abs tol 1e-10)
+ok 140 - GENQ 3bus local inband limited flags
+ok 141 - GENQ 3bus local inband at_min flags
+ok 142 - GENQ 3bus local inband at_max flags
+ok 143 - GENQ 3bus qmax success
+ok 144 - GENQ 3bus qmax VM matches PSS/E (abs tol 0.0005)
+ok 145 - GENQ 3bus qmax VA matches PSS/E (abs tol 0.15)
+ok 146 - GENQ 3bus qmax exposes results.psse.genq.control
+ok 147 - GENQ 3bus qmax genq control fields
+ok 148 - GENQ 3bus qmax control bus_ext
+ok 149 - GENQ 3bus qmax regulated bus
+ok 150 - GENQ 3bus qmax final CODE
+ok 151 - GENQ 3bus qmax PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 152 - GENQ 3bus qmax control QGEN (abs tol 0.5)
+ok 153 - GENQ 3bus qmax Q limits (abs tol 0.15)
+ok 154 - GENQ 3bus qmax VSCHED (abs tol 0.0005)
+ok 155 - GENQ 3bus qmax VACT (abs tol 0.0005)
+ok 156 - GENQ 3bus qmax RMPCT (abs tol 1e-10)
+ok 157 - GENQ 3bus qmax PCT Q (abs tol 1e-10)
+ok 158 - GENQ 3bus qmax limited flags
+ok 159 - GENQ 3bus qmax at_min flags
+ok 160 - GENQ 3bus qmax at_max flags
+ok 161 - GENQ 3bus qmin success
+ok 162 - GENQ 3bus qmin VM matches PSS/E (abs tol 0.0005)
+ok 163 - GENQ 3bus qmin VA matches PSS/E (abs tol 0.15)
+ok 164 - GENQ 3bus qmin exposes results.psse.genq.control
+ok 165 - GENQ 3bus qmin genq control fields
+ok 166 - GENQ 3bus qmin control bus_ext
+ok 167 - GENQ 3bus qmin regulated bus
+ok 168 - GENQ 3bus qmin final CODE
+ok 169 - GENQ 3bus qmin PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 170 - GENQ 3bus qmin control QGEN (abs tol 0.5)
+ok 171 - GENQ 3bus qmin Q limits (abs tol 0.15)
+ok 172 - GENQ 3bus qmin VSCHED (abs tol 0.0005)
+ok 173 - GENQ 3bus qmin VACT (abs tol 0.0005)
+ok 174 - GENQ 3bus qmin RMPCT (abs tol 1e-10)
+ok 175 - GENQ 3bus qmin PCT Q (abs tol 1e-10)
+ok 176 - GENQ 3bus qmin limited flags
+ok 177 - GENQ 3bus qmin at_min flags
+ok 178 - GENQ 3bus qmin at_max flags
+ok 179 - GENQ 3bus zero q limit success
+ok 180 - GENQ 3bus zero q limit VM matches PSS/E (abs tol 0.0005)
+ok 181 - GENQ 3bus zero q limit VA matches PSS/E (abs tol 0.15)
+ok 182 - GENQ 3bus zero q limit exposes results.psse.genq.control
+ok 183 - GENQ 3bus zero q limit genq control fields
+ok 184 - GENQ 3bus zero q limit control bus_ext
+ok 185 - GENQ 3bus zero q limit regulated bus
+ok 186 - GENQ 3bus zero q limit final CODE
+ok 187 - GENQ 3bus zero q limit PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 188 - GENQ 3bus zero q limit control QGEN (abs tol 0.5)
+ok 189 - GENQ 3bus zero q limit Q limits (abs tol 0.15)
+ok 190 - GENQ 3bus zero q limit VSCHED (abs tol 0.0005)
+ok 191 - GENQ 3bus zero q limit VACT (abs tol 0.0005)
+ok 192 - GENQ 3bus zero q limit RMPCT (abs tol 1e-10)
+ok 193 - GENQ 3bus zero q limit PCT Q (abs tol 1e-10)
+ok 194 - GENQ 3bus zero q limit limited flags
+ok 195 - GENQ 3bus zero q limit at_min flags
+ok 196 - GENQ 3bus zero q limit at_max flags
+ok 197 - GENQ 3bus slack q limit success
+ok 198 - GENQ 3bus slack q limit VM matches PSS/E (abs tol 0.0005)
+ok 199 - GENQ 3bus slack q limit VA matches PSS/E (abs tol 0.15)
+ok 200 - GENQ 3bus slack q limit exposes results.psse.genq.control
+ok 201 - GENQ 3bus slack q limit genq control fields
+ok 202 - GENQ 3bus slack q limit control bus_ext
+ok 203 - GENQ 3bus slack q limit regulated bus
+ok 204 - GENQ 3bus slack q limit final CODE
+ok 205 - GENQ 3bus slack q limit PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 206 - GENQ 3bus slack q limit control QGEN (abs tol 0.5)
+ok 207 - GENQ 3bus slack q limit Q limits (abs tol 0.15)
+ok 208 - GENQ 3bus slack q limit VSCHED (abs tol 0.0005)
+ok 209 - GENQ 3bus slack q limit VACT (abs tol 0.0005)
+ok 210 - GENQ 3bus slack q limit RMPCT (abs tol 1e-10)
+ok 211 - GENQ 3bus slack q limit PCT Q (abs tol 1e-10)
+ok 212 - GENQ 3bus slack q limit limited flags
+ok 213 - GENQ 3bus slack q limit at_min flags
+ok 214 - GENQ 3bus slack q limit at_max flags
+ok 215 - GENQ 4bus remote single success
+ok 216 - GENQ 4bus remote single VM matches PSS/E (abs tol 0.0005)
+ok 217 - GENQ 4bus remote single VA matches PSS/E (abs tol 0.15)
+ok 218 - GENQ 4bus remote single exposes results.psse.genq.control
+ok 219 - GENQ 4bus remote single genq control fields
+ok 220 - GENQ 4bus remote single control bus_ext
+ok 221 - GENQ 4bus remote single regulated bus
+ok 222 - GENQ 4bus remote single final CODE
+ok 223 - GENQ 4bus remote single PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 224 - GENQ 4bus remote single control QGEN (abs tol 0.5)
+ok 225 - GENQ 4bus remote single Q limits (abs tol 0.15)
+ok 226 - GENQ 4bus remote single VSCHED (abs tol 0.0005)
+ok 227 - GENQ 4bus remote single VACT (abs tol 0.0005)
+ok 228 - GENQ 4bus remote single RMPCT (abs tol 1e-10)
+ok 229 - GENQ 4bus remote single PCT Q (abs tol 1e-10)
+ok 230 - GENQ 4bus remote single limited flags
+ok 231 - GENQ 4bus remote single at_min flags
+ok 232 - GENQ 4bus remote single at_max flags
+ok 233 - GENQ 5bus remote group success
+ok 234 - GENQ 5bus remote group VM matches PSS/E (abs tol 0.0005)
+ok 235 - GENQ 5bus remote group VA matches PSS/E (abs tol 0.15)
+ok 236 - GENQ 5bus remote group exposes results.psse.genq.control
+ok 237 - GENQ 5bus remote group genq control fields
+ok 238 - GENQ 5bus remote group control bus_ext
+ok 239 - GENQ 5bus remote group regulated bus
+ok 240 - GENQ 5bus remote group final CODE
+ok 241 - GENQ 5bus remote group PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 242 - GENQ 5bus remote group control QGEN (abs tol 0.5)
+ok 243 - GENQ 5bus remote group Q limits (abs tol 0.15)
+ok 244 - GENQ 5bus remote group VSCHED (abs tol 0.0005)
+ok 245 - GENQ 5bus remote group VACT (abs tol 0.0005)
+ok 246 - GENQ 5bus remote group RMPCT (abs tol 1e-10)
+ok 247 - GENQ 5bus remote group PCT Q (abs tol 1e-10)
+ok 248 - GENQ 5bus remote group limited flags
+ok 249 - GENQ 5bus remote group at_min flags
+ok 250 - GENQ 5bus remote group at_max flags
+ok 251 - GENQ 5bus group all limited success
+ok 252 - GENQ 5bus group all limited VM matches PSS/E (abs tol 0.0005)
+ok 253 - GENQ 5bus group all limited VA matches PSS/E (abs tol 0.15)
+ok 254 - GENQ 5bus group all limited exposes results.psse.genq.control
+ok 255 - GENQ 5bus group all limited genq control fields
+ok 256 - GENQ 5bus group all limited control bus_ext
+ok 257 - GENQ 5bus group all limited regulated bus
+ok 258 - GENQ 5bus group all limited final CODE
+ok 259 - GENQ 5bus group all limited PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 260 - GENQ 5bus group all limited control QGEN (abs tol 0.5)
+ok 261 - GENQ 5bus group all limited Q limits (abs tol 0.15)
+ok 262 - GENQ 5bus group all limited VSCHED (abs tol 0.0005)
+ok 263 - GENQ 5bus group all limited VACT (abs tol 0.0005)
+ok 264 - GENQ 5bus group all limited RMPCT (abs tol 1e-10)
+ok 265 - GENQ 5bus group all limited PCT Q (abs tol 1e-10)
+ok 266 - GENQ 5bus group all limited limited flags
+ok 267 - GENQ 5bus group all limited at_min flags
+ok 268 - GENQ 5bus group all limited at_max flags
+ok 269 - GENQ 5bus group one limited success
+ok 270 - GENQ 5bus group one limited VM matches PSS/E (abs tol 0.0005)
+ok 271 - GENQ 5bus group one limited VA matches PSS/E (abs tol 0.15)
+ok 272 - GENQ 5bus group one limited exposes results.psse.genq.control
+ok 273 - GENQ 5bus group one limited genq control fields
+ok 274 - GENQ 5bus group one limited control bus_ext
+ok 275 - GENQ 5bus group one limited regulated bus
+ok 276 - GENQ 5bus group one limited final CODE
+ok 277 - GENQ 5bus group one limited PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 278 - GENQ 5bus group one limited control QGEN (abs tol 0.5)
+ok 279 - GENQ 5bus group one limited Q limits (abs tol 0.15)
+ok 280 - GENQ 5bus group one limited VSCHED (abs tol 0.0005)
+ok 281 - GENQ 5bus group one limited VACT (abs tol 0.0005)
+ok 282 - GENQ 5bus group one limited RMPCT (abs tol 1e-10)
+ok 283 - GENQ 5bus group one limited PCT Q (abs tol 1e-10)
+ok 284 - GENQ 5bus group one limited limited flags
+ok 285 - GENQ 5bus group one limited at_min flags
+ok 286 - GENQ 5bus group one limited at_max flags
+ok 287 - GENQ 3bus zero q limit VARLIM=0 success
+ok 288 - GENQ 3bus zero q limit VARLIM=0 VM matches PSS/E (abs tol 0.0005)
+ok 289 - GENQ 3bus zero q limit VARLIM=0 VA matches PSS/E (abs tol 0.15)
+ok 290 - GENQ 3bus zero q limit VARLIM=0 exposes results.psse.genq.control
+ok 291 - GENQ 3bus zero q limit VARLIM=0 genq control fields
+ok 292 - GENQ 3bus zero q limit VARLIM=0 control bus_ext
+ok 293 - GENQ 3bus zero q limit VARLIM=0 regulated bus
+ok 294 - GENQ 3bus zero q limit VARLIM=0 final CODE
+ok 295 - GENQ 3bus zero q limit VARLIM=0 PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 296 - GENQ 3bus zero q limit VARLIM=0 control QGEN (abs tol 0.5)
+ok 297 - GENQ 3bus zero q limit VARLIM=0 Q limits (abs tol 0.15)
+ok 298 - GENQ 3bus zero q limit VARLIM=0 VSCHED (abs tol 0.0005)
+ok 299 - GENQ 3bus zero q limit VARLIM=0 VACT (abs tol 0.0005)
+ok 300 - GENQ 3bus zero q limit VARLIM=0 RMPCT (abs tol 1e-10)
+ok 301 - GENQ 3bus zero q limit VARLIM=0 PCT Q (abs tol 1e-10)
+ok 302 - GENQ 3bus zero q limit VARLIM=0 limited flags
+ok 303 - GENQ 3bus zero q limit VARLIM=0 at_min flags
+ok 304 - GENQ 3bus zero q limit VARLIM=0 at_max flags
+ok 305 - GENQ 4bus remote single external bus numbering success
+ok 306 - GENQ 4bus remote single external bus numbering VM matches PSS/E (abs tol 0.0005)
+ok 307 - GENQ 4bus remote single external bus numbering VA matches PSS/E (abs tol 0.15)
+ok 308 - GENQ 4bus remote single external bus numbering exposes results.psse.genq.control
+ok 309 - GENQ 4bus remote single external bus numbering genq control fields
+ok 310 - GENQ 4bus remote single external bus numbering control bus_ext
+ok 311 - GENQ 4bus remote single external bus numbering regulated bus
+ok 312 - GENQ 4bus remote single external bus numbering final CODE
+ok 313 - GENQ 4bus remote single external bus numbering PGEN/QGEN match PSS/E (abs tol 0.5)
+ok 314 - GENQ 4bus remote single external bus numbering control QGEN (abs tol 0.5)
+ok 315 - GENQ 4bus remote single external bus numbering Q limits (abs tol 0.15)
+ok 316 - GENQ 4bus remote single external bus numbering VSCHED (abs tol 0.0005)
+ok 317 - GENQ 4bus remote single external bus numbering VACT (abs tol 0.0005)
+ok 318 - GENQ 4bus remote single external bus numbering RMPCT (abs tol 1e-10)
+ok 319 - GENQ 4bus remote single external bus numbering PCT Q (abs tol 1e-10)
+ok 320 - GENQ 4bus remote single external bus numbering limited flags
+ok 321 - GENQ 4bus remote single external bus numbering at_min flags
+ok 322 - GENQ 4bus remote single external bus numbering at_max flags
+ok 323 - coordinated active-set integrated 40bus success
+ok 324 - coordinated active-set report attempted
+ok 325 - coordinated active-set records GENQ trigger
+ok 326 - coordinated active-set converges tightly
+ok 327 - coordinated active-set preserves original failure diagnostics
+ok 328 - MODSW=1 success
+ok 329 - MODSW=1 switched one capacitor step
+ok 330 - MODSW=1 updates bus BS from BINIT=0
+ok 331 - MODSW=1 reaches voltage band
+ok 332 - MODSW=1 ADJM=0 advances one block per adjustment
+ok 333 - SWSHNT=0 leaves BINIT unchanged
+ok 334 - SWSHNT=0 leaves bus BS unchanged
+ok 335 - SWSHNT=0 report disabled
+ok 336 - SWSHNT=2 MODSW=1 success
+ok 337 - SWSHNT=2 leaves MODSW=1 BINIT unchanged
+ok 338 - SWSHNT=2 leaves MODSW=1 bus BS unchanged
+ok 339 - SWSHNT=2 does not control MODSW=1
+ok 340 - MODSW=0 leaves BINIT fixed
+ok 341 - MODSW=0 leaves bus BS fixed
+ok 342 - STAT=0 contributes no bus BS
+ok 343 - STAT=0 is not controllable
+ok 344 - MODSW=2 uses continuous B within range
+ok 345 - grouped RMPCT success
+ok 346 - grouped RMPCT has one regulated bus group
+ok 347 - grouped RMPCT reports multi-shunt group
+ok 348 - grouped RMPCT preserves literal sum
+ok 349 - grouped RMPCT moves both shunts together
+ok 350 - cycle memory success
+ok 351 - cycle memory detects repeated BINIT state
+ok 352 - cycle memory resolves repeated BINIT state
+ok 353 - cycle memory applies best visited BINIT
+ok 354 - FACTS STATCON success
+ok 355 - FACTS STATCON raises remote voltage
+ok 356 - FACTS STATCON reaches remote voltage target
+ok 357 - FACTS STATCON report controllable
+ok 358 - FACTS STATCON report remote control
+ok 359 - FACTS STATCON injects reactive power
+ok 360 - FACTS STATCON applies reactive injection through bus QD
+ok 361 - FACTS STATCON limited success
+ok 362 - FACTS STATCON upper SHMX limit reported
+ok 363 - FACTS STATCON reports voltage limited by SHMX
+ok 364 - FACTS STATCON respects SHMX reactive limit
+ok 365 - COD=1 transformer tap success
+ok 366 - COD=1 transformer tap moves one step
+ok 367 - COD=1 transformer WINDV updated
+ok 368 - COD=1 transformer reaches voltage band
+ok 369 - unsettled transformer tap control fails runpf_psse
+ok 370 - unsettled transformer control reported failed
+ok 371 - unsettled transformer control reports max-iteration reason
+ok 372 - unsettled transformer control records control-settlement failure
+ok 373 - unsettled transformer control reports remaining violations
+ok 374 - in-band off-grid transformer tap success
+ok 375 - in-band off-grid transformer tap snaps to grid
+ok 376 - in-band off-grid transformer WINDV snaps to grid
+ok 377 - in-band snapped transformer reports inside band
+ok 378 - TAB transformer correction success
+ok 379 - TAB transformer tap moves one step
+ok 380 - TAB updates branch R/X from corrected tap
+ok 381 - TAB correction reported
+ok 382 - 3-winding W1 TAB transformer tap success
+ok 383 - 3-winding W1 TAB transformer tap matches PSS/E direction
+ok 384 - 3-winding W1 TAB CW=2 transformer tap success
+ok 385 - 3-winding W1 TAB CW=2 WINDV matches PSS/E direction
+ok 386 - 3-winding CW=2 missing winding bus uses branch bus base kV
+ok 387 - 3-winding CW=2 missing winding bus preserves RAW initial WINDV
+ok 388 - 3-winding CW=2 TAB correction uses branch bus base kV
+ok 389 - 3-winding CW=2 missing winding bus writes final WINDV
+ok 390 - remote transformer tap reaches voltage band
+ok 391 - remote transformer reaches voltage band
+ok 392 - remote transformer tap reaches upper limit
+ok 393 - remote transformer upper limit reported
+ok 394 - positive CONT remote transformer tap matches PSS/E direction
+ok 395 - positive CONT remote transformer reaches voltage band
+ok 396 - positive CONT terminal transformer tap matches PSS/E direction
+ok 397 - positive CONT terminal transformer reaches voltage band
+ok 398 - positive CONT own-side transformer tap matches PSS/E direction
+ok 399 - positive CONT own-side transformer reaches voltage band
+ok 400 - ACTAPS=0 leaves transformer tap fixed
+ok 401 - ACTAPS=0 report disabled
+ok 402 - COD=-1 suppresses automatic tap adjustment
+ok 403 - COD=-1 reported suppressed
+ok 404 - transformer tap lower limit is respected
+ok 405 - transformer lower limit reported
+ok 406 - transformer lower-limit low-voltage violation reported
+ok 407 - transformer limit-blocked violation counted
+ok 408 - guarded transformer candidate accepts valid tap row
+ok 409 - guarded transformer candidate restores rejected tap row
+ok 410 - guarded transformer candidate reports accepted row
+ok 411 - guarded transformer candidate reports rejected row
+ok 412 - guarded transformer candidate locks rejected singleton row
+ok 413 - CPF transformer rebuild guard rejects failed candidate batch
+ok 414 - CPF transformer rebuild guard preserves valid tap row
+ok 415 - CPF transformer rebuild guard restores rejected tap row
+ok 416 - CPF transformer rebuild guard reports accepted row
+ok 417 - CPF transformer rebuild guard reports locked rejected row
+ok 418 - CPF same-lambda non-transformer warmstart resets transformer cycle state
+ok 419 - CPF same-lambda non-shunt warmstart resets shunt cycle state
+ok 420 - CPF transformer warmstart preserves transformer cycle state
+ok 421 - CPF transformer warmstart resets other family cycle state
+ok 422 - TWO DC MDC=0 success
+ok 423 - TWO DC MDC=0 has no active links
+ok 424 - TWO DC MDC=0 has no supported control
+ok 425 - TWO DC MDC=0 keeps dcline blocked
+ok 426 - TWO DC MDC=0 reports zero DC quantities (abs tol 1e-10)
+ok 427 - TWO DC MDC=0 reports PSS/E blocking angles (abs tol 1e-10)
+ok 428 - TWO DC unsupported active row success
+ok 429 - TWO DC unsupported active row remains active
+ok 430 - TWO DC unsupported active row is not modeled as LCC
+ok 431 - TWO DC unsupported active row is reported as not applied
+ok 432 - TWO DC unsupported active row preserves the static dcline equivalent
+ok 433 - TWO DC failed PQ probe uses deferred prepare mode
+ok 434 - TWO DC failed PQ probe records deferred prepare flag
+ok 435 - TWO DC failed PQ probe records deferred PQ model flag
+ok 436 - TWO DC failed PQ probe does not mark initial block
+ok 437 - TWO DC state keeps deferred prepare separate from blocking
+ok 438 - TWO DC deferred prepare keeps supported row modeled
+ok 439 - TWO DC MDC=2 current control success
+ok 440 - TWO DC MDC=2 reports current mode
+ok 441 - TWO DC MDC=2 uses SETVL amps as current
+ok 442 - TWO DC MDC=2 no-loss PAC matches PSS/E current target (abs tol 0.5)
+ok 443 - TWO DC MDC=2 taps match PSS/E current target (abs tol 5e-05)
+ok 444 - TWO DC MDC=2 firing angles match PSS/E current target (abs tol 0.1)
+ok 445 - TWO DC current control success
+ok 446 - TWO DC current mode reported
+ok 447 - TWO DC current mode lowers active power from static setpoint
+ok 448 - TWO DC dcline result synchronized with control report
+ok 449 - TWO DC current mode uses SETVL/VSCHD scheduled current
+ok 450 - TWO DC no-loss PAC matches PSS/E (abs tol 0.5)
+ok 451 - TWO DC no-loss QAC matches PSS/E (abs tol 0.5)
+ok 452 - TWO DC no-loss VDC/VCOMP matches PSS/E (abs tol 0.5)
+ok 453 - TWO DC no-loss reports zero loss (abs tol 1e-10)
+ok 454 - TWO DC no-loss taps match PSS/E (abs tol 5e-05)
+ok 455 - TWO DC no-loss firing angles match PSS/E (abs tol 0.1)
+ok 456 - TWO DC solved-snapshot control success
+ok 457 - TWO DC solved-snapshot control uses coupled solved voltage
+ok 458 - TWO DC current control loss success
+ok 459 - TWO DC current control applies RDC loss
+ok 460 - TWO DC VCMOD threshold reported
+ok 461 - TWO DC loss current matches PSS/E (abs tol 1e-10)
+ok 462 - TWO DC loss PAC matches PSS/E (abs tol 0.5)
+ok 463 - TWO DC loss reports RDC loss (abs tol 1e-10)
+ok 464 - TWO DC loss QAC matches PSS/E (abs tol 0.5)
+ok 465 - TWO DC loss VDC/VCOMP matches PSS/E (abs tol 0.5)
+ok 466 - TWO DC loss taps match PSS/E (abs tol 5e-05)
+ok 467 - TWO DC loss firing angles match PSS/E (abs tol 0.1)
+ok 468 - TWO DC negative SETVL converts as inverter received power
+ok 469 - TWO DC V26p active LCC success
+ok 470 - TWO DC V26p active remains in power mode
+ok 471 - TWO DC V26p active does not trigger VCMOD current mode
+ok 472 - TWO DC V26p PAC and loss match PSS/E (abs tol 0.5)
+ok 473 - TWO DC V26p current matches PSS/E (abs tol 0.0005)
+ok 474 - TWO DC V26p QAC matches PSS/E (abs tol 0.5)
+ok 475 - TWO DC V26p VDC/VCOMP matches PSS/E (abs tol 0.5)
+ok 476 - TWO DC V26p taps match PSS/E (abs tol 5e-05)
+ok 477 - TWO DC V26p firing angles match PSS/E (abs tol 0.1)
+ok 478 - TWO DC V26p active applies rectifier Q as bus demand
+ok 479 - TWO DC V26p active applies inverter Q as bus demand
+ok 480 - TWO DC V26p active reports converter Q on dcline
+ok 481 - TWO DC integrated 30bus coupled-voltage success
+ok 482 - TWO DC integrated 30bus uses coupled AC voltage
+ok 483 - TWO DC integrated 30bus rectifier Q matches PSS/E (abs tol 0.2)
+ok 484 - TWO DC integrated 14bus fallback success
+ok 485 - TWO DC integrated 14bus records accepted voltage-source fallback
+ok 486 - TWO DC V26p negative SETVL success
+ok 487 - TWO DC V26p negative SETVL remains in power mode
+ok 488 - TWO DC negative SETVL PAC and loss match inverter target (abs tol 0.5)
+ok 489 - TWO DC negative SETVL current matches PSS/E target (abs tol 0.0005)
+ok 490 - TWO DC negative SETVL taps match PSS/E target (abs tol 5e-05)
+ok 491 - TWO DC parallel current links success
+ok 492 - TWO DC parallel links are reported as supported LCC rows
+ok 493 - TWO DC parallel links actively update each dcline row
+ok 494 - TWO DC parallel links actively apply converter Q
+ok 495 - TWO DC parallel PF is accumulated from active rows (abs tol 1e-08)
+ok 496 - TWO DC parallel PT is accumulated from active rows (abs tol 1e-08)
+ok 497 - TWO DC parallel rectifier Q is accumulated at the AC bus (abs tol 1e-06)
+ok 498 - TWO DC parallel inverter Q is accumulated at the AC bus (abs tol 1e-06)
+ok 499 - PQBRAK with TWO DC current control success
+ok 500 - PQBRAK with TWO DC exposes control report
+ok 501 - PQBRAK with TWO DC exposes TWO DC report
+ok 502 - PQBRAK scales low-voltage native load
+ok 503 - PQBRAK native converter-bus QD base
+ok 504 - PQBRAK preserves TWO DC rectifier Q demand
+ok 505 - PQBRAK preserves TWO DC inverter Q demand
+ok 506 - PQBRAK preserves TWO DC rectifier P demand
+ok 507 - PQBRAK preserves TWO DC inverter P injection
+ok 508 - PQBRAK preserves TWO DC active dcline equivalent
+All tests successful (508 of 508)
+Elapsed time 81.35 seconds.

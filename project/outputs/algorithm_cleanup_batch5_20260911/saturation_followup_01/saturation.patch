@@ -1,0 +1,704 @@
+--- a/matpower/lib/mpoption.m
++++ b/matpower/lib/mpoption.m
+@@ -187,7 +187,8 @@
+ %      vsc_mtdc.dispatch_policy <empty>    VSC/HVDC CPF dispatch policy
+ %      vsc_mtdc.hvdc_dispatch  <empty>     alias for dispatch_policy
+ %      vsc_mtdc.psse_aware     0           enable PSS/E-aware active-set updates
+-%      vsc_mtdc.psse_control_limit 'stop'  behavior at PSS/E control limit
++%      vsc_mtdc.psse_control_limit 'saturate' behavior at PSS/E control limit
++%          [ 'saturate' - accept physical saturation; keep controls eligible ]
+ %          [ 'stop'   - stop at the control loading limit                      ]
+ %          [ 'freeze' - freeze controls and continue CPF                       ]
+ %      vsc_mtdc.psse_control_max_it 20      max PSS/E active-set iterations
+@@ -1647,7 +1648,7 @@
+             'dispatch_policy',      [], ...
+             'hvdc_dispatch',        [], ...
+             'psse_aware',           0, ...
+-            'psse_control_limit',   'stop', ...
++            'psse_control_limit',   'saturate', ...
+             'psse_control_max_it',  20, ...
+             'capability_enforce',   0, ...
+             'capability_limit',     'stop', ...
+--- a/matpower/lib/runpf_vsc_mtdc_unified.m
++++ b/matpower/lib/runpf_vsc_mtdc_unified.m
+@@ -59,7 +59,9 @@
+ results.success = success;
+ results.iterations = iterations;
+ results.convergence = struct( ...
+-    'converged',       success, ...
++    'converged',       logical(~isempty(eval) && isfinite(normF) && normF < ctx.opt.tol), ...
++    'overall_success', logical(success), ...
++    'scope',           'returned_electrical_point', ...
+     'method',          'unified', ...
+     'jacobian',        'analytic', ...
+     'psse_aware',      ctx.opt.psse_aware, ...
+@@ -144,7 +146,8 @@
+ 
+ function opt = unified_options(mpopt)
+ opt = struct('max_it', mpopt.pf.nr.max_it, 'tol', mpopt.pf.tol, ...
+-    'psse_aware', 0, 'psse_control_max_it', 20);
++    'psse_aware', 0, 'psse_control_max_it', 20, ...
++    'psse_control_limit', 'saturate');
+ if isfield(mpopt, 'vsc_mtdc')
+     if isfield(mpopt.vsc_mtdc, 'max_it') && ~isempty(mpopt.vsc_mtdc.max_it)
+         opt.max_it = mpopt.vsc_mtdc.max_it;
+@@ -158,6 +161,10 @@
+     if isfield(mpopt.vsc_mtdc, 'psse_control_max_it') && ...
+             ~isempty(mpopt.vsc_mtdc.psse_control_max_it)
+         opt.psse_control_max_it = mpopt.vsc_mtdc.psse_control_max_it;
++    end
++    if isfield(mpopt.vsc_mtdc, 'psse_control_limit') && ...
++            ~isempty(mpopt.vsc_mtdc.psse_control_limit)
++        opt.psse_control_limit = mpopt.vsc_mtdc.psse_control_limit;
+     end
+ end
+ 
+@@ -247,7 +254,7 @@
+     r.success = success;
+     r.iterations = iterations;
+     [changed, mpc_next, ac_controlled, delta, ok] = ...
+-        unified_pf_psse_control_update(mpc, mpopt, r);
++        unified_pf_psse_control_update(mpc, mpopt, r, ctx.opt.psse_control_limit);
+     if ~ok
+         report.converged = 0;
+         report.failed = 1;
+@@ -261,7 +268,10 @@
+     report.changed_gens = report.changed_gens + delta.changed_gens;
+     report.changed_branches = report.changed_branches + delta.changed_branches;
+     if ~changed
+-        if psse_report_has_unsatisfied_controls(delta)
++        accepted_saturation = isfield(delta,'acceptance') && delta.acceptance.accepted;
++        if isfield(delta,'acceptance'), report.acceptance = delta.acceptance; end
++        if (psse_report_has_unsatisfied_controls(delta) && ~accepted_saturation) || ...
++                (isfield(delta,'acceptance') && ~delta.acceptance.accepted)
+             report.converged = 0;
+             report.failed = 1;
+             success = 0;
+@@ -332,7 +342,7 @@
+ 
+ 
+ function [changed, mpc_next, ac_controlled, report, ok] = ...
+-        unified_pf_psse_control_update(mpc, mpopt, r)
++        unified_pf_psse_control_update(mpc, mpopt, r, policy)
+ changed = 0;
+ mpc_next = mpc;
+ ac_controlled = [];
+@@ -345,8 +355,14 @@
+     ac_controlled = psse_control_case_from_unified_result(r);
+     ac_controlled = copy_original_active_set_to_ac(ac_controlled, direct);
+     [changed, report] = psse_active_set_changed(mpc, direct);
+-    if changed || (~has_auxiliary_psse_control_data(mpc) && ...
+-            ~psse_report_has_unsatisfied_controls(report))
++    % The projected AC solve may propose other active sets, but cannot
++    % certify these controls against voltages different from the full model.
++    if changed || (~has_auxiliary_psse_control_data(mpc,r.ac.bus) && ...
++            ~direct_report.requires_auxiliary_pf && ...
++            (~psse_report_has_unsatisfied_controls(report) || ...
++            direct_report.blocked_violations > 0))
++        direct_report.control_cycles = report.control_cycles;
++        report.acceptance = mp.psse_unified_control_acceptance(direct_report,policy);
+         if changed
+             mpc_next = direct;
+         else
+@@ -379,6 +395,17 @@
+ end
+ 
+ [changed, report] = psse_active_set_changed(mpc, ac_controlled);
++if ~changed && direct_report.supported && ~direct_report.requires_auxiliary_pf
++    % Other families have settled in the auxiliary solve. Reclassify the
++    % supported voltage controllers on the unchanged full electrical state.
++    for family = {'xfmr','swshunt'}
++        name = family{1};
++        if isfield(direct.psse,name), ac_controlled.psse.(name)=direct.psse.(name); end
++    end
++    report.control_violations = direct_report.control_violations;
++    direct_report.control_cycles = report.control_cycles;
++    report.acceptance = mp.psse_unified_control_acceptance(direct_report,policy);
++end
+ if changed
+     mpc_next = apply_psse_active_set_update(mpc, ac_controlled);
+ else
+@@ -386,9 +413,9 @@
+ end
+ 
+ 
+-function TorF = has_auxiliary_psse_control_data(mpc)
++function TorF = has_auxiliary_psse_control_data(mpc, unified_bus)
+ TorF = 0;
+-families = {'pqbrak', 'genq', 'twodc', 'facts'};
++families = {'genq', 'twodc', 'facts'};
+ if ~isfield(mpc, 'psse') || isempty(mpc.psse)
+     return;
+ end
+@@ -397,6 +424,24 @@
+         TorF = 1;
+         return;
+     end
++end
++% Inactive PQBRAK metadata does not require an auxiliary electrical model.
++% Use the same scale/voltage activation boundary as unified CPF.
++if psse_family_present(mpc,'pqbrak')
++    pq = mpc.psse.pqbrak;
++    if isfield(pq,'scale') && ~isempty(pq.scale) && ...
++            any(abs(pq.scale(:)-1)>1e-10)
++        TorF = 1;
++        return;
++    end
++    if ~isfield(pq,'pqbrak') || isempty(pq.pqbrak) || ...
++            isnan(pq.pqbrak) || pq.pqbrak<=0
++        return;
++    end
++    vm = mpc.bus(:,8);
++    [present,rows] = ismember(mpc.bus(:,1),unified_bus(:,1));
++    vm(present) = unified_bus(rows(present),8);
++    TorF = any(vm < pq.pqbrak-1e-10);
+ end
+ 
+ 
+--- a/matpower/lib/runcpf_vsc_mtdc.m
++++ b/matpower/lib/runcpf_vsc_mtdc.m
+@@ -44,7 +44,9 @@
+ %                   validated and interpolated.
+ %   HVDC_DISPATCH   alias for DISPATCH_POLICY
+ %   PSSE_AWARE      enable PSS/E-aware active-set updates, default 0
+-%   PSSE_CONTROL_LIMIT  'stop' (default) or 'freeze'. With 'freeze', CPF
++%   PSSE_CONTROL_LIMIT  'saturate' (default), 'stop' or 'freeze'. Saturate
++%       accepts solved physical bounds without locking the controller.
++%       With 'freeze', CPF
+ %                   continues past a PSS/E discrete-control limit using the
+ %                   last feasible active set and records a freeze event.
+ %   PSSE_CONTROL_MAX_IT maximum PSS/E active-set iterations, default 20
+@@ -514,7 +516,9 @@
+                                 vsc_mtdc_cpf_event( ...
+                                 'PSSE_CONTROL_LIMIT', cont_steps, 1, ...
+                                 done_msg));
+-                            success = 1;
++                            % Only the explicit historical stop policy calls
++                            % an unmet NOSE/FULL request an orderly success.
++                            success = strcmpi(opt.psse_control_limit,'stop');
+                         else
+                             done_msg = sprintf(['VSC-MTDC PSS/E control ' ...
+                                 'termination (%s) at candidate lambda %.12g; ' ...
+@@ -1125,7 +1129,18 @@
+             end
+             if ~changed
+                 profile_count('psse_settle_no_change');
+-                if psse_report_has_unsatisfied_controls(report)
++                accepted_saturation = isfield(report,'acceptance') && report.acceptance.accepted;
++                if isfield(report,'acceptance')
++                    r.convergence.psse_controls = report.acceptance;
++                end
++                r = copy_psse_control_fields(r, mpcb);
++                if accepted_saturation && report.acceptance.saturated
++                    ev = vsc_mtdc_cpf_append_event(ev, vsc_mtdc_cpf_event( ...
++                        'PSSE_CONTROL_SATURATED', event_k, ctrl_it, ...
++                        sprintf('Physical control bound at lambda %.9g; controller remains eligible.',lam)));
++                end
++                if (psse_report_has_unsatisfied_controls(report) && ~accepted_saturation) || ...
++                        (isfield(report,'acceptance') && ~report.acceptance.accepted)
+                     [locked, lock_msg] = ...
+                         apply_selective_psse_control_lockout(report, lam);
+                     if locked
+@@ -1170,7 +1185,8 @@
+                     auxiliary_psse_control_update(r, lam);
+                 if aux_ok
+                     if ~aux_changed
+-                        if ~psse_report_has_unsatisfied_controls(aux_report)
++                        if ~psse_report_has_unsatisfied_controls(aux_report) && ...
++                                (~isfield(aux_report,'acceptance') || aux_report.acceptance.accepted)
+                             mpcb = copy_psse_control_fields(mpcb, aux_ac);
+                             mpct = copy_psse_control_fields(mpct, aux_ac);
+                             V = original_ac_voltage_for_result(r, bus_ids);
+@@ -3072,6 +3088,11 @@
+             report = merge_psse_direct_report(report, direct_report);
+             has_aux = has_auxiliary_psse_control_data(current, r.bus);
+             needs_aux = direct_report_requires_auxiliary_pf(direct_report);
++            if ~has_aux && ~needs_aux
++                direct_report.control_cycles = report.control_cycles;
++                report.acceptance = mp.psse_unified_control_acceptance( ...
++                    direct_report,opt.psse_control_limit);
++            end
+             if has_aux
+                 profile_count('psse_direct_blocked_by_aux_family');
+             elseif needs_aux
+@@ -3175,6 +3196,28 @@
+         current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+         clear current_cleanup;
+         [changed, report] = psse_active_set_changed(current, ac_controlled);
++        if ~changed
++            [direct, direct_report] = mp.psse_unified_control_update(current,r.bus);
++            if direct_report.supported && ~direct_report.requires_auxiliary_pf
++                if ~direct_report.changed
++                    for family = {'xfmr','swshunt'}
++                        name = family{1};
++                        if isfield(direct.psse,name)
++                            ac_controlled.psse.(name)=direct.psse.(name);
++                        end
++                    end
++                end
++                report.control_violations = direct_report.control_violations;
++                direct_report.control_cycles = report.control_cycles;
++                report = merge_psse_direct_report(report,direct_report);
++                report.acceptance = mp.psse_unified_control_acceptance( ...
++                    direct_report,opt.psse_control_limit);
++                if ~direct_report.changed
++                    mpcb = copy_psse_control_fields(mpcb,ac_controlled);
++                    mpct = copy_psse_control_fields(mpct,ac_controlled);
++                end
++            end
++        end
+         if changed
+             [mpcb_next, mpct_next] = apply_psse_active_set_update( ...
+                 current, ac_controlled);
+@@ -4033,11 +4076,10 @@
+     end
+ 
+     function policy = psse_control_declared_policy()
+-        policy = 'stop';
++        policy = 'saturate';
+         if isfield(opt, 'psse_control_limit') && ...
+-                ischar(opt.psse_control_limit) && ...
+-                strcmpi(opt.psse_control_limit, 'freeze')
+-            policy = 'freeze';
++                ischar(opt.psse_control_limit)
++            policy = lower(opt.psse_control_limit);
+         end
+     end
+ 
+@@ -4072,6 +4114,14 @@
+             {'PSSE_CONTROL_LIMIT', 'PSSE_CONTROL_FAIL'}, ...
+             {'PSSE_CONTROL_FREEZE', 'PSSE_CONTROL_SELECTIVE_FREEZE'}, ...
+             {}, {});
++        if active_set_has_event(ev, {'PSSE_CONTROL_SATURATED'})
++            report.psse_control.saturation_count = ...
++                active_set_event_count(ev, {'PSSE_CONTROL_SATURATED'});
++            if strcmp(report.psse_control.observed_policy,'enforce') || ...
++                    strcmp(report.psse_control.observed_policy,'not-triggered')
++                report.psse_control.observed_policy = 'saturate';
++            end
++        end
+         report.vsc_capability = active_set_policy_observed_record( ...
+             report.vsc_capability, ev, {'VSC_CAPABILITY'}, ...
+             {'VSC_CAPABILITY_LIMIT', 'VSC_CAPABILITY_FAIL'}, ...
+@@ -4240,7 +4290,7 @@
+     function opt = vsc_cpf_options(o)
+         opt = struct('cpf_max_it', 200, 'cpf_max_lam', 5, ...
+             'cpf_policies', [], 'profile', 0, ...
+-            'psse_control_limit', 'stop', 'psse_control_max_it', 20, ...
++            'psse_control_limit', 'saturate', 'psse_control_max_it', 20, ...
+             'capability_enforce', 0, 'capability_max_it', 10, ...
+             'capability_limit', 'stop', 'capability_vsc_limit', [], ...
+             'capability_gen_limit', [], ...
+--- a/matpower/lib/t/t_vsc_mtdc.m
++++ b/matpower/lib/t/t_vsc_mtdc.m
+@@ -7,6 +7,9 @@
+ %   This file is part of MATPOWER.
+ %   Covered by the 3-clause BSD License (see LICENSE file for details).
+ %   See https://matpower.org for more info.
++
++% Persistent MCP sessions must test the current composed solver files.
++clear runpf_vsc_mtdc_unified runcpf_vsc_mtdc
+ 
+ if nargin < 1
+     quiet = 0;
+@@ -398,7 +401,8 @@
+ end
+ 
+ mpcpt_pf = vsc_psse_xfmr_tap_case(mpcb);
+-[rpsse_tap_pf, success] = runpf_psse(mpcpt_pf, mpopt_u);
++[rpsse_tap_pf, success] = runpf_psse(mpcpt_pf, ...
++    mpoption(mpopt_u, 'vsc_mtdc.psse_control_limit', 'stop'));
+ t_ok(~success, 'runpf_psse unified VSC-MTDC PF rejects infeasible transformer tap band');
+ t_ok(rpsse_tap_pf.convergence.psse_controls.changed, ...
+     'runpf_psse unified VSC-MTDC PF reports transformer active-set change');
+@@ -1082,7 +1086,8 @@
+ mpcpt = vsc_psse_xfmr_tap_case(mpcb);
+ mpctpt = mpcpt;
+ mpctpt.bus(:, [PD QD]) = 1.02 * mpcpt.bus(:, [PD QD]);
+-[rpsse_tap, success] = runcpf_psse(mpcpt, mpctpt, mpopt_ps);
++[rpsse_tap, success] = runcpf_psse(mpcpt, mpctpt, ...
++    mpoption(mpopt_ps, 'vsc_mtdc.psse_control_limit', 'stop'));
+ t_ok(~success, 'runcpf_psse unified VSC-MTDC rejects infeasible transformer tap band');
+ t_is(length(rpsse_tap.cpf.events), 0, 12, ...
+     'runcpf_psse unified VSC-MTDC tap rejects before CPF events');
+@@ -1145,6 +1150,8 @@
+ mpopt_pcl.vsc_mtdc.cpf_max_lam = 20;
+ mpopt_pcl.vsc_mtdc.cpf_max_it = 260;
+ mpopt_pcl.vsc_mtdc.psse_control_max_it = 60;
++% Historical stop-policy reference remains explicit after saturation default.
++mpopt_pcl.vsc_mtdc.psse_control_limit = 'stop';
+ [rpsse_pcl, success] = runcpf_psse(mpcpcl, mpctpcl, mpopt_pcl);
+ t_ok(success, ...
+     'runcpf_psse unified VSC-MTDC backs off PSS/E control failures');
+--- a/docs/CONTROL_ACCEPTANCE.md
++++ b/docs/CONTROL_ACCEPTANCE.md
+@@ -1,4 +1,9 @@
+ # Control acceptance contract — algorithm cleanup batches 1–3
++
++The later [unified saturation contract](CONTROL_SATURATION_CONTRACT.md)
++declares the batch-5 follow-up policy: physical tap/shunt saturation may be
++accepted with unmet regulation while the controller remains eligible. The
++historical requirements and observations below retain their original scope.
+ 
+ Scope: small AC/DC control regressions before any ULTC or shunt policy refactor.
+ TRANSPA, reduction, hydro corridors, new benchmark adaptations and published
+--- a/docs/CPF_TERMINATION_CONTRACT.md
++++ b/docs/CPF_TERMINATION_CONTRACT.md
+@@ -1,4 +1,9 @@
+ # Unified VSC-MTDC CPF termination reporting
++
++The [batch-5 saturation follow-up](CONTROL_SATURATION_CONTRACT.md) supersedes
++the default control-stop policy described below. Explicit `stop` still
++reproduces these historical semantics; `saturate` accepts solved physical
++bounds and reports any later unsuccessful transition as failure.
+ 
+ Batch 5 separates an electrical point from acceptance by the automatic-control
+ scenario. It changes diagnostics and reporting, not controller decisions,
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -105,3 +105,16 @@
+ solutions around the event, finer CPF steps, and numeric versus NOSE stop
+ reporting. Fixed-state diagnostics do not replace automatic-control acceptance.
+ See the [termination contract](../docs/CPF_TERMINATION_CONTRACT.md).
++
++The batch-5 follow-up adds normal physical saturation with controller reversal
++eligibility and full-model PF acceptance reports:
++
++```matlab
++t_control_saturation_batch5(0, fullfile(pwd,'outputs','saturation_new_run'));
++```
++
++This uses the original long Beerten input/target and changes only the declared
++control-limit policy to `saturate`. The original `stop` fixture and batch-5
++termination gate remain unchanged. See the
++[saturation contract](../docs/CONTROL_SATURATION_CONTRACT.md). The full VSC
++suite explicitly selects `stop` for its historical control-limit reference.
+--- a/tests/t_ultc_beerten_batch3.m
++++ b/tests/t_ultc_beerten_batch3.m
+@@ -9,6 +9,8 @@
+ assert(~exist(outdir,'dir'),'Use a fresh output directory'); mkdir(outdir);
+ opt=mpoption('verbose',0,'out.all',0);
+ opt.vsc_mtdc.method='unified';
++% Keep this historical stop-policy scenario explicit after the new default.
++opt.vsc_mtdc.psse_control_limit='stop';
+ f=loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
+ s=mp.psse_xfmr_states(f); c=idx_vsc;
+ checks=struct('id',{},'passed',{},'detail',{});
+--- a/tests/t_swshunt_beerten_batch4.m
++++ b/tests/t_swshunt_beerten_batch4.m
+@@ -9,6 +9,8 @@
+ assert(~exist(outdir,'dir'),'Use a fresh output directory'); mkdir(outdir);
+ opt=mpoption('verbose',0,'out.all',0);
+ opt.vsc_mtdc.method='unified';
++% Keep this historical stop-policy scenario explicit after the new default.
++opt.vsc_mtdc.psse_control_limit='stop';
+ f=loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
+ c=idx_vsc;
+ checks=struct('id',{},'passed',{},'detail',{});
+--- /dev/null
++++ b/matpower/lib/+mp/psse_unified_control_acceptance.m
+@@ -0,0 +1,39 @@
++function acceptance = psse_unified_control_acceptance(report, policy)
++%PSSE_UNIFIED_CONTROL_ACCEPTANCE Classify a solved, unchanged direct pass.
++% This is control settlement, not electrical convergence or operating-limit
++% certification. No state, eligibility, tolerance or lock is changed here.
++%
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   Covered by the 3-clause BSD License (see LICENSE file for details).
++if nargin < 2 || isempty(policy), policy = 'saturate'; end
++assert(ischar(policy) && any(strcmpi(policy, {'saturate','stop','freeze'})), ...
++    'Unknown vsc_mtdc.psse_control_limit policy');
++required = {'supported','changed','requires_auxiliary_pf', ...
++    'control_violations','blocked_violations','unsupported_controls'};
++authoritative = all(isfield(report, required));
++if authoritative
++    authoritative = report.supported && ~report.requires_auxiliary_pf && ...
++        report.unsupported_controls == 0;
++end
++violations = 0; blocked = 0; cycles = 0;
++if isfield(report,'control_violations'), violations=report.control_violations; end
++if isfield(report,'blocked_violations'), blocked=report.blocked_violations; end
++if isfield(report,'control_cycles'), cycles=report.control_cycles; end
++settled = authoritative && ~report.changed && cycles == 0;
++saturated = settled && violations > 0 && blocked == violations;
++accepted = settled && (violations == 0 || ...
++    (strcmpi(policy,'saturate') && saturated));
++status = 'unresolved';
++if accepted
++    status = 'in_band';
++    if saturated, status = 'saturated'; end
++elseif saturated
++    status = 'control_bound';
++end
++acceptance = struct('policy',lower(policy),'status',status, ...
++    'accepted',logical(accepted),'saturated',logical(saturated), ...
++    'regulation_satisfied',logical(settled && violations == 0), ...
++    'voltage_source','full_model','authoritative',logical(authoritative), ...
++    'control_violations',violations,'blocked_violations',blocked);
++end
+--- /dev/null
++++ b/tests/t_control_saturation_batch5.m
+@@ -0,0 +1,184 @@
++function [checks,evidence] = t_control_saturation_batch5(quiet,outdir)
++%T_CONTROL_SATURATION_BATCH5 Solved saturation, reversal and full-model reports.
++% MCP sessions persist; test the current composed solver files on each run.
++clear runpf_vsc_mtdc_unified runcpf_vsc_mtdc
++if nargin<1, quiet=0; end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin<2, outdir=tempname(fullfile(root,'outputs')); end
++assert(~isfolder(outdir),'Use a fresh output directory'); mkdir(outdir);
++s=load(fullfile(root,'outputs','algorithm_cleanup_batch4_20260911','beerten_probe.mat'));
++f=s.b4f; target=s.b4t; opt=s.b4o; opt.vsc_mtdc.psse_control_limit='saturate';
++c=idx_vsc; sh=mp.psse_swshunt_states(f); xf=mp.psse_xfmr_states(f);
++checks=struct('id',{},'passed',{},'detail',{});
++evidence=struct('base',f,'target',target,'original_options',s.b4o,'options',opt,'fixed',{{}},'automatic',{{}});
++defaults=mpoption;
++check('default',strcmp(defaults.vsc_mtdc.psse_control_limit,'saturate'),'new explicit default');
++r=runcpf_psse(f,target,opt); evidence.cpf=r;
++check('target',r.success && r.cpf.termination.requested_endpoint_reached && ...
++    abs(r.cpf.lam(end)-.8)<=opt.cpf.target_lam_tol && strcmp(r.cpf.termination.cause,'requested_lambda'), ...
++    'unchanged numeric target reached under declared saturation policy');
++check('scope',r.convergence.converged && r.convergence.overall_success && ...
++    r.convergence.lambda==r.cpf.lam(end) && ~r.cpf.termination.nose_detected && ...
++    ~r.cpf.termination.stability_margin_validated,'target completion is not a nose certificate');
++check('saturation_report',r.convergence.psse_controls.accepted && ...
++    strcmp(r.convergence.psse_controls.status,'saturated') && ...
++    ~r.convergence.psse_controls.regulation_satisfied && r.psse.swshunt.control.blocked_low==1, ...
++    'accepted physical saturation retains full-model out-of-band report');
++check('no_locks',~any(contains({r.cpf.events.name},'FREEZE')) && ...
++    r.psse.swshunt.control.locked_out==0 && r.psse.xfmr.control.locked_out==0 && ...
++    r.psse.swshunt.control.controllable==1,'saturation never locks either controller');
++check('observed',strcmp(r.cpf.active_set_failure_policy.psse_control.observed_policy,'saturate') && ...
++    any(strcmp({r.cpf.events.name},'PSSE_CONTROL_SATURATED')),'accepted saturation recorded separately from failure');
++physical('endpoint',r);
++evidence.endpoint_capability_audit=check_capability_limits(r);
++check('ratings_preserved',isequal(r.gen(:,[4 5 9 10]),f.gen(:,[4 5 9 10])) && ...
++    isequal(r.vsc(:,c.LOSS_A:c.REACTOR_RATE_C),f.vsc(:,c.LOSS_A:c.REACTOR_RATE_C)), ...
++    'original generator limits and converter loss/station ratings retained');
++for k=1:numel(r.cpf.lam)
++    p=at_lambda(r.cpf.lam(k)); p.bus(:,6)=r.cpf.bus(:,6,k);
++    p.branch(:,1:13)=r.cpf.branch(:,1:13,k);
++    p.psse.swshunt.num(:,sh.binit_col)=p.bus(5,6)-sh.base_bs(5);
++    p.psse.xfmr.two.num(:,24)=p.branch(xf.branch_idx,9);
++    pf=runpf_vsc_mtdc(p,s.b4o); evidence.fixed{end+1}=pf;
++    tag=sprintf('point%d',k); physical([tag '.fixed'],pf);
++    [~,rows]=ismember(r.bus(:,1),pf.ac.bus(:,1));
++    check([tag '.match'],pf.success && max(abs(phasor(pf.ac.bus(rows,:))-phasor(r.cpf.bus(:,:,k))))<1e-6, ...
++        'independent fixed-state full PF matches accepted CPF voltage');
++    ctx=runpf_vsc_mtdc_unified('__setup',p,opt);
++    [~,ev]=runpf_vsc_mtdc_unified('__mismatch',ctx,r.cpf.x(:,k),[]);
++    full=runpf_vsc_mtdc_unified('__results',ctx,ev,p); physical([tag '.stored'],full);
++    check([tag '.legal'],any(abs(sh.states{1}-p.psse.swshunt.num(:,sh.binit_col))<1e-9) && ...
++        any(abs(xf.states_tap{1}-p.branch(xf.branch_idx,9))<1e-9), 'original discrete grids');
++end
++for lam=[s.b4r.cpf.failure.lambda .45 .8]
++    p=at_lambda(lam); pf=runpf_psse(p,opt); physical(sprintf('auto%.8g',lam),pf);
++    a=pf.convergence.psse_controls.acceptance;
++    check(sprintf('auto%.8g.report',lam),pf.success && a.accepted && a.saturated && ...
++        ~a.regulation_satisfied && pf.psse.swshunt.control.below_band==1 && ...
++        pf.psse.swshunt.control.inside_band==0,'full-model out-of-band voltage cannot be overwritten by auxiliary report');
++    if lam==.8
++        check('automatic_endpoint_match',max(abs(phasor(pf.ac.bus)-phasor(r.ac.bus)))<1e-6, ...
++            'automatic PF from original controls agrees with CPF');
++    end
++    evidence.automatic{end+1}=pf;
++end
++stress=f;stress.bus(:,[3 4])=1000*stress.bus(:,[3 4]);
++failed=runcpf_psse(stress,stress,opt);evidence.failed_electrical=failed;
++check('electrical_failure',~failed.success && ~failed.convergence.converged && ...
++    isempty(failed.cpf.lam),'saturation cannot accept a failed base electrical solve');
++stop=runpf_psse(at_lambda(s.b4r.cpf.failure.lambda),s.b4o); evidence.stop_pf=stop;
++check('stop_pf',~stop.success && stop.convergence.converged && ...
++    ~stop.convergence.overall_success && ~stop.convergence.psse_controls.converged && ...
++    strcmp(stop.convergence.psse_controls.acceptance.status,'control_bound'), ...
++    'explicit stop rejects regulation while accurately retaining electrical convergence');
++for step=[.05 .025]
++    a=runcpf_psse(f,target,mpoption(opt,'cpf.step',step));
++    check(sprintf('step%g',step),a.success && abs(a.cpf.lam(end)-.8)<=opt.cpf.target_lam_tol && ...
++        max(abs(phasor(a.ac.bus)-phasor(r.ac.bus)))<1e-6,'same target and state with smaller steps');
++    evidence.(sprintf('step%d',round(1000*step)))=a;
++end
++% Separate negative fixture: a narrow regulation band between discrete states
++% forces alternating shunt requests. Original cases/grid/tolerances are not
++% changed; this does not represent the main Beerten loading scenario.
++cycle_base=f;cycle_base.psse.swshunt.num(1,5:6)=[.95001 .95];
++cycle_target=target;cycle_target.psse.swshunt=cycle_base.psse.swshunt;
++cycle_opt=mpoption(opt,'cpf.stop_at','NOSE');
++cycle=runcpf_psse(cycle_base,cycle_target,cycle_opt);
++evidence.cycle=struct('base',cycle_base,'target',cycle_target,'options',cycle_opt,'result',cycle);
++check('cycle_outcome',~cycle.success && ~cycle.convergence.overall_success && ...
++    ~cycle.cpf.termination.requested_endpoint_reached && ~cycle.cpf.termination.nose_detected && ...
++    any(strcmp(cycle.cpf.termination.cause,{'control_cycle','control_iteration_limit'})), ...
++    'cycling cannot turn an unmet NOSE request into successful completion');
++check('cycle_last_accepted',cycle.convergence.converged && ...
++    cycle.convergence.lambda==cycle.cpf.lam(end) && ~isempty(cycle.cpf.failure) && ...
++    cycle.cpf.failure.lambda>cycle.cpf.lam(end), ...
++    'failed control transition remains separate from the accepted electrical point');
++% Separate unreachable tap-regulation objective exercises physical saturation
++% through both complete solvers, using the original transformer grid/ratings.
++tap_base=f;tap_base.psse=rmfield(tap_base.psse,'swshunt');
++tap_base.psse.xfmr.two.num(1,43:44)=[1.31 1.30];
++tap_target=tap_base;tap_target.bus(:,[3 4])=1.02*tap_base.bus(:,[3 4]);
++tap_pf=runpf_psse(tap_base,opt);tap_cpf=runcpf_psse(tap_base,tap_target,opt);
++physical('tap_saturated_pf',tap_pf);physical('tap_saturated_cpf',tap_cpf);
++check('tap_pf_saturation',tap_pf.success && ...
++    tap_pf.convergence.psse_controls.acceptance.saturated && ...
++    ~tap_pf.convergence.psse_controls.acceptance.regulation_satisfied && ...
++    tap_pf.psse.xfmr.control.locked_out==0,'full PF accepts unmet regulation at the physical tap bound');
++check('tap_cpf_saturation',tap_cpf.success && ...
++    tap_cpf.cpf.termination.requested_endpoint_reached && ...
++    tap_cpf.convergence.psse_controls.saturated && ...
++    tap_cpf.psse.xfmr.control.locked_out==0,'CPF retains the eligible saturated tap and reaches the unchanged numeric target');
++evidence.tap_saturation=struct('base',tap_base,'target',tap_target,'pf',tap_pf,'cpf',tap_cpf);
++% Prescribed voltages test both bounds and subsequent reverse requests.
++% These decision probes are separate from the electrical loading scenario.
++for family={'swshunt','xfmr'}
++    name=family{1}; p=f;
++    if strcmp(name,'swshunt'), p.psse=rmfield(p.psse,'xfmr'); else, p.psse=rmfield(p.psse,'swshunt'); end
++    for direction=[-1 1]
++        q=p;
++        if strcmp(name,'swshunt')
++            st=mp.psse_swshunt_states(q); st.current_b=st.bmin;
++            if direction>0, st.current_b=st.bmax; end
++            q=mp.psse_swshunt_update(q,st); reg=st.reg_bus_idx;
++            vm=st.vswhi+.1; if direction>0, vm=st.vswlo-.1; end
++        else
++            st=mp.psse_xfmr_states(q); j=1;
++            if direction*st.side_sign>0, j=numel(st.states_tap{1}); end
++            st.current_tap=st.states_tap{1}(j); st.current_raw=st.states_raw{1}(j);
++            q=mp.psse_xfmr_update(q,st); reg=st.reg_bus_idx;
++            vm=st.vma+.1; if direction>0, vm=st.vmi-.1; end
++        end
++        b=q.bus; b(reg,8)=vm;
++        [sat,d]=mp.psse_unified_control_update(q,b);
++        a=mp.psse_unified_control_acceptance(d,'saturate');
++        tag=sprintf('%s.bound%d',name,direction);
++        check(tag,~d.changed && a.accepted && a.saturated,'outward request at a physical bound is settled');
++        b(reg,8)=2-vm;
++        [back,rev]=mp.psse_unified_control_update(sat,b);
++        reverse_acceptance=mp.psse_unified_control_acceptance(rev,'saturate');
++        check([tag '.reverse'],rev.changed && ~reverse_acceptance.accepted, ...
++            'opposite request moves away from bound and requires re-correction');
++        evidence.([name sprintf('%d',direction+2)])=struct('saturated',sat,'reverse',back);
++        bad=d; bad.changed=1; reject(bad,[tag '.changed']);
++        bad=d; bad.control_cycles=1; reject(bad,[tag '.cycle']);
++        bad=d; bad.requires_auxiliary_pf=1; reject(bad,[tag '.unsupported']);
++        bad=d; bad.blocked_violations=0; reject(bad,[tag '.unresolved']);
++        q.psse.control_lockout.(name)=true;
++        [locked,ld]=mp.psse_unified_control_update(q,b);
++        la=mp.psse_unified_control_acceptance(ld,'saturate');
++        check([tag '.lock'],~ld.changed && ~la.saturated && ...
++            locked.psse.(name).control.locked_out==1,'explicit lock is preserved and not reclassified as saturation');
++    end
++end
++save(fullfile(outdir,'saturation.mat'),'checks','evidence','-v7.3');
++fid=fopen(fullfile(outdir,'checks.json'),'w');fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true));fclose(fid);
++t_begin(numel(checks),quiet);
++for k=1:numel(checks),t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]);end
++t_end;
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function reject(d,tag)
++        a=mp.psse_unified_control_acceptance(d,'saturate');
++        check(tag,~a.accepted,'saturation cannot excuse unresolved work');
++    end
++    function p=at_lambda(lam)
++        p=f;p.bus(:,[3 4])=f.bus(:,[3 4])+lam*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++    end
++    function v=phasor(b)
++        v=b(:,8).*exp(1j*pi/180*b(:,9));
++    end
++    function physical(tag,p)
++        a=ext2int(p.ac);v=phasor(a.bus);
++        ac=norm(v.*conj(makeYbus(a.baseMVA,a.bus,a.branch)*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        [~,rows]=ismember(p.vsc(:,c.BUSDC),p.busdc(:,1));
++        dc=norm(p.busdc(:,3).*(makeGdc(p.busdc,p.branchdc)*p.busdc(:,3))- ...
++            accumarray(rows,p.vsc(:,c.PDC),[size(p.busdc,1) 1])/f.baseMVA,Inf);
++        conv=max(abs(sum(p.vsc(:,[c.PAC c.PDC c.PLOSS]),2)))/f.baseMVA;
++        current=hypot(p.vsc(:,c.PAC),p.vsc(:,c.QAC))./(f.baseMVA*p.vsc(:,c.VAC_INTERNAL));
++        loss=max(abs(p.vsc(:,c.LOSS_A)+p.vsc(:,c.LOSS_B).*current+ ...
++            p.vsc(:,c.LOSS_C).*current.^2-p.vsc(:,c.PLOSS)))/f.baseMVA;
++        check([tag '.balance'],max([ac dc conv loss])<1e-8, ...
++            sprintf('full AC %.3g DC %.3g converter %.3g loss %.3g pu',ac,dc,conv,loss));
++    end
++end
+--- /dev/null
++++ b/docs/CONTROL_SATURATION_CONTRACT.md
+@@ -0,0 +1,75 @@
++# Unified PF/CPF physical control saturation
++
++The batch-5 follow-up adopts `vsc_mtdc.psse_control_limit = 'saturate'`
++as the default for unified AC/DC/VSC automatic voltage controls. This is a
++declared study-policy change authorized after the original batch-5 diagnosis.
++The voltage band remains a regulation objective. Exhausting a physical shunt
++or tap range is not by itself electrical failure or a voltage-stability limit.
++
++For a supported controller, a point is settled when the full electrical
++equations converge and a fresh control pass requests no state change. Each
++remaining regulation violation must be classified as an outward request at a
++physical bound. Any available legal movement requires another full electrical
++correction before acceptance. Cycling, unsupported control modes, unresolved
++requests and failed corrections do not qualify as saturation.
++
++Saturation changes no device status, range, deadband, voltage tolerance,
++generator/converter rating, capability option or controller eligibility.
++The next point evaluates the original voltage rule again. An opposite request
++can move the controller away from its bound. Merely returning inside the band
++does not cause a reverse movement. Existing explicit study/numerical locks
++remain distinct from physical saturation; this policy neither creates nor
++releases those locks.
++
++`stop` remains an explicit historical scenario, rejecting an electrically
++solved point with unmet regulation. `freeze` retains its existing CPF recovery
++semantics and is not the new default. Saved option structures specifying
++`stop` continue to request that behavior; loading an old fixture does not
++silently migrate it. For the new scenario set:
++
++```matlab
++options.vsc_mtdc.psse_control_limit = 'saturate';
++```
++
++This contract applies to the unified PF/CPF control-settlement layers. It does
++not consolidate the AC-only controller loops, their cycle policies, continuous
++shunt sensitivities or broader recovery mechanisms. Other enabled capability
++and termination checks retain their existing behavior. A successful configured
++run is not certification against every possible operational constraint.
++
++## Full-model authority and reporting
++
++Independently of the policy change, unified PF must not certify tap/shunt
++regulation from an auxiliary AC voltage while returning a different full-model
++voltage. A settled auxiliary active set is reclassified on the unchanged full
++solution for supported direct controls. Auxiliary proposals that change the
++active set still require a full electrical solve. Unsupported auxiliary
++families do not acquire a new saturation exemption.
++PF uses the same scale and full-model voltage activation check as CPF for
++PQBRAK. Inactive metadata alone does not require an auxiliary solve; active
++equivalent-load processing remains in the existing auxiliary path.
++
++PF reports `convergence.converged` for the returned electrical point and
++`convergence.overall_success` for the complete PF/control outcome. Its control
++report is `convergence.psse_controls`, with an `acceptance` substructure when
++the supported direct classification is available. CPF places that acceptance
++structure in `convergence.psse_controls` at the accepted point. It records
++`policy`, `status`, `accepted`, `saturated`, `regulation_satisfied`, full-model
++voltage provenance and violation counts. The existing per-device reports
++retain below/above-band and blocked rows instead of declaring them in band.
++Regulation counts concern eligible controllers; an explicitly locked or
++disabled device is still identified by its separate per-device status and is
++not certified as regulated by an aggregate zero count.
++
++CPF emits `PSSE_CONTROL_SATURATED` at accepted saturated samples. These are
++informational samples, not additional switching operations or failure events.
++No freeze event is emitted for normal saturation. The existing termination
++contract still identifies the last accepted point, requested endpoint and
++detected nose separately. Under `saturate`, failure to settle a later control
++transition is unsuccessful even for a NOSE/FULL request; the legacy orderly
++control-stop success convention remains confined to explicit `stop`.
++
++The focused gate is `tests/t_control_saturation_batch5.m`. Original batch-4
++inputs and batch-5 stop-policy evidence remain unchanged and independently
++replayable. New evidence is in
++`outputs/algorithm_cleanup_batch5_20260911/saturation_followup_01/`.

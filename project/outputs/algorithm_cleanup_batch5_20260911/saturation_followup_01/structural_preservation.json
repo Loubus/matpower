@@ -1,0 +1,17 @@
+{
+  "matpower/lib/runcpf_vsc_mtdc.m:unified_cpf_corrector": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:unified_cpf_tangent": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:unified_eval_at_lambda": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:unified_residual_norm": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:solve_unified_pf_at_lambda": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:locate_unified_nose": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:vsc_cpf_current_mpc": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:apply_psse_active_set_update": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:settle_unified_vsc_capability_controls": true,
+  "matpower/lib/runcpf_vsc_mtdc.m:settle_unified_gen_capability_controls": true,
+  "matpower/lib/runpf_vsc_mtdc_unified.m:solve_unified_pf": true,
+  "matpower/lib/runpf_vsc_mtdc_unified.m:unified_mismatch": true,
+  "matpower/lib/runpf_vsc_mtdc_unified.m:unified_build_results": true,
+  "matpower/lib/runpf_vsc_mtdc_unified.m:unified_setup": true,
+  "matpower/lib/runpf_vsc_mtdc_unified.m:apply_psse_active_set_update": true
+}

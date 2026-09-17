@@ -38,7 +38,7 @@ for kk = find(tf(:))'
     bus(kk, BUS_I) = orig_ext(kk);
     bus(kk, [BUS_TYPE PD QD GS BS]) = bus0(kk, [BUS_TYPE PD QD GS BS]);
 end
-results.bus = bus;
+results.bus = mp.psse_expand_bus_controls(results, state, bus);
 
 if isfield(results, 'gen') && ~isempty(results.gen) && ...
         isfield(state, 'original_gen') && ~isempty(state.original_gen)
@@ -72,7 +72,8 @@ end
 if isfield(results, 'psse')
     results.psse.swdev_collapsed = rmfield(state, intersect( ...
         fieldnames(state), {'original_bus', 'original_gen', ...
-        'original_bus_name', 'original_branch', 'original_dcline'}));
+        'original_bus_name', 'original_branch', 'original_dcline', ...
+        'original_swshunt'}));
 end
 
 if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...

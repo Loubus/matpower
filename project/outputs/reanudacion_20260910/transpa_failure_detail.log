@@ -1,0 +1,52 @@
+Proyecto listo. MATPOWER: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\matpower\lib\runpf_psse.m
+CPF fields:
+    {'steps'     }
+    {'iterations'}
+    {'lam_hat'   }
+    {'lam'       }
+    {'max_lam'   }
+    {'V_hat'     }
+    {'V'         }
+    {'done_msg'  }
+    {'events'    }
+    {'corrector' }
+    {'et'        }
+
+cpf.done_msg:
+Reached steady state loading limit in 690 continuation steps, lambda = 0.2227.
+result.success:
+   0
+
+cpf.iterations:
+   690
+
+result.iterations:
+     4
+
+         entrypoint: 'runcpf_psse'
+         task_class: 'mp.task_cpf_psse'
+       base_prepare: [1×1 struct]
+     target_prepare: [1×1 struct]
+        formulation: 'MATPOWER CPF F(x,lambda) plus parameterization'
+    output_topology: 'original_branch_expanded'
+      compact_trace: [1×1 struct]
+
+CONTROL FAILURE:
+    control: 'gen_capability'
+      stage: 'post_control_cpf'
+    success: 0
+
+TASK MESSAGE:
+PSS/E gen_capability control rebuild failed after rollback
+RUN INFO:
+    entrypoint: 'runcpf_psse'
+
+LAST EVENTS:
+  1×4 struct array with fields:
+
+    k
+    name
+    idx
+    msg
+
+STARTUP_OK

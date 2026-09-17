@@ -1,5 +1,7 @@
 function [target, dispatch] = make_vsc_hvdc_pac_dispatch_target(base, target, policy)
 % make_vsc_hvdc_pac_dispatch_target - Builds CPF targets with Pac dispatch.
+% PAC_SET/QAC_SET schedules are measured at the PCC; positive means
+% injection into the AC grid. PDC_SET remains a DC-terminal schedule.
 % ::
 %
 %   TARGET = MAKE_VSC_HVDC_PAC_DISPATCH_TARGET(BASE, TARGET, POLICY)

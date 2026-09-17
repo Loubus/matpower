@@ -1,0 +1,1216 @@
+{
+  "checks": [
+    {
+      "name": "both_directions_and_zero_reactive_operation",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "current_definition",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "equal_coefficients_exact_legacy_compatibility",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "invalid_coefficient_shape_rejected",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nonfinite_coefficients_rejected",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_1_method_1_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_1_method_1_independent_loss",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_1_method_1_power_balance",
+      "passed": true,
+      "error": 2.2930546350607983E-11
+    },
+    {
+      "name": "direction_1_method_2_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_1_method_2_independent_loss",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_1_method_2_power_balance",
+      "passed": true,
+      "error": 3.2700420149467391E-10
+    },
+    {
+      "name": "direction_1_solver_agreement",
+      "passed": true,
+      "error": 2.7340181496526839E-7
+    },
+    {
+      "name": "direction_2_method_1_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_2_method_1_independent_loss",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_2_method_1_power_balance",
+      "passed": true,
+      "error": 3.3550939804172231E-13
+    },
+    {
+      "name": "direction_2_method_2_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_2_method_2_independent_loss",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_2_method_2_power_balance",
+      "passed": true,
+      "error": 1.0603840028267086E-9
+    },
+    {
+      "name": "direction_2_solver_agreement",
+      "passed": true,
+      "error": 2.703152617300475E-7
+    },
+    {
+      "name": "equal_coefficients_identical_PF",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "direction_selector_uses_internal_not_PCC_sign",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "opposite_port_signs_select_positive_internal_coefficient",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "analytic_jacobian_width_0",
+      "passed": true,
+      "error": 1.4732344851575571E-10
+    },
+    {
+      "name": "analytic_jacobian_width_100",
+      "passed": true,
+      "error": 1.4732344851575571E-10
+    },
+    {
+      "name": "coefficient_derivative_P_-2",
+      "passed": true,
+      "error": 3.7470027081099033E-9
+    },
+    {
+      "name": "coefficient_derivative_P_-1",
+      "passed": true,
+      "error": 1.0173927672552097E-12
+    },
+    {
+      "name": "coefficient_derivative_P_0",
+      "passed": true,
+      "error": 9.5644152320328857E-13
+    },
+    {
+      "name": "coefficient_derivative_P_1",
+      "passed": true,
+      "error": 1.0173927672552097E-12
+    },
+    {
+      "name": "coefficient_derivative_P_2",
+      "passed": true,
+      "error": 3.7539416020138106E-9
+    },
+    {
+      "name": "cpf_smooth_power_reversal_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_actually_crossed_internal_power_zero",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_endpoint_matches_independent_PF",
+      "passed": true,
+      "error": 1.361382118147958E-8
+    },
+    {
+      "name": "cpf_loss_path_point_1",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_2",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_3",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_4",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_5",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_6",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_7",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_8",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_9",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_10",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_11",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_12",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_13",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_14",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_15",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_16",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_17",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_18",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_19",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_20",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_21",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_22",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_23",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_24",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_25",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_26",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_27",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_28",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_29",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_30",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_31",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_32",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_33",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_34",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_35",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_36",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_37",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_38",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_39",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_40",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_41",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_42",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_43",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_44",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_45",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_46",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_47",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_48",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_49",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_50",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_51",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_52",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_53",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_54",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_55",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_56",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_57",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_58",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_59",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_60",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_61",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_62",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_63",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_64",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_65",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_66",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_67",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_68",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_69",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_70",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_71",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_72",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_73",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_74",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_75",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_76",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_77",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_78",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_79",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_80",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_81",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_82",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_83",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_84",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_85",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_86",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_87",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_88",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_89",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_90",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_91",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_92",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_93",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_94",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_95",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_96",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_97",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_98",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_99",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_100",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_101",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_102",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_103",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_104",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_105",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_106",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_107",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_108",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_109",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_110",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_111",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_112",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_113",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_114",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_115",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_116",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_117",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_118",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_119",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_120",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_121",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_122",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_123",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_124",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_125",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_126",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_127",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_128",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_129",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_130",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_131",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_132",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_133",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_134",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_135",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_136",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_137",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_138",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_139",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_140",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_141",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_142",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_143",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_144",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_145",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_146",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_147",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_148",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_149",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_150",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_151",
+      "passed": true,
+      "error": 2.2204460492503131E-16
+    },
+    {
+      "name": "cpf_loss_path_point_152",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_153",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_154",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_155",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_156",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_157",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_158",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_159",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_160",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_161",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_162",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_163",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_164",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_165",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_166",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_167",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_168",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_169",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_170",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_171",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_172",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_173",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_174",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_175",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_176",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_177",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_178",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_179",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_180",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_181",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_182",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_183",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_184",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_185",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_186",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_187",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_188",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_189",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_190",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_191",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_192",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_193",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_194",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_195",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_196",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_197",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_198",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_199",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_200",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_201",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_202",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_203",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_loss_path_point_204",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "cpf_changed_equipment_data_rejected",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "sequential_cpf_smooth_reversal_success",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "sequential_cpf_crossed_internal_power_zero",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "sequential_cpf_endpoint_matches_unified_PF",
+      "passed": true,
+      "error": 5.303893644281743E-7
+    },
+    {
+      "name": "directional_metadata_savecase_roundtrip",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "roundtrip_solution",
+      "passed": true,
+      "error": 0
+    }
+  ],
+  "passed": 242,
+  "failed": 0
+}

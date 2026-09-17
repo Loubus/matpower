@@ -16,7 +16,7 @@ function mpc = psse_xfmr_update(mpc, state)
 %   Covered by the 3-clause BSD License (see LICENSE file for details).
 %   See https://matpower.org for more info.
 
-[~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
+[F_BUS, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
 [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
 
 idx = find(state.branch_idx > 0);
@@ -28,9 +28,13 @@ idx = find(state.branch_idx > 0 & state.tab_applied & ...
     ~isnan(state.nominal_r) & ~isnan(state.nominal_x));
 if ~isempty(idx) && isfield(mpc, 'psse') && isfield(mpc.psse, 'impcor')
     ratio = state.current_raw(idx);
-    k = state.cw(idx) == 2 & state.bus_idx(idx) > 0;
+    k = state.cw(idx) == 2;
     if any(k)
-        ratio(k) = ratio(k) ./ mpc.bus(state.bus_idx(idx(k)), BASE_KV);
+        rows = xfmr_base_kv_rows(mpc, state, idx(k), F_BUS);
+        ok = rows > 0;
+        ratio_k = ratio(k);
+        ratio_k(ok) = ratio_k(ok) ./ mpc.bus(rows(ok), BASE_KV);
+        ratio(k) = ratio_k;
     end
     [factor, applied] = mp.psse_xfmr_tab_factor( ...
         mpc.psse.impcor, state.tab(idx), ratio, state.ang(idx));
@@ -63,3 +67,65 @@ end
 mpc.psse.xfmr.control_current_tap = state.current_tap;
 mpc.psse.xfmr.control_current_raw = state.current_raw;
 mpc.psse.xfmr.control = mp.psse_xfmr_report(state);
+
+function rows = xfmr_base_kv_rows(mpc, state, idx, branch_bus_col)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+rows = state.bus_idx(idx);
+missing = rows <= 0;
+for kk = find(missing(:))'
+    br = state.branch_idx(idx(kk));
+    if br <= 0 || br > size(mpc.branch, 1)
+        continue;
+    end
+    b = mpc.branch(br, branch_bus_col);
+    rows(kk) = branch_bus_row(mpc, b, BUS_I);
+end
+
+function row = branch_bus_row(mpc, bus, bus_i_col)
+row = 0;
+if isnan(bus) || bus <= 0
+    return;
+end
+nb = size(mpc.bus, 1);
+if bus <= nb && abs(bus - round(bus)) < 1e-9 && ...
+        mpc.bus(bus, bus_i_col) == bus
+    row = bus;
+    return;
+end
+idx = psse_bus_map(mpc, bus);
+if idx > 0
+    row = idx;
+elseif bus <= nb && abs(bus - round(bus)) < 1e-9
+    row = bus;
+end
+
+function idx = psse_bus_map(mpc, bus)
+[~, ~, ~, ~, BUS_I] = idx_bus;
+idx = 0;
+if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
+        isfield(mpc.psse.xfmr, 'control_bus_i2e') && ...
+        ~isempty(mpc.psse.xfmr.control_bus_i2e) && ...
+        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
+    i2e = mpc.psse.xfmr.control_bus_i2e(:);
+    idx = bus_lookup(i2e, bus);
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+        isfield(mpc.order.bus, 'i2e') && ~isempty(mpc.order.bus.i2e) && ...
+        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
+    idx = bus_lookup(mpc.order.bus.i2e(:), bus);
+elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
+        isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
+    e2i = mpc.order.bus.e2i;
+    if bus <= size(e2i, 1)
+        idx = full(e2i(bus));
+    end
+else
+    idx = bus_lookup(mpc.bus(:, BUS_I), bus);
+end
+
+function idx = bus_lookup(i2e, bus)
+idx = 0;
+if bus > max(i2e)
+    return;
+end
+e2i = sparse(i2e, ones(length(i2e), 1), (1:length(i2e))', max(i2e), 1);
+idx = full(e2i(bus));

@@ -1,0 +1,22 @@
+{
+  "variant": "baseline",
+  "step": 0.05,
+  "points": 45,
+  "lambda": 1.2452543009372488,
+  "termination": {
+    "cause": "gen_capability_limit",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": 1.2452543009372488,
+    "last_accepted_index": 45,
+    "nose_detected": false,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "guard": [],
+  "history": [],
+  "physical_checks_pass": true,
+  "warning": ""
+}

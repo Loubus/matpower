@@ -1,0 +1,179 @@
+1..171
+ok 1 - mpoption() : isstruct mpopt
+ok 2 - mpoption() :  isfield mpopt.v
+not ok 3 - mpoption() :          mpopt.v == 26
+    index              got             expected      abs(got - exp)
+---------------  ----------------  ----------------  ----------------
+           (1)                27                26                 1  *
+max diff @ (1) = 1 > allowed tol of 1e-12
+
+ok 4 - mpoption() :  isfield mpopt.model
+ok 5 - mpoption() :          mpopt.model = 'AC'
+ok 6 - mpoption() :  isfield mpopt.pf
+ok 7 - mpoption() : isstruct mpopt.pf
+ok 8 - mpoption() :  isfield mpopt.pf.alg
+ok 9 - mpoption() :          mpopt.pf.alg = 'NR'
+ok 10 - mpoption() :  isfield mpopt.pf.tol
+ok 11 - mpoption() :          mpopt.pf.tol == 1e-8
+ok 12 - mpoption() :  isfield mpopt.pf.nr
+ok 13 - mpoption() : isstruct mpopt.pf.nr
+ok 14 - mpoption() :  isfield mpopt.pf.nr.max_it
+ok 15 - mpoption() :          mpopt.pf.nr.max_it == 10
+ok 16 - mpoption() :  isfield mpopt.pf.fd
+ok 17 - mpoption() : isstruct mpopt.pf.fd
+ok 18 - mpoption() :  isfield mpopt.pf.fd.max_it
+ok 19 - mpoption() :          mpopt.pf.fd.max_it == 30
+ok 20 - mpoption() :  isfield mpopt.pf.gs
+ok 21 - mpoption() : isstruct mpopt.pf.gs
+ok 22 - mpoption() :  isfield mpopt.pf.gs.max_it
+ok 23 - mpoption() :          mpopt.pf.gs.max_it == 1000
+ok 24 - mpoption() :  isfield mpopt.pf.enforce_q_lims
+ok 25 - mpoption() :          mpopt.pf.enforce_q_lims == 0
+ok 26 - mpoption() :  isfield mpopt.opf
+ok 27 - mpoption() : isstruct mpopt.opf
+ok 28 - mpoption() :  isfield mpopt.opf.ac
+ok 29 - mpoption() : isstruct mpopt.opf.ac
+ok 30 - mpoption() :  isfield mpopt.opf.ac.solver
+ok 31 - mpoption() :          mpopt.opf.ac.solver = 'DEFAULT'
+ok 32 - mpoption() :  isfield mpopt.opf.dc
+ok 33 - mpoption() : isstruct mpopt.opf.dc
+ok 34 - mpoption() :  isfield mpopt.opf.dc.solver
+ok 35 - mpoption() :          mpopt.opf.dc.solver = 'DEFAULT'
+ok 36 - mpoption() :  isfield mpopt.opf.violation
+ok 37 - mpoption() :          mpopt.opf.violation == 5e-6
+ok 38 - mpoption() :  isfield mpopt.opf.flow_lim
+ok 39 - mpoption() :          mpopt.opf.flow_lim = 'S'
+ok 40 - mpoption() :  isfield mpopt.opf.ignore_angle_lim
+ok 41 - mpoption() :          mpopt.opf.ignore_angle_lim == 0
+ok 42 - mpoption() :  isfield mpopt.opf.return_raw_der
+ok 43 - mpoption() :          mpopt.opf.return_raw_der == 0
+ok 44 - mpoption() :  isfield mpopt.out
+ok 45 - mpoption() : isstruct mpopt.out
+ok 46 - mpoption() :  isfield mpopt.out.all
+ok 47 - mpoption() :          mpopt.out.all == -1
+ok 48 - mpoption() :  isfield mpopt.out.sys_sum
+ok 49 - mpoption() :          mpopt.out.sys_sum == 1
+ok 50 - mpoption() :  isfield mpopt.out.area_sum
+ok 51 - mpoption() :          mpopt.out.area_sum == 0
+ok 52 - mpoption() :  isfield mpopt.out.bus
+ok 53 - mpoption() :          mpopt.out.bus == 1
+ok 54 - mpoption() :  isfield mpopt.out.branch
+ok 55 - mpoption() :          mpopt.out.branch == 1
+ok 56 - mpoption() :  isfield mpopt.out.gen
+ok 57 - mpoption() :          mpopt.out.gen == 0
+ok 58 - mpoption() :  isfield mpopt.out.lim
+ok 59 - mpoption() : isstruct mpopt.out.lim
+ok 60 - mpoption() :  isfield mpopt.out.lim.all
+ok 61 - mpoption() :          mpopt.out.lim.all == -1
+ok 62 - mpoption() :  isfield mpopt.out.lim.v
+ok 63 - mpoption() :          mpopt.out.lim.v == 1
+ok 64 - mpoption() :  isfield mpopt.out.lim.line
+ok 65 - mpoption() :          mpopt.out.lim.line == 1
+ok 66 - mpoption() :  isfield mpopt.out.lim.pg
+ok 67 - mpoption() :          mpopt.out.lim.pg == 1
+ok 68 - mpoption() :  isfield mpopt.out.lim.qg
+ok 69 - mpoption() :          mpopt.out.lim.qg == 1
+ok 70 - mpoption() :  isfield mpopt.out.force
+ok 71 - mpoption() :          mpopt.out.force == 0
+ok 72 - mpoption() :  isfield mpopt.verbose
+ok 73 - mpoption() :          mpopt.verbose == 1
+ok 74 - mpoption() :  isfield mpopt.exp
+ok 75 - mpoption() :          isstruct(mpopt.exp)
+ok 76 - mpoption() :  isfield mpopt.exp.sys_wide_zip_loads
+ok 77 - mpoption() :          isstruct(mpopt.exp.sys_wide_zip_loads)
+ok 78 - mpoption() :  isfield mpopt.exp.sys_wide_zip_loads.pw
+ok 79 - mpoption() :          isempty(mpopt.exp.sys_wide_zip_loads.pw)
+ok 80 - mpoption() :  isfield mpopt.exp.sys_wide_zip_loads.qw
+ok 81 - mpoption() :          isempty(mpopt.exp.sys_wide_zip_loads.pw)
+ok 82 - mpoption() :  isfield mpopt.vsc_mtdc
+ok 83 - mpoption() :          isstruct(mpopt.vsc_mtdc)
+ok 84 - mpoption() :          mpopt.vsc_mtdc.method = 'unified'
+ok 85 - mpoption() :          isempty(mpopt.vsc_mtdc.max_it)
+ok 86 - mpoption() :          mpopt.vsc_mtdc.dc_max_it == 20
+ok 87 - mpoption() :          mpopt.vsc_mtdc.cpf_max_it == 200
+ok 88 - mpoption() :          mpopt.vsc_mtdc.cpf_max_lam == 5
+ok 89 - mpoption() :          isempty(mpopt.vsc_mtdc.cpf_policies)
+ok 90 - mpoption() :          mpopt.vsc_mtdc.capability_enforce == 0
+ok 91 - mpoption() :          mpopt.vsc_mtdc.capability_limit = 'stop'
+ok 92 - mpoption() :          mpopt.vsc_mtdc.capability_max_it == 10
+ok 93 - mpoption() :          mpopt.vsc_mtdc.capability_vsc_vmax == 1.15
+ok 94 - mpoption() :          mpopt.vsc_mtdc.capability_gen_type == 2
+ok 95 - mpoption(mpoption(), []) == mpoption_old()
+ok 96 - mpoption(ov) : mpopt.verbose
+ok 97 - mpoption(ov) : mpopt.model
+ok 98 - mpoption(ov) : mpopt.opf.dc.solver
+ok 99 - mpoption(ov) : everything else
+ok 100 - mpoption('t_mpoption_ov') : mpopt.verbose
+ok 101 - mpoption('t_mpoption_ov') : mpopt.model
+ok 102 - mpoption('t_mpoption_ov') : mpopt.opf.dc.solver
+ok 103 - mpoption('t_mpoption_ov') : everything else
+ok 104 - mpoption(<new-style pairs>) : mpopt.verbose
+ok 105 - mpoption(<new-style pairs>) : mpopt.model
+ok 106 - mpoption(<new-style pairs>) : mpopt.opf.dc.solver
+ok 107 - mpoption(<new-style pairs>) : everything else
+ok 108 - mpoption(<vsc_mtdc pairs>) : mpopt.vsc_mtdc.method
+ok 109 - mpoption(<vsc_mtdc pairs>) : mpopt.vsc_mtdc.capability_enforce
+ok 110 - mpoption(<vsc_mtdc pairs>) : mpopt.vsc_mtdc.capability_limit
+ok 111 - mpoption(<vsc_mtdc pairs>) : mpopt.vsc_mtdc.cpf_max_lam
+ok 112 - mpoption(<vsc_mtdc pairs>) : mpopt.vsc_mtdc.cpf_policies
+ok 113 - mpoption(<vsc_mtdc pairs>) : rejects invalid VSC-MTDC option
+ok 114 - mpoption(<old-style pairs>) : mpopt.verbose
+ok 115 - mpoption(<old-style pairs>) : mpopt.model
+ok 116 - mpoption(<old-style pairs>) : mpopt.opf.dc.solver
+ok 117 - mpoption(<old-style pairs>) : mpopt.mips.step_control
+ok 118 - mpoption(<old-style pairs>) : everything else
+ok 119 - mpoption(default_mpopt_v) : 
+ok 120 - mpoption(mpopt_v) : mpopt.verbose
+ok 121 - mpoption(mpopt_v) : mpopt.model
+ok 122 - mpoption(mpopt_v) : mpopt.opf.dc.solver
+ok 123 - mpoption(mpopt_v) : mpopt.mips.step_control
+ok 124 - mpoption(mpopt_v) : everything else
+ok 125 - mpoption(mpopt_v, ov) : mpopt.verbose
+ok 126 - mpoption(mpopt_v, ov) : mpopt.model
+ok 127 - mpoption(mpopt_v, ov) : mpopt.opf.dc.solver
+ok 128 - mpoption(mpopt_v, ov) : mpopt.mips.step_control
+ok 129 - mpoption(mpopt_v, ov) : mpopt.opf.ac.solver
+ok 130 - mpoption(mpopt_v, ov) : everything else
+ok 131 - mpoption(mpopt_v, 't_mpoption_ov') : mpopt.verbose
+ok 132 - mpoption(mpopt_v, 't_mpoption_ov') : mpopt.model
+ok 133 - mpoption(mpopt_v, 't_mpoption_ov') : mpopt.opf.dc.solver
+ok 134 - mpoption(mpopt_v, 't_mpoption_ov') : mpopt.mips.step_control
+ok 135 - mpoption(mpopt_v, 't_mpoption_ov') : everything else
+ok 136 - mpoption(mpopt_v, <new-style pairs>) : mpopt.verbose
+ok 137 - mpoption(mpopt_v, <new-style pairs>) : mpopt.model
+ok 138 - mpoption(mpopt_v, <new-style pairs>) : mpopt.opf.dc.solver
+ok 139 - mpoption(mpopt_v, <new-style pairs>) : mpopt.mips.step_control
+ok 140 - mpoption(mpopt_v, <new-style pairs>) : mpopt.opf.ac.solver
+ok 141 - mpoption(mpopt_v, <new-style pairs>) : everything else
+ok 142 - mpoption(mpopt_v, <old-style pairs>) : mpopt.verbose
+ok 143 - mpoption(mpopt_v, <old-style pairs>) : mpopt.model
+ok 144 - mpoption(mpopt_v, <old-style pairs>) : mpopt.opf.dc.solver
+ok 145 - mpoption(mpopt_v, <old-style pairs>) : mpopt.mips.step_control
+ok 146 - mpoption(mpopt_v, <old-style pairs>) : mpopt.opf.ac.solver
+ok 147 - mpoption(mpopt_v, <old-style pairs>) : everything else
+ok 148 - mpoption(mpopt) : unchanged
+ok 149 - mpoption(mpopt, ov) : mpopt.verbose
+ok 150 - mpoption(mpopt, ov) : mpopt.model
+ok 151 - mpoption(mpopt, ov) : mpopt.opf.dc.solver
+ok 152 - mpoption(mpopt, ov) : mpopt.out.gen
+ok 153 - mpoption(mpopt, ov) : mpopt.opf.ac.solver
+ok 154 - mpoption(mpopt, ov) : everything else
+ok 155 - mpoption(mpopt, 't_mpoption_ov') : mpopt.verbose
+ok 156 - mpoption(mpopt, 't_mpoption_ov') : mpopt.model
+ok 157 - mpoption(mpopt, 't_mpoption_ov') : mpopt.opf.dc.solver
+ok 158 - mpoption(mpopt, 't_mpoption_ov') : mpopt.out.gen
+ok 159 - mpoption(mpopt, 't_mpoption_ov') : everything else
+ok 160 - mpoption(mpopt, <new-style pairs>) : mpopt.verbose
+ok 161 - mpoption(mpopt, <new-style pairs>) : mpopt.model
+ok 162 - mpoption(mpopt, <new-style pairs>) : mpopt.opf.dc.solver
+ok 163 - mpoption(mpopt, <new-style pairs>) : mpopt.out.gen
+ok 164 - mpoption(mpopt, <new-style pairs>) : mpopt.opf.ac.solver
+ok 165 - mpoption(mpopt, <new-style pairs>) : everything else
+ok 166 - mpoption(mpopt, <old-style pairs>) : mpopt.verbose
+ok 167 - mpoption(mpopt, <old-style pairs>) : mpopt.model
+ok 168 - mpoption(mpopt, <old-style pairs>) : mpopt.opf.dc.solver
+ok 169 - mpoption(mpopt, <old-style pairs>) : mpopt.out.gen
+ok 170 - mpoption(mpopt, <old-style pairs>) : mpopt.opf.ac.solver
+ok 171 - mpoption(mpopt, <old-style pairs>) : everything else
+Ran 171 of 171 tests: 170 passed, 1 failed
+Elapsed time 0.16 seconds.

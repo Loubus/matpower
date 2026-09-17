@@ -1,0 +1,416 @@
+{
+  "review_date": "2026-09-10",
+  "status": "Upstream inputs collected and hash-verified after relocation; not converted or numerically validated. Local case snapshots preserve the existing project data.",
+  "files": [
+    {
+      "path": "ieee/upstream/PowerModelsACDC/LICENSE.md",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/LICENSE.md",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 1524,
+      "sha256": "fce9a8bfab4ad642d6d620a6d249f81920d1fe68cc4e7afb279d85e5c8e8c867"
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/README.md",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/README.md",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 6557,
+      "sha256": "085407f3fd1c4f7c82dee72122a36c08ea242658b26ba218f23b3a2c9123fded"
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case5_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case5_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 4291,
+      "sha256": "495495088cd7e64abb8dd60b6b89011578b628afc60c9ef1fdbe8af6d137266b"
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case24_3zones_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case24_3zones_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 23940,
+      "sha256": "397245a4f39aa8b754277a4616a8dcda8eb894ce2453ad2e7730b739932a40af"
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case39_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case39_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 14346,
+      "sha256": "349720e80e4968327cfd4948e6348ef017698cc39d336270d965a9197f8810f9"
+    },
+    {
+      "path": "nordic/upstream/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/LICENSE",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "nordic/upstream/README.md",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/README.md",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 7044,
+      "sha256": "144c5c50127b6fc7ea5df36ee9b424fd8b1b0e69a20d24d32b57d66daeaf4e8d"
+    },
+    {
+      "path": "nordic/upstream/lf_A.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/lf_A.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 13609,
+      "sha256": "4593067bda44e9cd67e24f30281e8cc43716cb17ee6053470677c88febb5bcde"
+    },
+    {
+      "path": "nordic/upstream/lf_B.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/lf_B.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 14096,
+      "sha256": "ef12d35833ec768d499c105c78454af3e1c0b90a6957ae1b91b2350319932960"
+    },
+    {
+      "path": "cigre/upstream/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsTopologicalActions.jl/83db29405c522311c10fc681935291861c80ff17/LICENSE",
+      "revision": "83db29405c522311c10fc681935291861c80ff17",
+      "archive_member": null,
+      "bytes": 1497,
+      "sha256": "e59a97166004fe7b19d24fed8bb0fc318002ccbb2914cc1746c57f63997f2cdd"
+    },
+    {
+      "path": "cigre/upstream/test/data_sources/cigre_b4_dc_grid.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsTopologicalActions.jl/83db29405c522311c10fc681935291861c80ff17/test/data_sources/cigre_b4_dc_grid.m",
+      "revision": "83db29405c522311c10fc681935291861c80ff17",
+      "archive_member": null,
+      "bytes": 7406,
+      "sha256": "0b055f41bda66cd1fea2fcd27fb0c8c9ab6bc0dd2532933171de1c7b28532f5e"
+    },
+    {
+      "path": "beerten/upstream/MatACDC1_0.zip",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0 official archive",
+      "archive_member": null,
+      "bytes": 642557,
+      "sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_HVDCptp.m",
+      "bytes": 1679,
+      "sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCdroop.m",
+      "bytes": 2182,
+      "sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCslack.m",
+      "bytes": 2043,
+      "sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case24_ieee_rts1996_MTDC.m",
+      "bytes": 3055,
+      "sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones.m",
+      "bytes": 17166,
+      "sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case5_stagg.m",
+      "bytes": 1906,
+      "sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones_inf.m",
+      "bytes": 17453,
+      "sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa"
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case3_inf.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case3_inf.m",
+      "bytes": 897,
+      "sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6"
+    },
+    {
+      "path": "nordic/upstream/dyn_A.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/dyn_A.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 14813,
+      "sha256": "01c6a82c293feec024c1d04b6c91daae2d8b2fa22dc1e5ca84a51c4bd5426820"
+    },
+    {
+      "path": "nordic/upstream/dyn_B.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/dyn_B.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 13673,
+      "sha256": "9b0d47b26813fcb045f603b2fac8cf47cd7e9f43a3835a4a8fb437b1221c6e1a"
+    }
+  ],
+  "literal_matrix_row_counts": [
+    {
+      "path": "cigre/upstream/test/data_sources/cigre_b4_dc_grid.m",
+      "bus_literal_rows": 11,
+      "gen_literal_rows": 8,
+      "branch_literal_rows": 8,
+      "busdc_literal_rows": 15,
+      "convdc_literal_rows": 11,
+      "branchdc_literal_rows": 17
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "bus_literal_rows": 50,
+      "gen_literal_rows": 65,
+      "branch_literal_rows": 77
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "bus_literal_rows": 49,
+      "gen_literal_rows": 64,
+      "branch_literal_rows": 76
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "busdc_literal_rows": 7,
+      "convdc_literal_rows": 7,
+      "branchdc_literal_rows": 7
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case3_inf.m",
+      "bus_literal_rows": 3
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg.m",
+      "bus_literal_rows": 5,
+      "gen_literal_rows": 2,
+      "branch_literal_rows": 7
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "busdc_literal_rows": 2,
+      "convdc_literal_rows": 2,
+      "branchdc_literal_rows": 1
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    },
+    {
+      "path": "beerten/upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case24_3zones_acdc.m",
+      "bus_literal_rows": 50,
+      "gen_literal_rows": 65,
+      "branch_literal_rows": 77,
+      "busdc_literal_rows": 7,
+      "convdc_literal_rows": 7,
+      "branchdc_literal_rows": 7
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case39_acdc.m",
+      "bus_literal_rows": 39,
+      "gen_literal_rows": 10,
+      "branch_literal_rows": 46,
+      "busdc_literal_rows": 10,
+      "convdc_literal_rows": 10,
+      "branchdc_literal_rows": 12
+    },
+    {
+      "path": "ieee/upstream/PowerModelsACDC/test/data/case5_acdc.m",
+      "bus_literal_rows": 5,
+      "gen_literal_rows": 2,
+      "branch_literal_rows": 7,
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    }
+  ],
+  "path_base": "cases/",
+  "local_case_snapshots": [
+    {
+      "path": "full_network/raw/V26p_Trs_2532.raw",
+      "original_project_path": "PSSE/V26p_Trs_2532.raw",
+      "sha256": "9711a9049066a2f0db0d0c21548cadd483a667c94d3a9315c8d2f7da16d99541",
+      "bytes": 3387817,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "ieee/14/case14.m",
+      "original_project_path": "matpower/data/case14.m",
+      "sha256": "9b8626e4ff5f26df428c1caf4bb5ca5b468c2f9233ad2661e17053b0f09c0929",
+      "bytes": 4726,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "ieee/30/case_ieee30.m",
+      "original_project_path": "matpower/data/case_ieee30.m",
+      "sha256": "02cd8d83a9be68d94b6297fce181a7d712d027c937042261983c32d11b8f93e6",
+      "bytes": 8263,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "ieee/39/case39.m",
+      "original_project_path": "matpower/data/case39.m",
+      "sha256": "e3e44af0f0112fdd3ebd2c88210b2238698f8215d30ad0c9e628eee9e1fa0c6b",
+      "bytes": 9833,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "ieee/57/case57.m",
+      "original_project_path": "matpower/data/case57.m",
+      "sha256": "7d0fc9fc4470391cf303b56ca72fda92d526aeac9533ea964c88d5c9ce664e8a",
+      "bytes": 14016,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_all_controls_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_all_controls_explicit.m",
+      "sha256": "4b7c52d0bfc3049327b085f8802edd6aaceb545596c473c60f9a187c7f9f62e3",
+      "bytes": 6758,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_all_controls_target_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_all_controls_target_explicit.m",
+      "sha256": "592dd9879fca1cef112d1d1cd5e424e94ccdc23eb43a46de36be08dd03564999",
+      "bytes": 7642,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_all_controls_target.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_all_controls_target.m",
+      "sha256": "67bc2615a5b2068ea321acbc19cf6ce3eacad022320862c9e5edd9c5be656072",
+      "bytes": 1046,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_all_controls.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_all_controls.m",
+      "sha256": "4162b199178bbc52b3a833590160764390f1e866489417e05cb8b8c3cbc89c16",
+      "bytes": 2375,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_droop_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_droop_explicit.m",
+      "sha256": "e1e746177859123360d65706f80242eea263214067d59a9333f36a2e54bb1f05",
+      "bytes": 5171,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_droop_target_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_droop_target_explicit.m",
+      "sha256": "9abde833c1fed3baea424b07f605062ccb5c8d666707a3ce3f215e88b7158fe4",
+      "bytes": 5000,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_droop_target.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_droop_target.m",
+      "sha256": "b3de55e21c994276ca49ffd80584c1c997c82d68480ae372221a970d3eb558cc",
+      "bytes": 1192,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_droop.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_droop.m",
+      "sha256": "6ca7dc06b6890a40154fd016e3fb4814bb7241f09e85210763064ff0235a89b8",
+      "bytes": 1810,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_target.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_target.m",
+      "sha256": "22c4d42a4d4d571dcd3cd1c664539cb5cbf8cc5e2a98d8106f2aecda9989a2de",
+      "bytes": 690,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt_target.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt_target.m",
+      "sha256": "25dd0d93200656138d947e74d01dd64da46e4868277d016ae6696dcce5b87f90",
+      "bytes": 725,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt.m",
+      "sha256": "28016fc9d8c672c9576e56cb8e42a0b11b574ae9f7fbfc5b913af6b40a353f77",
+      "bytes": 1479,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch.m",
+      "sha256": "e8f5f74f1b0e999919c89b6c12c3274a6f28942c250dcca9ce81a23f1adb6f1d",
+      "bytes": 1929,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_paper_controls_cap_explicit.m",
+      "sha256": "81e42aaa187438d0351ccaa1bbf63e7ef94300820cfa370bfe1aafebaf5c247f",
+      "bytes": 9256,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit.m",
+      "sha256": "f796c7da82c135eec123429f1eb2fecc94b0bed8a8d557ec0d7ce457f69f8e5e",
+      "bytes": 1728,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten_ultc_swshunt.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten_ultc_swshunt.m",
+      "sha256": "dc30ac369300747b44d17b0445f47989eb0d8e2082b6b76e93e222c2fccb91d1",
+      "bytes": 5155,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    },
+    {
+      "path": "beerten/variants/case5_vsc_mtdc_beerten.m",
+      "original_project_path": "matpower/data/case5_vsc_mtdc_beerten.m",
+      "sha256": "f4395b040338f33a1ebc58da1e6782b6daef19f458e27bcc5eb958d2b43f371b",
+      "bytes": 3338,
+      "status": "Unmodified snapshot of existing local input; source comments retained."
+    }
+  ]
+}

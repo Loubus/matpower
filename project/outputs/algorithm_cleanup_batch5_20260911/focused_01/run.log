@@ -1,0 +1,78 @@
+1..75
+ok 1 - outcome: automatic target remains unsuccessful under unchanged options
+ok 2 - trace_preserved: exact historical accepted electrical trace
+ok 3 - bound: shunt bound, not a tap rejection
+ok 4 - no_correction: no discrete change or electrical re-correction at rejected point
+ok 5 - candidate_solved: rejected control candidate has a converged full electrical solve
+ok 6 - scoped_convergence: electrical convergence applies only to exported accepted point
+ok 7 - last_accepted: candidate is excluded from accepted trace and result arrays
+ok 8 - no_nose: failed endpoint is neither requested target nor a validated stability margin
+ok 9 - message: message names actual rejection
+ok 10 - no_recovery: no new freeze or lockout policy
+ok 11 - threshold: last accepted and rejected points bracket unchanged voltage tolerance at maximum B
+ok 12 - tap_in_band: ULTC regulated bus remains in band
+ok 13 - active_set: no generator, bus or converter mode switch at rejected candidate
+ok 14 - capability: original generator and converter capability audit passes
+ok 15 - accepted.balance: full AC 1.67e-10 DC 6.99e-15 converter 3.94e-15 pu
+ok 16 - candidate.balance: full AC 1.42e-09 DC 1.44e-14 converter 1.17e-14 pu
+ok 17 - point1.fixed: independent full PF matches accepted state
+ok 18 - point2.fixed: independent full PF matches accepted state
+ok 19 - point3.fixed: independent full PF matches accepted state
+ok 20 - point4.fixed: independent full PF matches accepted state
+ok 21 - point5.fixed: independent full PF matches accepted state
+ok 22 - point6.fixed: independent full PF matches accepted state
+ok 23 - point7.fixed: independent full PF matches accepted state
+ok 24 - point8.fixed: independent full PF matches accepted state
+ok 25 - point9.fixed: independent full PF matches accepted state
+ok 26 - point10.fixed: independent full PF matches accepted state
+ok 27 - fixed0.41055752.B0.balance: full AC 5.86e-10 DC 7.11e-15 converter 1.31e-15 pu
+ok 28 - fixed0.41055752.B0.solved: full PF converges with original equations and limits
+ok 29 - fixed0.41055752.B5.balance: full AC 1.41e-09 DC 8.88e-16 converter 5.27e-15 pu
+ok 30 - fixed0.41055752.B5.solved: full PF converges with original equations and limits
+ok 31 - fixed0.41055752.B10.balance: full AC 2.12e-11 DC 1.25e-14 converter 1.27e-15 pu
+ok 32 - fixed0.41055752.B10.solved: full PF converges with original equations and limits
+ok 33 - fixed0.41055752.B15.balance: full AC 1.65e-10 DC 1.45e-14 converter 3.55e-17 pu
+ok 34 - fixed0.41055752.B15.solved: full PF converges with original equations and limits
+ok 35 - fixed0.41070470.B0.balance: full AC 3.89e-11 DC 1.13e-14 converter 2.46e-15 pu
+ok 36 - fixed0.41070470.B0.solved: full PF converges with original equations and limits
+ok 37 - fixed0.41070470.B0.outside_band: all legal B states remain below the band
+ok 38 - fixed0.41070470.B5.balance: full AC 5.72e-10 DC 5.94e-15 converter 7.64e-15 pu
+ok 39 - fixed0.41070470.B5.solved: full PF converges with original equations and limits
+ok 40 - fixed0.41070470.B5.outside_band: all legal B states remain below the band
+ok 41 - fixed0.41070470.B10.balance: full AC 1.38e-10 DC 5.66e-15 converter 4.03e-15 pu
+ok 42 - fixed0.41070470.B10.solved: full PF converges with original equations and limits
+ok 43 - fixed0.41070470.B10.outside_band: all legal B states remain below the band
+ok 44 - fixed0.41070470.B15.balance: full AC 1.42e-09 DC 1.4e-14 converter 3.43e-15 pu
+ok 45 - fixed0.41070470.B15.solved: full PF converges with original equations and limits
+ok 46 - fixed0.41070470.B15.outside_band: all legal B states remain below the band
+ok 47 - candidate_pf_match: independent full PF reproduces rejected candidate voltage
+ok 48 - fixed0.42000000.B0.balance: full AC 1.31e-10 DC 1.08e-14 converter 5.35e-16 pu
+ok 49 - fixed0.42000000.B0.solved: full PF converges with original equations and limits
+ok 50 - fixed0.42000000.B0.outside_band: all legal B states remain below the band
+ok 51 - fixed0.42000000.B5.balance: full AC 5.71e-10 DC 3.77e-15 converter 1.86e-15 pu
+ok 52 - fixed0.42000000.B5.solved: full PF converges with original equations and limits
+ok 53 - fixed0.42000000.B5.outside_band: all legal B states remain below the band
+ok 54 - fixed0.42000000.B10.balance: full AC 5.79e-10 DC 1.11e-14 converter 4.03e-15 pu
+ok 55 - fixed0.42000000.B10.solved: full PF converges with original equations and limits
+ok 56 - fixed0.42000000.B10.outside_band: all legal B states remain below the band
+ok 57 - fixed0.42000000.B15.balance: full AC 4.85e-10 DC 2.11e-15 converter 1.77e-15 pu
+ok 58 - fixed0.42000000.B15.solved: full PF converges with original equations and limits
+ok 59 - fixed0.42000000.B15.outside_band: all legal B states remain below the band
+ok 60 - fixed0.45000000.B0.balance: full AC 1.43e-09 DC 9.71e-15 converter 6.51e-16 pu
+ok 61 - fixed0.45000000.B0.solved: full PF converges with original equations and limits
+ok 62 - fixed0.45000000.B0.outside_band: all legal B states remain below the band
+ok 63 - fixed0.45000000.B5.balance: full AC 1.8e-10 DC 6e-15 converter 3.37e-15 pu
+ok 64 - fixed0.45000000.B5.solved: full PF converges with original equations and limits
+ok 65 - fixed0.45000000.B5.outside_band: all legal B states remain below the band
+ok 66 - fixed0.45000000.B10.balance: full AC 1.5e-09 DC 1.13e-14 converter 2.77e-15 pu
+ok 67 - fixed0.45000000.B10.solved: full PF converges with original equations and limits
+ok 68 - fixed0.45000000.B10.outside_band: all legal B states remain below the band
+ok 69 - fixed0.45000000.B15.balance: full AC 7.23e-10 DC 1.39e-14 converter 6.05e-15 pu
+ok 70 - fixed0.45000000.B15.solved: full PF converges with original equations and limits
+ok 71 - fixed0.45000000.B15.outside_band: all legal B states remain below the band
+ok 72 - step0.05: same control boundary bracket with finer continuation step
+ok 73 - step0.025: same control boundary bracket with finer continuation step
+ok 74 - requested_success: short requested endpoint is explicitly reached
+ok 75 - nose_request_bound: legacy successful bound stop is explicit and is not a detected nose
+All tests successful (75 of 75)
+Elapsed time 0.01 seconds.

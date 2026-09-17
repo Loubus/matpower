@@ -1,0 +1,8 @@
+{
+  "source_folder": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\cpf_capability_recommendations_20260916\\..\\ultc_swshunt_g2_150mw_20260916",
+  "fixed_voltage": 0.96724425260156655,
+  "Q_cut_fraction": 0.001,
+  "current_reserve_at_saved_P_percent": 0.098124190852411086,
+  "current_reserve_at_rho_0_8_percent": 0.03598847585196685,
+  "current_reserve_at_rho_0_99_percent": 0.0019890247811016337
+}

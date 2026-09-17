@@ -1,0 +1,13 @@
+Proyecto listo. MATPOWER: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\matpower\lib\runpf_psse.m
+Compared 69 cases. Successful MATPOWER: 69. Voltage review (>0.005 pu or failure): 7
+                   case_name                    success     max_dVM     max_dVA
+    ________________________________________    _______    _________    _______
+
+    {'suite_m_integrated_14bus_dctaps0.raw'}     true      0.0068241    0.87179
+    {'suite_m_integrated_14bus_flatst1.raw'}     true      0.0067954    0.87152
+    {'suite_m_integrated_14bus_nominal.raw'}     true      0.0067954    0.87152
+    {'suite_m_integrated_14bus_varlim0.raw'}     true      0.0067954    0.87152
+    {'suite_s_40bus_dctaps0.raw'           }     true      0.0075851     0.9089
+    {'suite_s_40bus_nominal.raw'           }     true      0.0075751     0.9069
+    {'suite_s_40bus_varlim0.raw'           }     true      0.0087851     1.0716
+

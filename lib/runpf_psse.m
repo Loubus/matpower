@@ -575,7 +575,7 @@ end
 if isfield(results, 'psse')
     results.psse.solver_options = psse_solver_policy;
 end
-if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse)
+if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse, results)
     mpc_retry = mpc_psse_source;
     if isfield(mpc_retry, 'psse') && isfield(mpc_retry.psse, 'swdev')
         mpc_retry.psse = rmfield(mpc_retry.psse, 'swdev');
@@ -753,9 +753,15 @@ else
     TorF = 0;
 end
 
-function TorF = psse_swdev_retry_needed(swdev_collapse)
+function TorF = psse_swdev_retry_needed(swdev_collapse, results)
 TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
     swdev_collapse.active;
+if TorF && isfield(results, 'psse') && ...
+        isfield(results.psse, 'control_failure') && ...
+        isfield(results.psse.control_failure, 'stage') && ...
+        strcmp(results.psse.control_failure.stage, 'control_settlement')
+    TorF = 0;
+end
 
 function TorF = psse_twodc_aux_voltage_retry_needed(results, mpopt)
 TorF = 0;

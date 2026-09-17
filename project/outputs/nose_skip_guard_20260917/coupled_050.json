@@ -1,0 +1,88 @@
+{
+  "variant": "coupled",
+  "step": 0.05,
+  "points": 47,
+  "lambda": 1.2456408102088585,
+  "termination": {
+    "cause": "control_transition_turn_bracket",
+    "success": false,
+    "success_scope": "guard_stop_not_certified_nose",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": 1.2456408102088585,
+    "last_accepted_index": 47,
+    "nose_detected": false,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "guard": {
+    "classification": "control_transition_turn_bracket",
+    "lambda_low": 1.2456408102088585,
+    "lambda_high": 1.2456731963487955,
+    "bracket_width": 3.2386139936946279E-5,
+    "event_tolerance": 1E-5,
+    "within_event_tolerance": false,
+    "refinements": 4,
+    "local_nose_certified": false
+  },
+  "history": [
+    {
+      "last_lambda": 1.2454782349055451,
+      "pre_control_lambda": 1.2457378397813561,
+      "post_control_lambda": 1.2457378397813561,
+      "trial_step": 0.0015625,
+      "tangent_before": 0.16702705038252652,
+      "tangent_after": 0.018289886422645715,
+      "orientation_dot": -0.94922646416540168,
+      "G2_Q_before": 112.28691336165906,
+      "G2_Q_pre_control": 112.57740714300388,
+      "G2_mode_before": 2,
+      "G2_mode_after": 1,
+      "rollback_verified": true
+    },
+    {
+      "last_lambda": 1.2456083810842145,
+      "pre_control_lambda": 1.2457378396604752,
+      "post_control_lambda": 1.2457378396604752,
+      "trial_step": 0.00078125,
+      "tangent_before": 0.16614714779310633,
+      "tangent_after": 0.018289893179871224,
+      "orientation_dot": -0.94943955788254486,
+      "G2_Q_before": 112.43214417749903,
+      "G2_Q_pre_control": 112.57740700738412,
+      "G2_mode_before": 2,
+      "G2_mode_after": 1,
+      "rollback_verified": true
+    },
+    {
+      "last_lambda": 1.2456083810842145,
+      "pre_control_lambda": 1.2456731963505221,
+      "post_control_lambda": 1.2456731963505221,
+      "trial_step": 0.000390625,
+      "tangent_before": 0.16614714779310633,
+      "tangent_after": 0.021589525864634432,
+      "orientation_dot": -0.94864919806866865,
+      "G2_Q_before": 112.43214417749903,
+      "G2_Q_pre_control": 112.5047715915328,
+      "G2_mode_before": 2,
+      "G2_mode_after": 1,
+      "rollback_verified": true
+    },
+    {
+      "last_lambda": 1.2456408102088585,
+      "pre_control_lambda": 1.2456731963487955,
+      "post_control_lambda": 1.2456731963487955,
+      "trial_step": 0.0001953125,
+      "tangent_before": 0.16592708037574633,
+      "tangent_after": 0.021589525932006179,
+      "orientation_dot": -0.9487031882985425,
+      "G2_Q_before": 112.46845688366244,
+      "G2_Q_pre_control": 112.50477158988656,
+      "G2_mode_before": 2,
+      "G2_mode_after": 1,
+      "rollback_verified": true
+    }
+  ],
+  "physical_checks_pass": true,
+  "warning": ""
+}

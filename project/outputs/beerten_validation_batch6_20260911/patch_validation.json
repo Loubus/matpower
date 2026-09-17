@@ -1,0 +1,74 @@
+{
+  "baseline": "before/ working-file snapshots, not Git HEAD",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.eol=lf",
+        "apply",
+        "--check",
+        "--whitespace=nowarn",
+        "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\beerten_validation_batch6_20260911\\batch6.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.eol=lf",
+        "apply",
+        "--whitespace=nowarn",
+        "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\beerten_validation_batch6_20260911\\batch6.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": {
+    "docs/BENCHMARKS.md": {
+      "applied_sha256": "c3a2c54cdb4c484e1dce415b596f95219926a9e8eb45e33c43c9ac4e14bf5347",
+      "working_sha256": "c3a2c54cdb4c484e1dce415b596f95219926a9e8eb45e33c43c9ac4e14bf5347",
+      "byte_identical": true
+    },
+    "matpower/lib/runcpf_vsc_mtdc.m": {
+      "applied_sha256": "eb1fb0ada54d5a68af335a952da09344adf2e6d97a5b363944138d0573a42f84",
+      "working_sha256": "eb1fb0ada54d5a68af335a952da09344adf2e6d97a5b363944138d0573a42f84",
+      "byte_identical": true
+    },
+    "matpower/lib/runpf_vsc_mtdc_unified.m": {
+      "applied_sha256": "1cec1bec0fa6b08be7c02e3fb91b3d01c6907da0af3a853f20ce43ca32add52b",
+      "working_sha256": "1cec1bec0fa6b08be7c02e3fb91b3d01c6907da0af3a853f20ce43ca32add52b",
+      "byte_identical": true
+    },
+    "tests/README.md": {
+      "applied_sha256": "02700078e3c4f9542d2a435c3480197da11c86e7a75b632088646e3a98fa726c",
+      "working_sha256": "02700078e3c4f9542d2a435c3480197da11c86e7a75b632088646e3a98fa726c",
+      "byte_identical": true
+    },
+    "tests/t_beerten_reporting_batch6.m": {
+      "applied_sha256": "54834f36afc55dc4317392068dd51b8aebc0f2d2952fb7e1e74f66bb20fbd46f",
+      "working_sha256": "54834f36afc55dc4317392068dd51b8aebc0f2d2952fb7e1e74f66bb20fbd46f",
+      "byte_identical": true
+    },
+    "tests/t_beerten_capability_batch6.m": {
+      "applied_sha256": "761f54d0e65593dad4fd128f82fdcc706f4b25a2ff6719f3de7f8d1ce58e47bd",
+      "working_sha256": "761f54d0e65593dad4fd128f82fdcc706f4b25a2ff6719f3de7f8d1ce58e47bd",
+      "byte_identical": true
+    },
+    "studies/beerten/beerten_constant_pq_capability_batch6.m": {
+      "applied_sha256": "814fdc23d85466337c05390f621d9052092b21525165d232c6975bc2c6203288",
+      "working_sha256": "814fdc23d85466337c05390f621d9052092b21525165d232c6975bc2c6203288",
+      "byte_identical": true
+    }
+  },
+  "passed": true
+}

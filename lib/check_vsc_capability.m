@@ -106,10 +106,6 @@ function V = vsc_voltage(vsc, row, c)
 if size(vsc, 2) >= c.VAC_PCC && isfinite(vsc(row, c.VAC_PCC)) && ...
         vsc(row, c.VAC_PCC) > 0
     V = vsc(row, c.VAC_PCC);
-elseif size(vsc, 2) >= c.VAC_INTERNAL && ...
-        isfinite(vsc(row, c.VAC_INTERNAL)) && ...
-        vsc(row, c.VAC_INTERNAL) > 0
-    V = vsc(row, c.VAC_INTERNAL);
 else
     V = vsc(row, c.VAC_SET);
 end

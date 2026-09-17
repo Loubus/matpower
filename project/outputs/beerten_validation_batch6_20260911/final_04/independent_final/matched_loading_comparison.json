@@ -1,0 +1,74 @@
+[
+  {
+    "lambda": 0,
+    "total_MW": 165,
+    "constrained_trace_V5": 0.9942590445545172,
+    "unconstrained_fixed_state_PF_V5": 0.9942590445544894,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 4.260094499386469e-12,
+    "constrained_G2_Q": -14.266727885057776,
+    "unconstrained_G2_Q": -14.266727885089406,
+    "constrained_VSC2_Q": 1.51938829636175,
+    "unconstrained_VSC2_Q": 1.5193882964652987
+  },
+  {
+    "lambda": 0.8023037516826522,
+    "total_MW": 357.55290040383653,
+    "constrained_trace_V5": 0.8717250200735992,
+    "unconstrained_fixed_state_PF_V5": 0.8717250200736372,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 2.5035262751771372e-12,
+    "constrained_G2_Q": 38.74644218438334,
+    "unconstrained_G2_Q": 38.74644218439946,
+    "constrained_VSC2_Q": 82.53925212229575,
+    "unconstrained_VSC2_Q": 82.53925212225235
+  },
+  {
+    "lambda": 1.0794197517871693,
+    "total_MW": 424.0607404289206,
+    "constrained_trace_V5": 0.7859718466420805,
+    "unconstrained_fixed_state_PF_V5": 0.7869832748359616,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 1.488480450007046e-12,
+    "constrained_G2_Q": 75.22711641858307,
+    "unconstrained_G2_Q": 77.4365832257059,
+    "constrained_VSC2_Q": 146.26033049663155,
+    "unconstrained_VSC2_Q": 144.84650922667566
+  },
+  {
+    "lambda": 1.104504838364513,
+    "total_MW": 430.08116120748315,
+    "constrained_trace_V5": 0.7603785630345702,
+    "unconstrained_fixed_state_PF_V5": 0.7767017330090089,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 3.1316460535890656e-12,
+    "constrained_G2_Q": 75.22711641858307,
+    "unconstrained_G2_Q": 82.1485297391698,
+    "constrained_VSC2_Q": 146.82485357864002,
+    "unconstrained_VSC2_Q": 152.63555667343297
+  },
+  {
+    "lambda": 1.1270530286991205,
+    "total_MW": 435.49272688778893,
+    "constrained_trace_V5": 0.7222342989846288,
+    "unconstrained_fixed_state_PF_V5": 0.766813743266158,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 2.033857526839711e-12,
+    "constrained_G2_Q": 75.22711641858307,
+    "unconstrained_G2_Q": 86.67485580944567,
+    "constrained_VSC2_Q": 144.04537201059136,
+    "unconstrained_VSC2_Q": 160.1604385635638
+  },
+  {
+    "lambda": 1.1385320439399476,
+    "total_MW": 438.24769054558743,
+    "constrained_trace_V5": 0.668476203005621,
+    "unconstrained_fixed_state_PF_V5": 0.7615063457252709,
+    "unconstrained_PF_success": true,
+    "unconstrained_PF_residual": 1.1359979623648542e-12,
+    "constrained_G2_Q": 75.22711641858307,
+    "unconstrained_G2_Q": 89.10146837210753,
+    "constrained_VSC2_Q": 140.09269161702318,
+    "unconstrained_VSC2_Q": 164.2119809058662
+  }
+]

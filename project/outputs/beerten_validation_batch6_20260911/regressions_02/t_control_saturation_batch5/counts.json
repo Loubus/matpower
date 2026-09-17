@@ -1,0 +1,11 @@
+{
+  "name": "t_control_saturation_batch5",
+  "planned": 105,
+  "executed": 105,
+  "passed": 105,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 13.4607874,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

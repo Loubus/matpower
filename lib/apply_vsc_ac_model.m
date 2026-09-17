@@ -11,7 +11,8 @@ function [ac, map] = apply_vsc_ac_model(mpc, state)
 %
 %   The transformer, filter shunt and phase reactor are modeled as separate
 %   MATPOWER elements. Converter active/reactive injections are applied at
-%   the internal VSC AC bus using the sign convention from IDX_VSC.
+%   the internal VSC AC bus. STATE.pac/qac here are internal iteration
+%   variables; PAC_SET/QAC_SET and public PAC/QAC results are PCC powers.
 %
 % See also idx_vsc, runpf_vsc_mtdc.
 

@@ -1,0 +1,4 @@
+run_id,vsc_row,bus_ext,dc_bus_ext,status
+beerten_vsc,1,2,2,1
+beerten_vsc,2,3,3,1
+beerten_vsc,3,5,5,1

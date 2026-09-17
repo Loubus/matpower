@@ -1,0 +1,27 @@
+[
+  {
+    "run": "reproduce_01",
+    "issue": "Direct runcpf_vsc_mtdc call omitted the runcpf_psse preparation/psse_aware activation. Its success is not main-scenario evidence.",
+    "resolution": "reproduce_02 used saved fixture/options with runcpf_psse and exactly reproduced all accepted states."
+  },
+  {
+    "run": "diagnostics_01",
+    "issue": "Printed r.bus row 5 belongs to extended ordering; displayed 1 pu was not bus ID 5. Saved full PF results and balances are valid.",
+    "resolution": "diagnostics_02 selects original bus ID 5 from r.ac.bus and retains the same scientific solves."
+  },
+  {
+    "run": "interactive inspection",
+    "issue": "Three inspection expressions referenced undefined c.QAC, nonexistent idx_vsc QAC_MIN, or not-yet-assigned b5sh.vtol. No solver settings changed.",
+    "resolution": "Read idx_vsc and constructed state before valid audit. These were MATLAB inspection errors, not MCP integration or numerical failures."
+  },
+  {
+    "run": "base_failure_probe",
+    "issue": "Synthetic 1000x base-demand failure made both the starting solver and initial reporting patch throw while exporting an empty electrical evaluation.",
+    "resolution": "Bounded result-constructor guard returns false flags, input arrays, empty solved AC result, and failed state vector; covered by two added checks. Exact original stack saved in baseline_error.log."
+  },
+  {
+    "run": "plot_event.py",
+    "issue": "Project .venv lacks matplotlib (ModuleNotFoundError). No packages or environment settings were changed.",
+    "resolution": "Final scientific figure is generated through MATLAB MCP using plot_batch5.m."
+  }
+]

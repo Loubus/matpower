@@ -1,0 +1,5 @@
+# Execution record
+
+First MCP attempt stopped before saving a CPF result because the experimental code treated the optional capability override `params.Smax` as a resolved scalar. It is empty in this study; the existing capability wrapper resolves the station rating and returns it as `info.Smax`. Exact error: `Unable to perform assignment because the left and right sides have a different number of elements`, at `exa_cpf`, line 1493 (`bnext.exa_current_ilim(k)=Smax/current.baseMVA`). This was a prototype implementation error, not a numerical failure and not an MCP integration failure. Corrected to use `info.Smax`; the cases, solver tolerances, step sizes and policies were not altered.
+
+Before retrying, added an explicit rejection for an internal-voltage or dispatch-ceiling violation on a current-limited row, because this bounded prototype does not implement a second simultaneous boundary. Current-limited modes have no release heuristic in this experiment. No production or historical file was modified.

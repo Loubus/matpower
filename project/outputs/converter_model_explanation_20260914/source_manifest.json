@@ -1,0 +1,137 @@
+{
+  "date": "2026-09-14",
+  "files": [
+    {
+      "path": "studies/beerten/beerten_constant_pq_nonslack_dispatch.m",
+      "sha256": "8ed27c4547a3fbb5c3f017aee73e1c7f25802482c645b1295f70d703e65ff45b",
+      "bytes": 2105
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten.m",
+      "sha256": "f4395b040338f33a1ebc58da1e6782b6daef19f458e27bcc5eb958d2b43f371b",
+      "bytes": 3338
+    },
+    {
+      "path": "matpower/lib/apply_vsc_ac_model.m",
+      "sha256": "3cbc8950a97dc0181239e6549655c2302bcb1907362f60a36924f17dbbf6d341",
+      "bytes": 4776
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/REPORT.md",
+      "sha256": "ee8b7b760b7ff57e021e9d769706384acf6e3f424a279a4cf922c34b65d3999c",
+      "bytes": 26891
+    },
+    {
+      "path": "matpower/lib/idx_vsc.m",
+      "sha256": "f46a1bc0164f689332b3dca2c1753b4712e30a70e46a822cd3efdc5544129d53",
+      "bytes": 8403
+    },
+    {
+      "path": "matpower/lib/idx_branchdc.m",
+      "sha256": "fe3618b1fadc91e9e3e6d1fad30eb9269f41ff55e1adbbc4307f92b83f6fd00b",
+      "bytes": 2059
+    },
+    {
+      "path": "matpower/lib/calc_vsc_losses.m",
+      "sha256": "5119d69d96c33a23aed42a0ad78bb8f4ed1664c4ae21af278d076ff112ca43be",
+      "bytes": 1254
+    },
+    {
+      "path": "matpower/lib/makeYbus.m",
+      "sha256": "cf66da9685b9602af0859972c97b27795a0ef5289f185de2c008538db81014e1",
+      "bytes": 4811
+    },
+    {
+      "path": "matpower/lib/makeGdc.m",
+      "sha256": "386732617b5750f36c1dd08508b88be33cf18095b639849d912b8a24f42c9266",
+      "bytes": 1955
+    },
+    {
+      "path": "matpower/lib/runpf_vsc_mtdc_unified.m",
+      "sha256": "1cec1bec0fa6b08be7c02e3fb91b3d01c6907da0af3a853f20ce43ca32add52b",
+      "bytes": 44671
+    },
+    {
+      "path": "matpower/lib/update_vsc_state.m",
+      "sha256": "f1995fefd911465e1aecefd7e1faf70d32d2adf39a2b5cd4d75e3c10231c56c8",
+      "bytes": 3437
+    },
+    {
+      "path": "matpower/lib/vsc_capability_curve.m",
+      "sha256": "095bc07ba2476508cd35d665b1b42ac6eab523bb90e21099cdc09f35e0882860",
+      "bytes": 5099
+    },
+    {
+      "path": "matpower/lib/vsc_capability_geometry.m",
+      "sha256": "65f47b3cdff13c15c4c1b28ccbc978e2e5645650aa974a07e3536704e08f1fdd",
+      "bytes": 8545
+    },
+    {
+      "path": "matpower/lib/check_vsc_capability.m",
+      "sha256": "b986c7ea1a5c2d21f60d7ad59889f473fc30832f9cf674979026c62a3fdd99fd",
+      "bytes": 5085
+    },
+    {
+      "path": "matpower/lib/enforce_vsc_capability_active_set.m",
+      "sha256": "b82d64ef67b3142313c9ace31c3d34f5833e7cdeedc4a3eb3162a7d40e6c9be6",
+      "bytes": 5769
+    },
+    {
+      "path": "matpower/lib/runcpf_vsc_mtdc.m",
+      "sha256": "eb1fb0ada54d5a68af335a952da09344adf2e6d97a5b363944138d0573a42f84",
+      "bytes": 205643
+    },
+    {
+      "path": "matpower/lib/vsc_capability_policy.m",
+      "sha256": "dcdd139dd8d9af6ee0b4ea8efb7798f31f01505e5d11ae3a975a7b618a3d43cb",
+      "bytes": 4646
+    },
+    {
+      "path": "matpower/lib/runpf_vsc_mtdc.m",
+      "sha256": "4e5d7a0864605fcf238dd4414cf7dfb2403f001922fa7f0d58b9daeb6805f45a",
+      "bytes": 18708
+    },
+    {
+      "path": "docs/CONTROL_SATURATION_CONTRACT.md",
+      "sha256": "b1543888398fd24732fe95a9a3a755a82f74bcceb13ba089495e04a8feda4976",
+      "bytes": 4426
+    },
+    {
+      "path": "matpower/lib/gen_capability_curve.m",
+      "sha256": "5cca8e55e351860ddb386717cd3d490ea9966ad28b14be2b618e35755240f947",
+      "bytes": 7137
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "cea5cb6c901156228d5c200ebfc4d3e48ea06ee0e1e9346f8530f2a7b0c35be1",
+      "bytes": 1428
+    },
+    {
+      "path": ".codex/MATLAB_MCP.md",
+      "sha256": "6ae785e21649022a4f7af999ba59921971f8714c17abffaada69659f7635ec93",
+      "bytes": 6064
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_100.json",
+      "sha256": "e2a746345f5582f629cc34f6781e9e943edbfa9acb1b8886878b604a4440e4d4",
+      "bytes": 241037
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/author_reference.json",
+      "sha256": "bf3d771b5bca7d8fa09c6c53f7001c449937b452a9d4a84b51acc0d170189b4f",
+      "bytes": 2811
+    },
+    {
+      "path": "outputs/algorithm_cleanup_batch4_20260911/beerten_probe.mat",
+      "sha256": "2a4696137234b3d0a2e5faed69fcacb03a456945f681442389b85b2735841351",
+      "bytes": 71503
+    },
+    {
+      "path": "outputs/beerten_nonslack_dispatch_20260914/smoke.mat",
+      "sha256": "62b596d4610211069d60acf53c5d13051f69a4f1632f81a446fd5dc8ecb4acb6",
+      "bytes": 50711
+    }
+  ],
+  "equation_count": 43,
+  "artifact": "REPORT.html"
+}

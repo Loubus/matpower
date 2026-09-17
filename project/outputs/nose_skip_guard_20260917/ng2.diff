@@ -1,0 +1,124 @@
+--- outputs\cpf_solution_experiments_20260917\continuation_limit\all_controls\b17a_cpf.m
++++ ng2_cpf.m
+@@ -1,5 +1,5 @@
+ function [results, success] = ...
+-    b17a_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++    ng2_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+ % runcpf_vsc_mtdc - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+@@ -399,6 +399,7 @@
+         failure = [];
+         curr_step = step;
+         nose_tol = mpopt.cpf.nose_tol;
++        ng_history={};ng_stop=[];ng_checkpoint=[];
+ 
+         while isempty(done_msg)
+             target_lambda_step = 0;
+@@ -455,6 +456,13 @@
+             % active-set stage, including discrete-only tap/shunt settlement.
+             % Electrical settlement of a discrete action remains fixed-lambda.
+             b17_carried = z; b17_carried_keys = b17_state_keys(ctx);
++            % Isolated NOSE guard: checkpoint before ANY trial control mutation.
++            ng_stage=active_set_stage_snapshot(ctx,ctxt,Sdelta);
++            ng_events=events;
++            ng_misc={psse_controls_frozen,vsc_capability_transfer_frozen, ...
++                vsc_capability_transfer_backoff_count,vsc_capability_resaturation_count, ...
++                vsc_slack_q_backoff_count,gen_capability_dispatch_frozen, ...
++                unified_context_cache,vsc_capability_param_cache,psse_diagnostic};
+             ctx_hat = ctx;
+             Sdelta_hat = Sdelta;
+             xhat = x + trial_step * z(1:end-1);
+@@ -472,6 +480,7 @@
+                     corr_it, normFnew);
+                 [r, V] = stamp_original_ac_solution(r, base_bus_ids, ...
+                     base_branch_count, base_gen_count);
++                ng_raw_lam=lamnew;ng_raw_q=r.gen(2,QG);ng_raw_x=xnew;
+                 active_set_changed = 0;
+                 [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+                     corr_it, r, V, control_events, control_ok, ...
+@@ -850,6 +859,50 @@
+                     znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, z, ...
+                         x, lam, trial_parameterization, direction);
+                 end
++                % Guard against silently crossing a turn during a control switch,
++                % or reversing the full-state direction to force increasing lambda.
++                ng_oldkeys=ng_state_keys(ng_stage.ctx); ng_newkeys=ng_state_keys(ctx);
++                ng_zmap=zeros(numel(xnew)+1,1); ng_zmap(end)=z(end);
++                [ng_match,ng_where]=ismember(ng_newkeys,ng_oldkeys);
++                ng_zmap(find(ng_match))=z(ng_where(ng_match)); %#ok<FNDSB>
++                ng_dot=dot(ng_zmap,znew)/max(norm(ng_zmap),eps);
++                ng_alarm=active_set_changed && z(end)>0 && ...
++                    (znew(end)<=0 || ng_dot<0);
++                if strcmpi(stop_at,'NOSE') && ng_alarm
++                    ng_rec=struct('last_lambda',lam,'pre_control_lambda',ng_raw_lam, ...
++                        'post_control_lambda',lamnew,'trial_step',trial_step, ...
++                        'tangent_before',z(end),'tangent_after',znew(end), ...
++                        'orientation_dot',ng_dot,'G2_Q_before',last.gen(2,QG), ...
++                        'G2_Q_pre_control',ng_raw_q,'G2_mode_before',last.bus(6,BUS_TYPE), ...
++                        'G2_mode_after',r.bus(6,BUS_TYPE));
++                    ng_history{end+1}=ng_rec;
++                    % Restore every mutable study/control/cache field touched here.
++                    [ctx,ctxt,Sdelta]=restore_active_set_stage_snapshot(ng_stage);
++                    events=ng_events;
++                    psse_controls_frozen=ng_misc{1};vsc_capability_transfer_frozen=ng_misc{2};
++                    vsc_capability_transfer_backoff_count=ng_misc{3};vsc_capability_resaturation_count=ng_misc{4};
++                    vsc_slack_q_backoff_count=ng_misc{5};gen_capability_dispatch_frozen=ng_misc{6};
++                    unified_context_cache=ng_misc{7};vsc_capability_param_cache=ng_misc{8};psse_diagnostic=ng_misc{9};
++                    ng_restored=isequaln(mpcb,ng_stage.mpcb)&&isequaln(mpct,ng_stage.mpct) ...
++                        &&isequaln(cpf_policy_state,ng_stage.cpf_policy_state)&&isequaln(events,ng_events);
++                    assert(ng_restored,'NOSE guard rollback mismatch');
++                    ng_history{end}.rollback_verified=ng_restored;
++                    if trial_step/2>=step_min && abs(ng_raw_lam-lam)>nose_tol
++                        curr_step=trial_step/2;
++                        continue;
++                    end
++                    ng_stop=struct('classification','control_transition_turn_bracket', ...
++                        'lambda_low',lam,'lambda_high',ng_raw_lam, ...
++                        'bracket_width',abs(ng_raw_lam-lam),'event_tolerance',nose_tol, ...
++                        'within_event_tolerance',abs(ng_raw_lam-lam)<=nose_tol, ...
++                        'refinements',numel(ng_history),'local_nose_certified',false);
++                    ng_checkpoint=struct('stage',ng_stage,'x',x,'z',z,'last',last, ...
++                        'lambda',lam,'raw_candidate_x',ng_raw_x,'raw_candidate_lambda',ng_raw_lam);
++                    done_msg='Possible control-induced turn bracketed; smooth NOSE not certified.';
++                    events=vsc_mtdc_cpf_append_event(events,vsc_mtdc_cpf_event( ...
++                        'NOSE_SKIP_GUARD',cont_steps,1,done_msg));
++                    failure=[];success=0;break;
++                end
+                 nose_event = ~active_set_changed && isempty(target_lam) && ...
+                     strcmpi(stop_at, 'NOSE') && ...
+                     unified_nose_event(z, znew, nose_tol);
+@@ -968,6 +1021,9 @@
+         results.cpf.ac_solver = 'unified';
+         results.cpf.formulation = 'monolithic';
+         results.cpf.jacobian = 'analytic';
++        results.cpf.guard_history=ng_history;
++        results.cpf.guard_stop=ng_stop;
++        results.cpf.guard_checkpoint=ng_checkpoint;
+     end
+ 
+     function r = annotate_unified_termination(r)
+@@ -1023,6 +1079,10 @@
+             'last_accepted_index', numel(trace.lam), ...
+             'nose_detected', nose, 'max_lam_scope', 'accepted_trace_maximum', ...
+             'stability_margin_validated', false);
++        if isfield(trace,'guard_stop') && ~isempty(trace.guard_stop)
++            r.cpf.termination.cause='control_transition_turn_bracket';
++            r.cpf.termination.success_scope='guard_stop_not_certified_nose';
++        end
+         if ~accepted && contains(trace.done_msg, 'PSS/E control') && ...
+                 ~isempty(fieldnames(psse_diagnostic))
+             r.cpf.termination.cause = psse_diagnostic.cause;
+@@ -3740,6 +3800,12 @@
+         z = z / norm(z);
+     end
+ 
++    function keys=ng_state_keys(cc)
++        m=cc.model;
++        keys=["va:"+string(m.nonref(:));"vm:"+string(m.vm_vars(:)); ...
++            "pac:"+string(m.pac_vars(:));"dc:"+string(m.dc_var(:))];
++    end
++
+     function tf = unified_nose_event(z0, z1, tol)
+         tf = z0(end) > 0 && (z1(end) <= 0 || abs(z1(end)) <= tol);
+     end

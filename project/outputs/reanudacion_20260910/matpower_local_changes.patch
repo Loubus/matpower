@@ -1,0 +1,696 @@
+diff --git a/lib/+mp/psse_twodc_control.m b/lib/+mp/psse_twodc_control.m
+index a92317e3..df5bd05e 100644
+--- a/lib/+mp/psse_twodc_control.m
++++ b/lib/+mp/psse_twodc_control.m
+@@ -69,7 +69,7 @@ if ~isempty(nm) && isobject(nm) && isprop(nm, 'soln') && ...
+     vm = abs(nm.soln.v);
+ end
+ state0 = state;
+-if solved_snapshot_mode(state) || ~twodc_coupled_voltage_enabled(mpopt)
++if ~twodc_coupled_voltage_enabled(mpopt)
+     [vm, state] = mp.psse_twodc_ac_vm(dm.source, state, vm, mpopt);
+ else
+     state.ac_pf_success = 0;
+diff --git a/lib/+mp/psse_xfmr_control.m b/lib/+mp/psse_xfmr_control.m
+index 51f16758..f461a10f 100644
+--- a/lib/+mp/psse_xfmr_control.m
++++ b/lib/+mp/psse_xfmr_control.m
+@@ -206,6 +206,17 @@ if isfield(state, 'locked_margin')
+ end
+ state.at_min(:) = false;
+ state.at_max(:) = false;
++if ~isfield(state, 'blocked_low') || isempty(state.blocked_low)
++    state.blocked_low = false(state.n, 1);
++else
++    state.blocked_low(:) = false;
++end
++if ~isfield(state, 'blocked_high') || isempty(state.blocked_high)
++    state.blocked_high = false(state.n, 1);
++else
++    state.blocked_high(:) = false;
++end
++state.blocked_violations = 0;
+ idx = find(active_control_idx(state));
+ for kk = 1:length(idx)
+     k = idx(kk);
+@@ -224,6 +235,17 @@ for kk = 1:length(idx)
+         state.at_min(k) = abs(state.current_tap(k) - states(1)) < 1e-9;
+         state.at_max(k) = abs(state.current_tap(k) - states(end)) < 1e-9;
+     end
++    if state.last_margin(k) ~= 0 && ~isempty(states)
++        voltage_dir = -sign(state.last_margin(k));
++        tap_dir = voltage_dir * state.side_sign(k);
++        blocked = (tap_dir > 0 && state.at_max(k)) || ...
++            (tap_dir < 0 && state.at_min(k));
++        if blocked && state.last_margin(k) < 0
++            state.blocked_low(k) = true;
++        elseif blocked && state.last_margin(k) > 0
++            state.blocked_high(k) = true;
++        end
++    end
+     state.last_vm_final(k) = v;
+ end
+ locked_idx = locked_control_idx(state);
+@@ -251,6 +273,9 @@ margin = state.last_margin(idx);
+ margin = margin(~isnan(margin));
+ state.last_violations = nnz(margin ~= 0);
+ state.last_violation_sum = sum(abs(margin));
++if isfield(state, 'blocked_low') && isfield(state, 'blocked_high')
++    state.blocked_violations = nnz(state.blocked_low | state.blocked_high);
++end
+ if isfield(state, 'locked_margin') && ~isempty(state.locked_margin)
+     locked_margin = state.locked_margin(locked_idx);
+     locked_margin = locked_margin(~isnan(locked_margin));
+diff --git a/lib/+mp/psse_xfmr_report.m b/lib/+mp/psse_xfmr_report.m
+index 2d08987f..63e58639 100644
+--- a/lib/+mp/psse_xfmr_report.m
++++ b/lib/+mp/psse_xfmr_report.m
+@@ -68,6 +68,18 @@ else
+     report.locked_out = 0;
+     report.locked_rows = [];
+ end
++if isfield(state, 'study_locked_rows')
++    report.study_locked_rows = state.study_locked_rows;
++    report.study_locked = numel(state.study_locked_rows);
++else
++    report.study_locked_rows = [];
++    report.study_locked = 0;
++end
++if isfield(state, 'study_lock_label')
++    report.study_lock_label = state.study_lock_label;
++else
++    report.study_lock_label = '';
++end
+ if isfield(state, 'rebuild_rejected')
+     report.rebuild_rejected = state.rebuild_rejected;
+ else
+diff --git a/lib/+mp/psse_xfmr_states.m b/lib/+mp/psse_xfmr_states.m
+index 30a487aa..e0aad1f0 100644
+--- a/lib/+mp/psse_xfmr_states.m
++++ b/lib/+mp/psse_xfmr_states.m
+@@ -131,9 +131,15 @@ state.states_tap = cell(state.n, 1);
+ state.initial_tap_normalized = false(state.n, 1);
+ state.at_min = false(state.n, 1);
+ state.at_max = false(state.n, 1);
++state.blocked_low = false(state.n, 1);
++state.blocked_high = false(state.n, 1);
++state.blocked_violations = 0;
+ state.locked_out = false(state.n, 1);
++state.study_locked_rows = [];
++state.study_lock_label = '';
+ state.rebuild_rejected = 0;
+ state.rebuild_rejected_rows = [];
++initial_tap_snap_tol = 1e-5;
+ 
+ for k = 1:state.n
+     if state.branch_idx(k) > 0
+@@ -153,10 +159,14 @@ for k = 1:state.n
+     state.states_tap{k} = tap_states;
+     if state.controllable(k) && ~isempty(tap_states)
+         jj = nearest_tap_state_idx(tap_states, state.current_tap(k));
+-        state.current_tap(k) = tap_states(jj);
+-        state.current_raw(k) = raw_states(jj);
+-        state.initial_tap_normalized(k) = ...
+-            abs(state.current_tap(k) - state.base_tap(k)) > 1e-9;
++        if abs(tap_states(jj) - state.base_tap(k)) <= initial_tap_snap_tol
++            state.current_tap(k) = state.base_tap(k);
++            state.current_raw(k) = state.windv(k);
++        else
++            state.current_tap(k) = tap_states(jj);
++            state.current_raw(k) = raw_states(jj);
++            state.initial_tap_normalized(k) = true;
++        end
+     end
+ end
+ 
+@@ -167,12 +177,23 @@ if isfield(xf, 'control_current_tap') && ...
+     state.current_tap = xf.control_current_tap(:);
+     state.current_raw = xf.control_current_raw(:);
+     state.initial_tap_normalized = state.controllable & ...
+-        abs(state.current_tap - state.base_tap) > 1e-9;
++        abs(state.current_tap - state.base_tap) > initial_tap_snap_tol;
+ end
+ if isfield(xf, 'control_locked_out') && ...
+         numel(xf.control_locked_out) == state.n
+     state.locked_out = logical(xf.control_locked_out(:));
+ end
++if isfield(xf, 'control_study_locked_rows') && ...
++        ~isempty(xf.control_study_locked_rows)
++    rows = unique(xf.control_study_locked_rows(:));
++    rows = rows(rows >= 1 & rows <= state.n);
++    state.study_locked_rows = rows;
++    state.locked_out(rows) = true;
++end
++if isfield(xf, 'control_study_lock_label') && ...
++        ~isempty(xf.control_study_lock_label)
++    state.study_lock_label = char(xf.control_study_lock_label);
++end
+ if isfield(xf, 'control') && isstruct(xf.control)
+     if isfield(xf.control, 'rebuild_rejected') && ...
+             ~isempty(xf.control.rebuild_rejected)
+@@ -183,7 +204,11 @@ if isfield(xf, 'control') && isstruct(xf.control)
+     end
+ end
+ 
+-state.needs_initial_update = state.enabled && any(state.controllable & ...
++initial_update_idx = state.controllable;
++if ~isempty(state.locked_out)
++    initial_update_idx = initial_update_idx & ~state.locked_out;
++end
++state.needs_initial_update = state.enabled && any(initial_update_idx & ...
+     abs(state.current_tap - state.base_tap) > 1e-9);
+ 
+ state.last_vm_final = NaN(state.n, 1);
+@@ -394,7 +419,7 @@ cand = find(dist <= min_dist + tie_tol);
+ jj = cand(end);
+ 
+ function tap = raw_to_tap(state, mpc, k, raw)
+-[~, T_BUS] = idx_brch;
++[F_BUS, T_BUS] = idx_brch;
+ [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
+ if state.kind(k) == 2
+     w2 = state.windv2(k);
+@@ -405,6 +430,9 @@ if state.kind(k) == 2
+     if state.cw(k) == 2
+         f = state.bus_idx(k);
+         br = state.branch_idx(k);
++        if f <= 0
++            f = branch_bus_row(mpc, br, F_BUS);
++        end
+         if isfield(mpc, 'order') && isfield(mpc.order, 'bus')
+             t = mpc.branch(br, T_BUS);
+         else
+@@ -423,6 +451,10 @@ if state.kind(k) == 2
+ else
+     tap = raw;
+     f = state.bus_idx(k);
++    br = state.branch_idx(k);
++    if f <= 0
++        f = branch_bus_row(mpc, br, F_BUS);
++    end
+     if state.cw(k) == 2 && f > 0
+         tap = tap ./ mpc.bus(f, BASE_KV);
+     elseif state.cw(k) == 3
+@@ -433,6 +465,26 @@ else
+     end
+ end
+ 
++function row = branch_bus_row(mpc, br, col)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++row = 0;
++if br <= 0 || br > size(mpc.branch, 1)
++    return;
++end
++b = mpc.branch(br, col);
++if isnan(b) || b <= 0
++    return;
++end
++nb = size(mpc.bus, 1);
++if b <= nb && abs(b - round(b)) < 1e-9 && mpc.bus(b, BUS_I) == b
++    row = b;
++else
++    row = psse_bus_map(mpc, b);
++end
++if row <= 0 && b <= nb && abs(b - round(b)) < 1e-9
++    row = b;
++end
++
+ function idx = psse_bus_map(mpc, bus)
+ [~, ~, ~, ~, BUS_I] = idx_bus;
+ idx = zeros(size(bus));
+diff --git a/lib/+mp/psse_xfmr_update.m b/lib/+mp/psse_xfmr_update.m
+index 79df74fb..14bb6c1a 100644
+--- a/lib/+mp/psse_xfmr_update.m
++++ b/lib/+mp/psse_xfmr_update.m
+@@ -16,7 +16,7 @@ function mpc = psse_xfmr_update(mpc, state)
+ %   Covered by the 3-clause BSD License (see LICENSE file for details).
+ %   See https://matpower.org for more info.
+ 
+-[~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
++[F_BUS, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
+ [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
+ 
+ idx = find(state.branch_idx > 0);
+@@ -28,9 +28,13 @@ idx = find(state.branch_idx > 0 & state.tab_applied & ...
+     ~isnan(state.nominal_r) & ~isnan(state.nominal_x));
+ if ~isempty(idx) && isfield(mpc, 'psse') && isfield(mpc.psse, 'impcor')
+     ratio = state.current_raw(idx);
+-    k = state.cw(idx) == 2 & state.bus_idx(idx) > 0;
++    k = state.cw(idx) == 2;
+     if any(k)
+-        ratio(k) = ratio(k) ./ mpc.bus(state.bus_idx(idx(k)), BASE_KV);
++        rows = xfmr_base_kv_rows(mpc, state, idx(k), F_BUS);
++        ok = rows > 0;
++        ratio_k = ratio(k);
++        ratio_k(ok) = ratio_k(ok) ./ mpc.bus(rows(ok), BASE_KV);
++        ratio(k) = ratio_k;
+     end
+     [factor, applied] = mp.psse_xfmr_tab_factor( ...
+         mpc.psse.impcor, state.tab(idx), ratio, state.ang(idx));
+@@ -63,3 +67,65 @@ end
+ mpc.psse.xfmr.control_current_tap = state.current_tap;
+ mpc.psse.xfmr.control_current_raw = state.current_raw;
+ mpc.psse.xfmr.control = mp.psse_xfmr_report(state);
++
++function rows = xfmr_base_kv_rows(mpc, state, idx, branch_bus_col)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++rows = state.bus_idx(idx);
++missing = rows <= 0;
++for kk = find(missing(:))'
++    br = state.branch_idx(idx(kk));
++    if br <= 0 || br > size(mpc.branch, 1)
++        continue;
++    end
++    b = mpc.branch(br, branch_bus_col);
++    rows(kk) = branch_bus_row(mpc, b, BUS_I);
++end
++
++function row = branch_bus_row(mpc, bus, bus_i_col)
++row = 0;
++if isnan(bus) || bus <= 0
++    return;
++end
++nb = size(mpc.bus, 1);
++if bus <= nb && abs(bus - round(bus)) < 1e-9 && ...
++        mpc.bus(bus, bus_i_col) == bus
++    row = bus;
++    return;
++end
++idx = psse_bus_map(mpc, bus);
++if idx > 0
++    row = idx;
++elseif bus <= nb && abs(bus - round(bus)) < 1e-9
++    row = bus;
++end
++
++function idx = psse_bus_map(mpc, bus)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++idx = 0;
++if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
++        isfield(mpc.psse.xfmr, 'control_bus_i2e') && ...
++        ~isempty(mpc.psse.xfmr.control_bus_i2e) && ...
++        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
++    i2e = mpc.psse.xfmr.control_bus_i2e(:);
++    idx = bus_lookup(i2e, bus);
++elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
++        isfield(mpc.order.bus, 'i2e') && ~isempty(mpc.order.bus.i2e) && ...
++        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
++    idx = bus_lookup(mpc.order.bus.i2e(:), bus);
++elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
++        isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
++    e2i = mpc.order.bus.e2i;
++    if bus <= size(e2i, 1)
++        idx = full(e2i(bus));
++    end
++else
++    idx = bus_lookup(mpc.bus(:, BUS_I), bus);
++end
++
++function idx = bus_lookup(i2e, bus)
++idx = 0;
++if bus > max(i2e)
++    return;
++end
++e2i = sparse(i2e, ones(length(i2e), 1), (1:length(i2e))', max(i2e), 1);
++idx = full(e2i(bus));
+diff --git a/lib/+mp/task_cpf_psse.m b/lib/+mp/task_cpf_psse.m
+index 948088c9..86a45521 100644
+--- a/lib/+mp/task_cpf_psse.m
++++ b/lib/+mp/task_cpf_psse.m
+@@ -34,6 +34,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+         psse_stop_after_rollback = false   % stop controls after rollback solve
+         psse_pending_control = ''      % control family awaiting CPF acceptance
+         psse_pending_source = []       % source MPC for pending control family
++        psse_pending_xfmr_state = []   % accepted xfmr state before pending move
+         psse_pending_lambda = NaN      % lambda at which the pending control changed
+         psse_target_source = []        % CPF target source preserved across rebuilds
+         psse_failed_control = ''       % control family whose rebuild failed
+@@ -153,6 +154,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                     ~isempty(obj.psse_last_success_source)
+                 obj.psse_failed_control = obj.psse_pending_control;
+                 src = obj.psse_last_success_source;
++                if strcmp(obj.psse_pending_control, 'xfmr')
++                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src, mpopt);
++                    if rejected
++                        obj.psse_pending_control = '';
++                        obj.psse_pending_source = [];
++                        obj.psse_pending_xfmr_state = [];
++                        obj.psse_pending_lambda = NaN;
++                        dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
++                        return;
++                    end
++                end
+                 if ~isfield(src, 'psse') || isempty(src.psse)
+                     src.psse = struct();
+                 end
+@@ -165,6 +177,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                 obj.psse_failed_after_rollback = true;
+                 obj.psse_pending_control = '';
+                 obj.psse_pending_source = [];
++                obj.psse_pending_xfmr_state = [];
+                 obj.psse_pending_lambda = NaN;
+                 dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
+                 return;
+@@ -183,6 +196,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_last_success_source = dm0.source;
+             obj.psse_pending_control = '';
+             obj.psse_pending_source = [];
++            obj.psse_pending_xfmr_state = [];
+             obj.psse_pending_lambda = NaN;
+             if obj.psse_stop_after_rollback
+                 obj.psse_stop_after_rollback = false;
+@@ -213,6 +227,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             end
+ 
+             psse_warmstart = obj.psse_reorient_after_warmstart;
++            psse_warmstart_control = obj.psse_pending_control;
+             if psse_warmstart
+                 nx = obj.reorient_after_psse_warmstart(nx, mm, nm);
+                 [nx, s] = obj.suppress_warmstart_nose_event(nx, s);
+@@ -227,6 +242,8 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_pending_lambda = NaN;
+             if ~psse_warmstart
+                 obj.reset_control_cycle_window(nx.x(end));
++            else
++                obj.reset_control_cycle_after_warmstart(psse_warmstart_control);
+             end
+ 
+             mpx = obj.psse_mpx_from_options(mpopt);
+@@ -342,6 +359,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             % pending source so callback_psse() can re-correct the same CPF
+             % loading point after any PSS/E active-set change.
+ 
++            accepted_xfmr_state = [];
+             switch name
+                 case 'pqbrak'
+                     dm = [];
+@@ -350,6 +368,12 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                             obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
+                     end
+                 case 'xfmr'
++                    accepted_xfmr_state = obj.psse_xfmr;
++                    if isempty(accepted_xfmr_state) && ...
++                            isfield(dm0.source, 'psse') && ...
++                            isfield(dm0.source.psse, 'xfmr')
++                        accepted_xfmr_state = mp.psse_xfmr_states(dm0.source);
++                    end
+                     [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
+                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
+                 case 'genq'
+@@ -384,6 +408,11 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             if ~isempty(dm)
+                 obj.psse_pending_control = name;
+                 obj.psse_pending_source = dm.source;
++                if strcmp(name, 'xfmr')
++                    obj.psse_pending_xfmr_state = accepted_xfmr_state;
++                else
++                    obj.psse_pending_xfmr_state = [];
++                end
+             end
+         end
+ 
+@@ -629,6 +658,41 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             end
+         end
+ 
++        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src, mpopt)
++            % Reject transformer tap rows whose rebuilt CPF point failed.
++
++            rejected = false;
++            candidate = obj.psse_xfmr;
++            state = obj.psse_pending_xfmr_state;
++            if isempty(state) || ~isstruct(state) || ...
++                    isempty(candidate) || ~isstruct(candidate) || ...
++                    ~isfield(src, 'psse') || ~isfield(src.psse, 'xfmr')
++                return;
++            end
++            if ~isfield(candidate, 'current_tap') || ...
++                    numel(candidate.current_tap) ~= state.n || ...
++                    ~isfield(candidate, 'current_raw') || ...
++                    numel(candidate.current_raw) ~= state.n
++                return;
++            end
++
++            moved = abs(candidate.current_tap(:) - state.current_tap(:)) > 1e-9;
++            moved = moved & state.controllable(:);
++            if ~any(moved)
++                return;
++            end
++
++            if ~isfield(state, 'locked_out') || isempty(state.locked_out)
++                state.locked_out = false(state.n, 1);
++            end
++            state = mp.psse_xfmr_guard_candidate(src, state, candidate, ...
++                mpopt);
++
++            src = mp.psse_xfmr_update(src, state);
++            obj.psse_xfmr = state;
++            rejected = true;
++        end
++
+         function reset_control_cycle_window(obj, lam)
+             % Clear per-loading-point PSS/E control cycle memory.
+             %
+@@ -647,6 +711,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
+         end
+ 
++        function reset_control_cycle_after_warmstart(obj, trigger)
++            % Clear stale cycle memory after another family changes equations.
++
++            if ~strcmp(trigger, 'xfmr')
++                obj.psse_xfmr = psse_reset_cycle_state(obj.psse_xfmr);
++            end
++            if ~strcmp(trigger, 'swshunt')
++                obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
++            end
++        end
++
+         function reset_gen_pq_trace(obj, mpopt)
+             % Initialize optional generator P/Q trace capture.
+ 
+diff --git a/lib/runpf_psse.m b/lib/runpf_psse.m
+index cd6d2c53..5d44953a 100644
+--- a/lib/runpf_psse.m
++++ b/lib/runpf_psse.m
+@@ -575,7 +575,7 @@ end
+ if isfield(results, 'psse')
+     results.psse.solver_options = psse_solver_policy;
+ end
+-if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse)
++if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse, results)
+     mpc_retry = mpc_psse_source;
+     if isfield(mpc_retry, 'psse') && isfield(mpc_retry.psse, 'swdev')
+         mpc_retry.psse = rmfield(mpc_retry.psse, 'swdev');
+@@ -753,9 +753,15 @@ else
+     TorF = 0;
+ end
+ 
+-function TorF = psse_swdev_retry_needed(swdev_collapse)
++function TorF = psse_swdev_retry_needed(swdev_collapse, results)
+ TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
+     swdev_collapse.active;
++if TorF && isfield(results, 'psse') && ...
++        isfield(results.psse, 'control_failure') && ...
++        isfield(results.psse.control_failure, 'stage') && ...
++        strcmp(results.psse.control_failure.stage, 'control_settlement')
++    TorF = 0;
++end
+ 
+ function TorF = psse_twodc_aux_voltage_retry_needed(results, mpopt)
+ TorF = 0;
+diff --git a/lib/t/t_mpxt_psse.m b/lib/t/t_mpxt_psse.m
+index 8c0b2156..c31bca8c 100644
+--- a/lib/t/t_mpxt_psse.m
++++ b/lib/t/t_mpxt_psse.m
+@@ -12,7 +12,7 @@ if nargin < 1
+     quiet = 0;
+ end
+ 
+-num_tests = 491;
++num_tests = 508;
+ 
+ t_begin(num_tests, quiet);
+ 
+@@ -680,6 +680,20 @@ else
+         '3-winding W1 TAB CW=2 WINDV matches PSS/E direction');
+ end
+ 
++mpc = psse_case3w_xfmr_cw2_missing_bus_tab();
++state = mp.psse_xfmr_states(mpc);
++t_is(state.states_tap{1}, [0.9; 1.0; 1.1], 10, ...
++    '3-winding CW=2 missing winding bus uses branch bus base kV');
++t_is(state.current_raw(1), 230, 10, ...
++    '3-winding CW=2 missing winding bus preserves RAW initial WINDV');
++state.current_raw(1) = 207;
++state.current_tap(1) = 0.9;
++mpc = mp.psse_xfmr_update(mpc, state);
++t_is(mpc.branch(1, [BR_R BR_X]), [0.009 0.09], 10, ...
++    '3-winding CW=2 TAB correction uses branch bus base kV');
++t_is(mpc.psse.xfmr.three.num(1, 24), 207, 10, ...
++    '3-winding CW=2 missing winding bus writes final WINDV');
++
+ mpc = psse_case3_xfmr_tap_remote();
+ r = runpf_psse(mpc, mpopt);
+ t_is(r.branch(1, TAP), 1.05, 10, 'remote transformer tap reaches voltage band');
+@@ -721,6 +735,10 @@ mpc = psse_case2_xfmr_tap(1, 1, -2, 0.90, 1.09, 1.08, 1.1, 0.9, 5, 100, 50);
+ r = runpf_psse(mpc, mpopt);
+ t_is(r.branch(1, TAP), 0.90, 10, 'transformer tap lower limit is respected');
+ t_is(r.psse.xfmr.control.at_min, 1, 10, 'transformer lower limit reported');
++t_is(r.psse.xfmr.control.blocked_low, 1, 10, ...
++    'transformer lower-limit low-voltage violation reported');
++t_is(r.psse.xfmr.control.blocked_violations, 1, 10, ...
++    'transformer limit-blocked violation counted');
+ 
+ mpc = psse_case3_two_xfmr_guard();
+ state0 = mp.psse_xfmr_states(mpc);
+@@ -741,6 +759,36 @@ t_ok(ismember(2, accepted.rebuild_replay_rejected_rows), ...
+ t_ok(accepted.locked_out(2), ...
+     'guarded transformer candidate locks rejected singleton row');
+ 
++cpf_task = mp.task_cpf_psse();
++cpf_task.psse_xfmr = target;
++cpf_task.psse_pending_xfmr_state = state0;
++[src, rejected] = cpf_task.reject_pending_xfmr_rebuild(mpc, mpopt);
++t_ok(rejected, 'CPF transformer rebuild guard rejects failed candidate batch');
++t_is(src.psse.xfmr.control_current_tap(1), 0.95, 10, ...
++    'CPF transformer rebuild guard preserves valid tap row');
++t_is(src.psse.xfmr.control_current_tap(2), 1.00, 10, ...
++    'CPF transformer rebuild guard restores rejected tap row');
++t_ok(ismember(1, src.psse.xfmr.control.rebuild_replay_accepted_rows), ...
++    'CPF transformer rebuild guard reports accepted row');
++t_ok(ismember(2, src.psse.xfmr.control.locked_rows), ...
++    'CPF transformer rebuild guard reports locked rejected row');
++
++cpf_task = mp.task_cpf_psse();
++cpf_task.psse_xfmr = psse_cycle_state_stub();
++cpf_task.psse_swshunt = psse_cycle_state_stub();
++cpf_task.reset_control_cycle_after_warmstart('twodc');
++t_is(cpf_task.psse_xfmr.cycle_resolved, 0, 10, ...
++    'CPF same-lambda non-transformer warmstart resets transformer cycle state');
++t_is(cpf_task.psse_swshunt.cycle_resolved, 0, 10, ...
++    'CPF same-lambda non-shunt warmstart resets shunt cycle state');
++cpf_task.psse_xfmr = psse_cycle_state_stub();
++cpf_task.psse_swshunt = psse_cycle_state_stub();
++cpf_task.reset_control_cycle_after_warmstart('xfmr');
++t_is(cpf_task.psse_xfmr.cycle_resolved, 1, 10, ...
++    'CPF transformer warmstart preserves transformer cycle state');
++t_is(cpf_task.psse_swshunt.cycle_resolved, 0, 10, ...
++    'CPF transformer warmstart resets other family cycle state');
++
+ %% PSS/E two-terminal DC MDC=0 remains blocked
+ mpc = psse_case4_twodc_blocked();
+ r = runpf_psse(mpc, mpopt);
+@@ -836,6 +884,14 @@ psse_is_close([r.psse.twodc.control.alpha_deg(1) ...
+         r.psse.twodc.control.gamma_deg(1)], ...
+     [16.02 17.00], 0.1, 'TWO DC no-loss firing angles match PSS/E');
+ 
++mpc = psse_case4_twodc_current_mode(0);
++mpc.psse.solved_snapshot_detection = struct('active', 1, ...
++    'reason', 'test');
++r = runpf_psse(mpc, mpopt);
++t_ok(r.success, 'TWO DC solved-snapshot control success');
++t_ok(strcmp(r.psse.twodc.control.ac_pf_status, 'coupled_solution'), ...
++    'TWO DC solved-snapshot control uses coupled solved voltage');
++
+ mpc = psse_case4_twodc_current_mode(10);
+ r = runpf_psse(mpc, mpopt);
+ t_ok(r.success, 'TWO DC current control loss success');
+@@ -1595,6 +1651,97 @@ mpc.psse.impcor = struct( ...
+     'txt', {cell(2, 4)} ...
+ );
+ 
++function mpc = psse_case3w_xfmr_cw2_missing_bus_tab()
++mpc.version = '2';
++mpc.baseMVA = 100;
++mpc.bus = [
++    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
++    2 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
++    3 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
++];
++mpc.gen = [
++    1 0 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
++];
++mpc.branch = [
++    101 2 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++    2 102 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++    2 103 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++];
++
++cols = {'I', 'J', 'K', 'CKT', 'CW', 'CZ', 'CM', 'MAG1', ...
++    'MAG2', 'NMETR', 'NAME', 'STAT', 'O1', 'F1', 'O2', 'F2', ...
++    'O3', 'F3', 'O4', 'F4', 'R1_2', 'X1_2', 'SBASE1_2', ...
++    'WINDV1', 'NOMV1', 'ANG1', ...
++    'RATE11', 'RATE21', 'RATE31', 'RATE41', 'RATE51', 'RATE61', ...
++    'RATE71', 'RATE81', 'RATE91', 'RATE101', 'RATE111', 'RATE121', ...
++    'RATE131', 'RATE141', 'RATE151', 'RATE161', 'RATE171', 'RATE181', ...
++    'RATE191', 'RATE201', 'RATE211', 'RATE221', 'RATE231', 'RATE241', ...
++    'COD1', 'CONT1', 'RMA1', 'RMI1', 'VMA1', 'VMI1', ...
++    'NTP1', 'TAB1', 'CR1', 'CX1', 'CNXA1', 'NOD1', ...
++    'WINDV2', 'NOMV2', 'ANG2', 'RATE12', 'RATE22', 'RATE32', ...
++    'COD2', 'CONT2', 'RMA2', 'RMI2', 'VMA2', 'VMI2', ...
++    'NTP2', 'TAB2', 'CR2', 'CX2', 'CNXA2', 'NOD2', ...
++    'WINDV3', 'NOMV3', 'ANG3', 'RATE13', 'RATE23', 'RATE33', ...
++    'COD3', 'CONT3', 'RMA3', 'RMI3', 'VMA3', 'VMI3', ...
++    'NTP3', 'TAB3', 'CR3', 'CX3', 'CNXA3', 'NOD3'};
++col = struct();
++for k = 1:length(cols)
++    col.(lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'))) = k;
++end
++num = nan(1, length(cols));
++num([col.i col.j col.k col.cw col.cz col.cm col.stat ...
++        col.r1_2 col.x1_2 col.sbase1_2 col.windv1 col.nomv1 ...
++        col.ang1 col.cod1 col.cont1 col.rma1 col.rmi1 col.vma1 ...
++        col.vmi1 col.ntp1 col.tab1 col.cr1 col.cx1 col.windv2 ...
++        col.nomv2 col.ang2 col.windv3 col.nomv3 col.ang3]) = ...
++    [999 102 103 2 1 1 1 0.01 0.10 100 230 230 0 ...
++        1 -102 253 207 1.03 0.97 3 1 0 0 115 115 0 115 115 0];
++mpc.psse.rev = 34;
++mpc.psse.system.solver.ACTAPS = 1;
++mpc.psse.system.adjust.MXTPSS = 10;
++nominal_rx = NaN(1, 3, 2);
++nominal_rx(1, 1, :) = [0.01 0.10];
++mpc.psse.xfmr.two = struct( ...
++    'colnames', {{}}, ...
++    'num', zeros(0, 52), ...
++    'txt', {cell(0, 52)}, ...
++    'branch_idx', zeros(0, 1), ...
++    'col', struct() ...
++);
++mpc.psse.xfmr.three = struct( ...
++    'colnames', {cols}, ...
++    'num', num, ...
++    'txt', {cell(1, length(cols))}, ...
++    'branch_idx', [1 2 3], ...
++    'col', col, ...
++    'tab_applied', [true false false], ...
++    'tab_factor', complex(ones(1, 3)), ...
++    'nominal_rx', nominal_rx ...
++);
++mpc.psse.xfmr.control_bus_i2e = [101; 102; 103];
++mpc.psse.impcor = struct( ...
++    'colnames', {{'I', 'T', 'RE', 'IM'}}, ...
++    'num', [1 0.90 0.90 0; 1 1.10 1.10 0], ...
++    'txt', {cell(2, 4)} ...
++);
++
++function state = psse_cycle_state_stub()
++state = struct( ...
++    'initialized', 1, ...
++    'visited_signatures', {{'cycle'}}, ...
++    'iterations', 3, ...
++    'max_iter_reached', 1, ...
++    'best_score', 1, ...
++    'best_tap', 0.95, ...
++    'current_tap', 1.00, ...
++    'best_raw', 0.95, ...
++    'current_raw', 1.00, ...
++    'best_violations', 1, ...
++    'best_violation_sum', 0.1, ...
++    'cycle_resolved', 1, ...
++    'cycle_probe_attempted', 1, ...
++    'cycle_probe_pending', 1);
++
+ function mpc = psse_case3_xfmr_tap_remote()
+ mpc = psse_case2_xfmr_tap(1, 1, -3, 1.00, 0.98, 0.95, 1.1, 0.9, 5, 0, 0);
+ mpc.bus = [

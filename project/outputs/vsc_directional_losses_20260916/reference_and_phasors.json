@@ -1,0 +1,58 @@
+{
+  "unified_success": true,
+  "unified_iterations": 4,
+  "fixed_vs_dynamic_max_MW_MVAr": 1.262323578998803E-12,
+  "sequential_default_success": 0,
+  "sequential_default_iterations": 20,
+  "sequential_success": 1,
+  "sequential_iterations": 61,
+  "sequential_max_MW_MVAr_difference": 4.1898296556652781E-6,
+  "phasors": [
+    {
+      "name": "Local reconstruction",
+      "Us": 1,
+      "Is_real": -0.6,
+      "Is_imag": 0.4,
+      "Uf_real": 0.99996,
+      "Uf_imag": -6E-5,
+      "Uf_abs": 0.99996000180007194,
+      "Ic_real": -0.6,
+      "Ic_imag": 0.4,
+      "Uc_real": 0.9834231,
+      "Uc_imag": -0.0236154,
+      "Uc_abs": 0.9837066029720295
+    },
+    {
+      "name": "Author station",
+      "Us": 1,
+      "Is_real": -0.6,
+      "Is_imag": 0.4,
+      "Uf_real": 0.95426,
+      "Uf_imag": -0.06666,
+      "Uf_abs": 0.95658543957139552,
+      "Ic_real": -0.594087258,
+      "Ic_imag": 0.484642862,
+      "Uc_real": 0.87458346190484,
+      "Uc_imag": -0.16420819045803997,
+      "Uc_abs": 0.88986547390656678
+    },
+    {
+      "name": "Author impedances without filter",
+      "Us": 1,
+      "Is_real": -0.6,
+      "Is_imag": 0.4,
+      "Uf_real": 0.95426,
+      "Uf_imag": -0.06666,
+      "Uf_abs": 0.95658543957139552,
+      "Ic_real": -0.6,
+      "Ic_imag": 0.4,
+      "Uc_real": 0.88848799999999994,
+      "Uc_imag": -0.165188,
+      "Uc_abs": 0.90371345098321954
+    }
+  ],
+  "loss_model": {
+    "c_positive": 0.080795351116712155,
+    "c_negative": 0.12241125813904641
+  }
+}

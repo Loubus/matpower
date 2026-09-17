@@ -1,0 +1,460 @@
+--- a/matpower/lib/runcpf_vsc_mtdc.m
++++ b/matpower/lib/runcpf_vsc_mtdc.m
+@@ -120,6 +120,7 @@
+ cpf_policy_state = struct('enabled', 0);
+ vsc_capability_recorded_idx = [];
+ gen_capability_recorded_idx = [];
++psse_diagnostic = struct();
+ profile_timing = init_profile_timing(0);
+ 
+ if nargin >= 1 && ischar(basecasedata) && strncmp(basecasedata, '__', 2)
+@@ -182,6 +183,7 @@
+ t0 = tic;
+ if strcmp(method, 'unified')
+     [results, success] = run_unified_monolithic_cpf();
++    results = annotate_unified_termination(results);
+     results = attach_vsc_hvdc_dispatch(results);
+     finish_outputs();
+     if nargout > 1
+@@ -479,6 +481,8 @@
+                     else
+                         failure = struct('lambda', lamnew, ...
+                             'step', trial_step);
++                        failure.stage = 'psse_control';
++                        failure.diagnostic = psse_diagnostic;
+                         if isempty(target_lam) && ...
+                                 freeze_psse_controls_after_limit()
+                             psse_controls_frozen = 1;
+@@ -502,19 +506,20 @@
+                             end
+                             continue;
+                         elseif isempty(target_lam)
+-                            done_msg = sprintf(['Reached VSC-MTDC ' ...
+-                                'monolithic PSS/E control loading limit ' ...
+-                                'in %d continuation steps, lambda = %.6g.'], ...
+-                                cont_steps, last_lam);
++                            done_msg = sprintf(['VSC-MTDC PSS/E control ' ...
++                                'termination (%s) at candidate lambda %.12g; ' ...
++                                'last accepted lambda %.12g.'], ...
++                                psse_diagnostic.cause, lamnew, last_lam);
+                             events = vsc_mtdc_cpf_append_event(events, ...
+                                 vsc_mtdc_cpf_event( ...
+                                 'PSSE_CONTROL_LIMIT', cont_steps, 1, ...
+                                 done_msg));
+                             success = 1;
+                         else
+-                            done_msg = sprintf(['VSC-MTDC monolithic ' ...
+-                                'PSS/E control re-correction did not ' ...
+-                                'converge at lambda %.6g.'], lamnew);
++                            done_msg = sprintf(['VSC-MTDC PSS/E control ' ...
++                                'termination (%s) at candidate lambda %.12g; ' ...
++                                'last accepted lambda %.12g.'], ...
++                                psse_diagnostic.cause, lamnew, last_lam);
+                             events = vsc_mtdc_cpf_append_event(events, ...
+                                 vsc_mtdc_cpf_event( ...
+                                 'PSSE_CONTROL_FAIL', cont_steps + 1, 1, ...
+@@ -916,6 +921,67 @@
+         results.cpf.jacobian = 'analytic';
+     end
+ 
++    function r = annotate_unified_termination(r)
++        % Success retains the legacy stop-policy semantics. Requested endpoint
++        % completion, electrical-point convergence and control rejection are
++        % separate facts; max_lam is only the largest accepted trace sample.
++        trace = r.cpf;
++        accepted = isfield(trace, 'lam') && ~isempty(trace.lam);
++        last_lambda = [];
++        if accepted
++            last_lambda = trace.lam(end);
++            r.convergence.scope = 'last_accepted_point';
++            r.convergence.lambda = last_lambda;
++        else
++            r.convergence.scope = 'unaccepted_base_point';
++        end
++        cause = 'stopped';
++        names = {trace.events.name};
++        requested = false;
++        nose = any(strcmp(names, 'NOSE'));
++        if ~accepted
++            cause = 'base_failure';
++        elseif ~isempty(trace.failure)
++            cause = 'corrector_failed';
++            if isfield(trace.failure, 'diagnostic')
++                cause = trace.failure.diagnostic.cause;
++            elseif ~isempty(names)
++                cause = lower(names{end});
++            end
++        elseif nose
++            cause = 'nose_event';
++            requested = strcmpi(stop_at, 'NOSE');
++        elseif ~isempty(target_lam) && ...
++                abs(last_lambda-target_lam) <= mpopt.cpf.target_lam_tol
++            cause = 'requested_lambda';
++            requested = true;
++        elseif full_trace && any(strcmp(names, 'TARGET_LAM'))
++            cause = 'full_trace_complete';
++            requested = true;
++        elseif contains(trace.done_msg, 'lambda limit')
++            cause = 'lambda_limit';
++        elseif contains(trace.done_msg, 'step limit')
++            cause = 'step_limit';
++        elseif contains(trace.done_msg, 'identical')
++            cause = 'no_transfer';
++        end
++        r.convergence.overall_success = logical(r.success);
++        r.cpf.termination = struct('cause', cause, ...
++            'success', logical(r.success), ...
++            'success_scope', 'configured_stop_policy', ...
++            'requested_stop', stop_at, 'requested_endpoint_reached', requested, ...
++            'last_accepted_lambda', last_lambda, ...
++            'last_accepted_index', numel(trace.lam), ...
++            'nose_detected', nose, 'max_lam_scope', 'accepted_trace_maximum', ...
++            'stability_margin_validated', false);
++        if ~accepted && contains(trace.done_msg, 'PSS/E control') && ...
++                ~isempty(fieldnames(psse_diagnostic))
++            r.cpf.termination.cause = psse_diagnostic.cause;
++            r.cpf.failure = struct('stage', 'psse_control', ...
++                'diagnostic', psse_diagnostic);
++        end
++    end
++
+     function [ctx, ctxt, Sdelta] = build_unified_context_pair()
+         profile_cleanup = profile_time_scope('build_context_pair'); %#ok<NASGU>
+         key = unified_context_pair_signature(mpcb, mpct);
+@@ -1023,6 +1089,8 @@
+             bus_ids, nbranch, ngen, event_k)
+         profile_cleanup = profile_time_scope('settle_psse_controls'); %#ok<NASGU>
+         ev = struct('k', {}, 'name', {}, 'idx', {}, 'msg', {});
++        psse_diagnostic = struct('cause', 'settled', 'lambda', lam, ...
++            'correction_attempted', false, 'decisions', {{}});
+         success = 1;
+         changed_any = 0;
+         if ~unified_psse_controls_enabled()
+@@ -1038,7 +1106,19 @@
+             profile_count('psse_settle_iteration');
+             [changed, mpcb_next, mpct_next, ac_controlled, report, ok] = ...
+                 unified_psse_control_update(r, lam);
++            psse_diagnostic.decisions{end+1} = struct( ...
++                'iteration', ctrl_it, 'report', report, 'changed', changed, ...
++                'decision_ok', logical(ok), 'input_result', r, ...
++                'proposed_base', mpcb_next, 'proposed_target', mpct_next);
++            psse_diagnostic.candidate = r;
++            psse_diagnostic.x = x;
++            psse_diagnostic.candidate_electrical_converged = ...
++                logical(r.convergence.converged);
++            psse_diagnostic.correction_attempted = false;
++            psse_diagnostic.correction_iterations = 0;
++            psse_diagnostic.correction_residual = [];
+             if ~ok
++                psse_diagnostic.cause = 'control_update_failed';
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 success = 0;
+                 return;
+@@ -1056,6 +1136,10 @@
+                             ctrl_it, lock_msg));
+                         continue;
+                     end
++                    psse_diagnostic.cause = 'control_unresolved';
++                    if direct_report_has_blocked_controls(report)
++                        psse_diagnostic.cause = 'control_bound';
++                    end
+                     success = 0;
+                 end
+                 V = original_ac_voltage_for_result(r, bus_ids);
+@@ -1066,6 +1150,7 @@
+             profile_count('psse_settle_changed');
+             sig = psse_active_set_signature(mpcb_next);
+             if any(strcmp(visited(1:nvisited), sig))
++                psse_diagnostic.cause = 'control_cycle';
+                 profile_count('psse_settle_cycle_check');
+                 current = vsc_cpf_current_mpc(mpcb, mpct, lam);
+                 cycle_direct_cleanup = profile_time_scope( ...
+@@ -1120,6 +1205,13 @@
+             x0 = unified_x_from_controlled_ac(ctx, ac_controlled, r);
+             [x, eval, normF, it, ok] = ...
+                 solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
++            psse_diagnostic.correction_attempted = true;
++            psse_diagnostic.x = x;
++            psse_diagnostic.candidate = build_unified_cpf_result( ...
++                ctx, x, eval, lam, it, normF);
++            psse_diagnostic.candidate_electrical_converged = logical(ok);
++            psse_diagnostic.correction_iterations = it;
++            psse_diagnostic.correction_residual = normF;
+             iterations = iterations + it;
+             msg = sprintf(['PSS/E active-set update at lambda = %.8g; ' ...
+                 're-corrected unified VSC-MTDC point at fixed lambda ' ...
+@@ -1129,6 +1221,7 @@
+             ev = vsc_mtdc_cpf_append_event(ev, ...
+                 vsc_mtdc_cpf_event('PSSE_CONTROL', event_k, ctrl_it, msg));
+             if ~ok
++                psse_diagnostic.cause = 'electrical_correction_failed';
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 success = 0;
+                 return;
+@@ -1138,6 +1231,7 @@
+             [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
+         end
+         V = original_ac_voltage_for_result(r, bus_ids);
++        psse_diagnostic.cause = 'control_iteration_limit';
+         success = 0;
+     end
+ 
+@@ -3791,11 +3885,25 @@
+     function r = build_unified_cpf_result(ctx, x, eval, lam, iterations, normF)
+         profile_cleanup = profile_time_scope('build_cpf_result'); %#ok<NASGU>
+         mpc = vsc_cpf_current_mpc(mpcb, mpct, lam);
+-        r = runpf_vsc_mtdc_unified('__results', ctx, eval, mpc);
+-        r.success = 1;
++        evaluation_available = ~isempty(eval);
++        if evaluation_available
++            r = runpf_vsc_mtdc_unified('__results', ctx, eval, mpc);
++        else
++            % Preserve the input and failed iterate without inventing solved
++            % voltages/flows when Newton left the electrical model's domain.
++            r = mpc;
++            r.ac = [];
++        end
++        electrical_ok = evaluation_available && ...
++            isfinite(normF) && normF < ctx.opt.tol;
++        r.success = double(electrical_ok);
+         r.iterations = iterations;
+         r.convergence = struct( ...
+-            'converged',       1, ...
++            'converged',       logical(electrical_ok), ...
++            'evaluation_available', evaluation_available, ...
++            'state_vector',    x, ...
++            'scope',           'electrical_point', ...
++            'lambda',          lam, ...
+             'method',          'unified', ...
+             'jacobian',        'analytic', ...
+             'psse_aware',      ctx.opt.psse_aware, ...
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -91,3 +91,17 @@
+ independent fixed-state PF, automatic endpoint PF and half-step CPF comparisons.
+ See the [shared shunt contract](../docs/SWSHUNT_DECISION_CONTRACT.md) and
+ [batch 4 report](../outputs/algorithm_cleanup_batch4_20260911/REPORT.md).
++
++Batch 5 reproduces the saved long Beerten control-bound event and checks
++termination reporting without changing automatic-control acceptance:
++
++```matlab
++t_beerten_termination_batch5(0, fullfile(pwd,'outputs','termination_new_run'));
++```
++
++The gate loads the immutable batch-4 `beerten_probe.mat` inputs/options. It
++checks exact accepted-trace preservation, separate accepted/rejected electrical
++states, original control bands and capability, independent full-equation PF
++solutions around the event, finer CPF steps, and numeric versus NOSE stop
++reporting. Fixed-state diagnostics do not replace automatic-control acceptance.
++See the [termination contract](../docs/CPF_TERMINATION_CONTRACT.md).
+--- /dev/null
++++ b/tests/t_beerten_termination_batch5.m
+@@ -0,0 +1,150 @@
++function [checks,evidence] = t_beerten_termination_batch5(quiet,outdir)
++%T_BEERTEN_TERMINATION_BATCH5 Reproduce and classify the saved control bound.
++% Fixed-state diagnostics are separate from the automatic-control trace.
++if nargin < 1, quiet=0; end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin < 2, outdir=tempname(fullfile(root,'outputs')); end
++assert(~isfolder(outdir),'Use a fresh output directory'); mkdir(outdir);
++s=load(fullfile(root,'outputs','algorithm_cleanup_batch4_20260911','beerten_probe.mat'));
++f=s.b4f; target=s.b4t; opt=s.b4o; c=idx_vsc;
++checks=struct('id',{},'passed',{},'detail',{});
++[r,success]=runcpf_psse(f,target,opt);
++d=r.cpf.failure.diagnostic; candidate=d.candidate;
++sh=mp.psse_swshunt_states(f); xf=mp.psse_xfmr_states(f);
++evidence=struct('base',f,'target',target,'options',opt,'result',r,'fixed',{{}},'steps',{{}});
++check('outcome',~success && ~r.success && ~r.cpf.termination.success, ...
++    'automatic target remains unsuccessful under unchanged options');
++check('trace_preserved',isequaln(r.cpf.x,s.b4r.cpf.x) && ...
++    isequaln(r.cpf.lam,s.b4r.cpf.lam) && isequaln(r.cpf.bus,s.b4r.cpf.bus) && ...
++    isequaln(r.cpf.branch,s.b4r.cpf.branch) && isequaln(r.cpf.gen,s.b4r.cpf.gen) && ...
++    isequaln(r.cpf.vsc,s.b4r.cpf.vsc), 'exact historical accepted electrical trace');
++check('bound',strcmp(r.cpf.termination.cause,'control_bound') && ...
++    d.decisions{end}.report.swshunt_blocked_low==1 && ...
++    d.decisions{end}.report.xfmr_blocked_violations==0, 'shunt bound, not a tap rejection');
++check('no_correction',~d.correction_attempted && d.correction_iterations==0 && ...
++    isempty(d.correction_residual) && ~d.decisions{end}.changed, ...
++    'no discrete change or electrical re-correction at rejected point');
++check('candidate_solved',d.candidate_electrical_converged && candidate.success && ...
++    candidate.convergence.max_mismatch<candidate.convergence.tol, ...
++    'rejected control candidate has a converged full electrical solve');
++check('scoped_convergence',r.convergence.converged && ...
++    ~r.convergence.overall_success && strcmp(r.convergence.scope,'last_accepted_point') && ...
++    r.convergence.lambda==r.cpf.lam(end), 'electrical convergence applies only to exported accepted point');
++check('last_accepted',r.cpf.termination.last_accepted_lambda==r.cpf.lam(end) && ...
++    r.cpf.termination.last_accepted_index==numel(r.cpf.lam) && ...
++    r.cpf.failure.lambda>r.cpf.lam(end) && isequal(r.bus,r.cpf.bus(:,:,end)), ...
++    'candidate is excluded from accepted trace and result arrays');
++check('no_nose',~r.cpf.termination.nose_detected && ...
++    ~r.cpf.termination.stability_margin_validated && ...
++    ~r.cpf.termination.requested_endpoint_reached && ...
++    strcmp(r.cpf.termination.max_lam_scope,'accepted_trace_maximum'), ...
++    'failed endpoint is neither requested target nor a validated stability margin');
++check('message',contains(r.cpf.done_msg,'control_bound') && ...
++    ~contains(r.cpf.done_msg,'re-correction'), 'message names actual rejection');
++check('no_recovery',~any(contains({r.cpf.events.name},'FREEZE')) && ...
++    strcmp(r.cpf.active_set_failure_policy.psse_control.declared_policy,'stop'), ...
++    'no new freeze or lockout policy');
++check('threshold',r.bus(5,8)>=sh.vswlo-sh.vtol && ...
++    candidate.bus(5,8)<sh.vswlo-sh.vtol && candidate.bus(5,6)==sh.bmax, ...
++    'last accepted and rejected points bracket unchanged voltage tolerance at maximum B');
++check('tap_in_band',candidate.bus(xf.reg_bus_idx,8)>=xf.vmi-xf.vtol && ...
++    candidate.bus(xf.reg_bus_idx,8)<=xf.vma+xf.vtol && ...
++    isequal(candidate.branch(:,9),r.branch(:,9)), 'ULTC regulated bus remains in band');
++check('active_set',isequal(candidate.bus(:,2),r.bus(:,2)) && ...
++    isequal(candidate.gen(:,[4 5 6 8]),r.gen(:,[4 5 6 8])) && ...
++    isequal(candidate.vsc(:,[3 4 5]),r.vsc(:,[3 4 5])), ...
++    'no generator, bus or converter mode switch at rejected candidate');
++audit=check_capability_limits(candidate); evidence.capability_audit=audit;
++check('capability',audit.violations==0 && all(candidate.gen(:,3)<=f.gen(:,4)+.01) && ...
++    all(candidate.gen(:,3)>=f.gen(:,5)-.01), 'original generator and converter capability audit passes');
++physical('accepted',r); physical('candidate',candidate);
++% Every accepted point remains independently solvable on its explicit state.
++for k=1:numel(r.cpf.lam)
++    p=f; lam=r.cpf.lam(k);
++    p.bus(:,[3 4])=f.bus(:,[3 4])+lam*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++    p.bus(:,6)=r.cpf.bus(:,6,k); p.branch(:,1:13)=r.cpf.branch(:,1:13,k);
++    pf=runpf_vsc_mtdc(p,opt);
++    [~,rows]=ismember(r.cpf.bus(:,1,k),pf.ac.bus(:,1));
++    check(sprintf('point%d.fixed',k),pf.success && ...
++        max(abs(phasor(pf.ac.bus(rows,:))-phasor(r.cpf.bus(:,:,k))))<1e-6, 'independent full PF matches accepted state');
++end
++% Around the event, enumerate all original B states at the accepted tap.
++for lam=[r.cpf.lam(end) r.cpf.failure.lambda .42 .45]
++    for B=sh.states{1}'
++        p=f;
++        p.bus(:,[3 4])=f.bus(:,[3 4])+lam*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++        p.branch(:,1:13)=r.branch(:,1:13);
++        p.bus(5,6)=sh.base_bs(5)+B; p.psse.swshunt.num(:,sh.binit_col)=B;
++        pf=runpf_vsc_mtdc(p,opt); % explicit fixed state, original PF options
++        tag=sprintf('fixed%.8f.B%g',lam,B); physical(tag,pf);
++        vm=pf.ac.bus(pf.ac.bus(:,1)==5,8);
++        check([tag '.solved'],pf.success,'full PF converges with original equations and limits');
++        if lam>=r.cpf.failure.lambda
++            check([tag '.outside_band'],vm<sh.vswlo-sh.vtol,'all legal B states remain below the band');
++        end
++        if lam==r.cpf.failure.lambda && B==sh.bmax
++            [~,rows]=ismember(candidate.bus(:,1),pf.ac.bus(:,1));
++            check('candidate_pf_match',max(abs(phasor(pf.ac.bus(rows,:))-phasor(candidate.bus)))<1e-6, ...
++                'independent full PF reproduces rejected candidate voltage');
++        end
++        evidence.fixed{end+1}=struct('lambda',lam,'B',B,'input',p,'result',pf);
++    end
++end
++for step=[.05 .025]
++    op=mpoption(opt,'cpf.step',step); a=runcpf_psse(f,target,op);
++    check(sprintf('step%g',step),~a.success && strcmp(a.cpf.termination.cause,'control_bound') && ...
++        a.cpf.failure.diagnostic.candidate_electrical_converged && ...
++        abs(a.cpf.lam(end)-r.cpf.lam(end))<2e-4 && ...
++        a.bus(5,8)>=sh.vswlo-sh.vtol && ...
++        a.cpf.failure.diagnostic.candidate.bus(5,8)<sh.vswlo-sh.vtol, ...
++        'same control boundary bracket with finer continuation step');
++    evidence.steps{end+1}=struct('options',op,'result',a);
++end
++short=runcpf_psse(f,target,mpoption(opt,'cpf.stop_at',.4));
++check('requested_success',short.success && short.convergence.overall_success && ...
++    short.cpf.termination.requested_endpoint_reached && ...
++    strcmp(short.cpf.termination.cause,'requested_lambda'), 'short requested endpoint is explicitly reached');
++nose=runcpf_psse(f,target,mpoption(opt,'cpf.stop_at','NOSE'));
++check('nose_request_bound',nose.success && strcmp(nose.cpf.termination.cause,'control_bound') && ...
++    ~nose.cpf.termination.requested_endpoint_reached && ~nose.cpf.termination.nose_detected && ...
++    strcmp(nose.cpf.termination.success_scope,'configured_stop_policy'), ...
++    'legacy successful bound stop is explicit and is not a detected nose');
++evidence.short=short; evidence.nose_request=nose;
++% Synthetic negative-path fixture: preserve all ratings/options, but put the
++% base Newton iteration outside its electrical evaluation domain. This is
++% solely a failure-packaging regression, not a Beerten loading-limit study.
++stress=f; stress.bus(:,[3 4])=1000*stress.bus(:,[3 4]);
++bad=runcpf_psse(stress,stress,opt);
++check('invalid_evaluation',~bad.success && ~bad.convergence.converged && ...
++    ~bad.convergence.evaluation_available && isempty(bad.ac) && ...
++    ~isempty(bad.convergence.state_vector), 'invalid electrical evaluation returns failed iterate without fabricated solved arrays');
++check('no_accepted_base',isempty(bad.cpf.lam) && ...
++    strcmp(bad.cpf.termination.cause,'base_failure') && ...
++    isempty(bad.cpf.termination.last_accepted_lambda) && ...
++    strcmp(bad.convergence.scope,'unaccepted_base_point'), 'failed base is not an accepted CPF point');
++evidence.stress_input=stress; evidence.stress_result=bad;
++save(fullfile(outdir,'termination.mat'),'checks','evidence','-v7.3');
++fid=fopen(fullfile(outdir,'checks.json'),'w'); fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true)); fclose(fid);
++t_begin(numel(checks),quiet);
++for k=1:numel(checks), t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]); end
++t_end;
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function v=phasor(bus)
++        v=bus(:,8).*exp(1j*pi/180*bus(:,9));
++    end
++    function physical(tag,p)
++        a=ext2int(p.ac); v=a.bus(:,8).*exp(1j*pi/180*a.bus(:,9));
++        ac=norm(v.*conj(makeYbus(a.baseMVA,a.bus,a.branch)*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        [~,rows]=ismember(p.vsc(:,c.BUSDC),p.busdc(:,1));
++        injection=accumarray(rows,p.vsc(:,c.PDC),[size(p.busdc,1) 1])/f.baseMVA;
++        dc=norm(p.busdc(:,3).*(makeGdc(p.busdc,p.branchdc)*p.busdc(:,3))-injection,Inf);
++        conv=max(abs(sum(p.vsc(:,[c.PAC c.PDC c.PLOSS]),2)))/f.baseMVA;
++        current=hypot(p.vsc(:,c.PAC),p.vsc(:,c.QAC))./(f.baseMVA*p.vsc(:,c.VAC_INTERNAL));
++        losses=p.vsc(:,c.LOSS_A)+p.vsc(:,c.LOSS_B).*current+p.vsc(:,c.LOSS_C).*current.^2;
++        loss=max(abs(losses-p.vsc(:,c.PLOSS)))/f.baseMVA;
++        check([tag '.balance'],ac<1e-8 && dc<1e-8 && conv<1e-8 && loss<1e-8, ...
++            sprintf('full AC %.3g DC %.3g converter %.3g loss %.3g pu',ac,dc,conv,loss));
++    end
++end
+--- /dev/null
++++ b/docs/CPF_TERMINATION_CONTRACT.md
+@@ -0,0 +1,54 @@
++# Unified VSC-MTDC CPF termination reporting
++
++Batch 5 separates an electrical point from acceptance by the automatic-control
++scenario. It changes diagnostics and reporting, not controller decisions,
++retries, limits, tolerances or recovery policy.
++
++`results.bus`, `gen`, `branch`, `ac`, `vsc` and the final accepted trace column
++remain the last accepted point. On a later control rejection,
++`results.convergence.converged` describes that point's electrical solve;
++`scope = 'last_accepted_point'` and `lambda` identify it.
++`convergence.overall_success` mirrors `results.success`.
++An unsuccessful base electrical solve no longer receives an unconditional
++`converged = true` from the CPF result constructor.
++If Newton cannot produce an electrical evaluation, `evaluation_available` is
++false, `ac` is empty, and `convergence.state_vector` retains the failed iterate.
++The returned input arrays are not claimed to be solved; there is no accepted
++base point. This avoids an exception while packaging a numerical failure.
++
++`results.cpf.termination` records the cause, overall success, requested stop,
++whether that endpoint was reached, last accepted index/lambda, and whether
++a NOSE event was detected. `max_lam` retains its existing meaning as the maximum
++accepted trace sample. It is not an independently validated stability margin;
++the metadata explicitly records `stability_margin_validated = false`.
++A detected NOSE event is a solver event, not independent benchmark validation.
++
++For compatibility, `success` retains the existing configured-stop-policy
++semantics. In particular, numeric targets return false when a control bound
++prevents reaching the target. NOSE/FULL requests can return true when the
++declared stop policy terminates at a control bound. Such a result now explicitly
++reports `requested_endpoint_reached = false` and `nose_detected = false`.
++Consumers requiring a requested endpoint must inspect that field, not success
++alone. This batch does not redefine historical freeze/recovery outcomes.
++
++For terminal PSS/E control rejection, `cpf.failure.diagnostic` retains:
++
++- The cause (`control_bound`, `control_unresolved`, `control_update_failed`,
++  `control_cycle`, `control_iteration_limit` or `electrical_correction_failed`).
++- The candidate lambda, state vector, full electrical result and explicit
++  `candidate_electrical_converged` flag. The candidate is not appended to the
++  accepted trace. Its `success` is an electrical-point flag, not control acceptance.
++- Decision reports, input electrical results, proposed base/target active sets,
++  and whether the final decision actually attempted a correction. Correction
++  iteration count and residual are empty/zero when no correction was attempted.
++
++Bounded controllers can remain electrically feasible outside their voltage band.
++Under the existing stop policy this is a rejected control point, not a failed
++Newton solve or evidence of voltage collapse. Allowing continuation with such
++a saturated controller would be a separately justified recovery-policy change.
++
++The batch-5 Beerten gate reproduces the immutable batch-4 fixture to lambda 0.8,
++checks exact accepted-trace preservation, and independently solves explicit
++fixed-control states around the event. Short lambda-0.4 runs remain separate
++successful acceptance cases. See `tests/t_beerten_termination_batch5.m` and the
++[batch-5 report](../outputs/algorithm_cleanup_batch5_20260911/REPORT.md).

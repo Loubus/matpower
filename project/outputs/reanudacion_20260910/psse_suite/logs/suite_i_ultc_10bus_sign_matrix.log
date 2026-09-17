@@ -1,0 +1,961 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_i_ultc_10bus_sign_matrix.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 1 1 1 1 0 1 -1 0
+Solver option array values: 1 1 1 1 0 1 -1 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 1: enable transformer tap stepping adjustment.
+- Option 2, area interchange adjustment flag = 1: enable area interchange adjustment using tie-line flows only.
+- Option 3, phase shift adjustment flag = 1: enable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 0: disable switched-shunt adjustment.
+- Option 6, flat start flag = 1: flat start.
+- Option 7, VAR limit flag = -1: ignore generator reactive power limits.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW NEWTON, ITMXN=100: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(2).
+- RAW NEWTON, VCTOLV=0.00001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(18).
+- RAW ADJUST, MXTPSS=20: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(4).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, ACTAPS=1, SWSHNT=0, FLATST=1, VARLIM=-1
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_i_ultc_10bus_sign_matrix.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 100 20 20 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.7 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 1 1 1 1 0 1 -1 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_i_ultc_10bus_sign_matrix_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_i_ultc_10bus_sign_matrix.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:22
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Reading non-transformer branch data...
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ No power flow solution parameters changed
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 10   Off-diagonals = 5   Maximum size = 10
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         0.9000(      2     )    0.4000(      2     )
+                                                             0.06700(      4     )   0.12320(      7     )
+   1         0.0632(      4     )    0.0543(      2     )
+                                                             0.01478(      7     )   0.01080(      4     )
+   2         0.0018(      4     )    0.0009(      3     )
+                                                             0.00033(      7     )   0.00026(      7     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      3     [REMOTE_TAP  115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+      7     [W3_115      115.00]  3WNDTR [T5 3W W2 CW2    ] WND 2  1  1.00000   1.05000    0.05000
+
+ 5 tap ratios adjusted
+
+   3         0.0938(      2     )    0.4873(      6     )
+                                                             0.06440(     10     )   0.01232(     10     )
+   4         0.0101(      2     )    0.0350(      2     )
+                                                             0.00521(      7     )   0.00121(     10     )
+   5         0.0001(      2     )    0.0001(      2     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+   5         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+   6         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+   7         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+   8         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+   9         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  10         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  11         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  12         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  13         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  14         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  15         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  16         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  17         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  18         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  19         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  20         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  21         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  22         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  23         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  24         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  25         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  26         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  27         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  28         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  29         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  30         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  31         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  32         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  33         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  34         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  35         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  36         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+  37         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  38         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  1.00000   0.95000   -0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.00000   1.05000    0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  1.00000   0.95000   -0.05000
+
+ 3 tap ratios adjusted
+
+  39         0.0938(      2     )    0.4872(      6     )
+                                                             0.06439(     10     )   0.01231(     10     )
+  40         0.0101(      2     )    0.0350(      2     )
+                                                             0.00387(     10     )   0.00121(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.95000   1.00000    0.05000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  1.05000   1.00000   -0.05000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.95000   1.00000    0.05000
+
+ 3 tap ratios adjusted
+
+ ** Taps and/or switched shunts have been adjusted 20 times--further adjustments are suppressed
+
+
+  41         0.0946(      2     )    0.5171(      6     )
+                                                             0.05361(     10     )   0.01008(     10     )
+  42         0.0073(      2     )    0.0273(      2     )
+                                                             0.00342(     10     )   0.00102(     10     )
+  43         0.0000(      2     )    0.0001(      2     )
+
+
+ Reached tolerance in 43 iterations
+
+ Largest mismatch:      0.00 MW      0.01 Mvar      0.01 MVA at bus 2 [LOCAL115    115.00]
+ System total absolute mismatch:                    0.03 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     SRC230      230.00     401.4    600.0     0.0     218.9    600.0  -600.0
+
+ TAP RATIO CONTROL VIOLATIONS:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT  V OR Q    VMIN    VMAX   RATIO    RMIN    RMAX
+      1     [SRC230      230.00]       2     [LOCAL115    115.00]  1  0.94394 0.96000 0.99000 1.00000 0.90000 1.10000
+      5     [REV_LOCAL   115.00]       1     [SRC230      230.00]  1  0.95586 0.96000 0.99000 1.00000 0.90000 1.10000
+      1     [SRC230      230.00]       6     [CW2_LOCAL   115.00]  1  0.94729 0.96000 0.99000 1.00000 0.90000 1.10000
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+                         SUITE_I_ULTC_10BUS_SIGN_MATRIX                                   %MVA FOR TRANSFORMERS
+                         MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI     % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     SRC230      230.00    1 1.0000    0.0   401.4      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 230.00          218.9R     0.0    -0.0      2     LOCAL115    115.00    1  1    91.1   50.9 1.000RG           262  42   250M
+                                                                                3     REMOTE_TAP  115.00    1  1    81.4   45.7 1.000UN           234  37   250M
+                                                                                5     REV_LOCAL   115.00    1  1    75.7   39.3 1.000UN           214  34   250M
+                                                                                6     CW2_LOCAL   115.00    1  1    89.1   47.6 1.000RG           253  40   250M
+                                                                           3WNDTR T5 3W W2 CW2     WND 1       1    64.2   35.5 1.000LK           184  29   250M
+      2     LOCAL115    115.00    1 0.9439   -5.2     0.0     90.0     0.0 -------------------------------------------------------------------------------------
+                                  1 108.55            0.0     40.0    -0.0      1     SRC230      230.00    1  1   -90.0  -40.0 1.000UN           524  39   250M
+
+      3     REMOTE_TAP  115.00    1 0.9967   -4.6     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 114.62            0.0      0.0    -0.0      1     SRC230      230.00    1  1   -80.5  -37.0 1.050RG           446  35   250M
+                                                                                4     REMOTE_LOAD 115.00    1  1    60.5   28.6                   337  27  1255A
+                                                                                9     REMOTE_TAIL 115.00    1  1    20.1    8.4                   110   9  1255A
+      4     REMOTE_LOAD 115.00    1 0.9687   -7.3     0.0     60.0     0.0 -------------------------------------------------------------------------------------
+                                  1 111.41            0.0     25.0    -0.0      3     REMOTE_TAP  115.00    1  1   -60.0  -25.0                   337  27  1255A
+
+      5     REV_LOCAL   115.00    1 0.9559   -4.3     0.0     75.0     0.0 -------------------------------------------------------------------------------------
+                                  1 109.92            0.0     32.0    -0.0      1     SRC230      230.00    1  1   -75.0  -32.0 1.000RG           428  33   250M
+
+      6     CW2_LOCAL   115.00    1 0.9473   -5.1     0.0     70.0     0.0 -------------------------------------------------------------------------------------
+                                  1 108.94            0.0     30.0    -0.0      1     SRC230      230.00    1  1   -88.0  -37.4 1.000UN           507  38   250M
+                                                                               10     CW2_TAIL    115.00    1  1    18.0    7.4                   103   8  1255A
+      7     W3_115      115.00    1 0.9659   -7.7     0.0     55.0     0.0 -------------------------------------------------------------------------------------
+                                  1 111.08            0.0     22.0    -0.0 3WNDTR T5 3W W2 CW2     WND 2       1   -55.0  -22.0 1.050RG           308  24   250M
+
+      8     W3_013      13.800    1 0.9539   -4.3     0.0      8.0     0.0 -------------------------------------------------------------------------------------
+                                  1 13.164            0.0      3.0    -0.0 3WNDTR T5 3W W2 CW2     WND 3       1    -8.0   -3.0 1.000LK           375   9   100M
+
+      9     REMOTE_TAIL 115.00    1 0.9868   -5.6     0.0     20.0     0.0 -------------------------------------------------------------------------------------
+                                  1 113.48            0.0      8.0    -0.0      3     REMOTE_TAP  115.00    1  1   -20.0   -8.0                   110   9  1255A
+
+     10     CW2_TAIL    115.00    1 0.9381   -6.1     0.0     18.0     0.0 -------------------------------------------------------------------------------------
+                                  1 107.88            0.0      7.0    -0.0      6     CW2_LOCAL   115.00    1  1   -18.0   -7.0                   103   8  1255A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                           RATING   %MVA FOR TRANSFORMERS
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI             SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     SRC230      230.00 CKT     MW     MVAR     MVA   % 1.0000PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                        401.4   218.9R  457.2 457 230.00KV               MW     MVAR    1                 1
+  TO      2     LOCAL115    115.00  1     91.1    50.9   104.3  42 1.0000RG              1.09   10.88    1                 1
+  TO      3     REMOTE_TAP  115.00  1     81.4    45.7    93.4  37 1.0000UN              0.87    8.72    1                 1
+  TO      5     REV_LOCAL   115.00  1     75.7    39.3    85.3  34 1.0000UN              0.73    7.28    1                 1
+  TO      6     CW2_LOCAL   115.00  1     89.1    47.6   101.0  40 1.0000RG              1.02   10.20    1                 1
+  TO 3WNDTR T5 3W W2 CW2     WND 1  1     64.2    35.5    73.3  29 1.0000LK              1.18   10.46
+
+ BUS      2     LOCAL115    115.00 CKT     MW     MVAR     MVA   % 0.9439PU   -5.23  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      2
+                                                                   108.55KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              90.0    40.0    98.5
+  TO      1     SRC230      230.00  1    -90.0   -40.0    98.5  39 1.0000UN              1.09   10.88    1                 1
+
+ BUS      3     REMOTE_TAP  115.00 CKT     MW     MVAR     MVA   % 0.9967PU   -4.64  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      3
+                                                                   114.62KV               MW     MVAR    1                 1
+  TO      1     SRC230      230.00  1    -80.5   -37.0    88.6  35 1.0500RG              0.87    8.72    1                 1
+  TO      4     REMOTE_LOAD 115.00  1     60.5    28.6    66.9  27                       0.45    3.60    1                 1
+  TO      9     REMOTE_TAIL 115.00  1     20.1     8.4    21.8   9                       0.06    0.43    1                 1
+
+ BUS      4     REMOTE_LOAD 115.00 CKT     MW     MVAR     MVA   % 0.9687PU   -7.34  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      4
+                                                                   111.41KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              60.0    25.0    65.0
+  TO      3     REMOTE_TAP  115.00  1    -60.0   -25.0    65.0  27                       0.45    3.60    1                 1
+
+ BUS      5     REV_LOCAL   115.00 CKT     MW     MVAR     MVA   % 0.9559PU   -4.31  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      5
+                                                                   109.92KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              75.0    32.0    81.5
+  TO      1     SRC230      230.00  1    -75.0   -32.0    81.5  33 1.0000RG              0.73    7.28    1                 1
+
+ BUS      6     CW2_LOCAL   115.00 CKT     MW     MVAR     MVA   % 0.9473PU   -5.11  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      6
+                                                                   108.94KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              70.0    30.0    76.2
+  TO      1     SRC230      230.00  1    -88.0   -37.4    95.7  38 1.0000UN              1.02   10.20    1                 1
+  TO     10     CW2_TAIL    115.00  1     18.0     7.4    19.5   8                       0.05    0.38    1                 1
+
+ BUS      7     W3_115      115.00 CKT     MW     MVAR     MVA   % 0.9659PU   -7.69  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      7
+                                                                   111.08KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              55.0    22.0    59.2
+  TO 3WNDTR T5 3W W2 CW2     WND 2  1    -55.0   -22.0    59.2  24 1.0500RG              1.18   10.46
+
+ BUS      8     W3_013      13.800 CKT     MW     MVAR     MVA   % 0.9539PU   -4.28  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      8
+                                                                   13.164KV               MW     MVAR    1                 1
+  TO LOAD-PQ                               8.0     3.0     8.5
+  TO 3WNDTR T5 3W W2 CW2     WND 3  1     -8.0    -3.0     8.5   9 1.0000LK              1.18   10.46
+
+ BUS      9     REMOTE_TAIL 115.00 CKT     MW     MVAR     MVA   % 0.9868PU   -5.63  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      9
+                                                                   113.48KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              20.0     8.0    21.5
+  TO      3     REMOTE_TAP  115.00  1    -20.0    -8.0    21.5   9                       0.06    0.43    1                 1
+
+ BUS     10     CW2_TAIL    115.00 CKT     MW     MVAR     MVA   % 0.9381PU   -6.10  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     10
+                                                                   107.88KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              18.0     7.0    19.3
+  TO      6     CW2_LOCAL   115.00  1    -18.0    -7.0    19.3   8                       0.05    0.38    1                 1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+                         SUITE_I_ULTC_10BUS_SIGN_MATRIX                                   %MVA FOR TRANSFORMERS
+                         MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI     % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     SRC230      230.00    1 1.0000    0.0   401.4      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 230.00          218.9R     0.0    -0.0      2     LOCAL115    115.00    1  1     91.1    50.9  1.000RG          42   250
+                                                                                3     REMOTE_TAP  115.00    1  1     81.4    45.7  1.000UN          37   250
+                                                                                5     REV_LOCAL   115.00    1  1     75.7    39.3  1.000UN          34   250
+                                                                                6     CW2_LOCAL   115.00    1  1     89.1    47.6  1.000RG          40   250
+                                                                           3WNDTR T5 3W W2 CW2     WND 1       1     64.2    35.5  1.000LK          29   250
+      2     LOCAL115    115.00    1 0.9439   -5.2     0.0     90.0     0.0 ---------------------------------------------------------------------------------
+                                  1 108.55            0.0     40.0    -0.0      1     SRC230      230.00    1  1    -90.0   -40.0  1.000UN          39   250
+
+      3     REMOTE_TAP  115.00    1 0.9967   -4.6     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 114.62            0.0      0.0    -0.0      1     SRC230      230.00    1  1    -80.5   -37.0  1.050RG          35   250
+                                                                                4     REMOTE_LOAD 115.00    1  1     60.5    28.6                   27   250
+                                                                                9     REMOTE_TAIL 115.00    1  1     20.1     8.4                    9   250
+      4     REMOTE_LOAD 115.00    1 0.9687   -7.3     0.0     60.0     0.0 ---------------------------------------------------------------------------------
+                                  1 111.41            0.0     25.0    -0.0      3     REMOTE_TAP  115.00    1  1    -60.0   -25.0                   27   250
+
+      5     REV_LOCAL   115.00    1 0.9559   -4.3     0.0     75.0     0.0 ---------------------------------------------------------------------------------
+                                  1 109.92            0.0     32.0    -0.0      1     SRC230      230.00    1  1    -75.0   -32.0  1.000RG          33   250
+
+      6     CW2_LOCAL   115.00    1 0.9473   -5.1     0.0     70.0     0.0 ---------------------------------------------------------------------------------
+                                  1 108.94            0.0     30.0    -0.0      1     SRC230      230.00    1  1    -88.0   -37.4  1.000UN          38   250
+                                                                               10     CW2_TAIL    115.00    1  1     18.0     7.4                    8   250
+      7     W3_115      115.00    1 0.9659   -7.7     0.0     55.0     0.0 ---------------------------------------------------------------------------------
+                                  1 111.08            0.0     22.0    -0.0 3WNDTR T5 3W W2 CW2     WND 2       1    -55.0   -22.0  1.050RG          24   250
+
+      8     W3_013      13.800    1 0.9539   -4.3     0.0      8.0     0.0 ---------------------------------------------------------------------------------
+                                  1 13.164            0.0      3.0    -0.0 3WNDTR T5 3W W2 CW2     WND 3       1     -8.0    -3.0  1.000LK           9   100
+
+      9     REMOTE_TAIL 115.00    1 0.9868   -5.6     0.0     20.0     0.0 ---------------------------------------------------------------------------------
+                                  1 113.48            0.0      8.0    -0.0      3     REMOTE_TAP  115.00    1  1    -20.0    -8.0                    9   250
+
+     10     CW2_TAIL    115.00    1 0.9381   -6.1     0.0     18.0     0.0 ---------------------------------------------------------------------------------
+                                  1 107.88            0.0      7.0    -0.0      6     CW2_LOCAL   115.00    1  1    -18.0    -7.0                    8   250
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+      2     LOCAL115    115.00    1 0.9439 108.55         6     CW2_LOCAL   115.00    1 0.9473 108.94
+     10     CW2_TAIL    115.00    1 0.9381 107.88
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+
+                                   * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [SRC230      230.00] 1.00000 230.0         1.00000                      LOCAL  GENERATION      1     [SRC230      230.00]
+
+      2     [LOCAL115    115.00] 0.94394 108.6     0.96000 0.99000 -0.01606   -1.85 XFRMER CKT 1  BUS      1     [SRC230      230.00] TO      2     [LOCAL115    115.00]
+
+      4     [REMOTE_LOAD 115.00] 0.96874 111.4     0.96000 0.99000                  XFRMER CKT 1  BUS      1     [SRC230      230.00] TO      3     [REMOTE_TAP  115.00]
+
+      5     [REV_LOCAL   115.00] 0.95586 109.9     0.96000 0.99000 -0.00414   -0.48 XFRMER CKT 1  BUS      1     [SRC230      230.00] TO      5     [REV_LOCAL   115.00]
+
+      6     [CW2_LOCAL   115.00] 0.94729 108.9     0.96000 0.99000 -0.01271   -1.46 XFRMER CKT 1  BUS      1     [SRC230      230.00] TO      6     [CW2_LOCAL   115.00]
+
+      7     [W3_115      115.00] 0.96594 111.1     0.96000 0.99000                  XFRMER CKT 1  BUS      7     [W3_115      115.00] TO 3WNDTR [T5 3W W2 CW2    ] WND 2
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                            SHUNT
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI            SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                   SYSTEM SUMMARY
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+     11      8      2      0      0      1      0      8      1      1      0      0      0      0      0     0     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     SRC230      230.00
+     10      0      3      7      0     10      0     1      0      0    0    0   0     1     1     1     0
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW       401.4      0.0      0.0    396.0      0.0      0.0      0.0      0.0      0.0      5.4    401.4
+ MVAR     218.9      0.0      0.0    167.0      0.0      0.0     -0.0      0.0      0.0     51.9    218.9
+
+ TOTAL MISMATCH =    0.03 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.01 MVA      2     LOCAL115    115.00  0.000100  0.700   5.00 100.00   20
+   HIGH VOLTAGE = 1.00000 PU       1     SRC230      230.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 0.93813 PU      10     CW2_TAIL    115.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010 100 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                          WORST
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+      2     LOCAL115    115.00     -0.00     -0.01      0.01
+      6     CW2_LOCAL   115.00     -0.00     -0.01      0.01
+      5     REV_LOCAL   115.00     -0.00     -0.00      0.01
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                       RATING SET
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI        UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                10
+      2      RATE2   RATING SET 2                                10
+      3      RATE3   RATING SET 3                                10
+      4      RATE4   RATING SET 4                                 0
+      5      RATE5   RATING SET 5                                 0
+      6      RATE6   RATING SET 6                                 0
+      7      RATE7   RATING SET 7                                 0
+      8      RATE8   RATING SET 8                                 0
+      9      RATE9   RATING SET 9                                 0
+     10      RATE10  RATING SET 10                                0
+     11      RATE11  RATING SET 11                                0
+     12      RATE12  RATING SET 12                                0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                         BUS DATA
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     SRC230      230.00   3    0     0      0    1.00000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      2     LOCAL115    115.00   1    1     0      0    0.94394   -5.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+      3     REMOTE_TAP  115.00   1    0     0      0    0.99669   -4.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+      4     REMOTE_LOAD 115.00   1    1     0      0    0.96874   -7.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+      5     REV_LOCAL   115.00   1    1     0      0    0.95586   -4.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+      6     CW2_LOCAL   115.00   1    1     0      0    0.94729   -5.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+      7     W3_115      115.00   1    1     0      0    0.96594   -7.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+      8     W3_013      13.800   1    1     0      0    0.95389   -4.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+      9     REMOTE_TAIL 115.00   1    1     0      0    0.98681   -5.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+     10     CW2_TAIL    115.00   1    1     0      0    0.93813   -6.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                        SWITCHED
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                       GENERATING
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     SRC230      230.00  3   1  401.4  218.9  600.0 -600.0 1.0000 1.0000  100.0      1     SRC230      230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                        GENERATOR
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI          UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     SRC230      230.00  3 1  1  401.4  218.9  600.0 -600.0  600.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                      BRANCH DATA
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      3     REMOTE_TAP  115.00*      4     REMOTE_LOAD 115.00  1   0.01000  0.08000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      3     REMOTE_TAP  115.00*      9     REMOTE_TAIL 115.00  1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      6     CW2_LOCAL   115.00*     10     CW2_TAIL    115.00  1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                      BRANCH DATA
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      3     REMOTE_TAP  115.00*      4     REMOTE_LOAD 115.00  1   0.01000  0.08000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      3     REMOTE_TAP  115.00*      9     REMOTE_TAIL 115.00  1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      4     REMOTE_LOAD 115.00       3     REMOTE_TAP  115.00* 1   0.01000  0.08000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      6     CW2_LOCAL   115.00*     10     CW2_TAIL    115.00  1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+      9     REMOTE_TAIL 115.00       3     REMOTE_TAP  115.00* 1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+     10     CW2_TAIL    115.00       6     CW2_LOCAL   115.00* 1   0.01200  0.09000  0.00000   1  250.0  250.0  250.0    0.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI       DC LINE DATA
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                        LOAD DATA
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+      2     LOCAL115    115.00 1   1 1  1.000   90.0   40.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      4     REMOTE_LOAD 115.00 1   1 1  1.000   60.0   25.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      5     REV_LOCAL   115.00 1   1 1  1.000   75.0   32.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      6     CW2_LOCAL   115.00 1   1 1  1.000   70.0   30.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      7     W3_115      115.00 1   1 1  1.000   55.0   22.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      8     W3_013      13.800 1   1 1  1.000    8.0    3.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      9     REMOTE_TAIL 115.00 1   1 1  1.000   20.0    8.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     10     CW2_TAIL    115.00 1   1 1  1.000   18.0    7.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                    FACTS SENDING
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                   FACTS TERMINAL
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI        END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                          FIXED
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                      AREA TOTALS
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1           401.4      0.0      0.0    396.0      0.0      0.0      0.0      0.0      5.4      0.0      0.0      0.0
+                218.9      0.0      0.0    167.0     -0.0      0.0     -0.0      0.0     51.9      0.0      0.0
+
+ COLUMN         401.4      0.0      0.0    396.0      0.0      0.0      0.0      0.0      5.4      0.0      0.0      0.0
+ TOTALS         218.9      0.0      0.0    167.0      0.0      0.0      0.0      0.0     51.9      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:22
+ SUITE_I_ULTC_10BUS_SIGN_MATRIX                                      ZONE TOTALS
+ MIXED TWO-WINDING AND THREE-WINDING TAP-DIRECTION SIGN MATRI         IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1           401.4      0.0      0.0    396.0      0.0      0.0      0.0      0.0      5.4      0.0      0.0
+                218.9      0.0      0.0    167.0     -0.0      0.0     -0.0      0.0     51.9      0.0      0.0
+
+ COLUMN         401.4      0.0      0.0    396.0      0.0      0.0      0.0      0.0      5.4      0.0      0.0
+ TOTALS         218.9      0.0      0.0    167.0      0.0      0.0      0.0      0.0     51.9      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_i_ultc_10bus_sign_matrix.sav on THU, SEP 10 2026  11:22
+ Batch command complete.
+ : 

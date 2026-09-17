@@ -1,0 +1,27 @@
+const {chromium}=require('C:/Users/Santiago/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('fs');const path=require('path');const {pathToFileURL}=require('url');
+(async()=>{
+ const out=__dirname, v=path.join(out,'verification');
+ const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+ const page=await browser.newPage({viewport:{width:1280,height:1000},deviceScaleFactor:1});const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(path.join(out,'REPORT.html')).href);await page.waitForTimeout(400);
+ const desktop=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth,eq:[...document.querySelectorAll('.equation svg')].map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})),figures:document.querySelectorAll('figure').length,missingAnchors:[...document.querySelectorAll('a[href^="#"]')].filter(a=>!document.getElementById(a.hash.slice(1))).map(a=>a.hash),bodyText:document.body.innerText.length}));
+ await page.locator('header').screenshot({path:path.join(v,'report-cover.png')});
+ for(let i=0;i<desktop.figures;i++)await page.locator('figure').nth(i).screenshot({path:path.join(v,`report-figure-${i+1}.png`)});
+ for(let i=0;i<desktop.eq.length;i++)await page.locator('.equation').nth(i).screenshot({path:path.join(v,`report-equation-${i+1}.png`)});
+ await page.locator('.explorer').screenshot({path:path.join(v,'report-interactive-end.png')});
+ const initial=await page.locator('#sample-values').innerText();
+ await page.locator('#sample').fill('0');await page.locator('#conv').selectOption('0');
+ const changed=await page.locator('#sample-values').innerText();
+ await page.locator('.explorer').screenshot({path:path.join(v,'report-interactive-base.png')});
+ await page.locator('a.cite').first().click();const sourceOpened=await page.locator('details[open]').count();
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>scrollTo(0,0));
+ const mobile=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth,overflow:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1&&!e.closest('figure,.equation,.tablewrap,pre')).map(e=>({tag:e.tagName,cls:e.className,text:e.textContent.slice(0,100),width:e.getBoundingClientRect().width})).slice(0,12)}));
+ await page.locator('header').screenshot({path:path.join(v,'report-mobile-cover.png')});
+ await page.locator('.explorer').screenshot({path:path.join(v,'report-mobile-interactive.png')});
+ const checks={page_errors:errors,desktop,mobile,interaction_changed:initial!==changed,source_opened:sourceOpened>0};
+ fs.writeFileSync(path.join(v,'browser_checks.json'),JSON.stringify(checks,null,2));
+ await browser.close();console.log(JSON.stringify(checks,null,2));
+ if(errors.length||desktop.missingAnchors.length||!checks.interaction_changed||desktop.scrollWidth>desktop.innerWidth||mobile.scrollWidth>mobile.innerWidth)process.exitCode=1;
+})().catch(e=>{console.error(e);process.exit(1)});

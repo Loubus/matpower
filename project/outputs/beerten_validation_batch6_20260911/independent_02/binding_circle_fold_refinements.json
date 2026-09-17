@@ -1,0 +1,24 @@
+[
+  {
+    "h": 0.001,
+    "solver_success": true,
+    "lambda": 1.138532854471936,
+    "equation_residual": 1.76821649030825e-12,
+    "augmented_residual": 2.4783730623312294e-10,
+    "V5": 0.668119077529065,
+    "sigma_min": 1.0269152276518643e-10,
+    "left_null_dot_Flambda": 1.1148833304690835,
+    "left_null_dot_Fxx": 1.3498180892965503
+  },
+  {
+    "h": 0.0005,
+    "solver_success": true,
+    "lambda": 1.138532854471936,
+    "equation_residual": 1.76821649030825e-12,
+    "augmented_residual": 5.377387424232438e-10,
+    "V5": 0.668119077529065,
+    "sigma_min": 3.201993566541433e-10,
+    "left_null_dot_Flambda": 1.1148833307807653,
+    "left_null_dot_Fxx": 1.3498180894878997
+  }
+]

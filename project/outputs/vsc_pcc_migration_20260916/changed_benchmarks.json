@@ -1,0 +1,23 @@
+{
+  "nose_lambda": [
+    5.6240681039292326,
+    5.6240681039576
+  ],
+  "nose_step_agreement": 2.83675305468023E-11,
+  "nose_residual": [
+    1.2766056523173161E-12,
+    3.2495117707753707E-12
+  ],
+  "nose_singular_ratio": [
+    1.9178477530631136E-11,
+    9.0306030228056508E-13
+  ],
+  "nose_is_hardware_margin": false,
+  "control_lambda": 1.3604248395303025,
+  "control_shunt": 15,
+  "control_tap": 1.0111111111111111,
+  "control_pf_below_above": [
+    1,
+    0
+  ]
+}

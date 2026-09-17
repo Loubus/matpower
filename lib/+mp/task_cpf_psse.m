@@ -34,6 +34,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
         psse_stop_after_rollback = false   % stop controls after rollback solve
         psse_pending_control = ''      % control family awaiting CPF acceptance
         psse_pending_source = []       % source MPC for pending control family
+        psse_pending_xfmr_state = []   % accepted xfmr state before pending move
         psse_pending_lambda = NaN      % lambda at which the pending control changed
         psse_target_source = []        % CPF target source preserved across rebuilds
         psse_failed_control = ''       % control family whose rebuild failed
@@ -153,6 +154,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                     ~isempty(obj.psse_last_success_source)
                 obj.psse_failed_control = obj.psse_pending_control;
                 src = obj.psse_last_success_source;
+                if strcmp(obj.psse_pending_control, 'xfmr')
+                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src, mpopt);
+                    if rejected
+                        obj.psse_pending_control = '';
+                        obj.psse_pending_source = [];
+                        obj.psse_pending_xfmr_state = [];
+                        obj.psse_pending_lambda = NaN;
+                        dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
+                        return;
+                    end
+                end
                 if ~isfield(src, 'psse') || isempty(src.psse)
                     src.psse = struct();
                 end
@@ -165,6 +177,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                 obj.psse_failed_after_rollback = true;
                 obj.psse_pending_control = '';
                 obj.psse_pending_source = [];
+                obj.psse_pending_xfmr_state = [];
                 obj.psse_pending_lambda = NaN;
                 dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
                 return;
@@ -183,6 +196,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             obj.psse_last_success_source = dm0.source;
             obj.psse_pending_control = '';
             obj.psse_pending_source = [];
+            obj.psse_pending_xfmr_state = [];
             obj.psse_pending_lambda = NaN;
             if obj.psse_stop_after_rollback
                 obj.psse_stop_after_rollback = false;
@@ -213,6 +227,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
 
             psse_warmstart = obj.psse_reorient_after_warmstart;
+            psse_warmstart_control = obj.psse_pending_control;
             if psse_warmstart
                 nx = obj.reorient_after_psse_warmstart(nx, mm, nm);
                 [nx, s] = obj.suppress_warmstart_nose_event(nx, s);
@@ -227,6 +242,8 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             obj.psse_pending_lambda = NaN;
             if ~psse_warmstart
                 obj.reset_control_cycle_window(nx.x(end));
+            else
+                obj.reset_control_cycle_after_warmstart(psse_warmstart_control);
             end
 
             mpx = obj.psse_mpx_from_options(mpopt);
@@ -342,6 +359,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             % pending source so callback_psse() can re-correct the same CPF
             % loading point after any PSS/E active-set change.
 
+            accepted_xfmr_state = [];
             switch name
                 case 'pqbrak'
                     dm = [];
@@ -350,6 +368,12 @@ classdef task_cpf_psse < mp.task_cpf_legacy
                             obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
                     end
                 case 'xfmr'
+                    accepted_xfmr_state = obj.psse_xfmr;
+                    if isempty(accepted_xfmr_state) && ...
+                            isfield(dm0.source, 'psse') && ...
+                            isfield(dm0.source.psse, 'xfmr')
+                        accepted_xfmr_state = mp.psse_xfmr_states(dm0.source);
+                    end
                     [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
                 case 'genq'
@@ -384,6 +408,11 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             if ~isempty(dm)
                 obj.psse_pending_control = name;
                 obj.psse_pending_source = dm.source;
+                if strcmp(name, 'xfmr')
+                    obj.psse_pending_xfmr_state = accepted_xfmr_state;
+                else
+                    obj.psse_pending_xfmr_state = [];
+                end
             end
         end
 
@@ -629,6 +658,41 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             end
         end
 
+        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src, mpopt)
+            % Reject transformer tap rows whose rebuilt CPF point failed.
+
+            rejected = false;
+            candidate = obj.psse_xfmr;
+            state = obj.psse_pending_xfmr_state;
+            if isempty(state) || ~isstruct(state) || ...
+                    isempty(candidate) || ~isstruct(candidate) || ...
+                    ~isfield(src, 'psse') || ~isfield(src.psse, 'xfmr')
+                return;
+            end
+            if ~isfield(candidate, 'current_tap') || ...
+                    numel(candidate.current_tap) ~= state.n || ...
+                    ~isfield(candidate, 'current_raw') || ...
+                    numel(candidate.current_raw) ~= state.n
+                return;
+            end
+
+            moved = abs(candidate.current_tap(:) - state.current_tap(:)) > 1e-9;
+            moved = moved & state.controllable(:);
+            if ~any(moved)
+                return;
+            end
+
+            if ~isfield(state, 'locked_out') || isempty(state.locked_out)
+                state.locked_out = false(state.n, 1);
+            end
+            state = mp.psse_xfmr_guard_candidate(src, state, candidate, ...
+                mpopt);
+
+            src = mp.psse_xfmr_update(src, state);
+            obj.psse_xfmr = state;
+            rejected = true;
+        end
+
         function reset_control_cycle_window(obj, lam)
             % Clear per-loading-point PSS/E control cycle memory.
             %
@@ -645,6 +709,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
             obj.psse_last_control_lambda = lam;
             obj.psse_xfmr = psse_reset_cycle_state(obj.psse_xfmr);
             obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
+        end
+
+        function reset_control_cycle_after_warmstart(obj, trigger)
+            % Clear stale cycle memory after another family changes equations.
+
+            if ~strcmp(trigger, 'xfmr')
+                obj.psse_xfmr = psse_reset_cycle_state(obj.psse_xfmr);
+            end
+            if ~strcmp(trigger, 'swshunt')
+                obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
+            end
         end
 
         function reset_gen_pq_trace(obj, mpopt)

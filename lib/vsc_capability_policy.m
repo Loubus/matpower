@@ -58,6 +58,9 @@ else
 end
 
 target_if_p_changed = c.VSC_AC_PQ;
+if dc_mode == c.VSC_DC_VDC
+    target_if_p_changed = c.VSC_AC_Q;
+end
 if ac_mode == c.VSC_AC_PV || ac_mode == c.VSC_AC_PQ
     target_if_p_preserved = c.VSC_AC_PQ;
 else

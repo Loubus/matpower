@@ -1,0 +1,11 @@
+{
+  "name": "t_beerten_termination_batch5",
+  "planned": 75,
+  "executed": 75,
+  "passed": 75,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 7.9714172,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

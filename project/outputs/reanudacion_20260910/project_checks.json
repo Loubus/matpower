@@ -1,0 +1,241 @@
+[
+  {
+    "name": "raw_full_pf",
+    "success": true,
+    "seconds": 17.5886975,
+    "detail": {
+      "success": true,
+      "buses": 5763,
+      "iterations": 4
+    }
+  },
+  {
+    "name": "transpa_baseline_cpf",
+    "success": true,
+    "seconds": 61.9919475,
+    "detail": {
+      "success": true,
+      "mode": "psse",
+      "entrypoint": "runcpf_psse",
+      "run_id": "transpa_cpf_psse_all_disabled_pv_only",
+      "target_load_scale": 2,
+      "cpf_initial_step": 0.001,
+      "cpf_max_step": 0.005,
+      "cpf_stop_at": "NOSE",
+      "max_lambda": 0.23956815263454714,
+      "load_factor_at_nose": 1.2395681526345472,
+      "points": 678,
+      "events": 1,
+      "event_counts": [
+        {
+          "event": "NOSE",
+          "count": 1
+        }
+      ],
+      "final_min_v_bus": 1.000024E+6,
+      "final_min_v": 0.66376462740945763,
+      "final_min_physical_v_bus": 332,
+      "final_min_physical_v": 0.66721593729845985,
+      "physical_buses": 253,
+      "cpf_elapsed_seconds": 41.9438648,
+      "plot_elapsed_seconds": 0.0068552,
+      "total_elapsed_seconds": 42.6300556,
+      "fig_paths": [],
+      "ACTAPS": 0,
+      "SWSHNT": 0,
+      "VARLIM": 0,
+      "DCTAPS": 0,
+      "FACTS": 0,
+      "PQBRAK": 0,
+      "GENQ": 0,
+      "gen_capability": false,
+      "gen_capability_enforce": false,
+      "gen_redispatch": false,
+      "gen_pq_trace": false,
+      "swshunt_band_repair": []
+    }
+  },
+  {
+    "name": "transpa_controls_cpf",
+    "success": false,
+    "seconds": 148.8215809,
+    "detail": {
+      "error": "Error using assert\nTRANSPA controlled CPF did not converge\n\nError in verify_project (line 38)\n                assert(r.success, 'TRANSPA controlled CPF did not converge');\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "partial": {
+        "success": false,
+        "mode": "psse",
+        "entrypoint": "runcpf_psse",
+        "run_id": "transpa_cpf_psse_load200_actaps1_swshnt1_genq0_pqbrak0_swrepair_gencap",
+        "target_load_scale": 2,
+        "cpf_initial_step": 0.001,
+        "cpf_max_step": 0.005,
+        "cpf_stop_at": "NOSE",
+        "max_lambda": 0.22267474201681497,
+        "load_factor_at_nose": 1.2226747420168149,
+        "points": 718,
+        "events": 28,
+        "event_counts": [
+          {
+            "event": "NOSE",
+            "count": 1
+          },
+          {
+            "event": "PSSE_GEN_CAPABILITY",
+            "count": 2
+          },
+          {
+            "event": "PSSE_SWSHUNT",
+            "count": 1
+          },
+          {
+            "event": "PSSE_XFMR",
+            "count": 24
+          }
+        ],
+        "final_min_v_bus": 332,
+        "final_min_v": 0.62689670902384453,
+        "final_min_physical_v_bus": 332,
+        "final_min_physical_v": 0.62689670902384453,
+        "physical_buses": 253,
+        "cpf_elapsed_seconds": 126.9405918,
+        "plot_elapsed_seconds": 0.0021038,
+        "total_elapsed_seconds": 127.5865856,
+        "fig_paths": [],
+        "ACTAPS": 1,
+        "SWSHNT": 1,
+        "VARLIM": 0,
+        "DCTAPS": 0,
+        "FACTS": 0,
+        "PQBRAK": 0,
+        "GENQ": 0,
+        "gen_capability": true,
+        "gen_capability_enforce": true,
+        "gen_redispatch": false,
+        "gen_pq_trace": false,
+        "swshunt_band_repair": [
+          {
+            "bus_i": 566,
+            "old_vswlo": 1,
+            "old_vswhi": 1,
+            "donor_bus_i": 222,
+            "donor_row": 6,
+            "new_vswlo": 0.99,
+            "new_vswhi": 1.01
+          },
+          {
+            "bus_i": 570,
+            "old_vswlo": 1,
+            "old_vswhi": 1,
+            "donor_bus_i": 222,
+            "donor_row": 6,
+            "new_vswlo": 0.99,
+            "new_vswhi": 1.01
+          },
+          {
+            "bus_i": 230231,
+            "old_vswlo": 1,
+            "old_vswhi": 1,
+            "donor_bus_i": 334,
+            "donor_row": 13,
+            "new_vswlo": 0.97,
+            "new_vswhi": 1.03
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "beerten_vsc_cpf",
+    "success": true,
+    "seconds": 653.0480712,
+    "detail": {
+      "run_id": "beerten5_cpf_psse_nose_vschvdc_on_actaps1_swshnt1_vsccap_gencap",
+      "mode": "psse",
+      "entrypoint": "runcpf_psse",
+      "case_function": "case5_vsc_mtdc_beerten_paper_controls_cap_explicit",
+      "target_function": "case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit",
+      "success": 1,
+      "max_lambda": 2.930619218921978,
+      "points": 82,
+      "events": 203,
+      "event_counts": [
+        {
+          "event": "PSSE_CONTROL",
+          "count": 7
+        },
+        {
+          "event": "GEN_CAPABILITY",
+          "count": 1
+        },
+        {
+          "event": "PSSE_CONTROL_SELECTIVE_FREEZE",
+          "count": 2
+        },
+        {
+          "event": "VSC_CAPABILITY",
+          "count": 1
+        },
+        {
+          "event": "PSSE_CONTROL_FREEZE",
+          "count": 1
+        },
+        {
+          "event": "VSC_CAPABILITY_MARGIN_INCREASE",
+          "count": 190
+        },
+        {
+          "event": "VSC_CAPABILITY_LIMIT",
+          "count": 1
+        }
+      ],
+      "cpf_stop_at": "NOSE",
+      "cpf_initial_step": 0.05,
+      "cpf_max_step": 0.05,
+      "vsc_hvdc_enabled": true,
+      "base_apply_info": {
+        "had_vsc_hvdc": true,
+        "vsc_hvdc_enabled": true,
+        "vsc_rows": 3,
+        "busdc_rows": 3,
+        "branchdc_rows": 3,
+        "had_switched_shunt": true,
+        "had_ultc_transformer": true,
+        "switched_shunt_enabled": true,
+        "ultc_transformer_enabled": true
+      },
+      "target_apply_info": {
+        "had_vsc_hvdc": true,
+        "vsc_hvdc_enabled": true,
+        "vsc_rows": 3,
+        "busdc_rows": 3,
+        "branchdc_rows": 3,
+        "had_switched_shunt": true,
+        "had_ultc_transformer": true,
+        "switched_shunt_enabled": true,
+        "ultc_transformer_enabled": true
+      },
+      "ACTAPS": 1,
+      "SWSHNT": 1,
+      "switched_shunt_device": true,
+      "ultc_transformer_device": true,
+      "final_min_v_bus": 5,
+      "final_min_v": 0.65867769291522016,
+      "final_min_active_v_bus": 5,
+      "final_min_active_v": 0.65867769291522016,
+      "active_buses": 6,
+      "fig_paths": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\reanudacion_20260910\\beerten_vsc\\pv_curves.png",
+      "cpf_elapsed_seconds": 636.3035193,
+      "plot_elapsed_seconds": 13.2265838,
+      "total_elapsed_seconds": 649.7341288,
+      "done_msg": "Reached VSC-MTDC monolithic VSC capability loading limit in 81 continuation steps, lambda = 2.93062."
+    }
+  },
+  {
+    "name": "diagnostics",
+    "success": true,
+    "seconds": 46.0055296,
+    "detail": {
+      "completed": true
+    }
+  }
+]

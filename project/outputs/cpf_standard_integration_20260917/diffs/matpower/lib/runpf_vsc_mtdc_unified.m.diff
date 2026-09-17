@@ -1,0 +1,59 @@
+--- before/matpower\lib\runpf_vsc_mtdc_unified.m
++++ matpower\lib\runpf_vsc_mtdc_unified.m
+@@ -642,6 +642,25 @@
+ Sbase = makeSbus(ac.baseMVA, ac.bus, ac.gen, mpopt);
+ Gdc = makeGdc(mpc.busdc, mpc.branchdc);
+ model = build_unified_model(mpc, ac, map, Gdc, idx);
++% Optional solver active-set state: zero releases the current equation;
++% a positive value is converter RMS current on the system MVA/voltage base.
++% It replaces a released Q row, never an AC-voltage or DC-voltage equation.
++if isfield(mpc,'vsc_current_limit')
++    limits=mpc.vsc_current_limit;
++    if ~isnumeric(limits) || ~isreal(limits) || ~isvector(limits) || ...
++            numel(limits)~=size(mpc.vsc,1) || any(~isfinite(limits)) || any(limits<0)
++        error('runpf_vsc_mtdc_unified:current_limit', ...
++            'vsc_current_limit must contain one finite nonnegative value per VSC.');
++    end
++    mpc.vsc_current_limit=limits(:);
++    for k=find(limits(:)>0)'
++        if ~ismember(k,model.active) || ...
++                ~ismember(mpc.vsc(k,idx.c.AC_MODE),[idx.c.VSC_AC_Q idx.c.VSC_AC_PQ])
++            error('runpf_vsc_mtdc_unified:current_limit_mode', ...
++                'A coupled current limit requires an online Q/PQ-mode converter.');
++        end
++    end
++end
+ % Station PCC power is the negative transformer sending-end flow.
+ model.Yport = sparse(size(mpc.vsc, 1), size(ac.bus, 1));
+ model.Cport = model.Yport;
+@@ -876,6 +895,14 @@
+     (Pnet(model.dc_var) - Pspec(model.dc_var)) / baseMVA
+ ];
+ 
++% The physical converter-current row replaces the AC Q row.
++if isfield(mpc,'vsc_current_limit')
++    for k=find(mpc.vsc_current_limit(:)>0)'
++        row=length(model.nonref)+find(model.qeq==model.map.internal(k));
++        assert(isscalar(row),'Current limit must replace exactly one Q equation.');
++        F(row)=iac(k)^2/mpc.vsc_current_limit(k)^2-1;
++    end
++end
+ eval = struct('V', V, 'Va', Va, 'Vm', Vm, 'pac', pac, 'qac', qac, ...
+     'pdc', pdc, 'vdc_bus', Vdc, 'ploss', ploss, 'iac', iac, ...
+     'Scalc', Scalc, 'Pnet', Pnet, 'Idc', I, ...
+@@ -1046,6 +1073,15 @@
+     end
+ end
+ 
++% Analytic derivative of (Pconv^2+Qconv^2)/(baseMVA*Uc*Ilim)^2 - 1.
++if isfield(mpc,'vsc_current_limit')
++    for k=find(mpc.vsc_current_limit(:)>0)'
++        row=length(model.nonref)+find(model.qeq==model.map.internal(k));
++        U=eval.Vm(model.map.internal(k)); Ilim=mpc.vsc_current_limit(k);
++        J(row,:)=2*(eval.pac(k)*dPac(k,:)+eval.qac(k)*dQac(k,:))/(baseMVA*U*Ilim)^2 ...
++            -2*eval.iac(k)^2/(U*Ilim^2)*dUc(k,:);
++    end
++end
+ dPloss = converter_loss_derivatives(mpc, model, eval, dPac, dQac, dUc, idx);
+ dpdc = dc_converter_derivatives(mpc, model, eval, Gdc, dPac, dPloss, idx);
+ 

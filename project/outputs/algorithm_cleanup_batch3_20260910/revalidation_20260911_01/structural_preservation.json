@@ -1,0 +1,5 @@
+{
+  "ac_only_selector_extraction": true,
+  "unified_only_selector_extraction_after_lock_repair": true,
+  "switched_shunt_suffix_unchanged": true
+}

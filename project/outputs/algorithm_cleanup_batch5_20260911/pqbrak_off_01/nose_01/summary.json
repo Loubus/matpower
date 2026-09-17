@@ -1,0 +1,352 @@
+{
+  "success": true,
+  "termination": {
+    "cause": "nose_event",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": true,
+    "last_accepted_lambda": 1.3053755204218913,
+    "last_accepted_index": 35,
+    "nose_detected": true,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "convergence": {
+    "converged": true,
+    "evaluation_available": true,
+    "state_vector": [
+      -0.25200995202336174,
+      -0.34039412392971347,
+      -0.36564096266556073,
+      -0.7843259170477167,
+      -0.2392078850143062,
+      -0.38763210967575451,
+      -0.25208165743976579,
+      -0.2807993576759521,
+      -0.34037559974458143,
+      -0.33381055359940465,
+      -0.78422456819562725,
+      -0.74408737406893077,
+      0.91524164838439381,
+      1,
+      0.93965424233799555,
+      0.587418838333114,
+      0.94522160980265391,
+      0.9151951179471961,
+      0.89636899636860223,
+      1.0002698886131756,
+      1.1060901282975812,
+      0.58742491450865264,
+      0.590793674694983,
+      18.529184597515655,
+      1.0080005642935852,
+      0.99799348790840758
+    ],
+    "scope": "last_accepted_point",
+    "lambda": 1.3053755204218913,
+    "method": "unified",
+    "jacobian": "analytic",
+    "psse_aware": 1,
+    "tol": 1E-8,
+    "max_mismatch": 1.3820067715893088E-12,
+    "state_vector_size": 26,
+    "formulation": "monolithic",
+    "psse_controls": {
+      "policy": "saturate",
+      "status": "saturated",
+      "accepted": true,
+      "saturated": true,
+      "regulation_satisfied": false,
+      "voltage_source": "full_model",
+      "authoritative": true,
+      "control_violations": 1,
+      "blocked_violations": 1
+    },
+    "overall_success": true
+  },
+  "elapsed_seconds": 1.5465349,
+  "lambda": [
+    0,
+    0.0814469102270762,
+    0.16189271566168553,
+    0.2410673323885027,
+    0.31872451176100136,
+    0.39461712374224683,
+    0.46939295879558007,
+    0.54187645612877433,
+    0.61174349367555025,
+    0.67865384081805946,
+    0.74227391529897224,
+    0.80230375168265222,
+    0.85850297886747451,
+    0.91071054178675448,
+    0.95885430233586266,
+    1.0029494381647137,
+    1.0430874931189513,
+    1.0794197517871693,
+    1.1121388632602869,
+    1.1414617363158766,
+    1.1676154111070047,
+    1.1908264559681552,
+    1.2113180005244519,
+    1.2292914698890007,
+    1.2449387011506696,
+    1.2584357869333245,
+    1.2699430655935209,
+    1.2796057206001499,
+    1.2875547263461473,
+    1.2939079625305054,
+    1.2987713818524742,
+    1.3022401598604014,
+    1.3043997858283281,
+    1.3053270733046791,
+    1.3053755204218913
+  ],
+  "vm5": 0.587418838333114,
+  "tap": 0.98888888888888893,
+  "events": [
+    {
+      "k": 0,
+      "name": "PSSE_CONTROL",
+      "idx": 1,
+      "msg": "PSS/E active-set update at lambda = 0; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+    },
+    {
+      "k": 5,
+      "name": "PSSE_CONTROL",
+      "idx": 1,
+      "msg": "PSS/E active-set update at lambda = 0.39461712; re-corrected unified VSC-MTDC point at fixed lambda (buses 1, generators 0, branches 0)."
+    },
+    {
+      "k": 6,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.469392959; controller remains eligible."
+    },
+    {
+      "k": 7,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.541876456; controller remains eligible."
+    },
+    {
+      "k": 8,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.611743494; controller remains eligible."
+    },
+    {
+      "k": 9,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.678653841; controller remains eligible."
+    },
+    {
+      "k": 10,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.742273915; controller remains eligible."
+    },
+    {
+      "k": 11,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.802303752; controller remains eligible."
+    },
+    {
+      "k": 12,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.858502979; controller remains eligible."
+    },
+    {
+      "k": 13,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.910710542; controller remains eligible."
+    },
+    {
+      "k": 14,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 0.958854302; controller remains eligible."
+    },
+    {
+      "k": 15,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.00294944; controller remains eligible."
+    },
+    {
+      "k": 16,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.04308749; controller remains eligible."
+    },
+    {
+      "k": 17,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.07941975; controller remains eligible."
+    },
+    {
+      "k": 18,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.11213886; controller remains eligible."
+    },
+    {
+      "k": 19,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.14146174; controller remains eligible."
+    },
+    {
+      "k": 20,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.16761541; controller remains eligible."
+    },
+    {
+      "k": 21,
+      "name": "PSSE_CONTROL",
+      "idx": 1,
+      "msg": "PSS/E active-set update at lambda = 1.1908265; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+    },
+    {
+      "k": 21,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 2,
+      "msg": "Physical control bound at lambda 1.19082646; controller remains eligible."
+    },
+    {
+      "k": 22,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.211318; controller remains eligible."
+    },
+    {
+      "k": 23,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.22929147; controller remains eligible."
+    },
+    {
+      "k": 24,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.2449387; controller remains eligible."
+    },
+    {
+      "k": 25,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.25843579; controller remains eligible."
+    },
+    {
+      "k": 26,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.26994307; controller remains eligible."
+    },
+    {
+      "k": 27,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.27960572; controller remains eligible."
+    },
+    {
+      "k": 28,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.28755473; controller remains eligible."
+    },
+    {
+      "k": 29,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.29390796; controller remains eligible."
+    },
+    {
+      "k": 30,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.29877138; controller remains eligible."
+    },
+    {
+      "k": 31,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.30224016; controller remains eligible."
+    },
+    {
+      "k": 32,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.30439979; controller remains eligible."
+    },
+    {
+      "k": 33,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.30532707; controller remains eligible."
+    },
+    {
+      "k": 34,
+      "name": "PSSE_CONTROL_SATURATED",
+      "idx": 1,
+      "msg": "Physical control bound at lambda 1.30509108; controller remains eligible."
+    },
+    {
+      "k": 34,
+      "name": "NOSE",
+      "idx": 1,
+      "msg": "Reached VSC-MTDC monolithic nose point in 34 continuation steps, lambda = 1.30538."
+    }
+  ],
+  "pqbrak": {
+    "enabled": 0,
+    "pqbrak": 0,
+    "disabled_reason": "exp.psse_pqbrak_off_or_invalid_threshold",
+    "bus_ext": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "pd0": [
+      0,
+      20,
+      45,
+      0,
+      60,
+      0,
+      40
+    ],
+    "qd0": [
+      0,
+      10,
+      15,
+      0,
+      10,
+      0,
+      5
+    ],
+    "scale": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "iterations": 0,
+    "changed_last": 0
+  },
+  "failure": []
+}

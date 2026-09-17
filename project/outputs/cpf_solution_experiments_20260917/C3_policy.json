@@ -1,0 +1,12 @@
+{
+  "type": "vsc_capability_policy",
+  "projection_mode": "radial",
+  "target_ac_mode_if_saturated": 3,
+  "target_ac_mode_if_p_preserved": 3,
+  "target_ac_mode_if_p_changed": 3,
+  "reason": "fixed_pdc_default_radial",
+  "ac_mode": 3,
+  "dc_mode": 2,
+  "preserves_active_power": false,
+  "preserves_power_factor": true
+}

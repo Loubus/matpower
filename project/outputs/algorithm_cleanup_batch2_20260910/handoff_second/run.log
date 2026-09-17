@@ -1,0 +1,29 @@
+Unrecognized field name "gencost".
+
+Error in runpf_vsc_mtdc_unified>build_ac_results (line 1142)
+            ac.order.int.gencost, ng_original, size(proxy, 1));
+            ^^^^^^^^^^^^^^^^^^^^
+Error in runpf_vsc_mtdc_unified>unified_build_results (line 637)
+results.ac = build_ac_results(ctx.ac, ctx.map, eval, ctx.Ybus, ...
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runpf_vsc_mtdc_unified (line 58)
+results = unified_build_results(ctx, mpc, eval);
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runpf_vsc_mtdc (line 110)
+    [results, success] = runpf_vsc_mtdc_unified(mpc, mpopt, fname, solvedcase);
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in t_control_handoff_batch2 (line 34)
+r = runpf_vsc_mtdc(f, opt); evidence.export_input = f; evidence.export = r;
+    ^^^^^^^^^^^^^^^^^^^^^^
+Error in run_batch2_suite (line 8)
+logtext = evalc('try; feval(name, 0, varargin{:}); catch err; failure = getReport(err, ''extended'', ''hyperlinks'', ''off''); disp(failure); end');
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in LiveEditorEvaluationHelperEmatlab_mcp_server (line 1)
+run_batch2_suite('t_control_handoff_batch2',fullfile(batch2_out,'handoff_second'),fullfile(batch2_out,'handoff_second','evidence')); run_batch2_suite('t_mpxt_psse',fullfile(batch2_out,'full_mpxt_psse'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in matlab_mcp.mcpEval (line 48)
+    resp = jsondecode(matlab.internal.editor.evaluateSynchronousRequest(request));
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in connector.internal.fevalMatlab
+
+Error in connector.internal.fevalJSON

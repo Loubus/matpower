@@ -1,0 +1,26 @@
+{
+  "differences": {
+    "cpf.enforce_q_lims": {
+      "original": 0,
+      "capability": 1
+    },
+    "vsc_mtdc.capability_enforce": {
+      "original": 0,
+      "capability": 1
+    },
+    "vsc_mtdc.capability_gen_enforce": {
+      "original": [],
+      "capability": 1
+    }
+  },
+  "named_scenario_exact": {
+    "base_exact": true,
+    "target_exact": true,
+    "options_exact": true
+  },
+  "step_sensitivity_overrides": [
+    0.1,
+    0.05,
+    0.025
+  ]
+}

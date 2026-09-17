@@ -1,0 +1,32 @@
+Dot indexing is not supported for variables of this type.
+
+Error in runpf_vsc_mtdc_unified>build_ac_results (line 1087)
+ac.bus(:, idx.VM) = abs(eval.V);
+                        ^^^^^^
+Error in runpf_vsc_mtdc_unified>unified_build_results (line 637)
+results.ac = build_ac_results(ctx.ac, ctx.map, eval, ctx.Ybus, ...
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runpf_vsc_mtdc_unified>unified_dispatch (line 122)
+        varargout{1} = unified_build_results(ctx_out, mpc, eval);
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runpf_vsc_mtdc_unified (line 40)
+    [varargout{1:nargout}] = unified_dispatch(casedata, mpopt, fname, solvedcase);
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runcpf_vsc_mtdc_b5trace/build_unified_cpf_result (line 3798)
+        r = runpf_vsc_mtdc_unified('__results', ctx, eval, mpc);
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runcpf_vsc_mtdc_b5trace/run_unified_monolithic_cpf (line 319)
+            base = build_unified_cpf_result(ctx, x, eval, 0, pf_it, normF);
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in runcpf_vsc_mtdc_b5trace (line 185)
+    [results, success] = run_unified_monolithic_cpf();
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in LiveEditorEvaluationHelperEmatlab_mcp_server (line 1)
+b5stress_error=''; try; b5badop=mp.psse_mpx_options(b4probe.b4o); [b5badprepared,~,b5badop]=mp.psse_prepare_case(b5bad,b5badop,'cpf_base'); b5badop.vsc_mtdc.psse_aware=1; b5badbaseline=runcpf_vsc_mtdc_b5trace(b5badprepared,b5badprepared,b5badop); catch err; b5stress_error=getReport(err,'extended','hyperlinks','off'); end; fid=fopen(fullfile(b5root,'base_failure_probe','baseline_error.log'),'w');fprintf(fid,'%s',b5stress_error);fclose(fid); save(fullfile(b5root,'base_failure_probe','baseline_error.mat'),'b5bad','b5badop','b5stress_error'); clear runcpf_vsc_mtdc; rehash; b5badresult=runcpf_psse(b5bad,b5bad,b4probe.b4o); save(fullfile(b5root,'base_failure_probe','repaired.mat'),'b5bad','b5badresult'); disp(b5badresult.convergence); disp(b5badresult.cpf.termination);
+                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in matlab_mcp.mcpEval (line 48)
+    resp = jsondecode(matlab.internal.editor.evaluateSynchronousRequest(request));
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in connector.internal.fevalMatlab
+
+Error in connector.internal.fevalJSON

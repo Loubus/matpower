@@ -1,0 +1,65 @@
+{
+  "date": "2026-09-14",
+  "artifact": "REPORT.html",
+  "numerical": {
+    "fresh_base_success": true,
+    "fresh_base_residual_pu": 2.6140471935313355e-12,
+    "fresh_five_success": true,
+    "fresh_five_residual_pu": 3.712619101037262e-11,
+    "quoted_station_balance_error_MVA": 2.0149172921665056e-09,
+    "all_26_historical_station_balance_error_MVA": 2.2666605761333901e-07,
+    "boundary_current_error_pu": 6.661338147750939e-16,
+    "boundary_voltage_error_pu": 1.3322676295501878e-15,
+    "warning_message": "",
+    "warning_id": "",
+    "assertions_passed": true
+  },
+  "browser": {
+    "javascript_errors": [],
+    "equations_rendered": 43,
+    "figures_rendered": 9,
+    "missing_citation_anchors": [],
+    "desktop_page_overflow": false,
+    "mobile_page_overflow": false,
+    "interactive_selection_verified": true,
+    "source_citation_opens_excerpt": true,
+    "visual_review": "All nine report figures and all 43 equations inspected; mobile interactive view and cover inspected. DC diagram connection and label placement corrected before final inspection."
+  },
+  "source_checks": {
+    "invalid_line_ranges": [],
+    "missing_local_links": [],
+    "snapshotted_source_files": 25,
+    "changed_since_snapshot": [],
+    "preservation_scope": "All task writes were confined to this output directory. Compared cited source and consumed historical-input hashes across final artifact construction; this is not a Git diff or a whole-filesystem audit."
+  },
+  "scope": {
+    "production_edits": false,
+    "case_parameter_edits": false,
+    "historical_outputs_overwritten": false,
+    "new_cpf_run": false,
+    "new_physical_margin_claimed": false
+  },
+  "diagnostics": [
+    {
+      "phase": "MATLAB exporter attempts 1 and 2",
+      "error": "Subscripted assignment between dissimilar structures. Error in calculate_evidence>station_rows, line 85.",
+      "resolution": "Output-local structure initialization adjusted; function explicitly refreshed before final successful run. All final checks pass. No solver settings changed."
+    },
+    {
+      "phase": "Primary reference retrieval",
+      "error": "Old Lirias bitstream URL returned HTTP 404.",
+      "resolution": "Author retrieve/246525 URL succeeded; saved and inspected manuscript."
+    },
+    {
+      "phase": "Primary PDF rendering",
+      "error": "Poppler reported missing display fonts.",
+      "resolution": "Relevant rendered pages visually inspected; independent report equations/plots use embedded vector glyphs."
+    },
+    {
+      "phase": "HTML authoring",
+      "error": "Mathtext required braced underline and fraction syntax; initial narrow layout overflowed on long paths.",
+      "resolution": "Syntax and wrapping corrected, then all equations and responsive rendering rechecked."
+    }
+  ],
+  "passed": true
+}

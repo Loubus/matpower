@@ -1,0 +1,9 @@
+{
+  "embedded_figures": 3,
+  "local_links_verified": 18,
+  "visual_check": "All three final MATLAB figures inspected; contrast corrected before delivery",
+  "browser_preview": "Not attempted again after known local-URL policy rejection",
+  "production_files_checked": 295,
+  "production_files_changed": [],
+  "case_option_identity": "All ten saved experiments match original cases/options except declared step sensitivity"
+}

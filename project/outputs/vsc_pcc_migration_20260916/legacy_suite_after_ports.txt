@@ -1,0 +1,159 @@
+1..330
+ok 1 - makeGdc ignores out-of-service DC branch
+ok 2 - 2-terminal VSC-MTDC PF success
+ok 3 - 2-terminal iteration count
+ok 4 - 2-terminal VSC power balance
+ok 5 - 2-terminal DC voltages
+ok 6 - 2-terminal DC slack identification
+ok 7 - 2-terminal slack Pdc is calculated result
+ok 8 - out-of-service DC branch ignored
+ok 9 - out-of-service VSC ignored
+ok 10 - 2-terminal VSC losses are positive
+ok 11 - 2-terminal auxiliary AC buses
+ok 12 - 2-terminal transformer and reactor branches
+ok 13 - 2-terminal filter bus numbering
+ok 14 - 2-terminal internal bus numbering
+ok 15 - transformer branch keeps own impedance
+ok 16 - converter station transformer has no tap
+ok 17 - reactor branch keeps own impedance
+ok 18 - filter shunt is on filter bus
+ok 19 - no transformer plus reactor equivalent branch
+ok 20 - savecase writes VSC-MTDC matrices
+ok 21 - savecase/loadcase preserves busdc
+ok 22 - savecase/loadcase preserves branchdc
+ok 23 - savecase/loadcase preserves vsc
+ok 24 - savecase/loadcase preserves VSC capability metadata
+ok 25 - savecase/loadcase preserves VSC/HVDC dispatch policy
+ok 26 - savecase/loadcase preserves VSC/HVDC dispatch vectors
+ok 27 - savecase/loadcase preserves CPF incremental policy metadata
+ok 28 - savecase/loadcase VSC-MTDC case can be re-solved
+ok 29 - runpf_vsc_mtdc solvedcase preserves VSC-MTDC fields
+ok 30 - runpf_vsc_mtdc solvedcase can be re-solved
+ok 31 - 3-terminal VSC-MTDC PF success
+ok 32 - 3-terminal iteration count
+ok 33 - 3-terminal VSC power balance
+ok 34 - 3-terminal DC voltages
+ok 35 - 3-terminal slack absorbs DC power
+ok 36 - 3-terminal DC injections equal DC branch losses
+ok 37 - 3-terminal slack Pdc is calculated result
+ok 38 - 3-terminal Pdc controls hold set points
+ok 39 - VSC AC voltage control holds PCC voltage
+ok 40 - VSC fixed Q controls hold set points
+ok 41 - 3-terminal auxiliary AC buses
+ok 42 - 3-terminal out-of-service VSC ignored
+ok 43 - 3-terminal unified VSC-MTDC PF success
+ok 44 - 3-terminal unified VSC results match sequential solution
+ok 45 - 3-terminal unified out-of-service VSC ignored
+ok 46 - Beerten 5-bus VSC-MTDC PF success
+ok 47 - Beerten iteration count
+ok 48 - Beerten AC voltage magnitudes match published table
+ok 49 - Beerten AC voltage angles match published table
+ok 50 - Beerten converter internal voltages match published table
+ok 51 - Beerten converter internal angles match published table
+ok 52 - Beerten converter active powers match published table
+ok 53 - Beerten converter reactive powers match published table
+ok 54 - Beerten station active losses match published table
+ok 55 - Beerten reactor reactive losses match published table
+ok 56 - Beerten converter losses match published table
+ok 57 - Beerten DC powers match published table sign convention
+ok 58 - Beerten DC voltages match published table
+ok 59 - Beerten VSC power balance
+ok 60 - Beerten unified VSC-MTDC PF success
+ok 61 - Beerten unified iteration count
+ok 62 - unified VSC-MTDC PF uses analytic Jacobian
+ok 63 - runpf_vsc_mtdc defaults to unified method
+ok 64 - Beerten unified VSC results match sequential solution
+ok 65 - Beerten unified AC voltages match sequential solution
+ok 66 - runpf_psse delegates unified VSC-MTDC PF successfully
+ok 67 - runpf_psse reports unified VSC-MTDC PF task class
+ok 68 - runpf_psse unified VSC-MTDC PF uses analytic Jacobian
+ok 69 - runpf_psse unified VSC-MTDC PF is PSS/E-aware
+ok 70 - runpf_psse reports PSS/E-aware unified formulation
+ok 71 - thermal generator capability leaves interior point unchanged
+ok 72 - hydraulic generator capability leaves interior point unchanged
+ok 73 - wind generator capability leaves interior point unchanged
+ok 74 - thermal generator capability saturates to expected arc point
+ok 75 - generator capability audits active limit
+ok 76 - generator capability uses own MVA base
+ok 77 - VSC capability leaves interior point unchanged
+ok 78 - VSC capability saturates outside |P| limit
+ok 79 - VSC capability saturates outside AC current limit
+ok 80 - VSC capability audits AC current limit
+ok 81 - VSC capability saturates outside internal-voltage limit
+ok 82 - VSC capability projection lands inside final feasible region
+ok 83 - VSC radial mode preserves power factor
+ok 84 - VSC preservar_p mode preserves feasible P
+ok 85 - VSC preservar_p mode clips Q to feasible interval
+ok 86 - VSC capability uses own converter MVA base
+ok 87 - VSC capability converts station reactance to own MVA base
+ok 88 - VSC capability policy defaults DC slack to preservar_p
+ok 89 - VSC capability policy clips Q for DC slack voltage control
+ok 90 - VSC capability policy defaults DC droop to preservar_p
+ok 91 - VSC capability policy defaults fixed-PDC converters to radial
+ok 92 - VSC capability policy reports configured projection overrides
+ok 93 - VSC capability policy lets fixed-PDC converters use configured mode
+ok 94 - VSC capability metadata overrides global Smax option
+ok 95 - VSC capability metadata gives per-converter curves
+ok 96 - VSC capability audit reports metadata Smax source
+ok 97 - VSC capability metadata converts station reactance to own MVA base
+ok 98 - VSC capability supports deterministic vector Smax options
+ok 99 - VSC capability metadata VconvMax changes the converter Q range
+ok 100 - VSC capability rejects non-positive Smax
+ok 101 - VSC capability rejects non-positive voltage
+ok 102 - VSC capability audit rejects invalid index
+ok 103 - VSC capability rejects invalid Vmax
+ok 104 - VSC capability rejects malformed metadata length
+ok 105 - VSC capability rejects invalid option length
+ok 106 - Beerten PF capability audit covers gen and VSC rows
+ok 107 - Beerten PF capability audit reports saturated points and limits
+ok 108 - Beerten PF capability audit exempts slack generator
+ok 109 - runpf_psse unified VSC-MTDC PF settles PSS/E switched shunt
+ok 110 - runpf_psse unified VSC-MTDC PF reports switched shunt active-set change
+ok 111 - runpf_psse full model selects first reachable legal shunt state
+ok 112 - runpf_psse switched shunt BINIT agrees with electrical state
+ok 113 - runpf_psse unified VSC-MTDC PF rejects infeasible transformer tap band
+ok 114 - runpf_psse unified VSC-MTDC PF reports transformer active-set change
+ok 115 - runpf_psse unified VSC-MTDC PF applies transformer tap change
+ok 116 - runpf_psse unified VSC-MTDC PF syncs transformer WINDV
+ok 117 - runcpf rejects VSC-MTDC cases outside PSS/E wrapper
+ok 118 - runcpf_psse delegates VSC-MTDC case successfully
+ok 119 - runcpf_psse defaults VSC-MTDC CPF to unified method
+ok 120 - runcpf_psse VSC-MTDC CPF uses unified PF by default
+ok 121 - runcpf_psse unified VSC-MTDC CPF uses monolithic corrector
+ok 122 - runcpf_psse unified VSC-MTDC CPF uses analytic Jacobian
+ok 123 - runcpf_psse unified VSC-MTDC CPF stores monolithic state and tangent traces
+ok 124 - runcpf_psse unified VSC-MTDC CPF state includes AC/DC/VSC variables
+ok 125 - runcpf_psse VSC-MTDC reaches target lambda
+ok 126 - runcpf_psse VSC-MTDC stores original AC bus voltage trace
+ok 127 - runcpf_psse VSC-MTDC stores VSC trace
+ok 128 - Beerten CPF capability audit covers gen and VSC rows
+ok 129 - Beerten CPF capability audit exempts slack generator limits
+ok 130 - runcpf_vsc_mtdc solvedcase preserves VSC-MTDC fields
+ok 131 - runcpf_vsc_mtdc solvedcase can be re-solved
+ok 132 - runpf VSC-MTDC succeeds with active VSC capability enforcement
+ok 133 - runpf VSC capability enforcement reports active-set iteration
+ok 134 - runpf VSC capability enforcement returns final point inside curve
+ok 135 - runpf VSC capability enforcement switches saturated VSC modes
+ok 136 - runpf VSC capability enforcement uses case metadata
+ok 137 - runpf VSC capability enforcement reports max-iteration failure
+ok 138 - runpf VSC capability enforcement reports malformed metadata
+ok 139 - runcpf_psse VSC capability enforcement reports invalid VSC option length
+ok 140 - runcpf_psse generator capability enforcement reports invalid generator Smax
+ok 141 - runcpf_psse VSC-MTDC succeeds with active VSC capability enforcement
+ok 142 - active capability enforcement records generator saturation event
+not ok 143 - active VSC capability enforcement records saturation event
+ok 144 - active generator capability event stores location and point diagnostics
+Index exceeds array bounds.
+
+Error in t_vsc_mtdc (line 525)
+vsc_cap_event = vsc_cap_events(1);
+                ^^^^^^^^^^^^^^^^^
+Error in LiveEditorEvaluationHelperEmatlab_mcp_server (line 1)
+fprintf('TEST=%s\n',which('t_vsc_mtdc')); clear t_vsc_mtdc; pcc_txt=evalc('try, t_vsc_mtdc(0); catch ME, disp(getReport(ME,''extended'',''hyperlinks'',''off'')); end'); fid=fopen(fullfile(pwd,'outputs/vsc_pcc_migration_20260916/legacy_suite_after_ports.txt'),'w'); fprintf(fid,'%s',pcc_txt); fclose(fid); pcc_lines=splitlines(string(pcc_txt)); disp(pcc_lines(contains(pcc_lines,'not ok') | contains(pcc_lines,'Error')));
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in matlab_mcp.mcpEval (line 48)
+    resp = jsondecode(matlab.internal.editor.evaluateSynchronousRequest(request));
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in connector.internal.fevalMatlab
+
+Error in connector.internal.fevalJSON

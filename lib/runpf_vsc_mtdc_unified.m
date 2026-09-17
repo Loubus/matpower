@@ -56,10 +56,21 @@ ctx = unified_setup(mpc, mpopt);
     success, iterations, history);
 
 results = unified_build_results(ctx, mpc, eval);
+% Public PF tables must describe the returned electrical point. The expanded
+% AC result appends station buses/branches and converter proxy generators;
+% retain only original equipment here, in its external ordering. Keep the
+% internal __results composition interface unchanged.
+[found, original_rows] = ismember(mpc.bus(:, 1), results.ac.bus(:, 1));
+assert(all(found), 'runpf_vsc_mtdc_unified: original AC bus missing from results');
+results.bus = results.ac.bus(original_rows, :);
+results.gen = results.ac.gen(1:size(mpc.gen, 1), :);
+results.branch = results.ac.branch(1:size(mpc.branch, 1), :);
 results.success = success;
 results.iterations = iterations;
 results.convergence = struct( ...
-    'converged',       success, ...
+    'converged',       logical(~isempty(eval) && isfinite(normF) && normF < ctx.opt.tol), ...
+    'overall_success', logical(success), ...
+    'scope',           'returned_electrical_point', ...
     'method',          'unified', ...
     'jacobian',        'analytic', ...
     'psse_aware',      ctx.opt.psse_aware, ...
@@ -144,7 +155,8 @@ idx = struct('PQ', PQ, 'PV', PV, 'REF', REF, 'NONE', NONE, ...
 
 function opt = unified_options(mpopt)
 opt = struct('max_it', mpopt.pf.nr.max_it, 'tol', mpopt.pf.tol, ...
-    'psse_aware', 0, 'psse_control_max_it', 20);
+    'psse_aware', 0, 'psse_control_max_it', 20, ...
+    'psse_control_limit', 'saturate');
 if isfield(mpopt, 'vsc_mtdc')
     if isfield(mpopt.vsc_mtdc, 'max_it') && ~isempty(mpopt.vsc_mtdc.max_it)
         opt.max_it = mpopt.vsc_mtdc.max_it;
@@ -158,6 +170,10 @@ if isfield(mpopt, 'vsc_mtdc')
     if isfield(mpopt.vsc_mtdc, 'psse_control_max_it') && ...
             ~isempty(mpopt.vsc_mtdc.psse_control_max_it)
         opt.psse_control_max_it = mpopt.vsc_mtdc.psse_control_max_it;
+    end
+    if isfield(mpopt.vsc_mtdc, 'psse_control_limit') && ...
+            ~isempty(mpopt.vsc_mtdc.psse_control_limit)
+        opt.psse_control_limit = mpopt.vsc_mtdc.psse_control_limit;
     end
 end
 
@@ -247,7 +263,7 @@ for ctrl_it = 1:ctx.opt.psse_control_max_it
     r.success = success;
     r.iterations = iterations;
     [changed, mpc_next, ac_controlled, delta, ok] = ...
-        unified_pf_psse_control_update(mpc, mpopt, r);
+        unified_pf_psse_control_update(mpc, mpopt, r, ctx.opt.psse_control_limit);
     if ~ok
         report.converged = 0;
         report.failed = 1;
@@ -261,7 +277,10 @@ for ctrl_it = 1:ctx.opt.psse_control_max_it
     report.changed_gens = report.changed_gens + delta.changed_gens;
     report.changed_branches = report.changed_branches + delta.changed_branches;
     if ~changed
-        if psse_report_has_unsatisfied_controls(delta)
+        accepted_saturation = isfield(delta,'acceptance') && delta.acceptance.accepted;
+        if isfield(delta,'acceptance'), report.acceptance = delta.acceptance; end
+        if (psse_report_has_unsatisfied_controls(delta) && ~accepted_saturation) || ...
+                (isfield(delta,'acceptance') && ~delta.acceptance.accepted)
             report.converged = 0;
             report.failed = 1;
             success = 0;
@@ -274,7 +293,7 @@ for ctrl_it = 1:ctx.opt.psse_control_max_it
     report.changed = 1;
     sig = psse_active_set_signature(mpc_next);
     if any(strcmp(visited(1:nvisited), sig))
-        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
+        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
         if direct_report.supported && ~direct_report.changed && ...
                 psse_control_violations(direct) == 0
             mpc = copy_psse_control_fields(mpc, direct);
@@ -332,7 +351,7 @@ TorF = mp.psse_unified_active_set('family_present', mpc, name);
 
 
 function [changed, mpc_next, ac_controlled, report, ok] = ...
-        unified_pf_psse_control_update(mpc, mpopt, r)
+        unified_pf_psse_control_update(mpc, mpopt, r, policy)
 changed = 0;
 mpc_next = mpc;
 ac_controlled = [];
@@ -340,13 +359,19 @@ report = struct('changed_buses', 0, 'changed_gens', 0, ...
     'changed_branches', 0);
 ok = 1;
 
-[direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
+[direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
 if direct_report.supported
     ac_controlled = psse_control_case_from_unified_result(r);
     ac_controlled = copy_original_active_set_to_ac(ac_controlled, direct);
     [changed, report] = psse_active_set_changed(mpc, direct);
-    if changed || (~has_auxiliary_psse_control_data(mpc) && ...
-            ~psse_report_has_unsatisfied_controls(report))
+    % The projected AC solve may propose other active sets, but cannot
+    % certify these controls against voltages different from the full model.
+    if changed || (~has_auxiliary_psse_control_data(mpc,r.ac.bus) && ...
+            ~direct_report.requires_auxiliary_pf && ...
+            (~psse_report_has_unsatisfied_controls(report) || ...
+            direct_report.blocked_violations > 0))
+        direct_report.control_cycles = report.control_cycles;
+        report.acceptance = mp.psse_unified_control_acceptance(direct_report,policy);
         if changed
             mpc_next = direct;
         else
@@ -379,6 +404,17 @@ if ~ok || ~isstruct(ac_controlled) || ~isfield(ac_controlled, 'bus')
 end
 
 [changed, report] = psse_active_set_changed(mpc, ac_controlled);
+if ~changed && direct_report.supported && ~direct_report.requires_auxiliary_pf
+    % Other families have settled in the auxiliary solve. Reclassify the
+    % supported voltage controllers on the unchanged full electrical state.
+    for family = {'xfmr','swshunt'}
+        name = family{1};
+        if isfield(direct.psse,name), ac_controlled.psse.(name)=direct.psse.(name); end
+    end
+    report.control_violations = direct_report.control_violations;
+    direct_report.control_cycles = report.control_cycles;
+    report.acceptance = mp.psse_unified_control_acceptance(direct_report,policy);
+end
 if changed
     mpc_next = apply_psse_active_set_update(mpc, ac_controlled);
 else
@@ -386,9 +422,9 @@ else
 end
 
 
-function TorF = has_auxiliary_psse_control_data(mpc)
+function TorF = has_auxiliary_psse_control_data(mpc, unified_bus)
 TorF = 0;
-families = {'pqbrak', 'genq', 'twodc', 'facts'};
+families = {'genq', 'twodc', 'facts'};
 if ~isfield(mpc, 'psse') || isempty(mpc.psse)
     return;
 end
@@ -397,6 +433,24 @@ for kk = 1:length(families)
         TorF = 1;
         return;
     end
+end
+% Inactive PQBRAK metadata does not require an auxiliary electrical model.
+% Use the same scale/voltage activation boundary as unified CPF.
+if psse_family_present(mpc,'pqbrak')
+    pq = mpc.psse.pqbrak;
+    if isfield(pq,'scale') && ~isempty(pq.scale) && ...
+            any(abs(pq.scale(:)-1)>1e-10)
+        TorF = 1;
+        return;
+    end
+    if ~isfield(pq,'pqbrak') || isempty(pq.pqbrak) || ...
+            isnan(pq.pqbrak) || pq.pqbrak<=0
+        return;
+    end
+    vm = mpc.bus(:,8);
+    [present,rows] = ismember(mpc.bus(:,1),unified_bus(:,1));
+    vm(present) = unified_bus(rows(present),8);
+    TorF = any(vm < pq.pqbrak-1e-10);
 end
 
 
@@ -432,6 +486,8 @@ gen_cols = existing_cols([QMAX2 QMIN2 VG2 GEN_STATUS2], ...
     mpc.gen, ac.gen(1:ng, :));
 gen_delta = matrix_delta(mpc.gen(:, gen_cols), ...
     ac.gen(1:ng, gen_cols), tol);
+gen_delta = gen_delta | mp.psse_unified_active_set( ...
+    'fixed_q_changed', mpc, ac, tol);
 
 branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
     RATE_C2 TAP2 SHIFT2 BR_STATUS2], mpc.branch, ...
@@ -499,6 +555,8 @@ gen_active_cols = existing_cols([QMAX2 QMIN2 VG2 GEN_STATUS2], ...
     mpc.gen, ac_gen);
 gen_rows = any(abs(mpc.gen(:, gen_active_cols) - ...
     ac_gen(:, gen_active_cols)) > tol, 2);
+gen_rows = gen_rows | mp.psse_unified_active_set( ...
+    'fixed_q_changed', mpc, ac, tol);
 gen_copy_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
     mpc_next.gen, ac_gen);
 mpc_next.gen(gen_rows, gen_copy_cols) = ac_gen(gen_rows, gen_copy_cols);
@@ -557,7 +615,7 @@ npac = length(ctx.model.pac_vars);
 x0(1:nva) = Va(ctx.model.nonref);
 x0(nva + (1:nvm)) = Vm(ctx.model.vm_vars);
 if npac
-    x0(nva + nvm + (1:npac)) = r.vsc(ctx.model.pac_vars, c.PAC);
+    x0(nva + nvm + (1:npac)) = r.vsc(ctx.model.pac_vars, c.PCONV);
 end
 if ~isempty(ctx.model.dc_var)
     x0(nva + nvm + npac + (1:length(ctx.model.dc_var))) = ...
@@ -584,6 +642,34 @@ state0 = initialize_unified_state(mpc);
 Sbase = makeSbus(ac.baseMVA, ac.bus, ac.gen, mpopt);
 Gdc = makeGdc(mpc.busdc, mpc.branchdc);
 model = build_unified_model(mpc, ac, map, Gdc, idx);
+% Optional solver active-set state: zero releases the current equation;
+% a positive value is converter RMS current on the system MVA/voltage base.
+% It replaces a released Q row, never an AC-voltage or DC-voltage equation.
+if isfield(mpc,'vsc_current_limit')
+    limits=mpc.vsc_current_limit;
+    if ~isnumeric(limits) || ~isreal(limits) || ~isvector(limits) || ...
+            numel(limits)~=size(mpc.vsc,1) || any(~isfinite(limits)) || any(limits<0)
+        error('runpf_vsc_mtdc_unified:current_limit', ...
+            'vsc_current_limit must contain one finite nonnegative value per VSC.');
+    end
+    mpc.vsc_current_limit=limits(:);
+    for k=find(limits(:)>0)'
+        if ~ismember(k,model.active) || ...
+                ~ismember(mpc.vsc(k,idx.c.AC_MODE),[idx.c.VSC_AC_Q idx.c.VSC_AC_PQ])
+            error('runpf_vsc_mtdc_unified:current_limit_mode', ...
+                'A coupled current limit requires an online Q/PQ-mode converter.');
+        end
+    end
+end
+% Station PCC power is the negative transformer sending-end flow.
+model.Yport = sparse(size(mpc.vsc, 1), size(ac.bus, 1));
+model.Cport = model.Yport;
+for k = model.active'
+    br = find(ac.branch(:, idx.F_BUS) == map.pcc(k) & ...
+        ac.branch(:, idx.T_BUS) == map.filter(k), 1);
+    model.Yport(k, :) = -Yf(br, :);
+    model.Cport(k, map.pcc(k)) = 1;
+end
 x0 = initial_x(ac, model, state0, mpc, idx);
 ctx = struct('mpc', mpc, 'mpopt', mpopt, 'idx', idx, 'opt', opt, ...
     'state0', state0, 'ac0', ac0, 'ac', ac, 'map_ext', map_ext, ...
@@ -623,7 +709,7 @@ fixed_pac = vsc(:, c.AC_MODE) == c.VSC_AC_PQ | vsc(:, c.AC_MODE) == c.VSC_AC_PV;
 state.pac(fixed_pac & vsc(:, c.VSC_STATUS) > 0) = ...
     vsc(fixed_pac & vsc(:, c.VSC_STATUS) > 0, c.PAC_SET);
 [state.ploss, state.iac] = calc_vsc_losses(mpc.baseMVA, state.pac, ...
-    state.qac, state.vac_internal, vsc);
+    state.qac, state.vac_internal, vsc, mpc);
 kk = active(~fixed_pac(active));
 state.pac(kk) = -state.pdc(kk) - state.ploss(kk);
 
@@ -635,6 +721,16 @@ results.ac = build_ac_results(ctx.ac, ctx.map, eval, ctx.Ybus, ...
 [results.busdc, results.branchdc] = build_dc_results(mpc, eval, ctx.idx);
 results.vsc = build_vsc_results(mpc, ctx.map_ext, ctx.map, eval, ctx.idx);
 results.vsc_state = eval_to_state(mpc, ctx.map_ext, ctx.map, eval, ctx.idx);
+c = ctx.idx.c;
+for k = ctx.model.active'
+    tr = ctx.map_ext.tr_branch(k); rr = ctx.map_ext.reactor_branch(k);
+    pt = sum(results.ac.branch(tr, [ctx.idx.PF ctx.idx.PT]));
+    pr = sum(results.ac.branch(rr, [ctx.idx.PF ctx.idx.PT]));
+    results.vsc(k, [c.PTR_LOSS c.PREACTOR_LOSS]) = [pt pr];
+    results.vsc_state.ptr_loss(k) = pt;
+    results.vsc_state.preactor_loss(k) = pr;
+end
+results.vsc_power_port = 'PCC';
 
 
 function [ac, map] = build_unified_ac_base(mpc, state, idx)
@@ -709,6 +805,16 @@ model = struct('nb', nb, 'active', active, 'ref', ref(:), ...
     'slack_vsc', slack_vsc, 'fixed_dc', fixed_dc, ...
     'map', map, 'Gdc', Gdc, 'fixed_vm', ac.bus(:, idx.VM));
 
+% VM is a voltage initialization, not a local generator's regulation target.
+% Use VG for online generators on PV/REF buses, as in the AC PF initializer.
+on = find(ac.gen(:, idx.GEN_STATUS) > 0);
+for g = on'
+    b = ac.gen(g, idx.GEN_BUS);
+    if ac.bus(b, idx.BUS_TYPE) == idx.PV || ac.bus(b, idx.BUS_TYPE) == idx.REF
+        model.fixed_vm(b) = ac.gen(g, idx.VG);
+    end
+end
+
 neq = length(nonref) + length(qeq) + length(vctrl) + ...
     length(pac_vars) + length(dc_var);
 nx = length(nonref) + length(vm_vars) + length(pac_vars) + length(dc_var);
@@ -749,36 +855,31 @@ end
 baseMVA = mpc.baseMVA;
 c = idx.c;
 vsc = mpc.vsc;
-Sspec = Sbase;
-for k = model.active'
-    internal = model.map.internal(k);
-    if model.fixed_pac(k)
-        pk = vsc(k, c.PAC_SET);
-    else
-        pk = pac(k);
-    end
-    if vsc(k, c.AC_MODE) == c.VSC_AC_Q || vsc(k, c.AC_MODE) == c.VSC_AC_PQ
-        qk = vsc(k, c.QAC_SET);
-    else
-        qk = 0;
-    end
-    Sspec(internal) = Sspec(internal) + (pk + 1j * qk) / baseMVA;
-end
-
+% Keep internal power variables for bridge balance, but impose P/Q orders
+% on the measured PCC transformer flow. Auxiliary-node KCL is unchanged.
 Scalc = V .* conj(Ybus * V);
-mis = Scalc - Sspec;
+Spcc = (model.Cport * V) .* conj(model.Yport * V);
+mis = Scalc - Sbase;
 qac = zeros(size(vsc, 1), 1);
 for k = model.active'
-    if vsc(k, c.AC_MODE) == c.VSC_AC_Q || vsc(k, c.AC_MODE) == c.VSC_AC_PQ
-        qac(k) = vsc(k, c.QAC_SET);
+    internal = model.map.internal(k);
+    qac(k) = baseMVA * imag(Scalc(internal) - Sbase(internal));
+    if model.fixed_pac(k)
+        pac(k) = baseMVA * real(Scalc(internal) - Sbase(internal));
+        mis(internal) = real(Spcc(k)) - vsc(k, c.PAC_SET)/baseMVA ...
+            + 1j*imag(mis(internal));
     else
-        qac(k) = baseMVA * imag(Scalc(model.map.internal(k)) - Sbase(model.map.internal(k)));
+        mis(internal) = mis(internal) - pac(k)/baseMVA;
+    end
+    if vsc(k, c.AC_MODE) == c.VSC_AC_Q || vsc(k, c.AC_MODE) == c.VSC_AC_PQ
+        mis(internal) = real(mis(internal)) + ...
+            1j*(imag(Spcc(k)) - vsc(k, c.QAC_SET)/baseMVA);
     end
 end
 
 vac_internal = ones(size(vsc, 1), 1);
 vac_internal(model.active) = Vm(model.map.internal(model.active));
-[ploss, iac] = calc_vsc_losses(baseMVA, pac, qac, vac_internal, vsc);
+[ploss, iac] = calc_vsc_losses(baseMVA, pac, qac, vac_internal, vsc, mpc);
 ploss(vsc(:, c.VSC_STATUS) <= 0) = 0;
 iac(vsc(:, c.VSC_STATUS) <= 0) = 0;
 pdc = converter_dc_powers(mpc, model, Vdc, pac, ploss, Gdc, idx);
@@ -794,9 +895,18 @@ F = [
     (Pnet(model.dc_var) - Pspec(model.dc_var)) / baseMVA
 ];
 
+% The physical converter-current row replaces the AC Q row.
+if isfield(mpc,'vsc_current_limit')
+    for k=find(mpc.vsc_current_limit(:)>0)'
+        row=length(model.nonref)+find(model.qeq==model.map.internal(k));
+        assert(isscalar(row),'Current limit must replace exactly one Q equation.');
+        F(row)=iac(k)^2/mpc.vsc_current_limit(k)^2-1;
+    end
+end
 eval = struct('V', V, 'Va', Va, 'Vm', Vm, 'pac', pac, 'qac', qac, ...
     'pdc', pdc, 'vdc_bus', Vdc, 'ploss', ploss, 'iac', iac, ...
-    'Scalc', Scalc, 'Pnet', Pnet, 'Idc', I);
+    'Scalc', Scalc, 'Pnet', Pnet, 'Idc', I, ...
+    'ps', real(Spcc)*baseMVA, 'qs', imag(Spcc)*baseMVA);
 
 
 function [V, Va, Vm, pac, Vdc] = unpack_x(x, model, mpc, idx)
@@ -927,13 +1037,32 @@ for kk = 1:npac
     dPac(model.pac_vars(kk), col_pac(kk)) = 1;
 end
 
+% Derivatives of S_PCC = C*V .* conj(Yport*V), including phase shift
+% and branch charging. Never substitute internal voltage for PCC voltage.
+V = eval.V;
+Dn = spdiags(V ./ abs(V), 0, length(V), length(V));
+Dv = spdiags(V, 0, length(V), length(V));
+Cv = spdiags(model.Cport*V, 0, nv, nv);
+Di = spdiags(conj(model.Yport*V), 0, nv, nv);
+dSsVa = 1j*(Di*model.Cport*Dv - Cv*conj(model.Yport*Dv));
+dSsVm = Di*model.Cport*Dn + Cv*conj(model.Yport*Dn);
 dQac = zeros(nv, nx);
-v_modes = model.active(vsc(model.active, c.AC_MODE) == c.VSC_AC_V | ...
-    vsc(model.active, c.AC_MODE) == c.VSC_AC_PV);
-for k = v_modes'
+for k = model.active'
     internal = model.map.internal(k);
     dQac(k, col_va) = baseMVA * imag(dS_dVa(internal, model.nonref));
     dQac(k, col_vm) = baseMVA * imag(dS_dVm(internal, model.vm_vars));
+    if model.fixed_pac(k)
+        dPac(k, col_va) = baseMVA * real(dS_dVa(internal, model.nonref));
+        dPac(k, col_vm) = baseMVA * real(dS_dVm(internal, model.vm_vars));
+        r = row_p(model.nonref == internal);
+        J(r, col_va) = real(dSsVa(k, model.nonref));
+        J(r, col_vm) = real(dSsVm(k, model.vm_vars));
+    end
+    if vsc(k, c.AC_MODE) == c.VSC_AC_Q || vsc(k, c.AC_MODE) == c.VSC_AC_PQ
+        r = row_q(model.qeq == internal);
+        J(r, col_va) = imag(dSsVa(k, model.nonref));
+        J(r, col_vm) = imag(dSsVm(k, model.vm_vars));
+    end
 end
 
 dUc = zeros(nv, nx);
@@ -944,6 +1073,15 @@ for k = model.active'
     end
 end
 
+% Analytic derivative of (Pconv^2+Qconv^2)/(baseMVA*Uc*Ilim)^2 - 1.
+if isfield(mpc,'vsc_current_limit')
+    for k=find(mpc.vsc_current_limit(:)>0)'
+        row=length(model.nonref)+find(model.qeq==model.map.internal(k));
+        U=eval.Vm(model.map.internal(k)); Ilim=mpc.vsc_current_limit(k);
+        J(row,:)=2*(eval.pac(k)*dPac(k,:)+eval.qac(k)*dQac(k,:))/(baseMVA*U*Ilim)^2 ...
+            -2*eval.iac(k)^2/(U*Ilim^2)*dUc(k,:);
+    end
+end
 dPloss = converter_loss_derivatives(mpc, model, eval, dPac, dQac, dUc, idx);
 dpdc = dc_converter_derivatives(mpc, model, eval, Gdc, dPac, dPloss, idx);
 
@@ -966,6 +1104,7 @@ vsc = mpc.vsc;
 nv = size(vsc, 1);
 nx = size(dPac, 2);
 dPloss = zeros(nv, nx);
+[C, dC_dP] = vsc_loss_coefficients(vsc, eval.pac, mpc);
 
 for k = model.active'
     P = eval.pac(k);
@@ -976,12 +1115,13 @@ for k = model.active'
         continue;
     end
     I = R / (mpc.baseMVA * U);
-    dL_dI = vsc(k, c.LOSS_B) + 2 * vsc(k, c.LOSS_C) * I;
+    dL_dI = vsc(k, c.LOSS_B) + 2 * C(k) * I;
     dI_dP = P / (mpc.baseMVA * U * R);
     dI_dQ = Q / (mpc.baseMVA * U * R);
     dI_dU = -I / U;
     dPloss(k, :) = dL_dI * (dI_dP * dPac(k, :) + ...
-        dI_dQ * dQac(k, :) + dI_dU * dUc(k, :));
+        dI_dQ * dQac(k, :) + dI_dU * dUc(k, :)) + ...
+        I^2 * dC_dP(k) * dPac(k, :);
 end
 
 
@@ -1068,6 +1208,7 @@ normF = norm(F, Inf);
 function ac = build_ac_results(ac, map, eval, Ybus, Yf, Yt, mpc, idx, mpopt)
 c = idx.c;
 vsc = mpc.vsc;
+ng_original = size(ac.gen, 1);
 active = find(vsc(:, c.VSC_STATUS) > 0);
 ac.bus(:, idx.VM) = abs(eval.V);
 ac.bus(:, idx.VA) = angle(eval.V) * 180 / pi;
@@ -1109,7 +1250,45 @@ ac.branch(on, [idx.PF idx.QF idx.PT idx.QT]) = ...
 [ref, pv, pq] = bustypes(ac.bus, ac.gen);
 [ac.bus, ac.gen, ac.branch] = pfsoln(ac.baseMVA, ac.bus, ac.gen, ...
     ac.branch, Ybus, Yf, Yt, eval.V, ref, pv, pq, mpopt);
+% Proxy generators were appended after ext2int built the original mapping.
+% Preserve their solved injections explicitly, including external bus IDs.
+proxy_int = ac.gen(ng_original+1:end, :);
+proxy = proxy_int;
+ac.gen = ac.gen(1:ng_original, :);  % int2ext also sizes generator-aligned fields
+proxy(:, idx.GEN_BUS) = ac.order.bus.i2e(proxy(:, idx.GEN_BUS));
 ac = int2ext(ac);
+if ~isempty(proxy)
+    ng_external = size(ac.gen, 1);
+    rows = ng_external + (1:size(proxy, 1))';
+    ac.gen(rows, :) = proxy;
+    ac.order.int.gen = [ac.order.int.gen; proxy_int];
+    if isfield(ac, 'gencost')
+        ac.gencost = append_proxy_cost(ac.gencost, ng_external, size(proxy, 1));
+    end
+    for field = {'gentype', 'genfuel'}
+        name = field{1};
+        if isfield(ac, name)
+            ac.(name)(rows, :) = {''};
+        end
+    end
+    % Extend the generator maps so later indexing round trips are consistent.
+    perm = length(ac.order.gen.i2e) + (1:size(proxy, 1))';
+    ac.order.gen.status.on = [ac.order.gen.status.on; rows];
+    ac.order.gen.i2e = [ac.order.gen.i2e; perm];
+    ac.order.gen.e2i = [ac.order.gen.e2i; perm];
+end
+
+
+function cost = append_proxy_cost(cost, ng, np)
+% Zero-cost algebraic proxies preserve both P-only and P/Q cost row layouts.
+zero = zeros(np, size(cost, 2));
+zero(:, 1) = 2;  % polynomial
+zero(:, 4) = 1;  % one zero constant coefficient
+if size(cost, 1) == 2*ng
+    cost = [cost(1:ng, :); zero; cost(ng+1:end, :); zero];
+else
+    cost = [cost; zero];
+end
 
 
 function [busdc, branchdc] = build_dc_results(mpc, eval, idx)
@@ -1157,15 +1336,17 @@ c = idx.c;
 bdc = idx.bdc;
 vsc = mpc.vsc;
 nv = size(vsc, 1);
-if size(vsc, 2) < c.REACTOR_BRANCH
-    vsc_out = [vsc zeros(nv, c.REACTOR_BRANCH - size(vsc, 2))];
+if size(vsc, 2) < c.QCONV
+    vsc_out = [vsc zeros(nv, c.QCONV - size(vsc, 2))];
 else
     vsc_out = vsc;
 end
 active = find(vsc(:, c.VSC_STATUS) > 0);
-vsc_out(:, c.PAC:c.REACTOR_BRANCH) = 0;
-vsc_out(active, c.PAC) = eval.pac(active);
-vsc_out(active, c.QAC) = eval.qac(active);
+vsc_out(:, c.PAC:c.QCONV) = 0;
+vsc_out(active, c.PAC) = eval.ps(active);
+vsc_out(active, c.PCONV) = eval.pac(active);
+vsc_out(active, c.QAC) = eval.qs(active);
+vsc_out(active, c.QCONV) = eval.qac(active);
 vsc_out(active, c.PDC) = eval.pdc(active);
 for kk = 1:length(active)
     k = active(kk);
@@ -1186,8 +1367,10 @@ function state = eval_to_state(mpc, map_ext, map, eval, idx)
 c = idx.c;
 nv = size(mpc.vsc, 1);
 state = struct( ...
-    'pac', eval.pac, ...
-    'qac', eval.qac, ...
+    'pac', eval.ps, ...
+    'qac', eval.qs, ...
+    'pconv', eval.pac, ...
+    'qconv', eval.qac, ...
     'pdc', eval.pdc, ...
     'vdc', zeros(nv, 1), ...
     'vac_pcc', zeros(nv, 1), ...

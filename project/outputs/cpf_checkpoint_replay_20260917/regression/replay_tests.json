@@ -1,0 +1,346 @@
+{
+  "passed": 34,
+  "failed": 1,
+  "checks": [
+    {
+      "name": "off_disabled_bounded",
+      "passed": true
+    },
+    {
+      "name": "off_nose_bounded",
+      "passed": true
+    },
+    {
+      "name": "on_nose_bounded",
+      "passed": true
+    },
+    {
+      "name": "off_full_bounded",
+      "passed": true
+    },
+    {
+      "name": "on_full_bounded",
+      "passed": true
+    },
+    {
+      "name": "off_one_retry_bounded",
+      "passed": true
+    },
+    {
+      "name": "disabled_preserves_honest_failure",
+      "passed": true
+    },
+    {
+      "name": "replay_recovers_NOSE",
+      "passed": true
+    },
+    {
+      "name": "actual_rewind_exercised",
+      "passed": true
+    },
+    {
+      "name": "restoration_verified",
+      "passed": true
+    },
+    {
+      "name": "prefix_lambda_preserved",
+      "passed": true
+    },
+    {
+      "name": "prefix_bus_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_bus_aligned",
+      "passed": true
+    },
+    {
+      "name": "prefix_gen_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_gen_aligned",
+      "passed": true
+    },
+    {
+      "name": "prefix_branch_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_branch_aligned",
+      "passed": true
+    },
+    {
+      "name": "prefix_vsc_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_vsc_aligned",
+      "passed": true
+    },
+    {
+      "name": "prefix_busdc_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_busdc_aligned",
+      "passed": true
+    },
+    {
+      "name": "prefix_branchdc_preserved",
+      "passed": true
+    },
+    {
+      "name": "trace_branchdc_aligned",
+      "passed": true
+    },
+    {
+      "name": "exact_halving",
+      "passed": true
+    },
+    {
+      "name": "one_retry_budget_is_sufficient",
+      "passed": true
+    },
+    {
+      "name": "budget_does_not_change_successful_replay",
+      "passed": true
+    },
+    {
+      "name": "on_NOSE_needs_no_replay",
+      "passed": true
+    },
+    {
+      "name": "on_FULL_needs_no_replay",
+      "passed": true
+    },
+    {
+      "name": "off_FULL_records_nose_and_continues",
+      "passed": false
+    },
+    {
+      "name": "event_indices_in_retained_trace",
+      "passed": true
+    },
+    {
+      "name": "smooth_nose_tangent_within_tolerance",
+      "passed": true
+    },
+    {
+      "name": "invalid_replay_budget_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_replay_budget_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_replay_budget_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_replay_budget_rejected",
+      "passed": true
+    }
+  ],
+  "runs": [
+    {
+      "name": "off_disabled",
+      "lambda": 1.2455494988330067,
+      "V5": 0.67874995905654711,
+      "termination": {
+        "cause": "turn_localization_failed",
+        "success": false,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 1.2455494988330067,
+        "last_accepted_index": 35,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "replay": {
+        "max_attempts": 0,
+        "attempts": 0,
+        "step_cap": null,
+        "history": []
+      },
+      "warning": "",
+      "elapsed": 3.3301152
+    },
+    {
+      "name": "off_nose",
+      "lambda": 1.2455350524152848,
+      "V5": 0.67866248190824974,
+      "termination": {
+        "cause": "nose_event",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2455350524152848,
+        "last_accepted_index": 27,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": true,
+        "limit_induced_turn_detected": false
+      },
+      "replay": {
+        "max_attempts": 3,
+        "attempts": 1,
+        "step_cap": 0.05,
+        "history": [
+          {
+            "attempt": 1,
+            "failed_lambda": 1.2455494988330067,
+            "checkpoint_lambda": 1.2042120070003619,
+            "checkpoint_index": 20,
+            "discarded_points": 15,
+            "previous_step_cap": 0.1,
+            "step_cap": 0.05,
+            "reason": "turn_localization_stalled",
+            "restoration_verified": true
+          }
+        ]
+      },
+      "warning": "",
+      "elapsed": 4.0680751
+    },
+    {
+      "name": "on_nose",
+      "lambda": 1.2456689423022373,
+      "V5": 0.68054698745598952,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689423022373,
+        "last_accepted_index": 29,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "replay": {
+        "max_attempts": 3,
+        "attempts": 0,
+        "step_cap": null,
+        "history": []
+      },
+      "warning": "",
+      "elapsed": 2.0698696
+    },
+    {
+      "name": "off_full",
+      "lambda": 1.2411345369316058,
+      "V5": 0.65285338063117071,
+      "termination": {
+        "cause": "step_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 1.2411345369316058,
+        "last_accepted_index": 201,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": true,
+        "limit_induced_turn_detected": false
+      },
+      "replay": {
+        "max_attempts": 3,
+        "attempts": 1,
+        "step_cap": 0.05,
+        "history": [
+          {
+            "attempt": 1,
+            "failed_lambda": 1.2455494988330067,
+            "checkpoint_lambda": 1.2042120070003619,
+            "checkpoint_index": 20,
+            "discarded_points": 15,
+            "previous_step_cap": 0.1,
+            "step_cap": 0.05,
+            "reason": "turn_localization_stalled",
+            "restoration_verified": true
+          }
+        ]
+      },
+      "warning": "",
+      "elapsed": 8.9714043
+    },
+    {
+      "name": "on_full",
+      "lambda": 0.60307379524650362,
+      "V5": 0.2357133519820942,
+      "termination": {
+        "cause": "vsc_capability_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 0.60307379524650362,
+        "last_accepted_index": 48,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "replay": {
+        "max_attempts": 3,
+        "attempts": 0,
+        "step_cap": null,
+        "history": []
+      },
+      "warning": "",
+      "elapsed": 3.430159
+    },
+    {
+      "name": "off_one_retry",
+      "lambda": 1.2455350524152848,
+      "V5": 0.67866248190824974,
+      "termination": {
+        "cause": "nose_event",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2455350524152848,
+        "last_accepted_index": 27,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": true,
+        "limit_induced_turn_detected": false
+      },
+      "replay": {
+        "max_attempts": 1,
+        "attempts": 1,
+        "step_cap": 0.05,
+        "history": [
+          {
+            "attempt": 1,
+            "failed_lambda": 1.2455494988330067,
+            "checkpoint_lambda": 1.2042120070003619,
+            "checkpoint_index": 20,
+            "discarded_points": 15,
+            "previous_step_cap": 0.1,
+            "step_cap": 0.05,
+            "reason": "turn_localization_stalled",
+            "restoration_verified": true
+          }
+        ]
+      },
+      "warning": "",
+      "elapsed": 4.0488859
+    }
+  ]
+}

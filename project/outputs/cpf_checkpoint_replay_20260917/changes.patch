@@ -1,0 +1,328 @@
+--- before/matpower/lib/runcpf_vsc_mtdc.m
++++ after/matpower/lib/runcpf_vsc_mtdc.m
+@@ -153,6 +153,12 @@
+     target_lam = stop_at;
+ end
+ opt = vsc_cpf_options(mpopt);
++if ~isnumeric(opt.nose_replay_max) || ~isreal(opt.nose_replay_max) || ...
++        ~isscalar(opt.nose_replay_max) || ~isfinite(opt.nose_replay_max) || ...
++        opt.nose_replay_max<0 || opt.nose_replay_max~=fix(opt.nose_replay_max)
++    error('runcpf_vsc_mtdc:nose_replay_max', ...
++        'vsc_mtdc.nose_replay_max must be a finite nonnegative integer.');
++end
+ if ~(isnumeric(opt.coupled_current_limits) || islogical(opt.coupled_current_limits)) || ...
+         ~isreal(opt.coupled_current_limits) || ~isscalar(opt.coupled_current_limits) || ...
+         ~ismember(opt.coupled_current_limits,[0 1])
+@@ -418,8 +424,18 @@
+         turn_refinements = 0;
+         turn_history = {};
+         turn_resume_step = [];
++        replay_history = {};
++        replay_count = 0;
++        replay_cap = Inf;
++        replay_anchor = [];
++        replay_checkpoints = {make_replay_checkpoint( ...
++            active_set_stage_snapshot(ctx,ctxt,Sdelta),control_state_snapshot(), ...
++            x,lam,z,last,cpf,events,cont_steps,curr_step)};
+ 
+         while isempty(done_msg)
++            % A replay keeps the smaller step through subsequent controls,
++            % including adaptive-step growth and freeze recovery proposals.
++            curr_step = min(curr_step,replay_cap);
+             target_lambda_step = 0;
+             trial_parameterization = mpopt.cpf.parameterization;
+             if isempty(target_lam)
+@@ -472,10 +488,7 @@
+ 
+             turn_stage = active_set_stage_snapshot(ctx, ctxt, Sdelta);
+             turn_events = events;
+-            turn_misc = {psse_controls_frozen, vsc_capability_transfer_frozen, ...
+-                vsc_capability_transfer_backoff_count, vsc_capability_resaturation_count, ...
+-                vsc_slack_q_backoff_count, gen_capability_dispatch_frozen, ...
+-                unified_context_cache, vsc_capability_param_cache, psse_diagnostic};
++            turn_misc = control_state_snapshot();
+             % Carry the last accepted physical tangent across every stage.
+             % A failed trial restarts here from the restored accepted context.
+             transition_carried = z; transition_carried_keys = transition_state_keys(ctx);
+@@ -567,7 +580,7 @@
+                 events = vsc_mtdc_cpf_append_event(events, control_events);
+ 
+                 [ctx, ctxt, Sdelta, xnew, evalnew, lamnew, normFnew, ...
+-                    corr_it, r, V, cap_events, cap_ok, ~, ...
++                    corr_it, r, V, cap_events, cap_ok, vsc_cap_changed, ...
+                     retry_step, active_set_changed] = ...
+                     run_active_set_stage('vsc', 'VSC capability', ...
+                     'vsc_capability_recorr_failed', ctx, ctxt, Sdelta, ...
+@@ -883,6 +896,11 @@
+                 turn_alarm = isempty(target_lam) && z(end) > 0 && ...
+                     ((active_set_changed && znew(end) <= 0) || turn_dot < 0);
+                 if turn_alarm
++                    % Anchor before an accepted capability update, not at
++                    % the near-zero predictor produced by local refinement.
++                    if isempty(replay_anchor)
++                        replay_anchor = replay_checkpoints{end};
++                    end
+                     % Compare physical states on both sides of the mode
+                     % switch, including newly freed voltage coordinates.
+                     pre_mapped = unified_x_from_controlled_ac(ctx, last.ac, last);
+@@ -896,19 +914,12 @@
+                         'step',trial_step,'state_interval',state_interval, ...
+                         'incoming_interval',incoming_interval,'tangent_before',z(end), ...
+                         'tangent_after',znew(end),'orientation_dot',turn_dot, ...
+-                        'localized',localized,'rollback_verified',false);
++                        'localized',localized,'rollback_verified',false, ...
++                        'replay_attempt',replay_count);
+                     if ~localized
+                         [ctx,ctxt,Sdelta] = restore_active_set_stage_snapshot(turn_stage);
+                         events = turn_events;
+-                        psse_controls_frozen=turn_misc{1};
+-                        vsc_capability_transfer_frozen=turn_misc{2};
+-                        vsc_capability_transfer_backoff_count=turn_misc{3};
+-                        vsc_capability_resaturation_count=turn_misc{4};
+-                        vsc_slack_q_backoff_count=turn_misc{5};
+-                        gen_capability_dispatch_frozen=turn_misc{6};
+-                        unified_context_cache=turn_misc{7};
+-                        vsc_capability_param_cache=turn_misc{8};
+-                        psse_diagnostic=turn_misc{9};
++                        restore_control_state(turn_misc);
+                         turn_record.rollback_verified = isequaln(mpcb,turn_stage.mpcb) && ...
+                             isequaln(mpct,turn_stage.mpct) && ...
+                             isequaln(cpf_policy_state,turn_stage.cpf_policy_state) && ...
+@@ -920,6 +931,39 @@
+                         if turn_refinements < 60 && trial_step/2 >= 1e-12
+                             curr_step=trial_step/2;
+                             continue;
++                        end
++                        if replay_count < opt.nose_replay_max && ~isempty(replay_anchor)
++                            cp = replay_anchor;
++                            next_cap = min(cp.step,replay_cap)/2;
++                            if next_cap >= step_min
++                                replay_count = replay_count+1;
++                                entry = struct('attempt',replay_count, ...
++                                    'failed_lambda',lam,'checkpoint_lambda',cp.lambda, ...
++                                    'checkpoint_index',cp.steps+1, ...
++                                    'discarded_points',cont_steps-cp.steps, ...
++                                    'previous_step_cap',min(cp.step,replay_cap), ...
++                                    'step_cap',next_cap,'reason','turn_localization_stalled');
++                                [ctx,ctxt,Sdelta]=restore_active_set_stage_snapshot(cp.stage);
++                                restore_control_state(cp.controls);
++                                x=cp.x;lam=cp.lambda;last_lam=lam;z=cp.z;last=cp.last;
++                                cpf=cp.trace;events=cp.events;cont_steps=cp.steps;
++                                transition_carried=z;transition_carried_keys=transition_state_keys(ctx);
++                                entry.restoration_verified=isequaln(mpcb,cp.stage.mpcb) && ...
++                                    isequaln(mpct,cp.stage.mpct) && ...
++                                    isequaln(cpf_policy_state,cp.stage.cpf_policy_state) && ...
++                                    isequaln(control_state_snapshot(),cp.controls) && ...
++                                    isequaln(cpf,cp.trace) && isequaln(events,cp.events);
++                                assert(entry.restoration_verified,'CPF checkpoint restoration failed');
++                                replay_history{end+1}=entry;
++                                replay_cap=next_cap;curr_step=next_cap;
++                                turn_refinements=0;turn_resume_step=[];
++                                failure=[];success=1;
++                                if mpopt.verbose>1
++                                    fprintf('Replaying from lambda %.12g with step cap %.6g (attempt %d/%d).\n', ...
++                                        lam,next_cap,replay_count,opt.nose_replay_max);
++                                end
++                                continue;
++                            end
+                         end
+                         done_msg='Control-transition turn could not be localized; last accepted point retained.';
+                         failure=struct('stage','event_localization','lambda',lam, ...
+@@ -985,6 +1029,17 @@
+                         end
+                     end
+                 end
++                if opt.nose_replay_max>0 && isempty(replay_anchor) && ...
++                        (vsc_cap_changed || gen_cap_changed) && trial_step>=step_min
++                    % Bounded storage: base plus three recent pre-update
++                    % states. Trace tails after a rewind are discarded.
++                    cp=make_replay_checkpoint(turn_stage,turn_misc,x,lam,z,last, ...
++                        cpf,turn_events,cont_steps,min(curr_step,replay_cap));
++                    replay_checkpoints{end+1}=cp;
++                    if numel(replay_checkpoints)>4
++                        replay_checkpoints(2)=[];
++                    end
++                end
+                 cont_steps = cont_steps + 1;
+                 cpf = append_trace(cpf, r, V, accepted_step, lamnew);
+                 cpf.V_hat(:, end) = original_ac_voltage_from_eval(ctx_hat, xhat, ...
+@@ -1005,6 +1060,9 @@
+                         vsc_mtdc_cpf_event('NOSE',cont_steps,1, ...
+                         'Localized smooth loading maximum.', ...
+                         'lambda_event',lamnew,'kind','SMOOTH_NOSE'));
++                end
++                if nose_event || limit_turn
++                    replay_anchor=[];
+                 end
+                 if (nose_event || limit_turn) && ~full_trace
+                     lam = lamnew;
+@@ -1035,13 +1093,13 @@
+                 last = r;
+                 refresh_incremental_policy_anchor(lam);
+                 z = znew;
+-                if limit_turn && ~isempty(turn_resume_step)
+-                    curr_step=turn_resume_step;
++                if (nose_event || limit_turn) && ~isempty(turn_resume_step)
++                    curr_step=min(turn_resume_step,replay_cap);
+                     turn_resume_step=[];
+                     turn_refinements=0;
+                 end
+                 if adapt_step
+-                    curr_step = min(curr_step * 1.25, step_max);
++                    curr_step = min([curr_step * 1.25, step_max,replay_cap]);
+                 end
+             elseif trial_step / 2 >= step_min
+                 curr_step = trial_step / 2;
+@@ -1078,6 +1136,28 @@
+         results.cpf.coupled_current_limits = logical(opt.coupled_current_limits);
+         results.cpf.turn_detection = struct('history',{turn_history}, ...
+             'arclength_resolution',turn_resolution,'state_tolerance',nose_tol);
++        results.cpf.checkpoint_replay = struct('max_attempts',opt.nose_replay_max, ...
++            'attempts',replay_count,'step_cap',replay_cap,'history',{replay_history});
++    end
++
++    function state = control_state_snapshot()
++        state = {psse_controls_frozen, vsc_capability_transfer_frozen, ...
++            vsc_capability_transfer_backoff_count,vsc_capability_resaturation_count, ...
++            vsc_slack_q_backoff_count,gen_capability_dispatch_frozen, ...
++            unified_context_cache,vsc_capability_param_cache,psse_diagnostic};
++    end
++
++    function restore_control_state(state)
++        psse_controls_frozen=state{1};vsc_capability_transfer_frozen=state{2};
++        vsc_capability_transfer_backoff_count=state{3};
++        vsc_capability_resaturation_count=state{4};vsc_slack_q_backoff_count=state{5};
++        gen_capability_dispatch_frozen=state{6};unified_context_cache=state{7};
++        vsc_capability_param_cache=state{8};psse_diagnostic=state{9};
++    end
++
++    function cp=make_replay_checkpoint(stage,controls,x,lam,z,last,trace,events,steps,h)
++        cp=struct('stage',stage,'controls',{controls},'x',x,'lambda',lam, ...
++            'z',z,'last',last,'trace',trace,'events',events,'steps',steps,'step',h);
+     end
+ 
+     function r = annotate_unified_termination(r)
+@@ -4550,6 +4630,7 @@
+             'psse_control_limit', 'saturate', 'psse_control_max_it', 20, ...
+             'capability_enforce', 0, 'capability_max_it', 10, ...
+             'coupled_current_limits', 1, ...
++            'nose_replay_max', 3, ...
+             'capability_limit', 'stop', 'capability_vsc_limit', [], ...
+             'capability_gen_limit', [], ...
+             'capability_vsc_smax', [], 'capability_vsc_vmax', 1.15, ...
+--- before/matpower/lib/mpoption.m
++++ after/matpower/lib/mpoption.m
+@@ -195,6 +195,8 @@
+ %      vsc_mtdc.capability_enforce 0        enable TESIS-style PF/CPF saturation
+ %      vsc_mtdc.coupled_current_limits 1   unified CPF: coupled current equations
+ %          [ 0 - use projected Q limits; 1 - couple preserve-P current limits ]
++%      vsc_mtdc.nose_replay_max 3          max checkpoint replays after turn stall
++%          [ 0 - disable replay; each retry halves the checkpoint step cap ]
+ %      vsc_mtdc.capability_limit 'stop'     behavior at capability loading limit
+ %          [ 'stop'   - stop at the capability loading limit                  ]
+ %          [ 'freeze' - freeze exhausted CPF dispatch and continue CPF        ]
+@@ -1658,6 +1660,7 @@
+             'psse_control_max_it',  20, ...
+             'capability_enforce',   0, ...
+             'coupled_current_limits', 1, ...
++            'nose_replay_max',      3, ...
+             'capability_limit',     'stop', ...
+             'capability_vsc_limit', [], ...
+             'capability_gen_limit', [], ...
+--- before/docs/CPF_LIMIT_CONTINUATION.md
++++ after/docs/CPF_LIMIT_CONTINUATION.md
+@@ -65,14 +65,33 @@
+ 3. Both incoming-candidate and outgoing-state intervals, measured in the solver coordinates, no larger than `cpf.nose_tol`.
+ 4. A converged corrected network state and settled enabled controls.
+ 
+-The ordinary `cpf.step_min` does not prevent these event-refinement steps. The event search allows at most 60 rejected refinements and does not halve below 1e-12. An unresolved turn returns failure and retains the last accepted point. A discrete jump that does not shrink with refinement is therefore not mislabeled as a localized continuous turn. After a localized turn, FULL restores the pre-refinement step size.
++The ordinary `cpf.step_min` does not prevent these event-refinement steps. The event search allows at most 60 rejected refinements and does not halve below 1e-12. If local refinement stalls, the checkpoint recovery described below runs before declaring failure. If recovery is unavailable or exhausted, an unresolved turn returns failure and retains the last accepted point. A discrete jump that does not shrink with refinement is therefore not mislabeled as a localized continuous turn. After either a smooth nose or a localized control turn, FULL restores the pre-refinement step size, subject to any replay cap.
+ 
+ The smooth locator also checks its residual/tangent or bracket convergence before reporting an event. FULL avoids immediately rediscovering the same near-zero tangent.
+ 
+ This is bracket refinement in continuation arclength, not a generic analytic solve of every possible control-limit equation. Endpoint sign checks cannot guarantee detection of multiple folds hidden inside a single step. The orientation check adds protection against branch reversal, but it is not a global branch-uniqueness test.
++
++## Checkpoint replay after stalled turn refinement
++
++Unified CPF automatically retries a stalled control-turn search from a saved accepted point before a capability update. This changes the approach to the difficult region, which can matter when the projected-Q policy makes a finite setpoint jump that persists even as the local trial step tends to zero. It applies with coupled current either enabled or disabled.
++
++```matlab
++options = mpoption(options, 'vsc_mtdc.nose_replay_max', 3); % default
++options = mpoption(options, 'vsc_mtdc.nose_replay_max', 0); % disable replay
++```
++
++The nonnegative integer option bounds the total number of checkpoint replays in a run. The solver keeps a bounded cache of the base point and three recent pre-capability-update checkpoints. At the first suspicious turn it fixes the latest checkpoint as the replay anchor. Further local refinements do not replace that anchor with a nearly identical point at the stalled event.
++
++After local refinement exhausts its budget, recovery restores the checkpoint's cases, network contexts, policy state, discrete controls, control-freeze flags, caches, diagnostics, solution, tangent, accepted trace and events. Accepted points after the checkpoint are removed. The new step cap is half the checkpoint's saved step, or half the previous replay cap for another attempt from that anchor. The solver does not launch a replay with a cap below ordinary `cpf.step_min`. Adaptive growth and other step proposals remain bounded by the replay cap for the rest of the run.
++
++`results.cpf.checkpoint_replay` reports the attempt budget, attempt count, step cap and history. Each attempt records its failed lambda, checkpoint lambda/index, discarded-point count, old/new step caps and restoration verification. An infinite step cap means no replay occurred. Rejected local trials remain in `results.cpf.turn_detection.history`, tagged with `replay_attempt`; they are diagnostics, not accepted path points. Work-profile counters include discarded computation.
++
++Recovery does not relax convergence, feasibility or event-localization criteria. It can recover a trace without certifying that every smaller initial step produces the same projected-Q history or nose. In particular, this is not an exact event-ordering solution for discontinuous capability projections. A failed smooth-nose locator and unrelated corrector failures retain their existing handling; this recovery specifically follows exhausted suspicious-turn refinement.
+ 
+ ## Verified study and regressions
+ 
+ For the Beerten constant-P/Q non-slack dispatch study with ULTC, switched shunt and G2's 150 MW capability, initial steps 0.1 and 0.05 locate the first turn at approximately lambda=1.245668943, V5=0.680547 p.u. This agrees with the separately solved G2 Q-limit event. FULL records that event and continues; its later converter-capability termination near lambda=0.603 does not complete the requested FULL endpoint.
+ 
+ Verification artifacts, source snapshots, diffs and exact flags are saved in `outputs/cpf_standard_integration_20260917/`. `tests/t_cpf_coupled_controls.m` verifies current-row derivatives for three station configurations, metadata validation/round-trip, rollback, event localization and independent AC/DC/bridge/capability checks on saved verification runs. The existing PCC/station, directional-loss and VSC regression suites are also run.
++
++Checkpoint-replay verification is saved separately in `outputs/cpf_checkpoint_replay_20260917/`. With coupled current disabled and initial step 0.1, the studied run previously stalled at lambda=1.245549498833. One replay from lambda=1.204212007000 with a 0.05 step cap locates a smooth nose at lambda=1.245535052415, V5=0.678662482 p.u. FULL records it and continues until a later converter-capability stop near lambda=0.603060043. Coupled-current-enabled NOSE/FULL accepted physical traces are identical to the preceding integration results and require no replay. The new `tests/t_cpf_checkpoint_replay.m` exercises replay, restoration, bounded options, disabled behavior and both endpoint modes using the saved study fixture.
+--- /dev/null
++++ after/tests/t_cpf_checkpoint_replay.m
+@@ -0,0 +1,57 @@
++function evidence=t_cpf_checkpoint_replay(base,target,options,outdir)
++% Verify rewind recovery, unchanged non-replay behavior and bounded policy.
++if ~isfolder(outdir),mkdir(outdir);end
++checks=struct('name',{},'passed',{});runs=cell(1,6);summary=cell(1,6);
++names={'off_disabled','off_nose','on_nose','off_full','on_full','off_one_retry'};
++for k=1:6
++    mode='NOSE';if ismember(k,[4 5]),mode='FULL';end
++    coupled=ismember(k,[3 5]);limit=3;if k==1,limit=0;elseif k==6,limit=1;end
++    o=mpoption(options,'cpf.stop_at',mode,'cpf.step',.1, ...
++        'vsc_mtdc.coupled_current_limits',coupled,'vsc_mtdc.nose_replay_max',limit);
++    file=fullfile(outdir,[names{k} '.mat']);assert(~isfile(file),'Preserve verification outputs');
++    lastwarn('');tic;[r,success]=runcpf_psse(base,target,o);elapsed=toc;
++    [warning_text,warning_id]=lastwarn;
++    save(file,'r','success','base','target','o','elapsed','warning_text','warning_id','-v7.3');runs{k}=r;
++    ck([names{k} '_bounded'],r.cpf.checkpoint_replay.attempts<=limit);
++    summary{k}=struct('name',names{k},'lambda',r.cpf.lam(end),'V5',r.bus(5,8), ...
++        'termination',r.cpf.termination,'replay',r.cpf.checkpoint_replay, ...
++        'warning',warning_text,'elapsed',elapsed);
++    fprintf('%s: lambda %.12f endpoint %d replays %d cause %s\n',names{k}, ...
++        r.cpf.lam(end),r.cpf.termination.requested_endpoint_reached, ...
++        r.cpf.checkpoint_replay.attempts,r.cpf.termination.cause);
++end
++a=runs{1};b=runs{2};rec=b.cpf.checkpoint_replay;
++ck('disabled_preserves_honest_failure',~a.success && strcmp(a.cpf.termination.cause,'turn_localization_failed') && ~a.cpf.termination.nose_detected);
++ck('replay_recovers_NOSE',b.success && b.cpf.termination.requested_endpoint_reached && b.cpf.termination.smooth_nose_detected);
++ck('actual_rewind_exercised',rec.attempts>=1 && rec.history{1}.discarded_points>0);
++ck('restoration_verified',all(cellfun(@(s)s.restoration_verified,rec.history)));
++n=rec.history{1}.checkpoint_index;
++ck('prefix_lambda_preserved',isequaln(a.cpf.lam(1:n),b.cpf.lam(1:n)));
++for field={'bus','gen','branch','vsc','busdc','branchdc'}
++    name=field{1};ck(['prefix_' name '_preserved'],isequaln(a.cpf.(name)(:,:,1:n),b.cpf.(name)(:,:,1:n)));
++    ck(['trace_' name '_aligned'],size(b.cpf.(name),3)==numel(b.cpf.lam));
++end
++ck('exact_halving',all(cellfun(@(s)s.step_cap==s.previous_step_cap/2,rec.history)));
++ck('one_retry_budget_is_sufficient',runs{6}.success && runs{6}.cpf.checkpoint_replay.attempts==1);
++ck('budget_does_not_change_successful_replay',isequaln(runs{6}.cpf.lam,b.cpf.lam));
++ck('on_NOSE_needs_no_replay',runs{3}.cpf.termination.requested_endpoint_reached && runs{3}.cpf.checkpoint_replay.attempts==0);
++ck('on_FULL_needs_no_replay',runs{5}.cpf.checkpoint_replay.attempts==0);
++ck('off_FULL_records_nose_and_continues',runs{4}.cpf.termination.nose_detected && runs{4}.cpf.lam(end)<b.cpf.lam(end)-.1);
++% All returned trace arrays/events refer only to the replayed, accepted path.
++ck('event_indices_in_retained_trace',all([b.cpf.events.k]<=numel(b.cpf.lam)-1));
++zz=b.cpf.z(:,end);zz=zz(find(isfinite(zz),1,'last'));
++ck('smooth_nose_tangent_within_tolerance',abs(zz)<=10*options.cpf.nose_tol);
++for bad={-1,.5,NaN,[0 1]}
++    o=options;o.vsc_mtdc.nose_replay_max=bad{1};rejected=false;
++    try,runcpf_vsc_mtdc(base,target,o);catch me,rejected=strcmp(me.identifier,'runcpf_vsc_mtdc:nose_replay_max');end
++    ck('invalid_replay_budget_rejected',rejected);
++end
++evidence=struct('passed',sum([checks.passed]),'failed',sum(~[checks.passed]), ...
++    'checks',checks,'runs',{summary});
++fid=fopen(fullfile(outdir,'replay_tests.json'),'w');fprintf(fid,'%s',jsonencode(evidence,PrettyPrint=true));fclose(fid);
++fprintf('CHECKPOINT_REPLAY: %d passed, %d failed\n',evidence.passed,evidence.failed);
++assert(evidence.failed==0,'Checkpoint replay regression failed; see saved evidence');
++ function ck(name,passed)
++    checks(end+1)=struct('name',name,'passed',logical(passed));
++ end
++end

@@ -1,0 +1,18 @@
+{
+  "step": 0.1,
+  "lambda": 1.2456689435098853,
+  "P5_MW": 358.9605464423725,
+  "V5": 0.680547007711424,
+  "V6": 1,
+  "Qg2": 112.5000000000002,
+  "PV_residual": 2.5014157412073246E-12,
+  "PQ_residual": 2.5014157412073246E-12,
+  "incoming_tlambda": 0.16573589839221589,
+  "outgoing_oriented_tlambda": -0.021788964950546209,
+  "incoming_tV5": -0.34545368551837558,
+  "outgoing_oriented_tV5": -0.36536431292924881,
+  "mapped_tangent_dot": 0.94870197192921923,
+  "PV_J_smallest_singular": 0.0037956001738664036,
+  "PQ_J_smallest_singular": 0.0037949239557735813,
+  "interpretation": "One-sided tangent comparison at the same localized G2 limit; no dynamic stability certification"
+}

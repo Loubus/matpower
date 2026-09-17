@@ -1,0 +1,42 @@
+[
+  {
+    "file": "matpower/lib/calc_vsc_losses.m",
+    "sha256": "ed1ac134b97790fec9fae5f1ca23b4fb36f0ff0e82a4b5e1b1449c3d0b8ff685"
+  },
+  {
+    "file": "matpower/lib/idx_vsc.m",
+    "sha256": "5b078b96564e8eda4dc51bcb1e2c1c232386de8688ccad16c5116379f8f8506b"
+  },
+  {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "sha256": "d94f063ea57d4a68ac0d46020a8d9743e4997bdecd9c04b41c89b2766fd39c71"
+  },
+  {
+    "file": "matpower/lib/runpf_vsc_mtdc.m",
+    "sha256": "134ef3aaf0014f080609c6bf2e0fe334ef59aef8face98009bfd6664ba0bd12c"
+  },
+  {
+    "file": "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "sha256": "cef1c542324763946bc12cf66d4370e3d8eb5adfacf11db7391e17fb992e9ee7"
+  },
+  {
+    "file": "matpower/lib/savecase.m",
+    "sha256": "5d592debe5d5e7e281b35cca5443fa8a684271a9a2976182874d38046f8ac0d7"
+  },
+  {
+    "file": "matpower/lib/update_vsc_state.m",
+    "sha256": "529658f5601d7937c9adf26a944c067097cf8b1001af52a26bfc0d89632c8180"
+  },
+  {
+    "file": "matpower/lib/vsc_loss_coefficients.m",
+    "sha256": "08fb6ec13c53919c280ad4c9e8eb4ad370dcf98fa834da98273703e5702bc1df"
+  },
+  {
+    "file": "tests/t_vsc_directional_losses.m",
+    "sha256": "25f20de198320232dd62a6b18b192a720096690b3eeb7813cc46752e68d7d0a9"
+  },
+  {
+    "file": "docs/VSC_DIRECTIONAL_LOSS_CONTRACT.md",
+    "sha256": "e515ae686f1608cc10ccc7584ea14c05f88fef9e5e41159f09bafc3cfc4b5dd1"
+  }
+]

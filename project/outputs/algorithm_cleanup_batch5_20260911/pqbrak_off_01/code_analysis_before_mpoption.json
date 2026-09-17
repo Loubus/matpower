@@ -1,0 +1,32 @@
+[
+  {
+    "id": "STCI",
+    "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+    "fix": 1,
+    "line": 1270,
+    "column": [
+      4,
+      9
+    ]
+  },
+  {
+    "id": "STCI",
+    "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+    "fix": 1,
+    "line": 1305,
+    "column": [
+      4,
+      9
+    ]
+  },
+  {
+    "id": "STCI",
+    "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+    "fix": 1,
+    "line": 1428,
+    "column": [
+      4,
+      9
+    ]
+  }
+]

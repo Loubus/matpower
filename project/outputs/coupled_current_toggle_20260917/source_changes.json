@@ -1,0 +1,17 @@
+[
+  {
+    "file": "docs/CPF_LIMIT_CONTINUATION.md",
+    "before": "463512d6c5439035216c23202790a01138489c882440ed681c6491cd998d4989",
+    "after": "93ba9c7521e776c98468880b05260cf041e010304ebbf2d02657f8da5bc14991"
+  },
+  {
+    "file": "matpower/lib/mpoption.m",
+    "before": "11f9f344a8dbc79617968d3f4a53eb31da1f5e1009534cd7ee7e345b41ea480d",
+    "after": "1d759de433c2b55736bea3bd3036aeeb7007cb5a37d5e3dc3cbd9166ec196109"
+  },
+  {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "before": "fe99c40c17d551348fac3adae91cf6f625b65420a284a94b91e7aca86505f077",
+    "after": "0bf1c381e9ec0a71bda337a666ff88a3d7d8a833493ec62587c294c82bfc23d7"
+  }
+]

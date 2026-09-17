@@ -1,0 +1,19 @@
+{
+  "directory": "patch_check_3a4kq1se",
+  "exit_code": 0,
+  "output": "",
+  "matches": {
+    "matpower/lib/mpoption.m": true,
+    "matpower/lib/runpf_vsc_mtdc_unified.m": true,
+    "matpower/lib/runcpf_vsc_mtdc.m": true,
+    "matpower/lib/t/t_vsc_mtdc.m": true,
+    "docs/CONTROL_ACCEPTANCE.md": true,
+    "docs/CPF_TERMINATION_CONTRACT.md": true,
+    "tests/README.md": true,
+    "tests/t_ultc_beerten_batch3.m": true,
+    "tests/t_swshunt_beerten_batch4.m": true,
+    "matpower/lib/+mp/psse_unified_control_acceptance.m": true,
+    "tests/t_control_saturation_batch5.m": true,
+    "docs/CONTROL_SATURATION_CONTRACT.md": true
+  }
+}

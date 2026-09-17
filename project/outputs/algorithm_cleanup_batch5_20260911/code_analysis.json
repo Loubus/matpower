@@ -1,0 +1,24 @@
+{
+  "production": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"code_issues\":[]}"
+      }
+    ],
+    "structuredContent": {
+      "code_issues": []
+    }
+  },
+  "test": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"code_issues\":[]}"
+      }
+    ],
+    "structuredContent": {
+      "code_issues": []
+    }
+  }
+}

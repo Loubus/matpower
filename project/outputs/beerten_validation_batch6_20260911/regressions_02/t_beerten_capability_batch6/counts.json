@@ -1,0 +1,11 @@
+{
+  "name": "t_beerten_capability_batch6",
+  "planned": 442,
+  "executed": 442,
+  "passed": 442,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 7.5170965,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

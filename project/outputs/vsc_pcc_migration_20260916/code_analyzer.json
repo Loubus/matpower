@@ -1,0 +1,39 @@
+[
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\vsc_station_map.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\vsc_station_capability.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\runpf_vsc_mtdc_unified.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\runpf_vsc_mtdc.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\vsc_capability_curve.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\update_vsc_state.m",
+    "issues": []
+  },
+  {
+    "file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\tests\\t_vsc_pcc_station.m",
+    "issues": {
+      "id": "NOCOMMA",
+      "message": "Extra comma is unnecessary.",
+      "fix": 1,
+      "line": 90,
+      "column": [
+        4,
+        4
+      ]
+    }
+  }
+]

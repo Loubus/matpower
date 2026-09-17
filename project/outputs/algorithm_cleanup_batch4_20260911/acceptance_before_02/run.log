@@ -1,0 +1,70 @@
+1..67
+ok 1 - grid_-20_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 2 - grid_-20_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 3 - grid_-20_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 4 - grid_-20_1.fixed_bs: fixed BS remains separate from BINIT
+ok 5 - grid_-10_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 6 - grid_-10_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 7 - grid_-10_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 8 - grid_-10_1.fixed_bs: fixed BS remains separate from BINIT
+ok 9 - grid_0_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 10 - grid_0_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 11 - grid_0_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 12 - grid_0_1.fixed_bs: fixed BS remains separate from BINIT
+ok 13 - grid_10_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 14 - grid_10_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 15 - grid_10_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 16 - grid_10_1.fixed_bs: fixed BS remains separate from BINIT
+ok 17 - grid_20_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 18 - grid_20_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 19 - grid_20_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 20 - grid_20_1.fixed_bs: fixed BS remains separate from BINIT
+ok 21 - grid_30_-1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 22 - grid_30_-1.fixed_bs: fixed BS remains separate from BINIT
+ok 23 - grid_30_1: both adapters take one adjacent legal mixed-sign step or retain a bound
+ok 24 - grid_30_1.fixed_bs: fixed BS remains separate from BINIT
+ok 25 - direction-1.balance: success=1, AC nodal residual 2.38102134317e-09 pu
+ok 26 - direction-1.physical: independent AC solve confirms capacitive increase raises voltage and inductive decrease lowers it
+ok 27 - direction-1.injection: switched reactive injection follows BINIT times squared local voltage
+ok 28 - direction1.balance: success=1, AC nodal residual 1.72194152945e-10 pu
+ok 29 - direction1.physical: independent AC solve confirms capacitive increase raises voltage and inductive decrease lowers it
+ok 30 - direction1.injection: switched reactive injection follows BINIT times squared local voltage
+ok 31 - disabled1: no automatic move
+ok 32 - disabled2: no automatic move
+ok 33 - disabled3: no automatic move
+ok 34 - disabled4: no automatic move
+ok 35 - disabled5: no automatic move
+ok 36 - disabled6: no automatic move
+ok 37 - disabled7: no automatic move
+ok 38 - band0.96999000: inclusive deadband edges
+ok 39 - band1.03001000: inclusive deadband edges
+ok 40 - band1.00000000: inclusive deadband edges
+ok 41 - reversed_band: band ordering preserved
+ok 42 - remote.mapping: remote voltage uses external identity rather than measurement row order
+ok 43 - remote.balance: success=1, AC nodal residual 1.89912854352e-09 pu
+ok 44 - remote.physical: remote voltage rises after capacitive step
+ok 45 - remote.fallback: missing remote bus falls back to local bus
+ok 46 - vote_100_100: weighted competing errors; upward tie; only winning voters move
+ok 47 - permutation_100_100: device permutation preserves decisions
+ok 48 - vote_25_100: weighted competing errors; upward tie; only winning voters move
+ok 49 - permutation_25_100: device permutation preserves decisions
+ok 50 - vote_200_50: weighted competing errors; upward tie; only winning voters move
+ok 51 - permutation_200_50: device permutation preserves decisions
+ok 52 - simultaneous: same-bus contributions accumulate; both devices use one voltage sample
+ok 53 - group.settled.balance: success=1, AC nodal residual 6.18442578814e-10 pu
+not ok 54 - lock1: explicitly locked rows neither move nor vote against an eligible peer
+not ok 55 - lock2: explicitly locked rows neither move nor vote against an eligible peer
+ok 56 - lock3: explicitly locked rows neither move nor vote against an eligible peer
+not ok 57 - explicit_release: caller clearing the explicit lock permits the next step; no inferred release rule
+ok 58 - continuous.first: quarter span times literal 40 percent; no weight normalization
+ok 59 - continuous.history: AC sensitivity estimate and unified fixed increment intentionally differ
+ok 60 - continuous.bound-20: continuous physical bound is retained
+ok 61 - continuous.bound30: continuous physical bound is retained
+ok 62 - continuous.settled.balance: success=1, AC nodal residual 4.11054358791e-14 pu
+ok 63 - screening.rejected: AC rejects pathological electrical candidate and retains BINIT
+ok 64 - screening.provisional: direct unified selector is provisional; electrical acceptance belongs to outer solver
+ok 65 - cycle.balance: success=1, AC nodal residual 2.37780900177e-14 pu
+ok 66 - cycle.ac: AC detects actual repeated BINIT state and retains best visited solution
+ok 67 - cycle.unified: direct unified passes can reverse; outer solver owns history
+Ran 67 of 67 tests: 64 passed, 3 failed
+Elapsed time 0.01 seconds.

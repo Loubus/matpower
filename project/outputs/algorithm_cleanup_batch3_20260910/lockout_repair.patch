@@ -1,0 +1,15 @@
+--- a/matpower/lib/+mp/psse_unified_control_update.m
++++ b/matpower/lib/+mp/psse_unified_control_update.m
+@@ -89,7 +89,12 @@
+ 
+ function [mpc, state] = direct_xfmr_control(mpc, vm)
+ state = mp.psse_xfmr_states(mpc);
++% Preserve explicit study locks and rejected-rebuild locks loaded from RAW
++% control metadata. The unified solver mask adds locks; it cannot release them.
++inherited_locked = state.locked_out;
+ state = apply_control_lockout(state, mpc, 'xfmr');
++state.locked_out = state.locked_out | inherited_locked;
++state.controllable(state.locked_out) = false;
+ state.iterations = state.iterations + 1;
+ state = classify_xfmr_state(state, vm);
+ [new_raw, new_tap] = next_xfmr_tap_state(state, vm);

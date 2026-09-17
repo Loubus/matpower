@@ -1,0 +1,11 @@
+{
+  "name": "t_beerten_reporting_batch6",
+  "planned": 15,
+  "executed": 15,
+  "passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 0.0609192,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

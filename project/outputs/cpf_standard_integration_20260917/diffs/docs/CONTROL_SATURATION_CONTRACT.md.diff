@@ -1,0 +1,12 @@
+--- before/docs/CONTROL_SATURATION_CONTRACT.md
++++ docs/CONTROL_SATURATION_CONTRACT.md
+@@ -1,4 +1,9 @@
+ # Unified PF/CPF physical control saturation
++
++The unified CPF continuation and converter-current update of 2026-09-17 is
++specified in [CPF_LIMIT_CONTINUATION.md](CPF_LIMIT_CONTINUATION.md). It retains
++the physical tap/shunt saturation contract below and distinguishes a smooth
++nose from a localized control-limit loading turn.
+ 
+ The batch-5 follow-up adopts `vsc_mtdc.psse_control_limit = 'saturate'`
+ as the default for unified AC/DC/VSC automatic voltage controls. This is a

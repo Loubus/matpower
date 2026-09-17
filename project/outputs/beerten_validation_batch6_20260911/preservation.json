@@ -1,0 +1,253 @@
+{
+  "baseline_files_checked": 706,
+  "baseline_changed": [
+    "matpower/lib/runcpf_vsc_mtdc.m",
+    "matpower/lib/runpf_vsc_mtdc_unified.m"
+  ],
+  "baseline_unchanged": 704,
+  "preexisting_snapshots": [
+    "docs/BENCHMARKS.md",
+    "matpower/lib/runcpf_vsc_mtdc.m",
+    "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "tests/README.md"
+  ],
+  "new_project_files": [
+    "tests/t_beerten_reporting_batch6.m",
+    "tests/t_beerten_capability_batch6.m",
+    "studies/beerten/beerten_constant_pq_capability_batch6.m"
+  ],
+  "collected_beerten_sources": [
+    {
+      "path": "cases/beerten/upstream/MatACDC1_0.zip",
+      "entry_sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c",
+      "current_sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "entry_sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee",
+      "current_sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "entry_sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db",
+      "current_sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "entry_sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd",
+      "current_sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "entry_sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290",
+      "current_sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "entry_sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109",
+      "current_sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg.m",
+      "entry_sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff",
+      "current_sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "entry_sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa",
+      "current_sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa",
+      "unchanged": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case3_inf.m",
+      "entry_sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6",
+      "current_sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6",
+      "unchanged": true
+    }
+  ],
+  "author_archive_members": [
+    {
+      "member": "MatACDC1.0/runacdcpf.m",
+      "sha256": "1e785fcb8d2dea88cd64ed83bcb7b429ace64434f83e12725798efebcef219db",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/convlimplot.m",
+      "sha256": "c645fc03239bdc58e962eaddd0bc7fd23422528797387c3b17a2b246324f4c0b",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/printdcpf.m",
+      "sha256": "ff94b1671dffa6648086cbeb1a2413b7a22b97e73972e836f1e7186b9dcda25c",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/calcslackdroop.m",
+      "sha256": "7f881be9a7e2686ab1d10a78a0eccd7f73bbe70000f8dcd062f6a840d6533eb0",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/dcnetworkpf.m",
+      "sha256": "bde6988054d7def8edca207413e34b7a5d9fa37e7f8b0bee55dc8412fe92da97",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/idx_convdc.m",
+      "sha256": "293e0542c656b356f35324479cc16d030ece3f87456a94a61ee4cfbde2a3f0fb",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/calclossac.m",
+      "sha256": "d672c7f3ad0e9a654fba86b208b219672352ee148575081f918ba559deeb3f01",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/define_constantsdc.m",
+      "sha256": "b56ff19bbbf500a5887163f28621bb8ab07075e41a8c5590921165c3fdd12586",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/idx_busdc.m",
+      "sha256": "065cda53b5bf37c70935f3aba456bcdae1183f466faf0c836ceb57ba76421027",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/loadcasedc.m",
+      "sha256": "204823b593c2d67abce965f600236a47745c62c457f9dc29f5dc45df4fc93c69",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/idx_brchdc.m",
+      "sha256": "1e7f9c50eff1cf9eab85020f6f802918b6b50e27cbe0ef42fd35312f961d676b",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/ext2intdc.m",
+      "sha256": "83b2a6569daa51696a133bec082194f98922b7416dbfff104bb98c3d99ea676e",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/ext2intac.m",
+      "sha256": "3d2d891ccd2d577f45cb200a766236aac22dceacbeba565fb935e4d5af3f529d",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/test_acdcpf.m",
+      "sha256": "66af96aaa72807b913adc153ceae08a7a3ac90b55027fb576dc278571f3a67f2",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/brchdcout.m",
+      "sha256": "38cf2783259b4901fa2119687187cf21e550724dd2f2b2b8252d517725e894be",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_HVDCptp.m",
+      "sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCdroop.m",
+      "sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCslack.m",
+      "sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowDC/case24_ieee_rts1996_MTDC.m",
+      "sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones.m",
+      "sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowAC/case5_stagg.m",
+      "sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones_inf.m",
+      "sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/Cases/PowerflowAC/case3_inf.m",
+      "sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/macdcoption.m",
+      "sha256": "6808aa714c86e2e14c64af1f97b56ceccd48329cec17a7e10ee76b0dea07c127",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/convout.m",
+      "sha256": "fa79b73011bb6e99dd7b7960e05256b73e5b05bfdedd4820fa67459349d0d424",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/int2extac.m",
+      "sha256": "f00ea4d6444effc9012df0e59970b2271b06fa58d7123cab36bd6e23254666b8",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/zonecheck.m",
+      "sha256": "21eb137d7964950f3a01e76fe8d0217fd7a5599584efdc57dc1ef4ab83970e3c",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/makeYbusdc.m",
+      "sha256": "6c8c807019c9bcbf76f2d7ded98265fdb1202ccf0dc6774781e9a66e49e77e7d",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/MatACDC_UserManual.pdf",
+      "sha256": "fd6e1eec6aac892d4cd8abec48dbd1692609f065f45844d0571a972943c3f4fe",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/savecasedc.m",
+      "sha256": "92bd0783958ae23d5ba1b516f21c02c4027e5d50d761d8277a3bbee197eda08a",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/convlim.m",
+      "sha256": "b98fb15d45b6a584bd42069e22af8b402dbcb00c2fe1f560a044cbce4a84896d",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/ext2intpu.m",
+      "sha256": "dc9f2a0556177530390c4905bbdb62a035bdb9fdee68cb9d73883484cfe80f02",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/int2extpu.m",
+      "sha256": "161568b26e3742e6e5e3f0d83c9678ea53bb90b8e1a885ad3687cae5002599ef",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/brchout.m",
+      "sha256": "899eb38095a08ab22ccd11e0ed1fbff56185ad3225b08b4e8df766ae80c9852b",
+      "byte_identical": true
+    },
+    {
+      "member": "MatACDC1.0/int2extdc.m",
+      "sha256": "577b9763959236e674af234802c3a7eb4157bc601a29de4d9445e9abb70a59dd",
+      "byte_identical": true
+    }
+  ],
+  "historical_outputs": "Read as immutable inputs; no historical output was written by batch 6. Current input hashes are in source_manifest.json; entry baseline did not hash all historical outputs."
+}

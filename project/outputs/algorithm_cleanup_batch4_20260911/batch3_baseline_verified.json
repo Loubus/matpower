@@ -1,0 +1,15 @@
+{
+  "matpower/lib/+mp/psse_xfmr_control.m": true,
+  "matpower/lib/+mp/psse_unified_control_update.m": true,
+  "matpower/lib/+mp/psse_xfmr_tap_decision.m": true,
+  "matpower/lib/runcpf_vsc_mtdc.m": true,
+  "tests/t_ultc_acceptance_batch3.m": true,
+  "tests/t_ultc_beerten_batch3.m": true,
+  "docs/ULTC_DECISION_CONTRACT.md": true,
+  "docs/CONTROL_ACCEPTANCE.md": true,
+  "tests/README.md": true,
+  "outputs/algorithm_cleanup_batch3_20260910/run_batch3_suite.m": true,
+  "outputs/algorithm_cleanup_batch3_20260910/capture_patch.py": true,
+  "outputs/algorithm_cleanup_batch3_20260910/REPORT.md": true,
+  "outputs/algorithm_cleanup_batch3_20260910/revalidation_20260911_01/audit_revalidation.py": true
+}

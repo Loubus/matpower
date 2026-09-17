@@ -1,0 +1,11 @@
+{
+  "name": "t_swshunt_acceptance_batch4",
+  "planned": 67,
+  "executed": 67,
+  "passed": 64,
+  "failed": 3,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 5.9524382,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

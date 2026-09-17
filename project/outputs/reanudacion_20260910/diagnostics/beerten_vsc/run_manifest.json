@@ -1,0 +1,20 @@
+{
+  "run_id": "beerten_vsc",
+  "label": "beerten_vsc",
+  "source_dir": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\reanudacion_20260910\\beerten_vsc",
+  "primary_file": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\reanudacion_20260910\\beerten_vsc\\beerten5_cpf_psse_nose_vschvdc_on_actaps1_swshnt1_vsccap_gencap.mat",
+  "gen_pq_trace_file": "",
+  "result_variable": "cpf_results",
+  "success": 1,
+  "solver_type": "unified_vsc_mtdc",
+  "point_count": 82,
+  "max_lambda": 2.930619218921978,
+  "event_count": 203,
+  "warning_count": 1,
+  "has_gen_pq_trace": false,
+  "has_compact_trace": true,
+  "has_bus_trace": true,
+  "has_branch_trace": true,
+  "has_vsc_trace": true,
+  "done_msg": "Reached VSC-MTDC monolithic VSC capability loading limit in 81 continuation steps, lambda = 2.93062."
+}

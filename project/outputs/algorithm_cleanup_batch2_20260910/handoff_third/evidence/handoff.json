@@ -1,0 +1,247 @@
+[
+  {
+    "id": "export.success",
+    "passed": true,
+    "detail": "success and configured nonlinear residual"
+  },
+  {
+    "id": "export.ac_balance",
+    "passed": true,
+    "detail": "independent AC mismatch 5.19064659254e-11 pu"
+  },
+  {
+    "id": "export.converter_balance",
+    "passed": true,
+    "detail": "converter mismatch 4.60709248529e-13 pu"
+  },
+  {
+    "id": "export.row_count",
+    "passed": true,
+    "detail": "all original and active proxy rows retained"
+  },
+  {
+    "id": "export.original_identity",
+    "passed": true,
+    "detail": "original order and offline row retained"
+  },
+  {
+    "id": "export.roundtrip",
+    "passed": true,
+    "detail": "external/internal round trip preserves generator results including proxies"
+  },
+  {
+    "id": "export.proxy_power",
+    "passed": true,
+    "detail": "proxy injections equal solved converter AC injections"
+  },
+  {
+    "id": "voltage_initialization.success",
+    "passed": true,
+    "detail": "success and configured nonlinear residual"
+  },
+  {
+    "id": "voltage_initialization.ac_balance",
+    "passed": true,
+    "detail": "independent AC mismatch 8.46431205918e-09 pu"
+  },
+  {
+    "id": "voltage_initialization.converter_balance",
+    "passed": true,
+    "detail": "converter mismatch 1.16891851754e-11 pu"
+  },
+  {
+    "id": "voltage.schedule",
+    "passed": true,
+    "detail": "PV/REF solved voltages use unchanged generator schedules"
+  },
+  {
+    "id": "voltage.input",
+    "passed": true,
+    "detail": "input initialization was not overwritten"
+  },
+  {
+    "id": "shunt.grid_solved",
+    "passed": true,
+    "detail": "every legal fixed candidate solved on the full model"
+  },
+  {
+    "id": "shunt.first_reachable",
+    "passed": true,
+    "detail": "accepted automatic state is the first legal state reaching the deadband from zero"
+  },
+  {
+    "id": "shunt.solved_measurement",
+    "passed": true,
+    "detail": "flat input is in-band, but solved low voltage causes adjustment"
+  },
+  {
+    "id": "branch.collapsed",
+    "passed": true,
+    "detail": "fixture actually merged 11 and 37"
+  },
+  {
+    "id": "branch.totals",
+    "passed": true,
+    "detail": "expanded totals equal solved aggregate once"
+  },
+  {
+    "id": "branch.local_shunt",
+    "passed": true,
+    "detail": "switched increment restored at original device bus 37"
+  },
+  {
+    "id": "branch.fixed_shunt",
+    "passed": true,
+    "detail": "fixed contribution preserved"
+  },
+  {
+    "id": "branch.load_delta",
+    "passed": true,
+    "detail": "unattributed aggregate load delta placed once at representative"
+  },
+  {
+    "id": "branch.modes",
+    "passed": true,
+    "detail": "binding PQ mode and original generator identities survive"
+  },
+  {
+    "id": "branch.voltage",
+    "passed": true,
+    "detail": "merged buses inherit solved voltage"
+  },
+  {
+    "id": "branch.free_mode",
+    "passed": true,
+    "detail": "free voltage controller restored at its original bus"
+  },
+  {
+    "id": "swdev.collapsed",
+    "passed": true,
+    "detail": "fixture actually merged 11 and 37"
+  },
+  {
+    "id": "swdev.totals",
+    "passed": true,
+    "detail": "expanded totals equal solved aggregate once"
+  },
+  {
+    "id": "swdev.local_shunt",
+    "passed": true,
+    "detail": "switched increment restored at original device bus 37"
+  },
+  {
+    "id": "swdev.fixed_shunt",
+    "passed": true,
+    "detail": "fixed contribution preserved"
+  },
+  {
+    "id": "swdev.load_delta",
+    "passed": true,
+    "detail": "unattributed aggregate load delta placed once at representative"
+  },
+  {
+    "id": "swdev.modes",
+    "passed": true,
+    "detail": "binding PQ mode and original generator identities survive"
+  },
+  {
+    "id": "swdev.voltage",
+    "passed": true,
+    "detail": "merged buses inherit solved voltage"
+  },
+  {
+    "id": "swdev.free_mode",
+    "passed": true,
+    "detail": "free voltage controller restored at its original bus"
+  },
+  {
+    "id": "crossing.cpf.success",
+    "passed": true,
+    "detail": "success and configured nonlinear residual"
+  },
+  {
+    "id": "crossing.cpf.ac_balance",
+    "passed": true,
+    "detail": "independent AC mismatch 2.69790162433e-10 pu"
+  },
+  {
+    "id": "crossing.cpf.converter_balance",
+    "passed": true,
+    "detail": "converter mismatch 4.70734562441e-16 pu"
+  },
+  {
+    "id": "crossing.pf.success",
+    "passed": true,
+    "detail": "success and configured nonlinear residual"
+  },
+  {
+    "id": "crossing.pf.ac_balance",
+    "passed": true,
+    "detail": "independent AC mismatch 1.09941488149e-09 pu"
+  },
+  {
+    "id": "crossing.pf.converter_balance",
+    "passed": true,
+    "detail": "converter mismatch 6.47902176354e-12 pu"
+  },
+  {
+    "id": "crossing.cpf.binding",
+    "passed": true,
+    "detail": "original -20 MVAr upper bound agrees with PQ equation and report"
+  },
+  {
+    "id": "crossing.cpf.demand",
+    "passed": false,
+    "detail": "accepted model retains target demands"
+  },
+  {
+    "id": "crossing.pf.binding",
+    "passed": true,
+    "detail": "original -20 MVAr upper bound agrees with PQ equation and report"
+  },
+  {
+    "id": "crossing.pf.demand",
+    "passed": true,
+    "detail": "accepted model retains target demands"
+  },
+  {
+    "id": "crossing.event",
+    "passed": true,
+    "detail": "binding change is recorded after the initial CPF point"
+  },
+  {
+    "id": "crossing.pf_cpf",
+    "passed": true,
+    "detail": "independent endpoint PF matches CPF"
+  },
+  {
+    "id": "crossing.half_step.success",
+    "passed": true,
+    "detail": "success and configured nonlinear residual"
+  },
+  {
+    "id": "crossing.half_step.ac_balance",
+    "passed": true,
+    "detail": "independent AC mismatch 2.48417397764e-10 pu"
+  },
+  {
+    "id": "crossing.half_step.converter_balance",
+    "passed": true,
+    "detail": "converter mismatch 2.61346499997e-15 pu"
+  },
+  {
+    "id": "crossing.step_sensitivity",
+    "passed": true,
+    "detail": "halved CPF step preserves endpoint state and bound"
+  },
+  {
+    "id": "crossing.auxiliary_load",
+    "passed": false,
+    "detail": "repeated auxiliary solve does not replay base load cache"
+  },
+  {
+    "id": "crossing.auxiliary_mode",
+    "passed": true,
+    "detail": "repeated auxiliary solve retains accepted binding mode"
+  }
+]

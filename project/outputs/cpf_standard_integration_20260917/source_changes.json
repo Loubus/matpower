@@ -1,0 +1,57 @@
+{
+  "modified": [
+    {
+      "file": "matpower\\lib\\runcpf_vsc_mtdc.m",
+      "before": "d94f063ea57d4a68ac0d46020a8d9743e4997bdecd9c04b41c89b2766fd39c71",
+      "after": "fe99c40c17d551348fac3adae91cf6f625b65420a284a94b91e7aca86505f077",
+      "added_lines": 244,
+      "removed_lines": 31
+    },
+    {
+      "file": "matpower\\lib\\runpf_vsc_mtdc_unified.m",
+      "before": "cef1c542324763946bc12cf66d4370e3d8eb5adfacf11db7391e17fb992e9ee7",
+      "after": "ce95e202fa4a7a19166ae685af5dc4df505dee2123c7b36f57064096763b32da",
+      "added_lines": 36,
+      "removed_lines": 0
+    },
+    {
+      "file": "matpower/lib/savecase.m",
+      "before": "5d592debe5d5e7e281b35cca5443fa8a684271a9a2976182874d38046f8ac0d7",
+      "after": "0f60cf3b5feaac6ec875f8e54eaa94ed3d9cac3b14dc82eb4742bfa9f6635806",
+      "added_lines": 5,
+      "removed_lines": 0
+    },
+    {
+      "file": "matpower/lib/runpf_vsc_mtdc.m",
+      "before": "134ef3aaf0014f080609c6bf2e0fe334ef59aef8face98009bfd6664ba0bd12c",
+      "after": "1f6d9505117e945f49c25ec76772e2692ffbddb603d184784f375e17bda97ee7",
+      "added_lines": 5,
+      "removed_lines": 0
+    },
+    {
+      "file": "matpower/lib/t/t_vsc_mtdc.m",
+      "before": "e260df8eec61eb8d1238ff84b010cf3f11a2fde47daa1c169e60b3b7b4fa1a0a",
+      "after": "39826379fb68b92263ac1ad7446483bd2443c62c6564cb9a4f8444e4af881537",
+      "added_lines": 7,
+      "removed_lines": 6
+    },
+    {
+      "file": "docs/CONTROL_SATURATION_CONTRACT.md",
+      "before": "b1543888398fd24732fe95a9a3a755a82f74bcceb13ba089495e04a8feda4976",
+      "after": "2ae8e0e96925723aca7f7040662ac5960dbe32ee57479feff6678f74e2b71a37",
+      "added_lines": 5,
+      "removed_lines": 0
+    }
+  ],
+  "changed_from_pre_experiment_manifest": [
+    "matpower/lib/runcpf_vsc_mtdc.m",
+    "matpower/lib/runpf_vsc_mtdc.m",
+    "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "matpower/lib/savecase.m"
+  ],
+  "study_changes": [],
+  "new_files": [
+    "tests/t_cpf_coupled_controls.m",
+    "docs/CPF_LIMIT_CONTINUATION.md"
+  ]
+}

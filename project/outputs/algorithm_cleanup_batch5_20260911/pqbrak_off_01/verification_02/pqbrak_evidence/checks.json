@@ -1,0 +1,498 @@
+[
+  {
+    "id": "default_off",
+    "passed": true
+  },
+  {
+    "id": "old_options_off",
+    "passed": true
+  },
+  {
+    "id": "raw_threshold_does_not_enable",
+    "passed": true
+  },
+  {
+    "id": "explicit_opt_in",
+    "passed": true
+  },
+  {
+    "id": "restore_native_preserve_equivalents",
+    "passed": true
+  },
+  {
+    "id": "disable_idempotent",
+    "passed": true
+  },
+  {
+    "id": "restore_external_bus_mapping",
+    "passed": true
+  },
+  {
+    "id": "policy_reports_disabled",
+    "passed": true
+  },
+  {
+    "id": "low_voltage_pf_constant_load",
+    "passed": true
+  },
+  {
+    "id": "nose_0.1",
+    "passed": true
+  },
+  {
+    "id": "off_0.1",
+    "passed": true
+  },
+  {
+    "id": "nose_0.05",
+    "passed": true
+  },
+  {
+    "id": "off_0.05",
+    "passed": true
+  },
+  {
+    "id": "step_agreement_0.05",
+    "passed": true
+  },
+  {
+    "id": "nose_0.025",
+    "passed": true
+  },
+  {
+    "id": "off_0.025",
+    "passed": true
+  },
+  {
+    "id": "step_agreement_0.025",
+    "passed": true
+  },
+  {
+    "id": "point1_equations",
+    "passed": true
+  },
+  {
+    "id": "point1_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point1_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point2_equations",
+    "passed": true
+  },
+  {
+    "id": "point2_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point2_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point3_equations",
+    "passed": true
+  },
+  {
+    "id": "point3_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point3_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point4_equations",
+    "passed": true
+  },
+  {
+    "id": "point4_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point4_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point5_equations",
+    "passed": true
+  },
+  {
+    "id": "point5_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point5_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point6_equations",
+    "passed": true
+  },
+  {
+    "id": "point6_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point6_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point7_equations",
+    "passed": true
+  },
+  {
+    "id": "point7_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point7_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point8_equations",
+    "passed": true
+  },
+  {
+    "id": "point8_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point8_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point9_equations",
+    "passed": true
+  },
+  {
+    "id": "point9_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point9_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point10_equations",
+    "passed": true
+  },
+  {
+    "id": "point10_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point10_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point11_equations",
+    "passed": true
+  },
+  {
+    "id": "point11_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point11_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point12_equations",
+    "passed": true
+  },
+  {
+    "id": "point12_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point12_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point13_equations",
+    "passed": true
+  },
+  {
+    "id": "point13_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point13_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point14_equations",
+    "passed": true
+  },
+  {
+    "id": "point14_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point14_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point15_equations",
+    "passed": true
+  },
+  {
+    "id": "point15_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point15_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point16_equations",
+    "passed": true
+  },
+  {
+    "id": "point16_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point16_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point17_equations",
+    "passed": true
+  },
+  {
+    "id": "point17_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point17_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point18_equations",
+    "passed": true
+  },
+  {
+    "id": "point18_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point18_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point19_equations",
+    "passed": true
+  },
+  {
+    "id": "point19_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point19_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point20_equations",
+    "passed": true
+  },
+  {
+    "id": "point20_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point20_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point21_equations",
+    "passed": true
+  },
+  {
+    "id": "point21_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point21_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point22_equations",
+    "passed": true
+  },
+  {
+    "id": "point22_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point22_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point23_equations",
+    "passed": true
+  },
+  {
+    "id": "point23_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point23_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point24_equations",
+    "passed": true
+  },
+  {
+    "id": "point24_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point24_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point25_equations",
+    "passed": true
+  },
+  {
+    "id": "point25_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point25_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point26_equations",
+    "passed": true
+  },
+  {
+    "id": "point26_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point26_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point27_equations",
+    "passed": true
+  },
+  {
+    "id": "point27_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point27_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point28_equations",
+    "passed": true
+  },
+  {
+    "id": "point28_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point28_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point29_equations",
+    "passed": true
+  },
+  {
+    "id": "point29_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point29_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point30_equations",
+    "passed": true
+  },
+  {
+    "id": "point30_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point30_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point31_equations",
+    "passed": true
+  },
+  {
+    "id": "point31_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point31_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point32_equations",
+    "passed": true
+  },
+  {
+    "id": "point32_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point32_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point33_equations",
+    "passed": true
+  },
+  {
+    "id": "point33_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point33_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point34_equations",
+    "passed": true
+  },
+  {
+    "id": "point34_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point34_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "point35_equations",
+    "passed": true
+  },
+  {
+    "id": "point35_load_schedule",
+    "passed": true
+  },
+  {
+    "id": "point35_voltage_tables",
+    "passed": false
+  },
+  {
+    "id": "localized_nose_controls_settled",
+    "passed": false
+  },
+  {
+    "id": "localized_state_reporting",
+    "passed": true
+  }
+]

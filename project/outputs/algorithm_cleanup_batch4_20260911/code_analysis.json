@@ -1,0 +1,26 @@
+[
+  {
+    "file": "matpower/lib/+mp/psse_swshunt_control.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_unified_control_update.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_swshunt_group_action.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_swshunt_discrete_next.m",
+    "issues": []
+  },
+  {
+    "file": "tests/t_swshunt_acceptance_batch4.m",
+    "issues": []
+  },
+  {
+    "file": "tests/t_swshunt_beerten_batch4.m",
+    "issues": []
+  }
+]

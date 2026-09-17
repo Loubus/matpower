@@ -1,0 +1,54 @@
+<div id="cpf-current-reserve">
+  <h3>Q reduction versus current reserve</h3>
+  <div class="viz-controls">
+    <label class="form-label">Active power: <span data-p-label></span>
+      <input class="form-range" data-p type="range" min="0" max="99.9" step="0.1" value="13.7" aria-label="Active power as percent of the current-circle radius">
+    </label>
+    <label class="form-label">Reduction or reserve: <span data-e-label></span>
+      <input class="form-range" data-e type="range" min="0" max="2" step="0.01" value="0.1" aria-label="Q reduction or requested current reserve in percent">
+    </label>
+  </div>
+  <div class="text-small text-muted">Fixed PCC voltage: 0.967244 p.u. · VSC current rating: 1.5 p.u. on 100 MVA</div>
+  <div class="viz-row"><span>Current reserve after reducing Q</span><strong data-actual class="tabular-nums"></strong></div>
+  <div class="progress" role="progressbar" aria-label="Current reserve produced by the Q cut, as percent of the requested reserve" aria-valuemin="0" aria-valuemax="100" data-progress>
+    <div class="progress-bar" data-bar style="width:0%;background:var(--viz-series-1)"></div>
+  </div>
+  <div class="viz-row"><span>Specified current reserve</span><strong data-requested class="tabular-nums"></strong></div>
+  <div class="progress" role="progressbar" aria-label="Specified current reserve reference" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+    <div class="progress-bar" style="width:100%;background:var(--viz-series-2)"></div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead><tr><th>Boundary at this P and voltage</th><th class="text-end">Q ceiling (MVAr)</th></tr></thead>
+      <tbody>
+        <tr><td>Equipment current limit</td><td class="text-end tabular-nums" data-q0></td></tr>
+        <tr><td>After the selected Q reduction</td><td class="text-end tabular-nums" data-qq></td></tr>
+        <tr><td>With the selected current reserve</td><td class="text-end tabular-nums" data-qi></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div aria-live="polite" data-status class="text-small"></div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('cpf-current-reserve');
+  const pInput=root.querySelector('[data-p]'), eInput=root.querySelector('[data-e]');
+  const write=(key,value)=>root.querySelector('[data-'+key+']').textContent=value;
+  function update(){
+    const rho=Number(pInput.value)/100, eps=Number(eInput.value)/100, K=150*0.9672442526015666;
+    const P=rho*K, q0=K*Math.sqrt(1-rho*rho), qq=(1-eps)*q0;
+    const actual=1-Math.sqrt(rho*rho+(1-eps)*(1-eps)*(1-rho*rho));
+    const feasible=rho<=1-eps;
+    const qi=feasible ? K*Math.sqrt(Math.max(0,(1-eps)*(1-eps)-rho*rho)) : NaN;
+    write('p-label',P.toFixed(2)+' MW ('+(rho*100).toFixed(1)+'% of V Imax)');
+    write('e-label',(eps*100).toFixed(2)+'%');
+    write('actual',(actual*100).toFixed(5)+'%'); write('requested',(eps*100).toFixed(2)+'%');
+    write('q0',q0.toFixed(4)); write('qq',qq.toFixed(4)); write('qi',feasible ? qi.toFixed(4) : 'Infeasible at fixed P');
+    const width=eps>0 ? Math.min(100,Math.max(0,actual/eps*100)) : 0;
+    root.querySelector('[data-bar]').style.width=width+'%';
+    root.querySelector('[data-progress]').setAttribute('aria-valuenow',width.toFixed(2));
+    write('status',feasible ? 'Fixed-voltage calculation; no network power flow.' : 'P alone exceeds the reduced current capability; changing Q cannot supply this reserve.');
+  }
+  pInput.addEventListener('input',update); eInput.addEventListener('input',update); update();
+})();
+</script>

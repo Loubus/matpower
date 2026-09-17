@@ -1,0 +1,621 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_twodc_5bus_active.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 0 0 0 1 0 0 0 0
+Solver option array values: 0 0 0 1 0 0 0 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 0: disable transformer tap adjustment.
+- Option 2, area interchange adjustment flag = 0: disable area interchange adjustment.
+- Option 3, phase shift adjustment flag = 0: disable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 0: disable switched-shunt adjustment.
+- Option 6, flat start flag = 0: do not flat start; use voltages already present in the RAW/case.
+- Option 7, VAR limit flag = 0: apply generator reactive power limits immediately.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, ACTAPS=0, AREAIN=0, PHSHFT=0, DCTAPS=1, SWSHNT=0, FLATST=0, VARLIM=0, NONDIV=0
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_twodc_5bus_active.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 20 20 100 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.7 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 0 0 0 1 0 0 0 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_u_twodc_5bus_active_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_twodc_5bus_active.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:25
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Reading non-transformer branch data...
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ Power flow solution parameters changed:
+ X--ORIGINAL--X  X-NEW VALUE--X  DATA ITEM
+         99             100      MXTPSS
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 3   Off-diagonals = 1   Maximum size = 2
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         9.0000(      4     )    3.6760(     85     )
+                                                             0.09628(      4     )   0.09086(      4     )
+   1         1.3956(      4     )    0.6301(     86     )
+                                                             0.02954(      4     )   0.02040(      4     )
+   2         0.0803(      4     )    0.3508(     85     )
+                                                             0.00407(     85     )   0.00144(      4     )
+   3         0.0004(      4     )    0.0537(     85     )
+                                                             0.00063(     85     )   0.00002(      4     )
+   4         0.0000(     86     )    0.0153(     85     )
+                                                             0.00018(     85     )   0.00000(     85     )
+   5         0.0000(     85     )    0.0040(     85     )
+                                                             0.00005(     85     )   0.00000(     85     )
+   6         0.0000(     86     )    0.0011(     85     )
+                                                             0.00001(     85     )   0.00000(     85     )
+   7         0.0000(     85     )    0.0003(     85     )
+
+
+ Reached tolerance in 7 iterations
+
+ Largest mismatch:      0.00 MW     -0.03 Mvar      0.03 MVA at bus 85 [RECT 500    500.00]
+ System total absolute mismatch:                    0.03 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     SLACK R     500.00     834.2   2000.0     0.0     471.2    800.0  -800.0
+      5     SLACK I     345.00     113.8   2000.0     0.0     796.2    800.0  -800.0
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+                         SUITE_U_TWODC_5BUS_ACTIVE                                        %MVA FOR TRANSFORMERS
+                         REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                 % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     SLACK R     500.00    1 1.0000    0.0   834.2      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 500.00          471.2R     0.0    -0.0     85     RECT 500    500.00    1  1   834.2  471.2                  1106  48  2309A
+
+      4     LOAD 345    345.00    1 0.8749   -6.5     0.0    900.0     0.0 -------------------------------------------------------------------------------------
+                                  1 301.85            0.0    250.0    -0.0     86     INV 345     345.00    1  1  -900.0 -250.0                  1787  53  3347A
+
+      5     SLACK I     345.00    1 1.0000    0.0   113.8      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 345.00          796.2R     0.0    -0.0     86     INV 345     345.00    1  1   113.8  796.2                  1346  40  3347A
+
+     85     RECT 500    500.00    1 0.9478   -4.8     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 473.90            0.0      0.0    -0.0     86     INV 345     345.00    1 2DR  825.0  379.4 1.012RG  16.8RG  1106 "DC V26P"
+                                                                                1     SLACK R     500.00    1  1  -825.0 -379.4                  1106  48  2309A
+     86     INV 345     345.00    1 0.9192   -0.2     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 317.14            0.0      0.0    -0.0     85     RECT 500    500.00    1 2DI -804.1  367.5 0.966LO  17.0LO  1610 "DC V26P"
+                                                                                4     LOAD 345    345.00    1  1   911.4  364.0                  1787  53  3347A
+                                                                                5     SLACK I     345.00    1  1  -107.3 -731.5                  1346  40  3347A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                                RATING   %MVA FOR TRANSFORMERS
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                         SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     SLACK R     500.00 CKT     MW     MVAR     MVA   % 1.0000PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                        834.2   471.2R  958.1 958 500.00KV               MW     MVAR    1                 1
+  TO     85     RECT 500    500.00  1    834.2   471.2   958.1  48                       9.18   91.79    1                 1
+
+ BUS      4     LOAD 345    345.00 CKT     MW     MVAR     MVA   % 0.8749PU   -6.46  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      4
+                                                                   301.85KV               MW     MVAR    1                 1
+  TO LOAD-PQ                             900.0   250.0   934.1
+  TO     86     INV 345     345.00  1   -900.0  -250.0   934.1  53                      11.40  113.98    1                 1
+
+ BUS      5     SLACK I     345.00 CKT     MW     MVAR     MVA   % 1.0000PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      5
+  FROM GENERATION                        113.8   796.2R  804.3 804 345.00KV               MW     MVAR    1                 1
+  TO     86     INV 345     345.00  1    113.8   796.2   804.3  40                       6.47   64.69    1                 1
+
+ BUS     85     RECT 500    500.00 CKT     MW     MVAR     MVA   % 0.9478PU   -4.76  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     85
+                                                                   473.90KV               MW     MVAR    1                 1
+  TO     86     INV 345     345.00 2DR   825.0   379.4   908.1     1.0125RG   16.75RG   20.91  746.96    1                 1              "DC V26P"
+  TO      1     SLACK R     500.00  1   -825.0  -379.4   908.1  48                       9.18   91.79    1                 1
+
+ BUS     86     INV 345     345.00 CKT     MW     MVAR     MVA   % 0.9192PU   -0.21  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     86
+                                                                   317.14KV               MW     MVAR    1                 1
+  TO     85     RECT 500    500.00 2DI  -804.1   367.5   884.1     0.9660LO   17.00LO   20.91  746.96    1                 1              "DC V26P"
+  TO      4     LOAD 345    345.00  1    911.4   364.0   981.4  53                      11.40  113.98    1                 1
+  TO      5     SLACK I     345.00  1   -107.3  -731.5   739.3  40                       6.47   64.69    1                 1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+                         SUITE_U_TWODC_5BUS_ACTIVE                                        %MVA FOR TRANSFORMERS
+                         REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                 % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     SLACK R     500.00    1 1.0000    0.0   834.2      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 500.00          471.2R     0.0    -0.0     85     RECT 500    500.00    1  1    834.2   471.2                   48  2000
+
+      4     LOAD 345    345.00    1 0.8749   -6.5     0.0    900.0     0.0 ---------------------------------------------------------------------------------
+                                  1 301.85            0.0    250.0    -0.0     86     INV 345     345.00    1  1   -900.0  -250.0                   53  2000
+
+      5     SLACK I     345.00    1 1.0000    0.0   113.8      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 345.00          796.2R     0.0    -0.0     86     INV 345     345.00    1  1    113.8   796.2                   40  2000
+
+     85     RECT 500    500.00    1 0.9478   -4.8     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 473.90            0.0      0.0    -0.0     86     INV 345     345.00    1 2DR   825.0   379.4  1.012RG  16.8RG "DC V26P"
+                                                                                1     SLACK R     500.00    1  1   -825.0  -379.4                   48  2000
+     86     INV 345     345.00    1 0.9192   -0.2     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 317.14            0.0      0.0    -0.0     85     RECT 500    500.00    1 2DI  -804.1   367.5  0.966LO  17.0LO "DC V26P"
+                                                                                4     LOAD 345    345.00    1  1    911.4   364.0                   53  2000
+                                                                                5     SLACK I     345.00    1  1   -107.3  -731.5                   40  2000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+      4     LOAD 345    345.00    1 0.8749 301.85        85     RECT 500    500.00    1 0.9478 473.90
+     86     INV 345     345.00    1 0.9192 317.14
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+
+                                   * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [SLACK R     500.00] 1.00000 500.0         1.00000                      LOCAL  GENERATION      1     [SLACK R     500.00]
+
+      5     [SLACK I     345.00] 1.00000 345.0         1.00000                      LOCAL  GENERATION      5     [SLACK I     345.00]
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                                 SHUNT
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                        SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                        SYSTEM SUMMARY
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+      5      1      2      0      0      2      0      1      2      2      0      0      0      0      0     0     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     SLACK R     500.00
+      3      0      3      0      0      3      0     0      0      0    1    0   0     1     1     1     0      5     SLACK I     345.00
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW       948.0      0.0      0.0    900.0      0.0      0.0      0.0      0.0      0.0     48.0    948.0
+ MVAR    1267.4      0.0      0.0    250.0      0.0      0.0     -0.0      0.0      0.0   1017.4   1267.4
+
+ TOTAL MISMATCH =    0.03 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.03 MVA     85     RECT 500    500.00  0.000100  0.700   5.00 100.00  100
+   HIGH VOLTAGE = 1.00000 PU       1     SLACK R     500.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 0.87493 PU       4     LOAD 345    345.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010  20 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                               WORST
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+     85     RECT 500    500.00      0.00      0.03      0.03
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                            RATING SET
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                    UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                 3
+      2      RATE2   RATING SET 2                                 3
+      3      RATE3   RATING SET 3                                 3
+      4      RATE4   RATING SET 4                                 0
+      5      RATE5   RATING SET 5                                 0
+      6      RATE6   RATING SET 6                                 0
+      7      RATE7   RATING SET 7                                 0
+      8      RATE8   RATING SET 8                                 0
+      9      RATE9   RATING SET 9                                 0
+     10      RATE10  RATING SET 10                                0
+     11      RATE11  RATING SET 11                                0
+     12      RATE12  RATING SET 12                                0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                              BUS DATA
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     SLACK R     500.00   3    0     0      0    1.00000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      4     LOAD 345    345.00   1    1     0      0    0.87493   -6.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+      5     SLACK I     345.00   3    0     0      0    1.00000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+     85     RECT 500    500.00   1    0     0      0    0.94781   -4.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+     86     INV 345     345.00   1    0     0      0    0.91925   -0.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                             SWITCHED
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                            GENERATING
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     SLACK R     500.00  3   1  834.2  471.2  800.0 -800.0 1.0000 1.0000  100.0      1     SLACK R     500.00    0
+      5     SLACK I     345.00  3   1  113.8  796.2  800.0 -800.0 1.0000 1.0000  100.0      5     SLACK I     345.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                             GENERATOR
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                      UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     SLACK R     500.00  3 1  1  834.2  471.2  800.0 -800.0 2000.0    0.0    1 1.000             100.0 0.0000 1.0000
+      5     SLACK I     345.00  3 1  1  113.8  796.2  800.0 -800.0 2000.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                           BRANCH DATA
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK R     500.00*     85     RECT 500    500.00  1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+      4     LOAD 345    345.00      86     INV 345     345.00* 1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+      5     SLACK I     345.00*     86     INV 345     345.00  1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                           BRANCH DATA
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK R     500.00*     85     RECT 500    500.00  1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+      4     LOAD 345    345.00      86     INV 345     345.00* 1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+      5     SLACK I     345.00*     86     INV 345     345.00  1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+     85     RECT 500    500.00       1     SLACK R     500.00* 1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+     86     INV 345     345.00*      4     LOAD 345    345.00  1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+     86     INV 345     345.00       5     SLACK I     345.00* 1   0.00100  0.01000  0.00000   1 2000.0 2000.0 2000.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                          TWO-TERMINAL
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                   DC LINE DATA
+ X-- NAME --X MDC   RDC    RCOMP   DELTI SETVAL VSCHED DCVMIN VCMODE DCAMPS  VCOMP METER CCC_ITMAX CCC_ACC
+ DC V26P       1  10.470  10.470  0.1000  825.0  600.0    0.0  558.0 1413.2  583.8  RECT   100    1.00000
+
+      BUS#-SCT X-- NAME --X BASKV  ALF/GAM    MIN     MAX     PAC     QAC     VDC NB  EBASE RC-OHMS XC-OHMS XCCC-OHMS  TR
+ R:     85     RECT 500    500.00   16.75   12.50   17.50   825.0   379.4   583.8  4  500.0  0.000   6.134   0.000  0.25480
+ I:     86     INV 345     345.00   17.00   17.00   17.00  -804.1   367.5   569.0  4  345.0  0.000   5.689   0.000  0.35360
+
+                                    X-------- MEASURING BUS ---------X X----- WINDING 1 SIDE ------X X----- WINDING 2 SIDE ------X
+      TAP    TAPMIN  TAPMAX  TAPSTP   BUS#-SCT X-- NAME --X BASKV NODE   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV CKT  RATIO
+ R: 1.01250 0.92500 1.25000 0.01250      0                           0
+ I: 0.96600 0.96600 1.30500 0.01250      0                           0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                             LOAD DATA
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+      4     LOAD 345    345.00 1   1 1  1.000  900.0  250.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                         FACTS SENDING
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                        FACTS TERMINAL
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                    END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                               FIXED
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                           AREA TOTALS
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1           948.0      0.0      0.0    900.0      0.0      0.0      0.0      0.0     48.0      0.0      0.0      0.0
+               1267.4      0.0      0.0    250.0     -0.0      0.0     -0.0      0.0   1017.4      0.0      0.0
+
+ COLUMN         948.0      0.0      0.0    900.0      0.0      0.0      0.0      0.0     48.0      0.0      0.0      0.0
+ TOTALS        1267.4      0.0      0.0    250.0      0.0      0.0      0.0      0.0   1017.4      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_TWODC_5BUS_ACTIVE                                           ZONE TOTALS
+ REDUCED ACTIVE LCC LINK BASED ON V26P PARAMETERS                     IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1           948.0      0.0      0.0    900.0      0.0      0.0      0.0      0.0     48.0      0.0      0.0
+               1267.4      0.0      0.0    250.0     -0.0      0.0     -0.0      0.0   1017.4      0.0      0.0
+
+ COLUMN         948.0      0.0      0.0    900.0      0.0      0.0      0.0      0.0     48.0      0.0      0.0
+ TOTALS        1267.4      0.0      0.0    250.0      0.0      0.0      0.0      0.0   1017.4      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_twodc_5bus_active.sav on THU, SEP 10 2026  11:25
+ Batch command complete.
+ : 

@@ -1,0 +1,11 @@
+{
+  "name": "t_control_handoff_batch2",
+  "planned": 53,
+  "executed": 53,
+  "passed": 53,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 5.9028895,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

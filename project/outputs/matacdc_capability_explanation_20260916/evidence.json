@@ -1,0 +1,16 @@
+{
+  "PCC_voltage_pu": 1,
+  "current_limit_pu": 1.2,
+  "internal_voltage_min_pu": 0.9,
+  "internal_voltage_max_pu": 1.1,
+  "original_P_MW": -60,
+  "original_Q_MVAr": -40,
+  "original_current_pu": 0.76669314187979376,
+  "original_internal_voltage_pu": 0.88986547390656678,
+  "violation_code": 1,
+  "limited_P_MW": -60,
+  "limited_Q_MVAr": -36.251602126617755,
+  "limited_current_pu": 0.7437864440626909,
+  "limited_internal_voltage_pu": 0.8999999999999998,
+  "scope": "One convlim call at fixed PCC voltage; not a limit-enforced network PF"
+}

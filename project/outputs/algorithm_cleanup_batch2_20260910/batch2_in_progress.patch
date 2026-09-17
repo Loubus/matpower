@@ -1,0 +1,254 @@
+--- before/matpower/lib/runpf_vsc_mtdc_unified.m
++++ after/matpower/lib/runpf_vsc_mtdc_unified.m
+@@ -274,7 +274,7 @@
+     report.changed = 1;
+     sig = psse_active_set_signature(mpc_next);
+     if any(strcmp(visited(1:nvisited), sig))
+-        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
++        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
+         if direct_report.supported && ~direct_report.changed && ...
+                 psse_control_violations(direct) == 0
+             mpc = copy_psse_control_fields(mpc, direct);
+@@ -340,7 +340,7 @@
+     'changed_branches', 0);
+ ok = 1;
+ 
+-[direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
++[direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
+ if direct_report.supported
+     ac_controlled = psse_control_case_from_unified_result(r);
+     ac_controlled = copy_original_active_set_to_ac(ac_controlled, direct);
+@@ -432,6 +432,8 @@
+     mpc.gen, ac.gen(1:ng, :));
+ gen_delta = matrix_delta(mpc.gen(:, gen_cols), ...
+     ac.gen(1:ng, gen_cols), tol);
++gen_delta = gen_delta | mp.psse_unified_active_set( ...
++    'fixed_q_changed', mpc, ac, tol);
+ 
+ branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
+     RATE_C2 TAP2 SHIFT2 BR_STATUS2], mpc.branch, ...
+@@ -499,6 +501,8 @@
+     mpc.gen, ac_gen);
+ gen_rows = any(abs(mpc.gen(:, gen_active_cols) - ...
+     ac_gen(:, gen_active_cols)) > tol, 2);
++gen_rows = gen_rows | mp.psse_unified_active_set( ...
++    'fixed_q_changed', mpc, ac, tol);
+ gen_copy_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+     mpc_next.gen, ac_gen);
+ mpc_next.gen(gen_rows, gen_copy_cols) = ac_gen(gen_rows, gen_copy_cols);
+@@ -709,6 +713,16 @@
+     'slack_vsc', slack_vsc, 'fixed_dc', fixed_dc, ...
+     'map', map, 'Gdc', Gdc, 'fixed_vm', ac.bus(:, idx.VM));
+ 
++% VM is a voltage initialization, not a local generator's regulation target.
++% Use VG for online generators on PV/REF buses, as in the AC PF initializer.
++on = find(ac.gen(:, idx.GEN_STATUS) > 0);
++for g = on'
++    b = ac.gen(g, idx.GEN_BUS);
++    if ac.bus(b, idx.BUS_TYPE) == idx.PV || ac.bus(b, idx.BUS_TYPE) == idx.REF
++        model.fixed_vm(b) = ac.gen(g, idx.VG);
++    end
++end
++
+ neq = length(nonref) + length(qeq) + length(vctrl) + ...
+     length(pac_vars) + length(dc_var);
+ nx = length(nonref) + length(vm_vars) + length(pac_vars) + length(dc_var);
+@@ -1068,6 +1082,7 @@
+ function ac = build_ac_results(ac, map, eval, Ybus, Yf, Yt, mpc, idx, mpopt)
+ c = idx.c;
+ vsc = mpc.vsc;
++ng_original = size(ac.gen, 1);
+ active = find(vsc(:, c.VSC_STATUS) > 0);
+ ac.bus(:, idx.VM) = abs(eval.V);
+ ac.bus(:, idx.VA) = angle(eval.V) * 180 / pi;
+@@ -1109,7 +1124,21 @@
+ [ref, pv, pq] = bustypes(ac.bus, ac.gen);
+ [ac.bus, ac.gen, ac.branch] = pfsoln(ac.baseMVA, ac.bus, ac.gen, ...
+     ac.branch, Ybus, Yf, Yt, eval.V, ref, pv, pq, mpopt);
++% Proxy generators were appended after ext2int built the original mapping.
++% Preserve their solved injections explicitly, including external bus IDs.
++proxy = ac.gen(ng_original+1:end, :);
++proxy(:, idx.GEN_BUS) = ac.order.bus.i2e(proxy(:, idx.GEN_BUS));
+ ac = int2ext(ac);
++if ~isempty(proxy)
++    rows = size(ac.gen, 1) + (1:size(proxy, 1))';
++    ac.gen(rows, :) = proxy;
++    % order.int.gen already contains the proxies saved by int2ext. Extend
++    % only the generator maps so a later indexing round trip is consistent.
++    perm = length(ac.order.gen.i2e) + (1:size(proxy, 1))';
++    ac.order.gen.status.on = [ac.order.gen.status.on; rows];
++    ac.order.gen.i2e = [ac.order.gen.i2e; perm];
++    ac.order.gen.e2i = [ac.order.gen.e2i; perm];
++end
+ 
+ 
+ function [busdc, branchdc] = build_dc_results(mpc, eval, idx)
+--- before/matpower/lib/+mp/psse_branch_expand.m
++++ after/matpower/lib/+mp/psse_branch_expand.m
+@@ -38,7 +38,7 @@
+     bus(kk, BUS_I) = orig_ext(kk);
+     bus(kk, [BUS_TYPE PD QD GS BS]) = bus0(kk, [BUS_TYPE PD QD GS BS]);
+ end
+-results.bus = bus;
++results.bus = mp.psse_expand_bus_controls(results, state, bus);
+ 
+ if isfield(results, 'gen') && ~isempty(results.gen) && ...
+         isfield(state, 'original_gen') && ~isempty(state.original_gen)
+@@ -72,7 +72,8 @@
+ if isfield(results, 'psse')
+     results.psse.branch_collapsed = rmfield(state, intersect( ...
+         fieldnames(state), {'original_bus', 'original_gen', ...
+-        'original_bus_name', 'original_branch', 'original_dcline'}));
++        'original_bus_name', 'original_branch', 'original_dcline', ...
++        'original_swshunt'}));
+ end
+ 
+ if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...
+--- before/matpower/lib/+mp/psse_swdev_expand.m
++++ after/matpower/lib/+mp/psse_swdev_expand.m
+@@ -38,7 +38,7 @@
+     bus(kk, BUS_I) = orig_ext(kk);
+     bus(kk, [BUS_TYPE PD QD GS BS]) = bus0(kk, [BUS_TYPE PD QD GS BS]);
+ end
+-results.bus = bus;
++results.bus = mp.psse_expand_bus_controls(results, state, bus);
+ 
+ if isfield(results, 'gen') && ~isempty(results.gen) && ...
+         isfield(state, 'original_gen') && ~isempty(state.original_gen)
+@@ -72,7 +72,8 @@
+ if isfield(results, 'psse')
+     results.psse.swdev_collapsed = rmfield(state, intersect( ...
+         fieldnames(state), {'original_bus', 'original_gen', ...
+-        'original_bus_name', 'original_branch', 'original_dcline'}));
++        'original_bus_name', 'original_branch', 'original_dcline', ...
++        'original_swshunt'}));
+ end
+ 
+ if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...
+--- before/matpower/lib/+mp/psse_branch_collapse.m
++++ after/matpower/lib/+mp/psse_branch_collapse.m
+@@ -112,6 +112,9 @@
+     state.original_bus_name = [];
+ end
+ state.original_gen = mpc.gen;
++if isfield(mpc.psse, 'swshunt')
++    state.original_swshunt = mpc.psse.swshunt;
++end
+ state.original_branch = mpc.branch;
+ if isfield(mpc, 'dcline')
+     state.original_dcline = mpc.dcline;
+--- before/matpower/lib/+mp/psse_swdev_collapse.m
++++ after/matpower/lib/+mp/psse_swdev_collapse.m
+@@ -101,6 +101,9 @@
+     state.original_bus_name = [];
+ end
+ state.original_gen = mpc.gen;
++if isfield(mpc.psse, 'swshunt')
++    state.original_swshunt = mpc.psse.swshunt;
++end
+ state.original_branch = mpc.branch;
+ if isfield(mpc, 'dcline')
+     state.original_dcline = mpc.dcline;
+--- before/matpower/lib/runcpf_vsc_mtdc.m
++++ after/matpower/lib/runcpf_vsc_mtdc.m
+@@ -3184,6 +3184,8 @@
+             current.gen, ac.gen(1:ng, :));
+         gen_delta = matrix_delta(current.gen(:, gen_cols), ...
+             ac.gen(1:ng, gen_cols), tol);
++        gen_delta = gen_delta | mp.psse_unified_active_set( ...
++            'fixed_q_changed', current, ac, tol);
+ 
+         branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
+             RATE_C2 TAP2 SHIFT2 BR_STATUS2], current.branch, ...
+@@ -3345,6 +3347,8 @@
+             current.gen, ac_gen);
+         gen_rows = any(abs(current.gen(:, gen_active_cols) - ...
+             ac_gen(:, gen_active_cols)) > tol, 2);
++        gen_rows = gen_rows | mp.psse_unified_active_set( ...
++            'fixed_q_changed', current, ac, tol);
+         gen_copy_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+             bnext.gen, ac_gen);
+         bnext.gen(gen_rows, gen_copy_cols) = ac_gen(gen_rows, gen_copy_cols);
+--- before/matpower/lib/+mp/psse_unified_active_set.m
++++ after/matpower/lib/+mp/psse_unified_active_set.m
+@@ -24,6 +24,8 @@
+         varargout{1} = load_equiv_changed(varargin{:});
+     case 'has_genq_control'
+         varargout{1} = has_genq_control(varargin{:});
++    case 'fixed_q_changed'
++        varargout{1} = fixed_q_changed(varargin{:});
+     case 'copy_control_fields'
+         varargout{1} = copy_control_fields(varargin{:});
+     otherwise
+@@ -34,14 +36,20 @@
+ 
+ function sig = active_set_signature(mpc)
+ [~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
+-[~, ~, ~, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
++[GEN_BUS, ~, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
+ [~, ~, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, ...
+     TAP, SHIFT, BR_STATUS] = idx_brch;
+ bus_cols = existing_cols([BUS_TYPE PD QD GS BS], mpc.bus, mpc.bus);
+ gen_cols = existing_cols([QMAX QMIN VG GEN_STATUS], mpc.gen, mpc.gen);
+ branch_cols = existing_cols([BR_R BR_X BR_B RATE_A RATE_B RATE_C ...
+     TAP SHIFT BR_STATUS], mpc.branch, mpc.branch);
++[~, brow] = ismember(mpc.gen(:, GEN_BUS), mpc.bus(:, 1));
++fixed_q = zeros(size(mpc.gen, 1), 1);
++k = find(brow > 0 & mpc.gen(:, GEN_STATUS) > 0);
++k = k(mpc.bus(brow(k), BUS_TYPE) == 1);
++fixed_q(k) = mpc.gen(k, QG);
+ vals = [
++    fixed_q;
+     reshape(mpc.bus(:, bus_cols), [], 1);
+     reshape(mpc.gen(:, gen_cols), [], 1);
+     reshape(mpc.branch(:, branch_cols), [], 1);
+@@ -99,6 +107,15 @@
+ 
+ function ac = control_case_from_unified_result(r)
+ ac = r.ac;
++% Unit-scale PQBRAK metadata is a cache of nominal demands, not a load
++% schedule. A CPF projection contains the current step's demands. Rebuild
++% this cache rather than replaying pd0/qd0 from a previous auxiliary solve.
++% Keep non-unit characteristics and other equivalent injections intact.
++if isfield(ac, 'psse') && isfield(ac.psse, 'pqbrak') && ...
++        isfield(ac.psse.pqbrak, 'scale') && ...
++        all(ac.psse.pqbrak.scale(:) == 1) && ~load_equiv_changed(ac)
++    ac.psse = rmfield(ac.psse, 'pqbrak');
++end
+ drop = {'busdc', 'branchdc', 'vsc', 'vsc_state', 'cpf', ...
+     'om', 'order', 'et', 'success', 'iterations', 'convergence'};
+ for dd = 1:length(drop)
+@@ -219,3 +236,17 @@
+ 
+ function cols = existing_cols(cols, a, b)
+ cols = cols(cols <= size(a, 2) & cols <= size(b, 2));
++
++
++function changed = fixed_q_changed(current, ac, tol)
++% QG is an active-set input only at an in-service PQ generator. PV solved
++% reactive output must not trigger an active-set rebuild at every CPF step.
++[PQ, ~, ~, ~, BUS_I, BUS_TYPE] = idx_bus;
++[GEN_BUS, ~, QG, ~, ~, ~, ~, GEN_STATUS] = idx_gen;
++n = size(current.gen, 1);
++changed = false(n, 1);
++if ~has_genq_control(current), return; end
++[found, b] = ismember(ac.gen(1:n, GEN_BUS), ac.bus(:, BUS_I));
++k = find(found & ac.gen(1:n, GEN_STATUS) > 0);
++k = k(ac.bus(b(k), BUS_TYPE) == PQ);
++changed(k) = abs(current.gen(k, QG) - ac.gen(k, QG)) > tol;
+--- before/matpower/lib/+mp/psse_genq_states.m
++++ after/matpower/lib/+mp/psse_genq_states.m
+@@ -136,6 +136,13 @@
+ state.at_max = state.active & state.current_q >= state.qmax - state.qtol;
+ state.limited = state.active & ~state.swing & state.varlim_enabled & ...
+     state.qmax <= state.qmin + state.qtol;
++% Recreating an auxiliary case must retain an accepted binding mode. The
++% controller, not the serializer, owns subsequent release decisions.
++if isfield(gq, 'limited') && length(gq.limited) == n
++    state.limited = state.limited | (logical(gq.limited(:)) & ...
++        state.active & ~state.swing & state.varlim_enabled & ...
++        (state.at_min | state.at_max));
++end
+ state.controllable_local = state.active & state.local & ~state.swing;
+ state.controllable_remote = state.active & state.remote & ~state.swing;
+ state.unmapped = state.status ~= 0 & state.gen_idx <= 0;

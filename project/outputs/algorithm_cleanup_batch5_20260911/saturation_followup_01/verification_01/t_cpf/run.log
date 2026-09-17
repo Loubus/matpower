@@ -1,0 +1,338 @@
+1..430
+ok 1 - CPF gen redispatch preserve keeps target PG
+ok 2 - CPF gen redispatch preserve audits target PG delta
+ok 3 - CPF gen redispatch constant keeps base PG
+ok 4 - CPF gen redispatch constant audits zero PG delta
+ok 5 - CPF gen redispatch participation applies expected PG deltas
+ok 6 - CPF gen redispatch participation audits load-share amount
+ok 7 - CPF gen redispatch participation audits normalized weights
+ok 8 - CPF gen redispatch amount_mw applies exact PG deltas
+ok 9 - CPF runs with generator redispatch target
+ok 10 - CPF interpolates generator redispatch target PG
+ok 11 - CPF gen redispatch rejects unknown policy
+ok 12 - CPF gen redispatch participation requires amount or load share
+ok 13 - CPF gen redispatch participation requires generator selector
+ok 14 - CPF gen redispatch rejects bad weight dimensions
+ok 15 - CPF gen redispatch rejects unknown generator buses
+ok 16 - base == target : success
+ok 17 - base == target : Pg
+ok 18 - base == target : Pd
+ok 19 - base == target : iterations
+ok 20 - base == target : max_lam
+ok 21 - base == target : size(V_hat)
+ok 22 - base == target : size(V)
+ok 23 - base == target : size(lam_hat)
+ok 24 - base == target : size(lam)
+ok 25 - base == target : done_msg
+ok 26 - base == target : length(events) == 0
+ok 27 - CPF to lambda = 0.7 (natural) : success
+ok 28 - CPF to lambda = 0.7 (natural) : iterations
+ok 29 - CPF to lambda = 0.7 (natural) : max_lam
+ok 30 - CPF to lambda = 0.7 (natural) : Pg
+ok 31 - CPF to lambda = 0.7 (natural) : Pd
+ok 32 - CPF to lambda = 0.7 (natural) : size(V_hat)
+ok 33 - CPF to lambda = 0.7 (natural) : size(V)
+ok 34 - CPF to lambda = 0.7 (natural) : size(lam_hat)
+ok 35 - CPF to lambda = 0.7 (natural) : size(lam)
+ok 36 - CPF to lambda = 0.7 (natural) : done_msg
+ok 37 - CPF to lambda = 0.7 (natural) : length(events) == 1
+ok 38 - CPF to lambda = 0.7 (natural) : events(1).k
+ok 39 - CPF to lambda = 0.7 (natural) : events(1).idx
+ok 40 - CPF to lambda = 0.7 (natural) : events(1).name
+ok 41 - CPF to lambda = 0.7 (arc length) : success
+ok 42 - CPF to lambda = 0.7 (arc length) : iterations
+ok 43 - CPF to lambda = 0.7 (arc length) : max_lam
+ok 44 - CPF to lambda = 0.7 (arc length) : Pg
+ok 45 - CPF to lambda = 0.7 (arc length) : Pd
+ok 46 - CPF to lambda = 0.7 (arc length) : size(V_hat)
+ok 47 - CPF to lambda = 0.7 (arc length) : size(V)
+ok 48 - CPF to lambda = 0.7 (arc length) : size(lam_hat)
+ok 49 - CPF to lambda = 0.7 (arc length) : size(lam)
+ok 50 - CPF to lambda = 0.7 (arc length) : done_msg
+ok 51 - CPF to lambda = 0.7 (arc length) : length(events) == 1
+ok 52 - CPF to lambda = 0.7 (arc length) : events(1).k
+ok 53 - CPF to lambda = 0.7 (arc length) : events(1).idx
+ok 54 - CPF to lambda = 0.7 (arc length) : events(1).name
+ok 55 - CPF to lambda = 0.7 (pseudo arc length) : success
+ok 56 - CPF to lambda = 0.7 (pseudo arc length) : iterations
+ok 57 - CPF to lambda = 0.7 (pseudo arc length) : max_lam
+ok 58 - CPF to lambda = 0.7 (pseudo arc length) : Pg
+ok 59 - CPF to lambda = 0.7 (pseudo arc length) : Pd
+ok 60 - CPF to lambda = 0.7 (pseudo arc length) : size(V_hat)
+ok 61 - CPF to lambda = 0.7 (pseudo arc length) : size(V)
+ok 62 - CPF to lambda = 0.7 (pseudo arc length) : size(lam_hat)
+ok 63 - CPF to lambda = 0.7 (pseudo arc length) : size(lam)
+ok 64 - CPF to lambda = 0.7 (pseudo arc length) : done_msg
+ok 65 - CPF to lambda = 0.7 (pseudo arc length) : length(events) == 1
+ok 66 - CPF to lambda = 0.7 (pseudo arc length) : events(1).k
+ok 67 - CPF to lambda = 0.7 (pseudo arc length) : events(1).idx
+ok 68 - CPF to lambda = 0.7 (pseudo arc length) : events(1).name
+ok 69 - CPF to nose pt (arc length) : success
+ok 70 - CPF to nose pt (arc length) : iterations
+ok 71 - CPF to nose pt (arc length) : max_lam
+ok 72 - CPF to nose pt (arc length) : Pg
+ok 73 - CPF to nose pt (arc length) : Pd
+ok 74 - CPF to nose pt (arc length) : size(V_hat)
+ok 75 - CPF to nose pt (arc length) : size(V)
+ok 76 - CPF to nose pt (arc length) : size(lam_hat)
+ok 77 - CPF to nose pt (arc length) : size(lam)
+ok 78 - CPF to nose pt (arc length) : done_msg
+ok 79 - CPF to nose pt (arc length) : length(events) == 1
+ok 80 - CPF to nose pt (arc length) : events(1).k
+ok 81 - CPF to nose pt (arc length) : events(1).idx
+ok 82 - CPF to nose pt (arc length) : events(1).name
+ok 83 - CPF to nose pt (pseudo arc length) : success
+ok 84 - CPF to nose pt (pseudo arc length) : iterations
+ok 85 - CPF to nose pt (pseudo arc length) : max_lam
+ok 86 - CPF to nose pt (pseudo arc length) : Pg
+ok 87 - CPF to nose pt (pseudo arc length) : Pd
+ok 88 - CPF to nose pt (pseudo arc length) : size(V_hat)
+ok 89 - CPF to nose pt (pseudo arc length) : size(V)
+ok 90 - CPF to nose pt (pseudo arc length) : size(lam_hat)
+ok 91 - CPF to nose pt (pseudo arc length) : size(lam)
+ok 92 - CPF to nose pt (pseudo arc length) : done_msg
+ok 93 - CPF to nose pt (pseudo arc length) : length(events) == 1
+ok 94 - CPF to nose pt (pseudo arc length) : events(1).k
+ok 95 - CPF to nose pt (pseudo arc length) : events(1).idx
+ok 96 - CPF to nose pt (pseudo arc length) : events(1).name
+ok 97 - CPF to nose pt (pseudo arc length) w/Q lims: success
+ok 98 - CPF to nose pt (pseudo arc length) w/Q lims: iterations
+ok 99 - CPF to nose pt (pseudo arc length) w/Q lims: max_lam
+ok 100 - CPF to nose pt (pseudo arc length) w/Q lims: Pg
+ok 101 - CPF to nose pt (pseudo arc length) w/Q lims: Pd
+ok 102 - CPF to nose pt (pseudo arc length) w/Q lims: size(V_hat)
+ok 103 - CPF to nose pt (pseudo arc length) w/Q lims: size(V)
+ok 104 - CPF to nose pt (pseudo arc length) w/Q lims: size(lam_hat)
+ok 105 - CPF to nose pt (pseudo arc length) w/Q lims: size(lam)
+ok 106 - CPF to nose pt (pseudo arc length) w/Q lims: done_msg
+ok 107 - CPF to nose pt (pseudo arc length) w/Q lims: bus type
+ok 108 - CPF to nose pt (pseudo arc length) w/Q lims: size(events) == 2
+ok 109 - CPF to nose pt (pseudo arc length) w/Q lims: events(1).k == 12
+ok 110 - CPF to nose pt (pseudo arc length) w/Q lims: events(1).idx == 1
+ok 111 - CPF to nose pt (pseudo arc length) w/Q lims: events(1).name = 'QLIM'
+ok 112 - CPF to nose pt (pseudo arc length) w/Q lims: events(2).k == 19
+ok 113 - CPF to nose pt (pseudo arc length) w/Q lims: events(2).idx == 1
+ok 114 - CPF to nose pt (pseudo arc length) w/Q lims: events(2).name = 'NOSE'
+ok 115 - CPF to nose pt (pseudo arc length) w/P lims: success
+ok 116 - CPF to nose pt (pseudo arc length) w/P lims: iterations
+ok 117 - CPF to nose pt (pseudo arc length) w/P lims: max_lam
+ok 118 - CPF to nose pt (pseudo arc length) w/P lims: Pg
+ok 119 - CPF to nose pt (pseudo arc length) w/P lims: Pd
+ok 120 - CPF to nose pt (pseudo arc length) w/P lims: size(V_hat)
+ok 121 - CPF to nose pt (pseudo arc length) w/P lims: size(V)
+ok 122 - CPF to nose pt (pseudo arc length) w/P lims: size(lam_hat)
+ok 123 - CPF to nose pt (pseudo arc length) w/P lims: size(lam)
+ok 124 - CPF to nose pt (pseudo arc length) w/P lims: done_msg
+ok 125 - CPF to nose pt (pseudo arc length) w/P lims: bus type
+ok 126 - CPF to nose pt (pseudo arc length) w/P lims: size(events) == 3
+ok 127 - CPF to nose pt (pseudo arc length) w/P lims: events(1).k == 7
+ok 128 - CPF to nose pt (pseudo arc length) w/P lims: events(1).idx == 3
+ok 129 - CPF to nose pt (pseudo arc length) w/P lims: events(1).name = 'PLIM'
+ok 130 - CPF to nose pt (pseudo arc length) w/P lims: events(2).k == 13
+ok 131 - CPF to nose pt (pseudo arc length) w/P lims: events(2).idx == 1
+ok 132 - CPF to nose pt (pseudo arc length) w/P lims: events(2).name = 'PLIM'
+ok 133 - CPF to nose pt (pseudo arc length) w/P lims: events(3).k == 19
+ok 134 - CPF to nose pt (pseudo arc length) w/P lims: events(3).idx == 2
+ok 135 - CPF to nose pt (pseudo arc length) w/P lims: events(3).name = 'PLIM'
+ok 136 - CPF to nose pt (pseudo arc length) w/flow lims: success
+ok 137 - CPF to nose pt (pseudo arc length) w/flow lims: iterations
+ok 138 - CPF to nose pt (pseudo arc length) w/flow lims: max_lam
+ok 139 - CPF to nose pt (pseudo arc length) w/flow lims: Pg
+ok 140 - CPF to nose pt (pseudo arc length) w/flow lims: Pd
+ok 141 - CPF to nose pt (pseudo arc length) w/flow lims: size(V_hat)
+ok 142 - CPF to nose pt (pseudo arc length) w/flow lims: size(V)
+ok 143 - CPF to nose pt (pseudo arc length) w/flow lims: size(lam_hat)
+ok 144 - CPF to nose pt (pseudo arc length) w/flow lims: size(lam)
+ok 145 - CPF to nose pt (pseudo arc length) w/flow lims: done_msg
+ok 146 - CPF to nose pt (pseudo arc length) w/flow lims: length(events) == 1
+ok 147 - CPF to nose pt (pseudo arc length) w/flow lims: events(1).k
+ok 148 - CPF to nose pt (pseudo arc length) w/flow lims: events(1).idx
+ok 149 - CPF to nose pt (pseudo arc length) w/flow lims: events(1).name
+ok 150 - CPF to nose pt (pseudo arc length) w/violated flow lims: success
+ok 151 - CPF to nose pt (pseudo arc length) w/violated flow lims: iterations
+ok 152 - CPF to nose pt (pseudo arc length) w/violated flow lims: max_lam
+ok 153 - CPF to nose pt (pseudo arc length) w/violated flow lims: Pg
+ok 154 - CPF to nose pt (pseudo arc length) w/violated flow lims: Pd
+ok 155 - CPF to nose pt (pseudo arc length) w/violated flow lims: size(V_hat)
+ok 156 - CPF to nose pt (pseudo arc length) w/violated flow lims: size(V)
+ok 157 - CPF to nose pt (pseudo arc length) w/violated flow lims: size(lam_hat)
+ok 158 - CPF to nose pt (pseudo arc length) w/violated flow lims: size(lam)
+ok 159 - CPF to nose pt (pseudo arc length) w/violated flow lims: done_msg
+ok 160 - CPF to nose pt (pseudo arc length) w/violated flow lims: length(events) == 0
+ok 161 - CPF to nose pt (pseudo arc length) w/V lims: success
+ok 162 - CPF to nose pt (pseudo arc length) w/V lims: iterations
+ok 163 - CPF to nose pt (pseudo arc length) w/V lims: max_lam
+ok 164 - CPF to nose pt (pseudo arc length) w/V lims: Pg
+ok 165 - CPF to nose pt (pseudo arc length) w/V lims: Pd
+ok 166 - CPF to nose pt (pseudo arc length) w/V lims: size(V_hat)
+ok 167 - CPF to nose pt (pseudo arc length) w/V lims: size(V)
+ok 168 - CPF to nose pt (pseudo arc length) w/V lims: size(lam_hat)
+ok 169 - CPF to nose pt (pseudo arc length) w/V lims: size(lam)
+ok 170 - CPF to nose pt (pseudo arc length) w/V lims: done_msg
+ok 171 - CPF to nose pt (pseudo arc length) w/V lims: length(events) == 1
+ok 172 - CPF to nose pt (pseudo arc length) w/V lims: events(1).k
+ok 173 - CPF to nose pt (pseudo arc length) w/V lims: events(1).idx
+ok 174 - CPF to nose pt (pseudo arc length) w/V lims: events(1).name
+ok 175 - CPF to nose pt (pseudo arc length) w/violated V lims: success
+ok 176 - CPF to nose pt (pseudo arc length) w/violated V lims: iterations
+ok 177 - CPF to nose pt (pseudo arc length) w/violated V lims: max_lam
+ok 178 - CPF to nose pt (pseudo arc length) w/violated V lims: Pg
+ok 179 - CPF to nose pt (pseudo arc length) w/violated V lims: Pd
+ok 180 - CPF to nose pt (pseudo arc length) w/violated V lims: size(V_hat)
+ok 181 - CPF to nose pt (pseudo arc length) w/violated V lims: size(V)
+ok 182 - CPF to nose pt (pseudo arc length) w/violated V lims: size(lam_hat)
+ok 183 - CPF to nose pt (pseudo arc length) w/violated V lims: size(lam)
+ok 184 - CPF to nose pt (pseudo arc length) w/violated V lims: done_msg
+ok 185 - CPF to nose pt (pseudo arc length) w/violated V lims: length(events) == 0
+ok 186 - CPF to nose pt (pseudo arc length) w/V+flow lims: success
+ok 187 - CPF to nose pt (pseudo arc length) w/V+flow lims: iterations
+ok 188 - CPF to nose pt (pseudo arc length) w/V+flow lims: max_lam
+ok 189 - CPF to nose pt (pseudo arc length) w/V+flow lims: Pg
+ok 190 - CPF to nose pt (pseudo arc length) w/V+flow lims: Pd
+ok 191 - CPF to nose pt (pseudo arc length) w/V+flow lims: size(V_hat)
+ok 192 - CPF to nose pt (pseudo arc length) w/V+flow lims: size(V)
+ok 193 - CPF to nose pt (pseudo arc length) w/V+flow lims: size(lam_hat)
+ok 194 - CPF to nose pt (pseudo arc length) w/V+flow lims: size(lam)
+ok 195 - CPF to nose pt (pseudo arc length) w/V+flow lims: done_msg
+ok 196 - CPF to nose pt (pseudo arc length) w/V+flow lims: length(events) == 1
+ok 197 - CPF to nose pt (pseudo arc length) w/V+flow lims: events(1).k
+ok 198 - CPF to nose pt (pseudo arc length) w/V+flow lims: events(1).idx
+ok 199 - CPF to nose pt (pseudo arc length) w/V+flow lims: events(1).name
+ok 200 - CPF to nose pt (pseudo arc length) w/PQ lims: success
+ok 201 - CPF to nose pt (pseudo arc length) w/PQ lims: iterations
+ok 202 - CPF to nose pt (pseudo arc length) w/PQ lims: max_lam
+ok 203 - CPF to nose pt (pseudo arc length) w/PQ lims: Pg
+ok 204 - CPF to nose pt (pseudo arc length) w/PQ lims: Pd
+ok 205 - CPF to nose pt (pseudo arc length) w/PQ lims: size(V_hat)
+ok 206 - CPF to nose pt (pseudo arc length) w/PQ lims: size(V)
+ok 207 - CPF to nose pt (pseudo arc length) w/PQ lims: size(lam_hat)
+ok 208 - CPF to nose pt (pseudo arc length) w/PQ lims: size(lam)
+ok 209 - CPF to nose pt (pseudo arc length) w/PQ lims: done_msg
+ok 210 - CPF to nose pt (pseudo arc length) w/PQ lims: bus type
+ok 211 - CPF to nose pt (pseudo arc length) w/PQ lims: size(events) == 3
+ok 212 - CPF to nose pt (pseudo arc length) w/PQ lims: events(1).k == 7
+ok 213 - CPF to nose pt (pseudo arc length) w/PQ lims: events(1).idx == 3
+ok 214 - CPF to nose pt (pseudo arc length) w/PQ lims: events(1).name = 'PLIM'
+ok 215 - CPF to nose pt (pseudo arc length) w/PQ lims: events(2).k == 14
+ok 216 - CPF to nose pt (pseudo arc length) w/PQ lims: events(2).idx == 1
+ok 217 - CPF to nose pt (pseudo arc length) w/PQ lims: events(2).name = 'QLIM'
+ok 218 - CPF to nose pt (pseudo arc length) w/PQ lims: events(3).k == 20
+ok 219 - CPF to nose pt (pseudo arc length) w/PQ lims: events(3).idx == 1
+ok 220 - CPF to nose pt (pseudo arc length) w/PQ lims: events(3).name = 'NOSE'
+ok 221 - CPF (full trace) (arc length) : success
+ok 222 - CPF (full trace) (arc length) : iterations
+ok 223 - CPF (full trace) (arc length) : max_lam
+ok 224 - CPF (full trace) (arc length) : Pg
+ok 225 - CPF (full trace) (arc length) : Pd
+ok 226 - CPF (full trace) (arc length) : size(V_hat)
+ok 227 - CPF (full trace) (arc length) : size(V)
+ok 228 - CPF (full trace) (arc length) : size(lam_hat)
+ok 229 - CPF (full trace) (arc length) : size(lam)
+ok 230 - CPF (full trace) (arc length) : done_msg
+ok 231 - CPF (full trace) (arc length) : length(events) == 1
+ok 232 - CPF (full trace) (arc length) : events(1).k
+ok 233 - CPF (full trace) (arc length) : events(1).idx
+ok 234 - CPF (full trace) (arc length) : events(1).name
+ok 235 - CPF (full trace) (pseudo arc length) : success
+ok 236 - CPF (full trace) (pseudo arc length) : iterations
+ok 237 - CPF (full trace) (pseudo arc length) : max_lam
+ok 238 - CPF (full trace) (pseudo arc length) : Pg
+ok 239 - CPF (full trace) (pseudo arc length) : Pd
+ok 240 - CPF (full trace) (pseudo arc length) : size(V_hat)
+ok 241 - CPF (full trace) (pseudo arc length) : size(V)
+ok 242 - CPF (full trace) (pseudo arc length) : size(lam_hat)
+ok 243 - CPF (full trace) (pseudo arc length) : size(lam)
+ok 244 - CPF (full trace) (pseudo arc length) : done_msg
+ok 245 - CPF (full trace) (pseudo arc length) : length(events) == 1
+ok 246 - CPF (full trace) (pseudo arc length) : events(1).k
+ok 247 - CPF (full trace) (pseudo arc length) : events(1).idx
+ok 248 - CPF (full trace) (pseudo arc length) : events(1).name
+ok 249 - CPF (full trace) (pseudo arc length) w/Q lims: success
+ok 250 - CPF (full trace) (pseudo arc length) w/Q lims: iterations
+ok 251 - CPF (full trace) (pseudo arc length) w/Q lims: max_lam
+ok 252 - CPF (full trace) (pseudo arc length) w/Q lims: Pg
+ok 253 - CPF (full trace) (pseudo arc length) w/Q lims: Pd
+ok 254 - CPF (full trace) (pseudo arc length) w/Q lims: size(V_hat)
+ok 255 - CPF (full trace) (pseudo arc length) w/Q lims: size(V)
+ok 256 - CPF (full trace) (pseudo arc length) w/Q lims: size(lam_hat)
+ok 257 - CPF (full trace) (pseudo arc length) w/Q lims: size(lam)
+ok 258 - CPF (full trace) (pseudo arc length) w/Q lims: done_msg
+ok 259 - CPF (full trace) (pseudo arc length) w/Q lims: bus type
+ok 260 - CPF (full trace) (pseudo arc length) w/Q lims: size(events) == 3
+ok 261 - CPF (full trace) (pseudo arc length) w/Q lims: events(1).k == 12
+ok 262 - CPF (full trace) (pseudo arc length) w/Q lims: events(1).idx == 1
+ok 263 - CPF (full trace) (pseudo arc length) w/Q lims: events(1).name = 'QLIM'
+ok 264 - CPF (full trace) (pseudo arc length) w/Q lims: events(2).k == 22
+ok 265 - CPF (full trace) (pseudo arc length) w/Q lims: events(2).idx == 3
+ok 266 - CPF (full trace) (pseudo arc length) w/Q lims: events(2).name = 'QLIM'
+ok 267 - CPF (full trace) (pseudo arc length) w/Q lims: events(3).k == 43
+ok 268 - CPF (full trace) (pseudo arc length) w/Q lims: events(3).idx == 2
+ok 269 - CPF (full trace) (pseudo arc length) w/Q lims: events(3).name = 'QLIM'
+ok 270 - bug #12 : early termination : success
+ok 271 - bug #12 : early termination : iterations
+ok 272 - all buses isolated : success = 0
+ok 273 - issues #23,25 : direction switching : success
+ok 274 - issues #23,25 : direction switching : iterations
+ok 275 - issues #23,25 : direction switching : max_lam
+ok 276 - issues #23,25 : direction switching : length(events) == 2
+ok 277 - issues #23,25 : direction switching : events(1).k
+ok 278 - issues #23,25 : direction switching : events(1).idx
+ok 279 - issues #23,25 : direction switching : events(1).name
+ok 280 - issues #23,25 : direction switching : events(2).k
+ok 281 - issues #23,25 : direction switching : events(1=2).idx
+ok 282 - issues #23,25 : direction switching : events(2).name
+skipped 283..370 - user callbacks
+ok 371 - case300 w/Q lims : success
+ok 372 - case300 w/Q lims : iterations
+ok 373 - case300 w/Q lims : max_lam
+ok 374 - case300 w/Q lims : size(V_hat)
+ok 375 - case300 w/Q lims : size(V)
+ok 376 - case300 w/Q lims : size(lam_hat)
+ok 377 - case300 w/Q lims : size(lam)
+ok 378 - case300 w/Q lims : done_msg
+ok 379 - case300 w/Q lims : bus type
+ok 380 - case300 w/Q lims : Qmin violation
+ok 381 - case300 w/Q lims : Qmax violation
+ok 382 - case300 w/Q lims : size(events) == 13
+ok 383 - case300 w/Q lims : events(1).k == 1
+ok 384 - case300 w/Q lims : events(1).idx == 26
+ok 385 - case300 w/Q lims : events(1).name = 'QLIM'
+ok 386 - case300 w/Q lims : events(2).k == 3
+ok 387 - case300 w/Q lims : events(2).idx == 19
+ok 388 - case300 w/Q lims : events(2).name = 'QLIM'
+ok 389 - case300 w/Q lims : events(3).k == 5
+ok 390 - case300 w/Q lims : events(3).idx == 67
+ok 391 - case300 w/Q lims : events(3).name = 'QLIM'
+ok 392 - case300 w/Q lims : events(4).k == 12
+ok 393 - case300 w/Q lims : events(4).idx == 15
+ok 394 - case300 w/Q lims : events(4).name = 'QLIM'
+ok 395 - case300 w/Q lims : events(5).k == 14
+ok 396 - case300 w/Q lims : events(5).idx == 59
+ok 397 - case300 w/Q lims : events(5).name = 'QLIM'
+ok 398 - case300 w/Q lims : events(6).k == 17
+ok 399 - case300 w/Q lims : events(6).idx == 69
+ok 400 - case300 w/Q lims : events(6).name = 'QLIM'
+ok 401 - case300 w/Q lims : events(7).k == 19
+ok 402 - case300 w/Q lims : events(7).idx == 50
+ok 403 - case300 w/Q lims : events(7).name = 'QLIM'
+ok 404 - case300 w/Q lims : events(8).k == 22
+ok 405 - case300 w/Q lims : events(8).idx == 66
+ok 406 - case300 w/Q lims : events(8).name = 'QLIM'
+ok 407 - case300 w/Q lims : events(9).k == 24
+ok 408 - case300 w/Q lims : events(9).idx == 54
+ok 409 - case300 w/Q lims : events(9).name = 'QLIM'
+ok 410 - case300 w/Q lims : events(10).k == 28
+ok 411 - case300 w/Q lims : events(10).idx == 68
+ok 412 - case300 w/Q lims : events(10).name = 'QLIM'
+ok 413 - case300 w/Q lims : events(11).k == 38
+ok 414 - case300 w/Q lims : events(11).idx == 87
+ok 415 - case300 w/Q lims : events(11).name = 'QLIM'
+ok 416 - case300 w/Q lims : events(12).k == 41
+ok 417 - case300 w/Q lims : events(12).idx == 89
+ok 418 - case300 w/Q lims : events(12).name = 'QLIM'
+ok 419 - case300 w/Q lims : events(13).k == 43
+ok 420 - case300 w/Q lims : events(13).idx == 1
+ok 421 - case300 w/Q lims : events(13).name = 'TARGET_LAM'
+skipped 422..430 - case14 (unsuccessful) : MP-Core not affected by angle wrap-around failure
+All tests successful (333 passed, 97 skipped of 430)
+Elapsed time 12.25 seconds.

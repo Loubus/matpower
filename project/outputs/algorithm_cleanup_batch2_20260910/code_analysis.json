@@ -1,0 +1,310 @@
+[
+  {
+    "file": "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_unified_active_set.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_genq_states.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_expand_bus_controls.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_branch_collapse.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_branch_expand.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_swdev_collapse.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_swdev_expand.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  },
+  {
+    "file": "matpower/lib/t/t_vsc_mtdc.m",
+    "before": [
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 88,
+        "column": [
+          6,
+          48
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 89,
+        "column": [
+          5,
+          50
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 90,
+        "column": [
+          5,
+          45
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1229,
+        "column": [
+          36,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1230,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1230,
+        "column": [
+          43,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1231,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1231,
+        "column": [
+          43,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1232,
+        "column": [
+          6,
+          41
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1232,
+        "column": [
+          46,
+          81
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1233,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1233,
+        "column": [
+          43,
+          75
+        ]
+      }
+    ],
+    "after": [
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 92,
+        "column": [
+          6,
+          48
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 93,
+        "column": [
+          5,
+          50
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 94,
+        "column": [
+          5,
+          45
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1275,
+        "column": [
+          36,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1276,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1276,
+        "column": [
+          43,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1277,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1277,
+        "column": [
+          43,
+          75
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1278,
+        "column": [
+          6,
+          41
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1278,
+        "column": [
+          46,
+          81
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1279,
+        "column": [
+          6,
+          38
+        ]
+      },
+      {
+        "id": "STREMP",
+        "message": "For readability, use '~contains(str1, str2)' instead of 'isempty(strfind(str1, str2))'.",
+        "fix": 1,
+        "line": 1279,
+        "column": [
+          43,
+          75
+        ]
+      }
+    ],
+    "new_messages": []
+  },
+  {
+    "file": "tests/t_control_handoff_batch2.m",
+    "before": [],
+    "after": [],
+    "new_messages": []
+  }
+]

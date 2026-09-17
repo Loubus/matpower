@@ -7,7 +7,7 @@ function [state, conv] = update_vsc_state(mpc, state, ac, dc, map)
 %   Reads AC voltages, AC reactive output, converter losses, DC voltages and
 %   DC converter powers, then updates the VSC state using
 %
-%       Pac + Pdc + Ploss = 0.
+%       Pconv + Pdc + Ploss = 0; PAC_SET/QAC_SET are PCC orders.
 %
 % See also idx_vsc, apply_vsc_ac_model, solve_vsc_dc_pf, runpf_vsc_mtdc.
 
@@ -19,8 +19,7 @@ function [state, conv] = update_vsc_state(mpc, state, ac, dc, map)
 %   See https://matpower.org for more info.
 
 [~, ~, ~, ~, BUS_I, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
-[~, ~, QG] = idx_gen;
-[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, PF, ~, PT, QT] = idx_brch;
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, PF, QF, PT, QT] = idx_brch;
 bdc = idx_busdc;
 c = idx_vsc;
 
@@ -36,15 +35,16 @@ for k = active'
     state.vac_pcc(k) = ac.bus(pcc, VM);
     state.vac_filter(k) = ac.bus(filter, VM);
     state.vac_internal(k) = ac.bus(internal, VM);
-    if map.uses_gen(k)
-        state.qac(k) = ac.gen(map.gen(k), QG);
-    else
-        state.qac(k) = vsc(k, c.QAC_SET);
-    end
+    state.ps(k) = -ac.branch(map.tr_branch(k), PF);
+    state.qs(k) = -ac.branch(map.tr_branch(k), QF);
+    state.pconv(k) = ac.branch(map.reactor_branch(k), PT);
+    state.qconv(k) = ac.branch(map.reactor_branch(k), QT);
+    state.pac(k) = state.pconv(k);
+    state.qac(k) = state.qconv(k);
 end
 
 [state.ploss, state.iac] = calc_vsc_losses(mpc.baseMVA, state.pac, ...
-    state.qac, state.vac_internal, vsc);
+    state.qac, state.vac_internal, vsc, mpc);
 state.ploss(vsc(:, c.VSC_STATUS) <= 0) = 0;
 state.pdc = dc.pdc;
 
@@ -55,7 +55,11 @@ end
 
 fixed_pac = vsc(:, c.AC_MODE) == c.VSC_AC_PQ | vsc(:, c.AC_MODE) == c.VSC_AC_PV;
 state.pac(active) = -state.pdc(active) - state.ploss(active);
-state.pac(fixed_pac & vsc(:, c.VSC_STATUS) > 0) = vsc(fixed_pac & vsc(:, c.VSC_STATUS) > 0, c.PAC_SET);
+kp = active(fixed_pac(active));
+state.pac(kp) = state.pconv(kp) + vsc(kp, c.PAC_SET) - state.ps(kp);
+fixed_q = vsc(:, c.AC_MODE) == c.VSC_AC_Q | vsc(:, c.AC_MODE) == c.VSC_AC_PQ;
+kq = active(fixed_q(active));
+state.qac(kq) = state.qconv(kq) + vsc(kq, c.QAC_SET) - state.qs(kq);
 
 state.ptr_loss(:) = 0;
 state.preactor_loss(:) = 0;
@@ -90,5 +94,6 @@ conv = struct( ...
     'max_delta_qac', max(abs(state.qac - old.qac)), ...
     'max_delta_vac_set', max(abs(state.vac_internal_set - old.vac_internal_set)), ...
     'max_vac_ctrl_error', max(abs(vac_error)), ...
-    'max_balance',   max(abs(state.pac + state.pdc + state.ploss)) );
+    'max_balance',   max([abs(state.pconv + state.pdc + state.ploss); ...
+        abs(state.ps(kp)-vsc(kp,c.PAC_SET)); abs(state.qs(kq)-vsc(kq,c.QAC_SET))]) );
 end

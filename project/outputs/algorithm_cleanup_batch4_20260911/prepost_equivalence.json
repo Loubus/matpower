@@ -1,0 +1,26 @@
+{
+  "shunt_only": {
+    "lambda": true,
+    "stored_state": true,
+    "bus": true,
+    "branch": true,
+    "vsc": true,
+    "events": true,
+    "half_state": true
+  },
+  "combined": {
+    "lambda": true,
+    "stored_state": true,
+    "bus": true,
+    "branch": true,
+    "vsc": true,
+    "events": true,
+    "half_state": true
+  },
+  "acceptance_checks": true,
+  "lock1": true,
+  "lock2": true,
+  "lock3": true,
+  "screening": true,
+  "continuous": true
+}

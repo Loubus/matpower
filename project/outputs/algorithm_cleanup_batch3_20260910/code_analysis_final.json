@@ -1,0 +1,27 @@
+{
+  "file1": {
+    "file": "matpower/lib/+mp/psse_xfmr_control.m",
+    "findings": []
+  },
+  "file2": {
+    "file": "matpower/lib/+mp/psse_unified_control_update.m",
+    "findings": []
+  },
+  "file3": {
+    "file": "matpower/lib/+mp/psse_xfmr_tap_decision.m",
+    "findings": []
+  },
+  "file4": {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "findings": []
+  },
+  "file5": {
+    "file": "tests/t_ultc_acceptance_batch3.m",
+    "findings": []
+  },
+  "file6": {
+    "file": "tests/t_ultc_beerten_batch3.m",
+    "findings": []
+  },
+  "cpf_before": []
+}

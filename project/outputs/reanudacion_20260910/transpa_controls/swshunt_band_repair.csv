@@ -1,0 +1,4 @@
+bus_i,old_vswlo,old_vswhi,donor_bus_i,donor_row,new_vswlo,new_vswhi
+566,1,1,222,6,0.99,1.01
+570,1,1,222,6,0.99,1.01
+230231,1,1,334,13,0.97,1.03

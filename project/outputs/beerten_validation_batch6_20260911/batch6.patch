@@ -1,0 +1,252 @@
+--- a/docs/BENCHMARKS.md
++++ b/docs/BENCHMARKS.md
+@@ -52,4 +52,24 @@
+ 4. Reproduce a source PF solution under matching assumptions; audit capability feasibility separately from convergence. Do not quietly change source values to pass.
+ 5. Add one feature at a time and define a CPF stress/dispatch path. A source lacking discrete control metadata cannot validate that feature without a declared extension.
+ 
+-The collection helper is [collect_sources.py](collect_sources.py). It deliberately refuses to overwrite existing downloaded files; use a fresh task directory if recollecting. It performs network downloads and static inventory only. The original MatACDC archive is retained alongside the selected data and licenses.
++The collection helper is [collect_sources.py](collect_sources.py). It deliberately refuses to overwrite existing downloaded files; use a fresh task directory if recollecting. It performs network downloads and static inventory only. The original MatACDC archive is retained alongside the selected data and licenses.
++
++## Beerten validation, 2026-09-11 (batch 6)
++
++The [batch-6 report](../outputs/beerten_validation_batch6_20260911/REPORT.md)
++supersedes the unexecuted status above only for Beerten. The unmodified
++MatACDC 1.0 `case5_stagg` / `case5_stagg_MTDCslack` example was executed and
++compared with its manual and a separate Python implementation. It differs
++from the 2010 paper and the local case: published P/Q controls are at the PCC,
++while the project case sets internal converter powers. The 2010 article lacks
++a complete numerical station/DC input table; its full PF is not claimed
++reproduced from exact inputs.
++
++The separately named `beerten_constant_pq_capability_batch6` scenario retains
++the saved loading direction and original equipment data. Its available
++capability enforcement was exercised, including generator/converter mode
++transitions and CPF step sensitivity. Slack exemptions, unavailable limits,
++base feasibility conflicts under generic capability assumptions and
++termination diagnostics prevent an equipment-compliant margin claim.
++Published PF agreement does not validate this project's CPF margin.
++IEEE/Nordic/CIGRE conversions remain unexecuted in this batch.
+--- a/matpower/lib/runcpf_vsc_mtdc.m
++++ b/matpower/lib/runcpf_vsc_mtdc.m
+@@ -1371,8 +1371,27 @@
+                         ev(last_vsc_event), report, r);
+                 end
+             end
+-            clear complete_event_cleanup;
+-        end
++            clear complete_event_cleanup;
++            % Capability changes voltage. Settle any newly requested tap or
++            % shunt move on the full model before checking capability again.
++            % Reuse the declared control policy and existing iteration bounds.
++            if unified_psse_controls_enabled()
++                [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
++                    handoff_events, handoff_ok] = settle_unified_psse_controls( ...
++                    ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
++                    bus_ids, nbranch, ngen, event_k);
++                ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
++                if ~handoff_ok
++                    success = 0;
++                    return;
++                end
++                last_vsc_event = find(strcmp({ev.name}, 'VSC_CAPABILITY'), 1, 'last');
++                if ~isempty(last_vsc_event)
++                    ev(last_vsc_event) = complete_vsc_capability_event( ...
++                        ev(last_vsc_event), report, r);
++                end
++            end
++        end
+         V = original_ac_voltage_for_result(r, bus_ids);
+         success = 0;
+     end
+@@ -1903,12 +1922,40 @@
+                     gen_capability_recorded_idx(:)))
+                 last_gen_event = find(strcmp({ev.name}, 'GEN_CAPABILITY'), ...
+                     1, 'last');
+-                if ~isempty(last_gen_event)
+-                    ev(last_gen_event) = complete_gen_capability_event( ...
+-                        ev(last_gen_event), report, r);
+-                end
+-            end
+-        end
++                if ~isempty(last_gen_event)
++                    ev(last_gen_event) = complete_gen_capability_event( ...
++                        ev(last_gen_event), report, r);
++                end
++            end
++            % A generator PV/PQ transition can invalidate both the earlier
++            % voltage-control decision and the earlier converter active set.
++            % Re-solve those stages, then check the generator again.
++            if unified_psse_controls_enabled()
++                [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
++                    handoff_events, handoff_ok] = settle_unified_psse_controls( ...
++                    ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
++                    bus_ids, nbranch, ngen, event_k);
++                ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
++                if ~handoff_ok
++                    success = 0;
++                    return;
++                end
++            end
++            [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
++                handoff_events, handoff_ok] = settle_unified_vsc_capability_controls( ...
++                ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
++                bus_ids, nbranch, ngen, event_k);
++            ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
++            if ~handoff_ok
++                success = 0;
++                return;
++            end
++            last_gen_event = find(strcmp({ev.name}, 'GEN_CAPABILITY'), 1, 'last');
++            if ~isempty(last_gen_event)
++                ev(last_gen_event) = complete_gen_capability_event( ...
++                    ev(last_gen_event), report, r);
++            end
++        end
+         V = original_ac_voltage_for_result(r, bus_ids);
+         success = 0;
+     end
+--- a/matpower/lib/runpf_vsc_mtdc_unified.m
++++ b/matpower/lib/runpf_vsc_mtdc_unified.m
+@@ -55,8 +55,17 @@
+     settle_unified_pf_psse_controls(mpc, mpopt, ctx, eval, normF, ...
+     success, iterations, history);
+ 
+-results = unified_build_results(ctx, mpc, eval);
+-results.success = success;
++results = unified_build_results(ctx, mpc, eval);
++% Public PF tables must describe the returned electrical point. The expanded
++% AC result appends station buses/branches and converter proxy generators;
++% retain only original equipment here, in its external ordering. Keep the
++% internal __results composition interface unchanged.
++[found, original_rows] = ismember(mpc.bus(:, 1), results.ac.bus(:, 1));
++assert(all(found), 'runpf_vsc_mtdc_unified: original AC bus missing from results');
++results.bus = results.ac.bus(original_rows, :);
++results.gen = results.ac.gen(1:size(mpc.gen, 1), :);
++results.branch = results.ac.branch(1:size(mpc.branch, 1), :);
++results.success = success;
+ results.iterations = iterations;
+ results.convergence = struct( ...
+     'converged',       logical(~isempty(eval) && isfinite(normF) && normF < ctx.opt.tol), ...
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -130,3 +130,22 @@
+ The historical `t_mpxt_psse` suite explicitly opts into PQBRAK; its prior
+ modeling assertions are preserved. Prior output directories remain evidence
+ of their original scenario and are not rewritten when defaults change.
++
++## Beerten capability and reference validation (batch 6)
++
++`t_beerten_reporting_batch6(0)` checks solved public unified-PF tables,
++including generator reordering and offline rows. `t_beerten_capability_batch6`
++checks genuine generator/VSC capability transitions, every accepted point's
++full electrical equations and fresh effective tap/shunt decision, unchanged
++ratings/loading, and CPF step sensitivity:
++
++```matlab
++t_beerten_capability_batch6(0, fullfile(pwd,'outputs','beerten_capability_new_run'));
++```
++
++The post-capability handoff re-solves existing voltage controls and then
++rechecks capability. It introduces no freeze, rating or tolerance changes.
++The test explicitly retains the slack's generic-curve conflict; it does not
++certify all-equipment feasibility. Independent Python PF and archived MatACDC
++validation are separate from this internal gate. See the
++[batch-6 report](../outputs/beerten_validation_batch6_20260911/REPORT.md).
+--- /dev/null
++++ b/tests/t_beerten_reporting_batch6.m
+@@ -0,0 +1,22 @@
++function t_beerten_reporting_batch6(quiet)
++% Public unified PF equipment tables must contain the solved external state.
++if nargin<1,quiet=0;end
++t_begin(15,quiet);
++o=mpoption('verbose',0,'out.all',0);
++for mode=1:3
++ p=case5_vsc_mtdc_beerten;
++ if mode==2
++   p.bus=flipud(p.bus); p.gen=flipud(p.gen);
++ elseif mode==3
++   off=p.gen(2,:);off(8)=0;p.gen=[off;p.gen];
++   o.vsc_mtdc.capability_enforce=1;
++ end
++ r=runpf_psse(p,o); [ok,rows]=ismember(p.bus(:,1),r.ac.bus(:,1));
++ t_ok(r.success && all(ok),'full PF converges');
++ t_ok(isequal(r.bus,r.ac.bus(rows,:)),'public voltages and bus modes are solved');
++ t_ok(isequal(r.gen,r.ac.gen(1:size(p.gen,1),:)),'original generator powers and row order');
++ t_ok(isequal(r.branch,r.ac.branch(1:size(p.branch,1),:)),'original branch flows are solved');
++ t_ok(r.gen(r.gen(:,1)==1,2)>100,'slack demand is visible in public audit input');
++end
++t_end;
++end
+--- /dev/null
++++ b/tests/t_beerten_capability_batch6.m
+@@ -0,0 +1,48 @@
++function [checks,results] = t_beerten_capability_batch6(quiet,outdir)
++% Equipment and full-model control handoff after genuine Beerten limits.
++if nargin<1,quiet=0;end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin<2,outdir=tempname(fullfile(root,'outputs'));end
++assert(~isfolder(outdir),'Use a fresh output directory');mkdir(outdir);
++s=load(fullfile(root,'outputs/algorithm_cleanup_batch4_20260911/beerten_probe.mat'));
++f=s.b4f;t=s.b4t;
++o=mpoption(s.b4o,'cpf.stop_at','NOSE','exp.psse_pqbrak',0, ...
++ 'vsc_mtdc.psse_control_limit','saturate','vsc_mtdc.capability_enforce',1, ...
++ 'vsc_mtdc.capability_gen_enforce',1,'cpf.enforce_q_lims',1);
++checks=struct('id',{},'passed',{});results=cell(1,2);
++sh=mp.psse_swshunt_states(f);xf=mp.psse_xfmr_states(f);c=idx_vsc;
++steps=[.1 .025];
++for j=1:2
++ opt=mpoption(o,'cpf.step',steps(j));r=runcpf_psse(f,t,opt);results{j}=r;
++ check(sprintf('step%d_limit_is_not_nose',j),strcmp(r.cpf.termination.cause,'vsc_capability_limit') && ...
++  ~r.cpf.termination.nose_detected && ~r.cpf.termination.requested_endpoint_reached);
++ check(sprintf('step%d_genuine_switches',j),any(strcmp({r.cpf.events.name},'GEN_CAPABILITY')) && ...
++  any(strcmp({r.cpf.events.name},'VSC_CAPABILITY')) && ~any(contains({r.cpf.events.name},'FREEZE')));
++ for k=1:numel(r.cpf.lam)
++  p=f;p.bus=r.cpf.bus(:,:,k);p.gen=r.cpf.gen(:,:,k);p.branch=r.cpf.branch(:,1:13,k);p.vsc=r.cpf.vsc(:,:,k);
++  p.psse.swshunt.num(:,sh.binit_col)=p.bus(5,6)-sh.base_bs(5);
++  p.psse.xfmr.two.num(:,24)=p.branch(xf.branch_idx,9);
++  p=mp.psse_prepare_case(p,opt,'cpf');
++  ctx=runpf_vsc_mtdc_unified('__setup',p,opt);xx=r.cpf.x(:,k);xx=xx(isfinite(xx));
++  [F,ev]=runpf_vsc_mtdc_unified('__mismatch',ctx,xx,[]);full=runpf_vsc_mtdc_unified('__results',ctx,ev,p);
++  [~,decision]=mp.psse_unified_control_update(p,full.ac.bus);
++  accept=mp.psse_unified_control_acceptance(decision,'saturate');
++  tag=sprintf('step%d_point%d_',j,k);
++  check([tag 'settled_after_capability'],accept.accepted && ~decision.changed);
++  check([tag 'equations'],norm(F,Inf)<1e-8);
++  [~,~,~,~,gi]=gen_capability_curve(p.gen(2,2),p.gen(2,3),f.gen(2,7),2);
++  va=check_vsc_capability(p);
++  check([tag 'original_non_slack_capabilities'],gi.projection_norm<=1e-8 && all([va.elements.margin]>=-1e-8));
++  check([tag 'constant_load_and_original_station'],max(abs(p.bus(:,3:4)-f.bus(:,3:4)-r.cpf.lam(k)*(t.bus(:,3:4)-f.bus(:,3:4))),[],'all')<1e-10 && ...
++   isequal(p.vsc(:,c.LOSS_A:c.REACTOR_RATE_C),f.vsc(:,c.LOSS_A:c.REACTOR_RATE_C)));
++ end
++end
++check('step_terminal_loading_agreement',abs(results{1}.cpf.lam(end)-results{2}.cpf.lam(end))<o.cpf.target_lam_tol);
++check('original_slack_curve_conflict_visible',results{1}.cpf.gen(1,2,1)>.8*f.gen(1,7));
++save(fullfile(outdir,'evidence.mat'),'checks','results','o','f','t','-v7.3');
++fid=fopen(fullfile(outdir,'checks.json'),'w');fprintf(fid,'%s',jsonencode(checks));fclose(fid);
++t_begin(numel(checks),quiet);for k=1:numel(checks),t_ok(checks(k).passed,checks(k).id);end;t_end;
++ function check(id,passed)
++  checks(end+1)=struct('id',id,'passed',logical(passed));
++ end
++end
+--- /dev/null
++++ b/studies/beerten/beerten_constant_pq_capability_batch6.m
+@@ -0,0 +1,19 @@
++function [base,target,options,study] = beerten_constant_pq_capability_batch6
++%BEERTEN_CONSTANT_PQ_CAPABILITY_BATCH6 Saved direction with supported limits.
++% Project scenario, not the published Beerten PF configuration. The slack is
++% exempt in the implementation. Applying the generic MBASE-based curve to it
++% makes the initial point infeasible. See the batch-6 REPORT before using a
++% configured stop as a physical or published stability margin.
++root=fileparts(fileparts(fileparts(mfilename('fullpath'))));
++fixture=fullfile(root,'outputs','algorithm_cleanup_batch4_20260911','beerten_probe.mat');
++s=load(fixture,'b4f','b4t','b4o');base=s.b4f;target=s.b4t;
++options=mpoption(s.b4o,'cpf.stop_at','NOSE','exp.psse_pqbrak',0, ...
++ 'vsc_mtdc.psse_control_limit','saturate','vsc_mtdc.capability_enforce',1, ...
++ 'vsc_mtdc.capability_gen_enforce',1,'cpf.enforce_q_lims',1);
++study=struct('name','beerten_constant_pq_supported_capabilities', ...
++ 'fixture',fixture,'P5_MW','60 + 240*lambda','Q5_MVAr','10 + 40*lambda', ...
++ 'total_P_MW','165 + 240*lambda','total_Q_MVAr','40 + 40*lambda', ...
++ 'gen_dispatch','P2=40 MW; slack supplies remainder and losses', ...
++ 'q_box_option_scope','requested, but no RAW GENQ metadata in this unified fixture', ...
++ 'stability_margin_validated',false);
++end

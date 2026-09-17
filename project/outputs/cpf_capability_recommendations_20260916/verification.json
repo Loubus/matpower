@@ -1,0 +1,15 @@
+{
+  "embedded_images_valid": 14,
+  "unique_ids": 6,
+  "navigation_anchors_valid": true,
+  "external_scripts": 0,
+  "unchanged_shared_source_hashes": [
+    "matpower/lib/runcpf_vsc_mtdc.m",
+    "matpower/lib/vsc_station_capability.m",
+    "matpower/lib/vsc_station_map.m",
+    "studies/beerten/beerten_constant_pq_nonslack_dispatch.m"
+  ],
+  "visual_inspection": "5 scientific plots, 6 equation figures, 3 engineering schematics passed",
+  "browser_verification": "Blocked by browser URL security policy; full page layout and live interaction not verified",
+  "production_rerun": false
+}

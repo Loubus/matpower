@@ -1,0 +1,11 @@
+{
+  "name": "t_cpf",
+  "planned": 430,
+  "executed": 430,
+  "passed": 333,
+  "failed": 0,
+  "skipped": 97,
+  "exception": "",
+  "elapsed_seconds": 9.8071197,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

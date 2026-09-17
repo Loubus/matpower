@@ -1,0 +1,5 @@
+Proyecto listo. MATPOWER: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\matpower\lib\runpf_psse.m
+START full RAW runpf
+runpf success=1 max_dVM=0.202969784 time=5.6s
+START full RAW runpf_psse
+runpf_psse success=1 max_dVM=0.0353635863 time=123.4s

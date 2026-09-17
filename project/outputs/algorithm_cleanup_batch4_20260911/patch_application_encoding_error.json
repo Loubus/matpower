@@ -1,0 +1,1 @@
+{"stage":"normalized scratch comparison", "error":"UnicodeDecodeError: Windows cp1252 could not decode UTF-8 source text", "correction":"Read all patch and source text explicitly as UTF-8; retain LF normalization"}

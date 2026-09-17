@@ -1,0 +1,26 @@
+--- before/docs/CPF_LIMIT_CONTINUATION.md
++++ docs/CPF_LIMIT_CONTINUATION.md
+@@ -3,6 +3,23 @@
+ The standard **unified VSC-MTDC CPF** now combines converter current-limit equations, augmented capability-transition correction, transported tangents and loading-turn detection. Sequential PF/CPF and AC-only CPF are not migrated to this formulation. No equipment ratings, case parameters or historical outputs are changed.
+ 
+ ## Converter current constraint
++
++Coupled-current activation is optional in unified CPF. Its default is enabled,
++preserving the integrated algorithm's behavior. Set it with either syntax:
++
++```matlab
++options = mpoption(options, 'vsc_mtdc.coupled_current_limits', 0); % off
++options.vsc_mtdc.coupled_current_limits = 1;                      % on (default)
++```
++
++With the toggle off, capability enforcement uses the existing projected-Q
++treatment, including its configured saturation margin. Augmented correction,
++tangent transport and nose detection stay enabled. The resolved setting is
++reported in `results.cpf.coupled_current_limits`. This switch controls CPF
++activation, not the lower-level PF interpretation of a saved active constraint.
++An off-setting CPF rejects an input with a positive `vsc_current_limit` entry;
++compare formulations from the original unsaturated case rather than silently
++discarding its saved active-set state. Missing or empty options use the default.
+ 
+ When the existing capability policy chooses **preserve active power** and identifies converter current as the binding constraint without changing active power, the released AC-Q equation becomes
+ 

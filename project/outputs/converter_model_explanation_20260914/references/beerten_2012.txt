@@ -1,0 +1,1298 @@
+ 
+J. Beerten, S. Cole, and R. Belmans, “Generalized steady-state VSC MTDC model for sequential 
+AC/DC power flow algorithms,” IEEE Trans. Power Syst., vol. 27, no. 2, pp. 821–829, May. 
+2012. 
+ 
+Digital Object Identifier: 10.1109/TPWRS.2011.2177867 
+ 
+ 
+URL: 
+http://ieeexplore.ieee.org/xpl/abstractAuthors.jsp?arnumber=6123184 
+ 
+ 
+© 2012 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained 
+for all other users, including reprinting/ republishing this material for advertising or promotional 
+purposes, creating new collective works for resale or redistribution to servers or lists, or reuse of 
+any copyrighted components of this work in other works. 
+ 
+ 
+IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. X, NO. X, MONTH 201X 1
+Generalized Steady-State VSC MTDC Model for
+Sequential AC/DC Power Flow Algorithms
+Jef Beerten, Student Member, IEEE, Stijn Cole, Member, IEEE, and Ronnie Belmans, Fellow, IEEE
+Abstract—In this paper, a steady-state Multi-terminal Voltage
+Source Converter High Voltage Direct Current (VSC MTDC)
+model is introduced. The proposed approach is extended to
+include multiple AC and DC grids with arbitrary topologies.
+The DC grids can thereby interconnect arbitrary buses in one or
+more non-synchronized AC systems. The converter equations are
+derived in their most general format and correctly deﬁne all set-
+points with respect to the system bus instead of the converter or
+ﬁlter bus, which is often done to simplify calculations. The paper
+introduces a mathematical model to include the converter limits
+and discusses how the equations change when a transformerless
+operation is considered or when the converter ﬁlter is omitted. An
+AC/VSC MTDC power ﬂow is implemented using MATPOWER
+to show the validity of the generalized power ﬂow model.
+Index Terms —HVDC transmission, HVDC converters, load
+ﬂow analysis, VSC HVDC.
+I. I NTRODUCTION
+T
+HE ever growing need for transmission capacity in cur-
+rent day power systems has led to an increased interest
+in transmission based on V oltage Source Converter High
+V oltage Direct Current (VSC HVDC) technology. One of the
+advantages of the VSC technology over conventional Current
+Source Commutated (CSC) HVDC is the relatively straight-
+forward extension to Multi-Terminal (MTDC) conﬁgurations.
+The VSC HVDC offers signiﬁcant advantages over traditional
+AC grid reinforcements and an operation in a MTDC grid
+could facilitate the integration of renewable energy sources in
+the future. Recently, plans have even been suggested to build
+offshore grids based on DC technology or a DC supergrid to
+connect the growing share of renewable energy sources [1],
+[2].
+One of the outstanding research issues is the steady-state be-
+havior of these integrated AC/DC systems. In the past, numer-
+ous efforts have been spent on the joint solution of integrated
+AC/DC systems based on the traditional CSC technology
+[3]–[7]. Generally, the solution methods presented for CSC
+HVDC systems can be subdivided in uniﬁed and sequential
+methods. In uniﬁed methods, the AC and DC system equations
+are solved together [6], whereas in the sequential method,
+the AC and DC system equations are solved sequentially
+Jef Beerten is funded by a research grant from the Research Foundation –
+Flanders (FWO).
+Jef Beerten and Ronnie Belmans are with the Department of Electrical
+Engineering (ESAT), Division ELECTA, Katholieke Universiteit Leuven,
+Kasteelpark Arenberg 10, bus 2445, 3001 Leuven-Heverlee, Belgium. (e-mail:
+jef.beerten@esat.kuleuven.be, ronnie.belmans@esat.kuleuven.be)
+Stijn Cole is with the Power System Consulting group of
+Tractebel Engineering, Arianelaan 7, 1200 Brussels, Belgium (e-mail:
+stijn.cole@gdfsuez.com).
+[7]. The biggest advantage of the sequential methods over
+their uniﬁed counterparts is that the sequential methods can
+be implemented relatively easily as an extension to existing
+AC power ﬂow programs, whereas a uniﬁed implementation
+requires an alteration of existing AC power ﬂow algorithms.
+A lot of research has been conducted on the operation
+of CSC HVDC in a multi-terminal set-up, but the inherent
+technical speciﬁcs of the CSC technology make a multi-
+terminal operation impractical if more than three converters are
+involved, thus impeding an application of the CSC technology
+in large scale, meshed DC grids. In a parallel operation, a
+power reversal is complex as it requires mechanical switching.
+A different voltage to ground at the different converters results
+in a complex insulation and grounding scheme in a series
+operation, hampering an extension of the scheme. VSC HVDC
+has much better prospects for an operation in a MTDC system
+than CSC HVDC technology: The DC side of the converter
+behaves as a current source, which makes a power reversal at
+any terminal a straight-forward control set-point change.
+The general distinction between uniﬁed and sequential
+methods is also applicable to integrated AC/VSC MTDC
+power ﬂow algorithms, but due to the technical speciﬁcs of
+the VSC, the power ﬂow models of CSC and VSC MTDC
+systems differ. Whereas the past research has been focussing
+on the power-ﬂow solutions for CSC MTDC systems, a general
+approach for VSC HVDC systems is missing. Most VSC
+HVDC power ﬂow models available in literature or embedded
+in commercial software are limited to two-terminal VSC
+HVDC systems or are not general enough, which can impede
+their extension to a general VSC MTDC model [8]. In [9],
+[10], the analysis is limited to a two-terminal VSC HVDC
+system. In [11], converter losses are neglected, DC variables
+are not accessible and the power ﬂow set-points are deﬁned
+at the converter bus instead of the system bus. This simpliﬁes
+the calculations, but is not in accordance with current practice.
+In [12], losses are included but the VSC is only modeled to a
+limited extent while converter limits are not included.
+The main contribution of this paper is the development
+of a detailed, general steady-state VSC MTDC model for a
+sequential AC/DC power ﬂow algorithm. The method elabo-
+rates further on the general algorithm presented in [13], now
+including a representation of converter transformers, ﬁlters and
+operation limits as a part of the converter model. Additionally,
+the model can represent multiple DC grids interconnecting
+different buses within one AC system or connecting buses from
+various AC systems. The paper also discusses the modiﬁca-
+tions to be made when a transformer- or ﬁlterless operation
+0000–0000/00$00.00 c© 2011 IEEE
+2 IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. X, NO. X, MONTH 201X
+Filter
+Phase
+reactor
+Converter
+Fig. 1. VSC HVDC converter station.
+is considered. Section II discusses the power ﬂow model of
+the converter and that of the DC grid. The sequential AC/DC
+power ﬂow implementation is discussed in Section III. Finally,
+Section IV discusses simulation results by combining the
+proposed methodology with the open source Matlab toolbox,
+MATPOWER [14].
+II. P OWER FLOW MODELING
+A. Converter model
+In its most general format, a VSC HVDC converter (Fig.
+1) can be represented by a controllable voltage source Uc =
+Uc∠δc behind the phase reactor with a complex impedance
+Zc = Rc +Xc. As shown in Fig. 2, the phase reactor is
+connected to the susceptanceBf which forms a part of the low
+pass ﬁlter. The ﬁlter bus is connected to the AC grid through a
+transformer, represented by its impedance Ztf =Rtf +Xtf .
+The equations for the power ﬂowing to the AC network can
+thus be written as
+Ps =−U2
+sGtf +UsUf[Gtf cos(δs−δf)+Btf sin(δs−δf)], (1)
+Qs= U2
+sBtf +UsUf[Gtf sin(δs−δf)−Btf cos(δs−δf)], (2)
+with Us =Us∠δs and Uf =Uf ∠δf respectively the complex
+grid side and ﬁlter bus voltage. The equations at the converter
+side can be written as
+Pc = U2
+cGc−UfUc[Gc cos(δf−δc)−Bc sin(δf−δc)], (3)
+Qc =−U2
+cBc +UfUc[Gc sin(δf−δc)+Bc cos(δf−δc)], (4)
+Assuming the AC ﬁlters to be lossless, the ﬁlter power reduces
+to its reactive part
+Qf =−U2
+fBf, (5)
+while the expressions for the ﬁlter side complex power ﬂowing
+through the transformer are written as
+Psf = U2
+fGtf−UfUs[Gtf cos(δs−δf)−Btf sin(δs−δf)],(6)
+Qsf=−U2
+fBtf +UfUs[Gtf sin(δs−δf)+Btf cos(δs−δf)],(7)
+and those ﬂowing through the phase reactor side are
+Pcf =−U2
+fGc+UfUc[Gc cos(δf−δc)+Bc sin(δf−δc)], (8)
+Qcf= U2
+fBc+UfUc[Gc sin(δf−δc)−Bc cos(δf−δc)]. (9)
+In the absence of low pass ﬁlters or with the ﬁlters omitted,
+the phase reactor and the converter transformer can be lumped
+together [13], eliminating the dependence on the complex ﬁlter
+bus voltage in (1) – (4). Similarly, if transformerless designs
+Us
+Ztf Uf
+Bf
+Zc
+Uc
+Ss Ssf Scf Sc
+Qf
+Fig. 2. Equivalent single phase power ﬂow model of a converter station
+connected to the AC grid.
+are considered, the ﬁlter bus and the AC grid bus coincide,
+hence simplifying the equations.
+A VSC HVDC converter can independently control the
+active and reactive power injection with respect to the AC
+system. In the power ﬂow algorithm presented in this paper,
+the active power injection is modeled in two different ways:
+1) Constant P : The converter has a constant active power
+injection Ps into the AC grid.
+2) Constant Udc: The algorithm adapts the active power
+injection Ps to obtain a constant DC bus voltage Udc.
+The actual steady-state behavior of a two-terminal VSC HVDC
+link can be modeled in a power ﬂow algorithm by one constant
+P converter and one constant Udc converter. The active power
+injection of the latter is unknown prior to the power ﬂow and
+depend on the losses in the VSC HVDC system. This constant
+Udc converter is referred to as the DC slack converter, due to
+its similarity to the slack bus in AC power ﬂow algorithms.
+This two-terminal representation can be extended to model
+x different MTDC systems with a total of y DC converters.
+With one DC slack bus per MTDC system , this results iny−x
+converters controlling their active power output (constant P ).
+Thex remaining DC slack converters, one per MTDC system,
+adjust their power to account for the DC system losses and to
+keep up the voltage of the DC grids. Alternatively, a voltage
+droop can be implemented to study the effect of distributing
+the DC voltage control function on the power ﬂows [15].
+The ability of the converter to independently control the
+reactive power results in two different representations in the
+power ﬂow algorithm:
+1) ConstantQ: The converter has a constant reactive power
+injection Qs into the AC grid.
+2) Constant U: The converter adapts the reactive power
+injection to obtain a constant AC bus voltage magnitude
+Us.
+As discussed in [8], commercial software models include
+the converter up to the ﬁlter bus while the ﬁlter and
+transformer have to be added separately. The power and
+voltage set-points are then deﬁned with respect to the ﬁlter bus
+or the converter bus [11] instead of the system bus. Although
+these alternative methods are easier to implement, they do
+not comply with current day practices in VSC HVDC systems.
+The model developed in this paper also includes the con-
+verter station losses using a generalized loss formula with
+BEERTEN et al.: GENERALIZED STEADY-STATE VSC MTDC MODEL FOR SEQUENTIAL AC/DC POWER FLOW ALGORITHMS 3
+−1 −0.5 0 0.5 1
+−1
+−0.5
+0
+0.5
+1
+Active power, Ps (p.u.)
+Reactive power, Qs (p.u.)
+Fig. 3. PQ-capability chart – Converter station current and voltage limits
+(with Icmax = 1.05 p.u., Ucmin = 0.85 p.u. and Ucmax =1.2 p.u.).
+the converter losses quadratically dependent on the converter
+current Ic [16]:
+Ploss =a +b·Ic +c·I2
+c, (10)
+with the per unit converter current magnitude Ic given by
+Ic =
+√
+P 2c +Q2c√
+3Uc
+. (11)
+This aggregated loss model has been derived for the S ¨odra
+L¨anken project, a VSC HVDC link with a rating of 600MW
+and a DC voltage of ±300kV . The model includes the
+losses in the different components of a VSC HVDC converter
+substation. The loss components are further discussed in [16].
+The loss data in this paper has been scaled down to the
+appropriate MV A base.
+B. VSC HVDC Converter limits
+To ensure an overall safe operation of the converter station,
+the steady state working point must be situated within the PQ
+capability chart of the converter, depicted in Fig. 3. The full
+lines include the effect of the ﬁlters, the dotted lines neglect
+the ﬁlters. The gray circle forms the converter current limit.
+The black arcs depict the upper and lower converter voltage
+limits.
+With the apparent power injection written as
+Ss =UsI∗
+s, (12)
+the system bus voltage equation, which is equal to
+Us =Uf−ZtfIs, (13)
+can be reformulated and substituted in the equation for the
+current at the ﬁlter bus, yielding
+Is =Ic− Us +ZtfIs
+Zf
+. (14)
+Rewriting this equation in terms of the current Is and substi-
+tuting it in (12) results in a closed expression of the converter
+current limit
+Ss =−U2
+s
+( 1
+Z∗
+f +Z∗
+tf
+)
++UsI∗
+cm
+( Z∗
+f
+Z∗
+f +Z∗
+tf
+)
+, (15)
+Us
+Z2
+Z1 Z3 Uc
+Ss,j Sc,j
+Fig. 4. Pi-equivalent scheme of a VSC HVDC converter.
+with Icm the phasor of the maximum current,
+Icm =Icmax ∠δIc. (16)
+With the ﬁlters omitted, (15) simpliﬁes to
+Ss =UsI∗
+cm, (17)
+As shown in Fig. 3, the circular current limit from (17) slightly
+scales and shifts to a new center point as a result of the ﬁlter
+inclusion. The ﬁlter capacitance thus leads to a small bias in
+Q-axis direction [17].
+In VSC systems that use Pulse Width Modulation (PWM),
+the modulation factor has an upper and lower limit, re-
+spectively to avoid overmodulation and the reappearance of
+harmonics. In [18], the lower reactive power limit is a constant
+at -0.5 p.u. With the Modular Multilevel Converter (MMC)
+technology, the reactive power is limited by the current in
+the lagging region [19]. The lower voltage limit can thus be
+omitted in this case.
+These limits are implemented as limits on the converter
+voltage. The voltage limits can be obtained by applying a
+Y− ∆ transformation to the equivalent model from Fig. 2.
+This is shown in Fig. 4, with the equivalent impedances Z1,
+Z2 and Z3 respectively
+Z1 = ZtfZc +ZcZf +ZfZtf
+Zc
+, (18)
+Z2 = ZtfZc +ZcZf +ZfZtf
+Zf
+. (19)
+Z3 = ZtfZc +ZcZf +ZfZtf
+Ztf
+. (20)
+Rewriting I∗
+s in (12) in terms of the currents I1 and I2,
+through Z1 and Z2 results in
+Ss =Us (I∗
+2−I∗
+1), (21)
+=Us
+(U∗
+c−U∗
+s
+Z∗
+2
+− U∗
+s
+Z∗
+1
+)
+. (22)
+Rewriting this equation in terms of admittances results in the
+expression for Ss in terms of a converter voltage limit
+Ss =−U2
+s (Y∗
+1 +Y∗
+2) +UsU∗
+cmY∗
+2, (23)
+with Ucm the phasor of the minimum or maximum converter
+voltage Ucmin or Ucmax. Ucmax is the maximum voltage that
+can be generated by the converter while avoiding overmodula-
+tion. The lower voltage limit Ucmin in Fig. 3 has been chosen
+to comply with the minimum reactive power limit from [18].
+4 IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. X, NO. X, MONTH 201X
+This limit can be omitted in a MMC or when no minimum
+reactive power limit is imposed on the converter.
+Similar expressions can be found by applying l’H ˆopital’s
+rule to (18) – (20) for Zf→∞ or Ztf→0 when the ﬁlter or
+transformer are not included. The expression without the ﬁlter
+hence simpliﬁes to
+Ss =−U2
+s
+( 1
+Z∗
+tf +Z∗
+c
+)
++ UsU∗
+cm
+Z∗
+tf +Z∗
+c
+. (24)
+Similar to the current limit, the inclusion of the ﬁlter shifts
+the voltage limit circles from (17) to a new center point, while
+their radii slightly change.
+C. DC Grid model
+The power ﬂows in the DC grid can be obtained in a way
+similar to a conventional AC power ﬂow. The current injected
+at a DC node i can be written as the current ﬂowing to the
+other n− 1 nodes in the network:
+Idci=
+n∑
+j=1
+j⁄=i
+Ydcij· (Udci−Udcj), (25)
+with Ydcij equal to 1/Rdcij .
+Combining all currents injected in an n bus DC network
+results in
+Idc=YdcUdc, (26)
+withIdc = [Idc1,Idc2...I dck, 0... 0]T the DC current vector
+with n−k zero elements due to DC buses without a power
+injection and converter outages, Udc = [Udc1,Udc2...U dcn]T
+the DC voltage vector and Ydc the DC bus matrix. When line
+outages are taken into account, the DC bus matrix needs to
+be updated accordingly. When x DC grids are considered, all
+DC bus matrices Ydcj of the different DC grids are combined
+in one single sparse band matrix Ydc:
+Ydc=
+
+
+Ydc1
+...
+Ydcx
+
+. (27)
+For a monopolar DC grid the active power injected in node i
+can be written as
+Pdci=UdciIdci, ∀i≤k, (28)
+whereas for a monopolar, symmetrically grounded DC grid,
+the power injections become
+Pdci=2UdciIdci, ∀i≤k. (29)
+A similar expressions holds for a bipolar conﬁguration. The
+current injections Idc are not known prior to the power ﬂow
+solution for the DC grid, whereas the active power injections
+Pdc are known for all buses except for the DC slack buses as
+a results of the AC power ﬂow. Combining (26) and (29) and
+assuming a monopolar, symmetrically grounded DC grid
+Pdci=2Udci
+n∑
+j=1
+j⁄=i
+Ydcij· (Udci−Udcj). (30)
+AC grids
+power ﬂowData input
+per unit
+conversion
+& internal
+numbering
+DC slack
+bus power
+estimate
+Converter
+powers
+and losses
+Converter
+limit check
+DC grids
+power ﬂow
+DC slack
+bus iteration
+Converged?Output
+per unit
+reconversion
+& external
+numbering
+Update
+DC slack
+bus power
+yes no
+Fig. 5. Flow chart of the sequential VSC AC/DC power ﬂow algorithm.
+This system of non-linear equations can either be solved with a
+Newton-Raphson (NR) method, as derived in the next section,
+or rewritten to include the unknown DC slack buses power
+equations directly [20].
+III. AC/DC P OWER FLOW
+Fig. 5 shows the ﬂow chart of the sequential power ﬂow
+algorithm. The algorithm starts with a per unit conversion
+and an internal bus renumbering from [8] which facilates the
+inclusion of multiple DC grids, line and converter outages, as
+well as DC buses without an AC grid connection. In order
+to simplify notation, it is assumed in the remainder of the
+paper that interconnected AC and DC buses have the same
+bus number. For convenience, the analysis will be conﬁned
+to one AC grid and one DC grid with n buses of which k
+have a connection to the AC grids. The method can easily be
+extended to include multiple AC and DC grids.
+A. AC network power ﬂow
+The power ﬂow equations for bus i in the AC grid can be
+written as
+Pi(U,δ) =Ui
+p∑
+j=1
+Uj
+[
+Gij cos(δi−δj)+Bij sin(δi−δj)
+]
+, (31)
+Qi(U,δ)=Ui
+p∑
+j=1
+Uj
+[
+Gij sin(δi−δj)−Bij cos(δi−δj)
+]
+. (32)
+The non-linear set of power ﬂow equations for all AC buses
+can be solved using a NR power ﬂow, with the converter power
+injectionsPs andQs included in the power mismatch vectors
+∆P (k) and ∆Q(k) as negative loads. The power mismatch
+vectors can be rewritten as:
+∆P (j)
+i =Pgen
+i − (Pdem
+i −Psi)−Pi(U (j),δ(j)), (33)
+∆Q(j)
+i =Qgen
+i − (Qdem
+i −Qsi)−Qi(U (j),δ(j)). (34)
+BEERTEN et al.: GENERALIZED STEADY-STATE VSC MTDC MODEL FOR SEQUENTIAL AC/DC POWER FLOW ALGORITHMS 5
+Converters in V -control are represented as dummy AC gen-
+erators and their AC buses are changed from PQ -nodes to
+PV -nodes. The active power injections of the slack buses are
+changed in order to control the DC grid voltages. Without lack
+of generality, the ﬁrst converter of the DC grid is assumed
+to operate as DC slack bus to simplify notation. As a ﬁrst
+estimate to initiate the iteration, the DC system is assumed to
+be lossless, hence
+P (0)
+s1 =−
+k∑
+j=2
+Psj. (35)
+For subsequent iterations, the solution from the previous
+iteration is used for P (k)
+s1 .
+B. Converter calculations
+With the AC grid voltagesU s and power injection at the AC
+grid side Ss known, the converter side voltage and currents
+can be calculated. With (12) – (13), the ﬁlter bus voltage Uf
+can be written as
+Ufi =Usi +Ztfi·
+(S∗
+si
+U∗
+si
+)
+∀i<k. (36)
+The converter current Ic can be extracted from (14), with Is
+rewritten using (12)
+Ici = Usi
+Zfi
++
+(S∗
+si
+U∗
+si
+)
+· Zfi +Ztfi
+Zfi
+∀i<k, (37)
+which can be substituted in (10) to calculate the converter
+losses. The converter voltage Uc can be calculated as
+Uci =Ufi +ZciIci, ∀i<k. (38)
+With all quantities on the AC side known, the DC grid’s
+injected power becomes
+Pdci =−Pc,i−Plossi, ∀i<k. (39)
+C. Converter limit check
+If the converter is operating outside its limits, the power
+injections are adapted to ensure a safe operation. In general,
+a weighting factor can be used to give a higher priority to
+active or reactive power. In this paper, priority is given to
+active power. The grid injected powerPs can remain unaltered
+if intersections with the capability chart can be found. If, on
+the contrary, Ps is too large, the active power is limited to its
+maximum value and the reactive power is adapted accordingly.
+The current and voltage limits in (15) and (23) are circles in
+thePQ -plane. Hence, with Ps known, the two reactive power
+limits imposed by the current limit can be calculated as
+Qs =Q0±
+√
+r2− (Ps−P0)2, (40)
+with the circle’s center S0 = P0 +Q0 and a radius r. The
+center point and radius of the current limit are given by
+S0 =−U2
+s
+( 1
+Z∗
+f +Z∗
+tf
+)
+, (41)
+r =UsIcmax
+⏐⏐⏐⏐
+Z∗
+f
+Z∗
+f +Z∗
+tf
+⏐⏐⏐⏐. (42)
+The two solutions refer to the upper and lower reactive power
+limit imposed by the current limit.
+Similarly, the voltage limits center point and radius are given
+by
+S0 =−U2
+s (Y∗
+1 +Y∗
+2), (43)
+r =UsUcmY2. (44)
+Replacing Ucm in (44) with Ucmin or Ucmax and substituting
+(43) – (44) in (40) gives an analytical expression for the lower
+and upper voltage limit reactive power. Only the solution with
+the positive sign is of interest, as the other solution refers to
+the lower crossing point with voltage limit circle.
+The limit checks can be implemented similarly to those of
+generator limits: If a converter is operating outside its active
+power limits, the set-points must be reduced to their maximum
+values. Additionally, it must be ascertained that the DC slack
+buses are working within their bounds. Apart from the active
+power violations, the converter’s reactive power must stay
+within limits. When aQ-limit is hit, the most stringent reactive
+power limit imposes the new converter operation point. If the
+converter is operating in V -control, the voltage controlled bus
+also has to be changed to a PQ -bus. If one or more converters
+hit their limits, the most stringent one is enforced and the
+convergence ﬂag is reset.
+Contrary to generator limits, which are often approximated
+by constant values, the Q-limits of the converters are updated
+every iteration due to changing grid conditions. As a conse-
+quence, it was found that simply enforcing the limits during
+each iteration proved unsatisfactory. Therefore, the set-points
+are only updated when the incremental change in apparent
+power exceeds a minimum value of 1e-2 p.u. Alternatively, it
+was also found that checking the limits after every iteration
+and only updating their value every three iterations led to
+convergence as well. The algorithm should be properly tuned
+to achieve good convergence.
+D. DC network power ﬂow
+Alternatively to the approach proposed in [20], the non-
+linear DC network equations from (30) can be solved with a
+NR method
+(
+Udc
+∂Pdc
+∂Udc
+)(j)
+· ∆Udc
+Udc
+(j)
+= ∆Pdc
+(j). (45)
+The power mismatch vector ∆Pdc
+(j) is given by
+∆P (j)
+dci
+=
+{
+P (k)
+dci
+−Pdci(Udc
+(j)) ∀i≤k
+−Pdci(Udc
+(j)) ∀k≤i≤n, (46)
+with superscripts (j) and (k) respectively referring to the inner
+NR iteration and the outer AC/DC power ﬂow iteration. The
+terms of the Jacobian are
+(
+Udcj
+∂Pdci
+∂Udcj
+)(j)
+=−2U(j)
+dci
+YdcijU(j)
+dcj
+, (47)
+(
+Udci
+∂Pdci
+∂Udci
+)(j)
+=P (j)
+dci
++ 2U(j)
+dci
+2 n∑
+j=1
+j⁄=i
+Ydcij. (48)
+6 IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. X, NO. X, MONTH 201X
+The equations and terms corresponding to the slack bus are
+removed since its voltage is known prior to the DC network
+power ﬂow. After convergence, the voltages on all DC buses
+are known, while the slack bus power injection can be found
+using (30). The DC line currents can be obtained by premul-
+tiplying the DC bus voltage vector Udc by the system branch
+admittance matrices Ydcf and Ydct, which are obtained as a
+byproduct of the construction of the DC bus matrix Ydc.
+E. DC slack bus iteration
+The AC bus active power injection Ps1 of the DC slack bus
+is calculated from its DC power Pdc1 by accounting for the
+converter losses. As the converter losses from (10) depend on
+the yet unknown converter current, an additional iteration is
+needed to calculate the active power injection Ps1. During this
+iteration, the grid side voltageUs1 and reactive power injection
+Qs1 are kept constant. Omitting the subscript 1 to simplify
+notations, the value of Pc is iteratively updated according to
+P (i)
+c =−P (k)
+dc −P (i)
+loss, (49)
+with the superscripts (i) and (k) respectively referring to
+the DC slack bus iteration and the outer AC/DC power ﬂow
+iteration. The converter losses Ploss are calculated from (10)
+– (11). The previous AC network power ﬂow results are used
+to provide an initial estimate for the converter losses P (0)
+loss.
+A NR iteration based onUc andUf as variables is internally
+used to update the converter state in order to obtain a new
+value for P (i)
+loss, as shown in (50) at the bottom of the page,
+with the functions F1 and F2 given by
+F1(Us,U c,U f) =Pcf−Psf, (51)
+F2(Us,U c,U f) =Qcf−Qsf−Qf. (52)
+The power mismatches ∆P (j)
+c and ∆Q(j)
+s can be calculated
+by respectively using (3) and (2) and are given by
+∆P (j)
+c = P (i)
+c −Pc(U(j)
+f ,U (j)
+c ), (53)
+∆Q(j)
+s =Q(k)
+s −Qs(U(k)
+s ,U (j)
+f ), (54)
+The superscript (j) refers to the inner NR iteration. The
+elements of the Jacobian matrix can be analytically derived
+from (1) – (9) directly and by substitution in the expressions
+for F1 and F2. The results are given in the appendix.
+In absence of the transformer, the active and reactive power
+injections can be rewritten in terms of Us and Uc as
+Ps =−U2
+sGc+UsUc[Gc cos(δs−δc)+Bc sin(δs−δc)],(55)
+Qs= U2
+sBcf +UsUc[Gc sin(δs−δc)−Bc cos(δs−δc)],(56)
+Inputs
+P (0)
+c from (49)
+U (k)
+s ,Q (k)
+s
+U (i)
+c andU (i)
+f
+using (50) – (54)
+Q(i)
+c from (4)
+P (i)
+loss from (10) – (11)
+P (i)
+c using (49)
+Check
+convergencePc
+UpdatePc
+Output
+Ps from (1)
+yes no
+Fig. 6. DC Slack bus iteration ﬂow chart.
+with Bc + Bf abbreviated as Bcf . By rewriting Qs, the
+Jacobian matrix simpliﬁes to a 2× 2 structure retaining ∆δc
+and ∆Uc
+Uc
+as unknowns and the derivates related to the Pc and
+Qs equations as Jacobian elements
+
+
+(
+∂Pc
+∂δc
+)(j) (
+Uc∂Pc
+∂Uc
+)(j)
+(
+∂Qs
+∂δc
+)(j) (
+Uc
+∂Qs
+∂Uc
+)(j)
+
+
+[
+∆δ(j)
+c
+∆Uc
+Uc
+(j)
+]
+=
+[
+∆P (j)
+c
+∆Q(j)
+s
+]
+(57)
+with
+(
+∂Pc
+∂δc
+)(j)
+and
+(
+Uc∂Pc
+∂Uc
+)(j)
+given by the expressions in
+the appendix and the other elements of the reduced Jacobian
+matrix given by
+(∂Qs
+∂δc
+)(j)
+=−P (j)
+s − U(k)
+s
+2
+Gc, (58)
+(
+Uc
+∂Qs
+∂Uc
+)(j)
+= Q(j)
+s − U(k)
+s
+2
+Bcf, (59)
+with Ps, Qs from (55) – (56) and Pc, Qc from (3) – (4) with
+Uf replaced by Us. In absence of the converter ﬁlters, the
+equations can be reduced to the forms derived in [13].
+When multiple DC grids and slack buses are present, all
+Jacobian matrices are combined and solved simultaneously.
+IV. S IMULATION RESULTS
+This section presents simulation results of the proposed
+AC/DC power ﬂow algorithm implemented in the open-source
+Matlab toolbox, MATPOWER [14]. In the case of commercial
+closed-source AC power ﬂow software, the model has to be
+integrated with the coding level and not at the end-user level,
+hence making the implementation less evident.
+
+
+(
+∂Pc
+∂δc
+)(j) (
+∂Pc
+∂δf
+)(j) (
+Uc∂Pc
+∂Uc
+)(j) (
+Uf ∂Pc
+∂Uf
+)(j)
+0
+(
+∂Qs
+∂δf
+)(j)
+0
+(
+Uf
+∂Qs
+∂Uf
+)(j)
+(
+∂F1
+∂δc
+)(j) (
+∂F1
+∂δf
+)(j) (
+Uc∂F1
+∂Uc
+)(j) (
+Uf ∂F1
+∂Uf
+)(j)
+(
+∂F2
+∂δc
+)(j) (
+∂F2
+∂δf
+)(j) (
+Uc∂F2
+∂Uc
+)(j) (
+Uf ∂F2
+∂Uf
+)(j)
+
+
+·
+
+
+∆δ(j)
+c
+∆δ(j)
+f
+∆Uc
+Uc
+(j)
+∆Uf
+Uf
+(j)
+
+
+=
+
+
+∆P (j)
+c
+∆Q(j)
+s
+−F (j)
+1
+−F (j)
+2
+
+ (50)
+BEERTEN et al.: GENERALIZED STEADY-STATE VSC MTDC MODEL FOR SEQUENTIAL AC/DC POWER FLOW ALGORITHMS 7
+Bus 101 Bus 102
+Bus 103
+Bus 104 Bus 105
+Bus 106
+Bus 108 Bus 107
+Bus 113
+Bus 109 Bus 110 
+Bus 111 Bus 112
+Bus 114Bus 115
+Bus 116
+Bus 117
+Bus 118
+Bus 119
+Bus 120
+Bus 121
+Bus 124
+Bus 122
+Bus 123
+Synch.
+Cond.
+Bus 301 Bus 302
+DC 2
+DC 3
+DC 1
+DC 4
+DC 6
+DC 7
+DC 5
+Bus 201 Bus 202
+Bus 203
+Bus 204 Bus 205
+Bus 206
+Bus 208 Bus 207
+Bus 213
+Bus 209 Bus 210 
+Bus 211 Bus 212
+Bus 214Bus 215
+Bus 216
+Bus 217
+Bus 218
+Bus 219
+Bus 220
+Bus 221
+Bus 224
+Bus 222
+Bus 223
+Synch.
+Cond.
+Fig. 7. Modiﬁed Two Area RTS-96 system with 2 MTDC Systems.
+TABLE I
+VSC CONVERTER DATA
+Converter parameters Rating & Converter loss data
+No. 1, 2 3 4, 6 5, 7
+Xtr (p.u.) 0.1121 Pdc (MW) 100 200 200 100
+Rtr (p.u.) 0.0015 ±Vdc (kV) 150 150 300 300
+Bf (p.u.) 0.0887a a (MW) 1.103 2.206 1.103 2.206
+Xc (p.u.) 0.16428 b (kV) 0.887 0.887 1.800 1.800
+Rc (p.u.) 0.0001 crec (Ω) 2.885 1.442 5.94 11.88
+cinv (Ω) 4.371 2.185 9 18
+a Only included for converters 4 – 7.
+In this implementation, a tolerance of 1e-8 p.u. was used for
+the AC and DC networks power ﬂow, DC slack bus iteration
+and the overall iteration loop. Results are presented on a mod-
+iﬁed version of the IEEE Two Area RTS-96 (MRTS) network
+[21]. A single-line diagram of the MRTS network is shown
+in Fig. 7. In this MRTS network, the three interconnections
+between the two areas have been replaced by MTDC systems:
+In the 138 kV system, line 107 – 203 has been replaced
+by a 3-terminal 150 kV MTDC system connecting the two
+asynchronous systems with a 150 MW offshore wind farm
+(buses 301 and 302). In the 345 kV system, lines 113 – 215
+and 123 – 217 have been replaced by a 4-terminal 300 kV
+MTDC system. The parameters of the DC systems can be
+found in Tab. I. The 3-terminal DC system between buses 107
+and 203 represents a ﬁlterless MMC VSC MTDC system,
+the 4-terminal MTDC scheme includes low-pass ﬁlters and
+TABLE II
+POWER FLOW SOLUTION – MTDC GRID 1
+Converter 1 2 3
+Control Slack - Q P - V P - Q
+Ps (MW) 66.84 75.00 -150.00
+Qs (MVAr) 0.00 5.86 0.00
+Us (p.u.) 1.025 1.000 1.050
+δs (deg) -8.93 -4.88 -0.08
+Pc (MW) 66.91 75.09 -149.67
+Qc (MVAr) 11.75 21.50 56.40
+Uc (p.u.) 1.042 1.038 1.120
+δc (deg) 1.04 6.63 -20.73
+Ploss (MW) 1.56 1.67 3.52
+Pdc (MW) -68.47 -76.76 146.16
+Udc (p.u.) 1.000 0.999 1.006
+represents a 2-level PWM VSC MTDC system. The three
+sequentially solved AC networks operate asynchronously, with
+reference (slack) buses at 113, 213 and 302. A generator
+(U100), producing 80 MW, at bus 107 and a generator (U76),
+producing 76 MW, at bus 201 have been disabled and replaced
+by the production of 150 MW in bus 302. The active power
+injections of the 4-terminal MTDC grid converters closely
+resemble the line ﬂows between the different zones in the
+original two-area MRTS network. All but one converters are
+set to reactive power control, working at unity power factor.
+Tabs. II – III summarize the AC and DC powers and voltages
+of the VSC converters connected to the 2 MTDC grids.
+The power ﬂow converges in 2 overall iterations with a
+8 IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. X, NO. X, MONTH 201X
+TABLE III
+POWER FLOW SOLUTION – MTDC GRID 2
+Converter 4 5 6 7
+Control Slack - Q P - Q P - Q P - Q
+Ps (MW) 124.43 -50.00 -135.00 50.00
+Qs (MVAr) 0.00 0.00 0.00 0.00
+Us (p.u.) 1.020 1.050 1.014 1.039
+δs (deg) 0.00 10.11 10.25 14.60
+Pc (MW) 124.67 -49.96 -134.72 50.04
+Qc (MVAr) 31.36 -3.46 39.26 -3.14
+Uc (p.u.) 1.061 1.042 1.062 1.033
+δc (deg) 18.41 2.90 -9.89 21.96
+Ploss (MW) 2.81 1.36 3.04 1.33
+Pdc (MW) -127.49 48.60 131.67 -51.37
+Udc (p.u.) 1.000 1.008 1.010 1.006
+ﬂat start. In the ﬁrst overall iteration cycle, all grids need 4
+internal iteration steps. In the second overall cycle, the AC grid
+connected to the DC slack buses is the only grid that needs
+3 steps to converge, the other grids are already converged
+after the ﬁrst cycle. Compared to the situation without MTDC
+systems, the calculation time increases with a factor 2.4, with
+the largest contributions resulting from the repeated AC power
+ﬂow (75%) and the DC slack iteration ( 21%). The DC power
+ﬂow is only responsible for 1.7% of the overall calculation
+time due to the limited size of the DC grids compared to the
+AC grids. Since no converter limits are encountered, enabling
+the limits does not increase the overall number of iterations.
+However, the overall calculation time increases by a factor 1.3.
+V. C ONCLUSION
+In this paper, a steady-state VSC MTDC model for power
+ﬂow programs has been developed. The model allows sim-
+ulating multiple AC grids interconnected by multiple DC
+grids. The approach demonstrated in this paper is general
+and allows to include converter limits as well as different
+converter topologies by either including converter transformers
+and/or low-pass ﬁlters. Simulation results show the ability
+of the proposed model to fully represent MTDC systems in
+power ﬂow software and demonstrate how the model can be
+incorporated with an open-source AC power ﬂow analysis
+code.
+APPENDIX
+The slack bus iteration Jacobian elements from (50) are
+(∂Pc
+∂δc
+)(j)
+=−Q(j)
+c − U(j)
+c
+2
+Bc,
+(∂Pc
+∂δf
+)(j)
+= Q(j)
+c + U(j)
+c
+2
+Bc,
+(
+Uc
+∂Pc
+∂Uc
+)(j)
+= P (j)
+c + U(j)
+c
+2
+Gc,
+(
+Uf
+∂Pc
+∂Uf
+)(j)
+= P (j)
+c − U(j)
+c
+2
+Gc,
+(∂Qs
+∂δf
+)(j)
+=−P (j)
+s − U(k)
+s
+2
+Gtf,
+(
+Uf
+∂Qs
+∂Uf
+)(j)
+= Q(j)
+s − U(k)
+s
+2
+Btf,
+(∂F1
+∂δc
+)(j)
+= Q(j)
+cf − U(j)
+f
+2
+Bc,
+(∂F1
+∂δf
+)(j)
+=−Q(j)
+cf +Q(j)
+sf + U(j)
+f
+2
+(Bc +Btf),
+(
+Uc
+∂F1
+∂Uc
+)(j)
+= P (j)
+cf + U(j)
+f
+2
+Gc,
+(
+Uf
+∂F1
+∂Uf
+)(j)
+= P (j)
+cf −P (j)
+sf − U(j)
+f
+2
+(Gc +Gtf),
+(∂F2
+∂δc
+)(j)
+=−P (j)
+cf − U(j)
+f Gc,
+(∂F2
+∂δf
+)(j)
+= P (j)
+cf −P (j)
+sf + U(j)
+f
+2
+(Gc +Gtf),
+(
+Uc
+∂F2
+∂Uc
+)(j)
+= Q(j)
+cf − U(j)
+f
+2
+Bc,
+(
+Uf
+∂F2
+∂Uf
+)(j)
+=Q(j)
+cf −Q(j)
+sf + U(j)
+f
+2
+(Bc +Btf + 2Bf),
+with the converter powers from (1) – (9).
+REFERENCES
+[1] D. Van Hertem and M. Ghandhari, “Multi-terminal VSC HVDC for
+the European supergrid: Obstacles,” Renewable and Sustainable Energy
+Reviews, vol. 14, no. 9, pp. 3156–3163, Dec. 2010.
+[2] W. Lu and B.-T. Ooi, “Optimal acquisition and aggregation of offshore
+wind power by multiterminal voltage-source HVDC,” IEEE Trans.
+Power Del., vol. 18, no. 1, pp. 201–206, Jan. 2003.
+[3] C. M. Ong and A. Hamzei-nejad, “A general-purpose multiterminal DC
+load-ﬂow,”IEEE Trans. Power App. Syst., vol. PAS-100, no. 7, pp. 3166–
+3174, Jul. 1981.
+[4] H. Fudeh and C. M. Ong, “A simple and efﬁcient AC-DC load-ﬂow
+method for multiterminal DC systems,” IEEE Trans. Power App. Syst. ,
+vol. PAS-100, no. 11, pp. 4389–4396, Nov. 1981.
+[5] T. Smed, G. Andersson, G. B. Sheble, and L. L. Grigsby, “A new
+approach to AC/DC power ﬂow,” IEEE Trans. Power Syst., vol. 6, no. 3,
+pp. 1238–1244, Aug. 1991.
+[6] M. El-Marsafawy and R. Mathur, “A new, fast technique for load-
+ﬂow solution of integrated multi-terminal AC/DC systems,” IEEE Trans.
+Power App. Syst., vol. 99, no. 1, pp. 246–255, Jan./Feb. 1980.
+[7] M. E. El-Hawary and S. T. Ibrahim, “A new approach to AC-DC load
+ﬂow analysis,” Electric Power Systems Research , vol. 33, no. 3, pp.
+193–200, 1995.
+[8] J. Beerten, S. Cole, and R. Belmans, “Implementation aspects of a
+sequential AC/DC power ﬂow computation algorithm for multi-terminal
+VSC HVDC systems,” in Proc. IET ACDC ’10, London, UK, Oct. 20–
+21, 2010.
+[9] C. Angeles-Camacho, O. L. Tortelli, E. Acha, and C. R. Fuerte-Esquivel,
+“Inclusion of a high voltage DC-voltage source converter model in a
+Newton-Raphson power ﬂow algorithm,” IEE Proc.-Gener. Transm. and
+Distrib., vol. 150, no. 6, pp. 691–696, Nov. 2003.
+[10] A. Pizano-Martinez, C. R. Fuerte-Esquivel, H. Ambriz-Perez, and
+E. Acha, “Modeling of VSC-based HVDC systems for a Newton-
+Raphson OPF algorithm,” IEEE Trans. Power Syst. , vol. 22, no. 4, pp.
+1794–1803, Nov. 2007.
+[11] G. Li, M. Zhou, J. He, G. Li, and H. Liang, “Power ﬂow calculation
+of power systems incorporating VSC-HVDC,” in Proc.IEEE PowerCon
+2004, vol. 2, Singapore, Nov. 21–24, 2004, pp. 1562–1566.
+[12] M. Zhao, Z. Chen, and F. Blaabjerg, “Load ﬂow analysis for variable
+speed offshore wind farms,” IET Renew. Power Gener., vol. 3, no. 2, pp.
+120–132, Jun. 2009.
+[13] J. Beerten, S. Cole, and R. Belmans, “A sequential AC/DC power ﬂow
+algorithm for neworks containing multi-terminal VSC HVDC systems,”
+in Proc. IEEE PES GM ’10 , Minneapolis, USA, Jul. 25–29, 2010.
+BEERTEN et al.: GENERALIZED STEADY-STATE VSC MTDC MODEL FOR SEQUENTIAL AC/DC POWER FLOW ALGORITHMS 9
+[14] R. D. Zimmerman, C. E. Murillo-Sanchez, and R. J. Thomas, “MAT-
+POWER: Steady-state operations, planning, and analysis tools for power
+systems research and education,”IEEE Trans. Power Syst., vol. 26, no. 1,
+pp. 12–19, Feb. 2011.
+[15] J. Beerten, D. Van Hertem, and R. Belmans, “VSC MTDC systems with
+a distributed DC voltage control – a power ﬂow approach,” inProc. IEEE
+PowerTech ’11, Trondheim, Norway, Jun. 19–23, 2011.
+[16] G. Daelemans, “VSC HVDC in meshed networks,” Master’s thesis,
+Katholieke Universiteit Leuven, Leuven, 2008.
+[17] S. Johansson, G. Asplund, E. Jansson, and R. Rudervall, “Power system
+stability beneﬁts with VSC DC-transmission systems,” in Proc. CIGRE
+2004 Session, Paris, France, 2004.
+[18] M. P. Bahrman and B. K. Johnson, “The ABCs of HVDC transmission
+technologies,” IEEE Power Energy Mag., vol. 5, no. 2, pp. 32–44, 2007.
+[19] G. P. Adam, O. Anaya-Lara, and G. Burt, “Steady-state and transient
+performance of DC transmission systems based on HVDC technology,”
+in Proc. IET ACDC ’10, London, UK, Oct. 20–21, 2010.
+[20] S. Cole, J. Beerten, and R. Belmans, “Generalized dynamic VSC MTDC
+model for power system stability studies,” IEEE Trans. Power Syst. ,
+vol. 25, no. 3, pp. 1655–1662, Aug. 2010.
+[21] Reliability Test System Task Force, “The IEEE reliability test system-
+1996. a report prepared by the reliability test system task force of the
+application of probability methods subcommittee,” IEEE Trans. Power
+Syst., vol. 14, no. 3, pp. 1010–1020, Aug. 1999.
+Jef Beerten (S’07) was born in Belgium in 1985.
+He received the M.Sc. degree in electrical engi-
+neering from the Katholieke Universiteit Leuven
+(K.U.Leuven), Leuven, Belgium, in 2008, where he
+is currently working towards the Ph.D. degree. He
+is a Research Assistant with the division ESAT-
+ELECTA division of K.U.Leuven. His research in-
+terests include power system control, the grid of the
+future and multiterminal VSC HVDC in particular.
+Mr. Beerten is an active member of both the IEEE
+and Cigr ´e.
+Mr. Beerten holds a Ph.D. fellowship from the Research Foundation
+Flanders (FWO).
+Stijn Cole (S’06-M’10) received the M.Sc. degree in
+electrical engineering in 2005 from the Katholieke
+Universiteit Leuven (K.U.Leuven), Belgium. After
+completing his doctoral dissertation on modelling
+and simulation of HVDC systems, he received the
+Ph.D. degree in 2010 from the same university. In
+2010, he joined Tractebel Engineering where he is
+currently working as a power system consultant.
+Ronnie Belmans (S’77-M’84-SM’89-F’05) re-
+ceived the M.Sc. degree in electrical engineering in
+1979 and the Ph.D. degree in 1984, both from the
+K.U.Leuven, Belgium, the Special Doctorate in 1989
+and the Habilitierung in 1993, both from the RWTH,
+Aachen, Germany. Currently, he is a full profes-
+sor with the K.U.Leuven, teaching electric power
+and energy systems. His research interests include
+techno-economic aspects of power systems, power
+quality and distributed generation. He is also guest
+professor at Imperial College of Science, Medicine
+and Technology, London-UK.

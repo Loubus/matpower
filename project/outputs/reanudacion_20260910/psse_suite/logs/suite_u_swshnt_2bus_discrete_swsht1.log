@@ -1,0 +1,622 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_swshnt_2bus_discrete_swsht1.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 1 1 1 1 1 0 99 0
+Solver option array values: 1 1 1 1 1 0 99 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 1: enable transformer tap stepping adjustment.
+- Option 2, area interchange adjustment flag = 1: enable area interchange adjustment using tie-line flows only.
+- Option 3, phase shift adjustment flag = 1: enable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 1: enable switched-shunt adjustment.
+- Option 6, flat start flag = 0: do not flat start; use voltages already present in the RAW/case.
+- Option 7, VAR limit flag = 99: apply generator reactive power limits on iteration 99, or sooner if mismatch gets small.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, SWSHNT=1, FLATST=0
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_swshnt_2bus_discrete_swsht1.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 20 20 100 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.7 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 1 1 1 1 1 0 99 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_u_swshnt_2bus_discrete_swsht1_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_swshnt_2bus_discrete_swsht1.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:25
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Messages for machine "1" at bus 1 [SLACK       230.00]:   (002226)
+ Error: Invalid ZSORCE reactance: .00000; set to 1.00000   (002230)
+
+ Reading non-transformer branch data...
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ Power flow solution parameters changed:
+ X--ORIGINAL--X  X-NEW VALUE--X  DATA ITEM
+         99             100      MXTPSS
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 1   Off-diagonals = 0   Maximum size = 0
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         0.6665(      2     )    0.1985(      2     )
+                                                             0.04880(      2     )   0.10000(      2     )
+   1         0.0376(      2     )    0.0400(      2     )
+                                                             0.00966(      2     )   0.00629(      2     )
+   2         0.0005(      2     )    0.0005(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]     0.00    10.00
+
+ 1 switched shunts adjusted
+
+   2         0.0005(      2     )    0.0812(      2     )
+                                                             0.01709(      2     )   0.00012(      2     )
+   3         0.0002(      2     )    0.0015(      2     )
+                                                             0.00032(      2     )   0.00003(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]    10.00    20.00
+
+ 1 switched shunts adjusted
+
+   4         0.0000(      2     )    0.0845(      2     )
+                                                             0.01745(      2     )   0.00011(      2     )
+   5         0.0002(      2     )    0.0016(      2     )
+                                                             0.00033(      2     )   0.00003(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]    20.00    30.00
+
+ 1 switched shunts adjusted
+
+   6         0.0000(      2     )    0.0875(      2     )
+                                                             0.01769(      2     )   0.00019(      2     )
+   7         0.0002(      2     )    0.0017(      2     )
+                                                             0.00034(      2     )   0.00003(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]    30.00    40.00
+
+ 1 switched shunts adjusted
+
+   8         0.0000(      2     )    0.0905(      2     )
+                                                             0.01793(      2     )   0.00027(      2     )
+   9         0.0002(      2     )    0.0018(      2     )
+                                                             0.00035(      2     )   0.00003(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]    40.00    50.00
+
+ 1 switched shunts adjusted
+
+  10         0.0000(      2     )    0.0937(      2     )
+                                                             0.01818(      2     )   0.00035(      2     )
+  11         0.0002(      2     )    0.0019(      2     )
+                                                             0.00035(      2     )   0.00003(      2     )
+
+ SWITCHED SHUNTS ADJUSTED:
+ X----------- AT BUS ----------X    OLD Q    NEW Q
+      2     [LOAD_SHUNT  230.00]    50.00    60.00
+
+ 1 switched shunts adjusted
+
+  12         0.0000(      2     )    0.0971(      2     )
+                                                             0.01844(      2     )   0.00043(      2     )
+  13         0.0002(      2     )    0.0020(      2     )
+                                                             0.00036(      2     )   0.00003(      2     )
+  14         0.0000(      2     )    0.0000(      2     )
+
+
+ Reached tolerance in 14 iterations
+
+ Largest mismatch:      0.00 MW      0.00 Mvar      0.00 MVA at bus 2 [LOAD_SHUNT  230.00]
+ System total absolute mismatch:                    0.00 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     SLACK       230.00      71.0    200.0     0.0      -7.7    300.0  -300.0
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+                         SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                              %MVA FOR TRANSFORMERS
+                         DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                 % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     SLACK       230.00    1 1.0000    0.0    71.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 230.00           -7.7R     0.0    -0.0      2     LOAD_SHUNT  230.00    1  1    71.0   -7.7                   179  36   502A
+
+      2     LOAD_SHUNT  230.00    1 1.0032   -6.2     0.0     70.0     0.0 -------------------------------------------------------------------------------------
+                                  1 230.74            0.0     45.0   -60.4      1     SLACK       230.00    1  1   -70.0   15.4                   179  36   502A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                      RATING   %MVA FOR TRANSFORMERS
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                         SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     SLACK       230.00 CKT     MW     MVAR     MVA   % 1.0000PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                         71.0    -7.7R   71.4  71 230.00KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      2     LOAD_SHUNT  230.00  1     71.0    -7.7    71.4  36                       1.02    7.66    1 AREA1           1 ZONE1
+
+ BUS      2     LOAD_SHUNT  230.00 CKT     MW     MVAR     MVA   % 1.0032PU   -6.18  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      2
+                                                                   230.74KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              70.0    45.0    83.2
+  TO SWITCHED SHUNT                        0.0   -60.4    60.4
+  TO      1     SLACK       230.00  1    -70.0    15.4    71.7  36                       1.02    7.66    1 AREA1           1 ZONE1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+                         SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                              %MVA FOR TRANSFORMERS
+                         DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                 % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     SLACK       230.00    1 1.0000    0.0    71.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 230.00           -7.7R     0.0    -0.0      2     LOAD_SHUNT  230.00    1  1     71.0    -7.7                   36   200
+
+      2     LOAD_SHUNT  230.00    1 1.0032   -6.2     0.0     70.0     0.0 ---------------------------------------------------------------------------------
+                                  1 230.74            0.0     45.0   -60.4      1     SLACK       230.00    1  1    -70.0    15.4                   36   200
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+
+                                   * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [SLACK       230.00] 1.00000 230.0         1.00000                      LOCAL  GENERATION      1     [SLACK       230.00]
+
+      2     [LOAD_SHUNT  230.00] 1.00323 230.7     0.99000 1.03000                  LOCAL  SWICH SHNT      2     [LOAD_SHUNT  230.00]
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                       SHUNT
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                        SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+      2     LOAD_SHUNT  230.00   1       1                60.0  1.00323  SWITCHED  1    0       0.0      60.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                              SYSTEM SUMMARY
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+      2      1      0      0      0      1      0      1      1      1      0      0      1      0      0     0     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     SLACK       230.00
+      1      0      1      0      0      1      0     0      0      0    0    0   0     1     1     1     0
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW        71.0      0.0      0.0     70.0      0.0      0.0      0.0      0.0      0.0      1.0     71.0
+ MVAR      -7.7      0.0      0.0     45.0      0.0      0.0    -60.4      0.0      0.0      7.7     -7.7
+
+ TOTAL MISMATCH =    0.00 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.00 MVA      2     LOAD_SHUNT  230.00  0.000100  0.700   5.00 100.00  100
+   HIGH VOLTAGE = 1.00323 PU       2     LOAD_SHUNT  230.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 1.00000 PU       1     SLACK       230.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010  20 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                     WORST
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+      2     LOAD_SHUNT  230.00     -0.00     -0.00      0.00
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                  RATING SET
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                    UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                 1
+      2      RATE2   RATING SET 2                                 1
+      3      RATE3   RATING SET 3                                 1
+      4      RATE4   RATING SET 4                                 0
+      5      RATE5   RATING SET 5                                 0
+      6      RATE6   RATING SET 6                                 0
+      7      RATE7   RATING SET 7                                 0
+      8      RATE8   RATING SET 8                                 0
+      9      RATE9   RATING SET 9                                 0
+     10      RATE10  RATING SET 10                                0
+     11      RATE11  RATING SET 11                                0
+     12      RATE12  RATING SET 12                                0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                    BUS DATA
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     SLACK       230.00   3    0     0      0    1.00000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      2     LOAD_SHUNT  230.00   1    1     0      1    1.00323   -6.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                   SWITCHED
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+      2     LOAD_SHUNT  230.00  1  1  0 1.0300 0.9900    60.00  6:  10.00                                100.0      2     LOAD_SHUNT  230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                  GENERATING
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     SLACK       230.00  3   1   71.0   -7.7  300.0 -300.0 1.0000 1.0000  100.0      1     SLACK       230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                   GENERATOR
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                      UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     SLACK       230.00  3 1  1   71.0   -7.7  300.0 -300.0  200.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                 BRANCH DATA
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     LOAD_SHUNT  230.00  1   0.02000  0.15000  0.00000   1  200.0  200.0  200.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                 BRANCH DATA
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     LOAD_SHUNT  230.00  1   0.02000  0.15000  0.00000   1  200.0  200.0  200.0   10.0    1 1.000
+      2     LOAD_SHUNT  230.00       1     SLACK       230.00* 1   0.02000  0.15000  0.00000   1  200.0  200.0  200.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                   DC LINE DATA
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                   LOAD DATA
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+      2     LOAD_SHUNT  230.00 1   1 1  1.000   70.0   45.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                               FACTS SENDING
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                              FACTS TERMINAL
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                    END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                     FIXED
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                 AREA TOTALS
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1            71.0      0.0      0.0     70.0      0.0      0.0      0.0      0.0      1.0      0.0      0.0      0.0
+ AREA1           -7.7      0.0      0.0     45.0    -60.4      0.0     -0.0      0.0      7.7      0.0      0.0
+
+ COLUMN          71.0      0.0      0.0     70.0      0.0      0.0      0.0      0.0      1.0      0.0      0.0      0.0
+ TOTALS          -7.7      0.0      0.0     45.0    -60.4      0.0      0.0      0.0      7.7      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:25
+ SUITE_U_SWSHNT_2BUS_DISCRETE_SWSHT1                                 ZONE TOTALS
+ DISCRETE SWITCHED-SHUNT WITH PSS/E STEPPING FLAG                     IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1            71.0      0.0      0.0     70.0      0.0      0.0      0.0      0.0      1.0      0.0      0.0
+ ZONE1           -7.7      0.0      0.0     45.0    -60.4      0.0     -0.0      0.0      7.7      0.0      0.0
+
+ COLUMN          71.0      0.0      0.0     70.0      0.0      0.0      0.0      0.0      1.0      0.0      0.0
+ TOTALS          -7.7      0.0      0.0     45.0    -60.4      0.0      0.0      0.0      7.7      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_swshnt_2bus_discrete_swsht1.sav on THU, SEP 10 2026  11:25
+ Batch command complete.
+ : 

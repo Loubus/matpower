@@ -1,0 +1,30 @@
+--- B/b17_cpf.m
++++ B2/b17a_cpf.m
+@@ -1,5 +1,5 @@
+ function [results, success] = ...
+-    b17_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++    b17a_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+ % runcpf_vsc_mtdc - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+@@ -451,7 +451,10 @@
+                 break;
+             end
+ 
+-            b17_carried = []; b17_carried_keys = strings(0,1);
++            % Preserve the incoming continuation direction through every
++            % active-set stage, including discrete-only tap/shunt settlement.
++            % Electrical settlement of a discrete action remains fixed-lambda.
++            b17_carried = z; b17_carried_keys = b17_state_keys(ctx);
+             ctx_hat = ctx;
+             Sdelta_hat = Sdelta;
+             xhat = x + trial_step * z(1:end-1);
+@@ -3628,7 +3631,7 @@
+             'hyperplane_residual',nt'*([xx;ll]-[xx0;ll0]),'residual',nn, ...
+             'iterations',ii,'success',ok,'state_size_before',length(ko), ...
+             'state_size_after',length(kn),'state_correction_norm',norm(xx-xx0));
+-        b17_journal('append',rr);
++        b17a_journal('append',rr);
+         if ok
+             b17_carried=nt; b17_carried_keys=kn;
+         end

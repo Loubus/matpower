@@ -1,0 +1,123 @@
+PDF PAGE 572
+Power Flow Operation RATE_2
+1.262. RATE_2
+Use this API to check branch loadings.
+This API routine was first introduced in release 32.0.0.
+Batch command syntax:
+BAT_RATE_2 SID ALL LINFLG TRNFLG BRKFLG RATING FMAX
+Python command syntax:
+ierr = rate_2(sid, all, linflg, trnflg, brkflg, rating, fmax)
+Fortran command syntax:
+CALL RATE_2(SID, ALL, LINFLG, TRNFLG, BRKFLG, RATING, FMAX, IERR)
+Where:
+Integer SID a valid subsystem identifier. Valid subsystem identifiers range from 0
+to 11. Subsystem SID must have been previously defined (input; 0 by
+default).
+Integer ALL all buses or specified subsystem flag (input; 1 by default).
+ALL = 0 process only branches connected to buses in
+subsystem SID
+ALL = 1 process all branches
+Integer LINFLG include non-transformer branches that are not breakers or switches
+in the branch check to be applied (input; 1 by default).
+LINFLG = 0 no
+LINFLG = 1 yes
+Integer TRNFLG include transformer branches in the branch check to be applied (in￾put; 1 by default).
+TRNFLG = 0 no
+TRNFLG = 1 yes
+Integer BRKFLG include branches that are breakers or switches in the branch check to
+be applied (input; 1 by default).
+BRKFLG = 0 no
+BRKFLG = 1 yes
+Integer RATING rating to be used (input; default rating set program option setting).
+RATING = 0 all rating sets
+RATING = 1 RATEA
+RATING = 2 RATEB
+RATING = 3 RATEC
+Real FMAX line loading limit, in percent; 0.0 =< FMAX =< 500.0 (input; 100.0).
+Integer IERR error code (output).
+IERR = 0 no error
+All material contained in this documentation is proprietary to Siemens Industry Inc., Siemens Power Technologies International
+530
+PDF PAGE 573
+Power Flow Operation RATE_2
+IERR = 1 invalid SID value or subsystem SID is not de￾fined
+IERR = 2 invalid ALL value
+IERR = 3 invalid LINFLG value
+IERR = 4 invalid TRNFLG value
+IERR = 5 invalid BRKFLG value
+IERR = 6 invalid RATING value
+IERR = 7 invalid FMAX value
+IERR = 8 prerequisite requirements for API are not met
+All material contained in this documentation is proprietary to Siemens Industry Inc., Siemens Power Technologies International
+531
+PDF PAGE 870
+Power Flow Data SOLUTION_PARAMETERS_4
+2.78. SOLUTION_PARAMETERS_4
+Use this API to modify the power flow solution parameters in the working case (see PSSE Program Opera￾tion Manual, Sections 6.3.13, 6.3.18, 6.5.1 and 11.7).
+This API routine was first introduced in release 33.0.0.
+Batch command syntax:
+BAT_SOLUTION_PARAMETERS_4 INTGAR(1)..INTGAR(5) REALAR(1)..REALAR(19)
+Python command syntax:
+ierr = solution_parameters_4(intgar, realar)
+Fortran command syntax:
+CALL SOLUTION_PARAMETER_API_4(INTGAR, REALAR, IERR)
+Where:
+Integer INTGAR (5) array of 5 elements specifying (input).
+INTGAR(1) ITMX, Gauss-Seidel maximum number of it￾erations (100 by default)
+INTGAR(2) ITMXN, Newton-Raphson maximum number
+of iterations (20 by default)
+INTGAR(3) ITMXTY, TYSL maximum number of iterations
+(20 by default)
+INTGAR(4) MXTPSS, maximum number of times taps
+and/or switched shunts are adjusted during
+power flow solutions (100 by default)
+INTGAR(5) MXSWIM, maximum number of times an
+induction machine can change state (e.g.,
+from "running" to "stalled") during power
+flow solutions (10 by default)
+Real REALAR (19) array of 19 elements specifying (input).
+REALAR(1) ACCP, Gauss-Seidel real component accelera￾tion factor (1.6 by default)
+REALAR(2) ACCQ, Gauss-Seidel imaginary component
+acceleration factor (1.6 by default)
+REALAR(3) ACCM, special MSLV acceleration factor (1.0
+by default)
+REALAR(4) TOL, Gauss-Seidel convergence tolerance
+(0.0001 by default)
+REALAR(5) ACCN, Newton-Raphson acceleration factor
+(1.0 by default)
+REALAR(6) TOLN, Newton-Raphson mismatch conver￾gence tolerance (default Newton power flow
+solution tolerance option setting)
+REALAR(7) ACCTY, TYSL acceleration factor (1.0 by de￾fault)
+All material contained in this documentation is proprietary to Siemens Industry Inc., Siemens Power Technologies International
+828
+PDF PAGE 871
+Power Flow Data SOLUTION_PARAMETERS_4
+REALAR(8) TOLTY, TYSL convergence tolerance (0.00001
+by default)
+REALAR(9) BLOWUP, blow-up threshold (5.0 by default)
+REALAR(10) PQBRAK, constant power load characteristic
+breakpoint (0.7 by default)
+REALAR(11) THRSHZ, zero impedance line threshold
+(0.0001 by default)
+REALAR(12) ADJTHR, automatic adjustment threshold tol￾erance (0.005 by default)
+REALAR(13) ACCTAP, tap movement deceleration factor
+(1.0 by default)
+REALAR(14) TAPLIM, maximum tap change per adjust￾ment (0.05 by default)
+REALAR(15) DVLIM, largest | (delta v)/|v| | for Newton so￾lutions (0.99 by default)
+REALAR(16) NDVFCT, non-divergent required improve￾ment factor (0.99 by default)
+REALAR(17) VCTOLQ, Newton-Raphson voltage controlled
+bus reactive power mismatch convergence
+tolerance (default Newton power flow solu￾tion tolerance option setting)
+REALAR(18) VCTOLV, Newton-Raphson voltage controlled
+bus voltage error convergence tolerance
+(0.00001 by default)
+REALAR(19) SWVBND, percent of voltage controlling band
+mode switched shunts to be adjusted per
+power flow iteration (100.0 by default)
+Integer IERR error code (output).
+IERR = 0 no errors occurred
+IERR > 0 fatal error occurred
+IERR = 1 prerequisite requirements for API are not met
+IERR = -1 data error, warning and information mes￾sages; one or more of: - Invalid percent val￾ue for switched shunt adjustment. - Invalid in￾duction motor treatment code
+All material contained in this documentation is proprietary to Siemens Industry Inc., Siemens Power Technologies International
+829

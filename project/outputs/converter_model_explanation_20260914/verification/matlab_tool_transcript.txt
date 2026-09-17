@@ -1,0 +1,16 @@
+MATLAB MCP evidence (tool-return transcript; diary file was empty in this MCP session)
+
+Initialization: iniciar_proyecto; project path verified.
+
+Exporter attempts 1 and 2:
+Subscripted assignment between dissimilar structures.
+Error in calculate_evidence>station_rows (line 85)
+Error in calculate_evidence (line 18)
+
+Final execution, after output-local correction and explicit function refresh:
+FRESH_BASE_SUCCESS=1 MAX_MISMATCH=2.61404719353e-12
+FIVE_BUS_SUCCESS=1 MAX_MISMATCH=3.71261910104e-11
+STATION_BALANCE_MAX_MVA=2.01491729217e-09
+
+The completed assertions and exact residuals are in calculation_checks.json.
+No restoredefaultpath, MATLAB CLI fallback, solver relaxation, source-code change or case-parameter change was used.

@@ -1,0 +1,41 @@
+{
+  "passed": false,
+  "reason": "Git global newline conversion changed new/additional LF lines; all normalized text identical. Recheck with core.autocrlf=false and core.eol=lf.",
+  "files": [
+    {
+      "path": "docs/BENCHMARKS.md",
+      "byte_identical": true,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "tests/README.md",
+      "byte_identical": false,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "tests/t_beerten_capability_batch6.m",
+      "byte_identical": false,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "tests/t_beerten_reporting_batch6.m",
+      "byte_identical": false,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "matpower/lib/runcpf_vsc_mtdc.m",
+      "byte_identical": true,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "matpower/lib/runpf_vsc_mtdc_unified.m",
+      "byte_identical": true,
+      "normalized_text_identical": true
+    },
+    {
+      "path": "studies/beerten/beerten_constant_pq_capability_batch6.m",
+      "byte_identical": false,
+      "normalized_text_identical": true
+    }
+  ]
+}

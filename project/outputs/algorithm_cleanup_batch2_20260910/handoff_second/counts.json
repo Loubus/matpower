@@ -1,0 +1,11 @@
+{
+  "name": "t_control_handoff_batch2",
+  "planned": 0,
+  "executed": 0,
+  "passed": 0,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "Unrecognized field name \"gencost\".\n\nError in runpf_vsc_mtdc_unified>build_ac_results (line 1142)\n            ac.order.int.gencost, ng_original, size(proxy, 1));\n            ^^^^^^^^^^^^^^^^^^^^\nError in runpf_vsc_mtdc_unified>unified_build_results (line 637)\nresults.ac = build_ac_results(ctx.ac, ctx.map, eval, ctx.Ybus, ...\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in runpf_vsc_mtdc_unified (line 58)\nresults = unified_build_results(ctx, mpc, eval);\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in runpf_vsc_mtdc (line 110)\n    [results, success] = runpf_vsc_mtdc_unified(mpc, mpopt, fname, solvedcase);\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in t_control_handoff_batch2 (line 34)\nr = runpf_vsc_mtdc(f, opt); evidence.export_input = f; evidence.export = r;\n    ^^^^^^^^^^^^^^^^^^^^^^\nError in run_batch2_suite (line 8)\nlogtext = evalc('try; feval(name, 0, varargin{:}); catch err; failure = getReport(err, ''extended'', ''hyperlinks'', ''off''); disp(failure); end');\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in LiveEditorEvaluationHelperEmatlab_mcp_server (line 1)\nrun_batch2_suite('t_control_handoff_batch2',fullfile(batch2_out,'handoff_second'),fullfile(batch2_out,'handoff_second','evidence')); run_batch2_suite('t_mpxt_psse',fullfile(batch2_out,'full_mpxt_psse'));\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in matlab_mcp.mcpEval (line 48)\n    resp = jsondecode(matlab.internal.editor.evaluateSynchronousRequest(request));\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nError in connector.internal.fevalMatlab\n\nError in connector.internal.fevalJSON",
+  "elapsed_seconds": 0.4904625,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

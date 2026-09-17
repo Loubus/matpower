@@ -1,0 +1,9 @@
+{
+  "changes": [
+    "cpf.stop_at: 0.8 -> NOSE",
+    "vsc_mtdc.psse_control_limit: stop -> saturate",
+    "exp.psse_pqbrak: absent (historically on) -> 0",
+    "option schema v26 -> v27"
+  ],
+  "all_other_options_identical": true
+}

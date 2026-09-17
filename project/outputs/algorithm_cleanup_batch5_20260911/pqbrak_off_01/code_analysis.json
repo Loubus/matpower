@@ -1,0 +1,61 @@
+[
+  {
+    "file": "matpower/lib/mpoption.m",
+    "issues": [
+      {
+        "id": "STCI",
+        "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+        "fix": 1,
+        "line": 1274,
+        "column": [
+          4,
+          9
+        ]
+      },
+      {
+        "id": "STCI",
+        "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+        "fix": 1,
+        "line": 1309,
+        "column": [
+          4,
+          9
+        ]
+      },
+      {
+        "id": "STCI",
+        "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+        "fix": 1,
+        "line": 1432,
+        "column": [
+          4,
+          9
+        ]
+      }
+    ]
+  },
+  {
+    "file": "matpower/lib/+mp/psse_prepare_case.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_pqbrak_prepare.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_coordinated_active_set.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/+mp/psse_solver_options.m",
+    "issues": []
+  },
+  {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "issues": []
+  },
+  {
+    "file": "tests/t_pqbrak_off_batch5.m",
+    "issues": []
+  }
+]

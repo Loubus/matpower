@@ -1,0 +1,8 @@
+{
+  "matpower\\lib\\runcpf_vsc_mtdc.m": "d94f063ea57d4a68ac0d46020a8d9743e4997bdecd9c04b41c89b2766fd39c71",
+  "matpower\\lib\\runpf_vsc_mtdc_unified.m": "cef1c542324763946bc12cf66d4370e3d8eb5adfacf11db7391e17fb992e9ee7",
+  "matpower/lib/savecase.m": "5d592debe5d5e7e281b35cca5443fa8a684271a9a2976182874d38046f8ac0d7",
+  "matpower/lib/runpf_vsc_mtdc.m": "134ef3aaf0014f080609c6bf2e0fe334ef59aef8face98009bfd6664ba0bd12c",
+  "matpower/lib/t/t_vsc_mtdc.m": "e260df8eec61eb8d1238ff84b010cf3f11a2fde47daa1c169e60b3b7b4fa1a0a",
+  "docs/CONTROL_SATURATION_CONTRACT.md": "b1543888398fd24732fe95a9a3a755a82f74bcceb13ba089495e04a8feda4976"
+}

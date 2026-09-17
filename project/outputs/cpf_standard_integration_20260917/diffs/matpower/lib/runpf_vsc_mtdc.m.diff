@@ -1,0 +1,14 @@
+--- before/matpower/lib/runpf_vsc_mtdc.m
++++ matpower/lib/runpf_vsc_mtdc.m
+@@ -101,6 +101,11 @@
+ validate_vsc_mtdc_case(mpc);
+ 
+ method = vsc_mtdc_method(mpopt);
++if ~strcmp(method,'unified') && isfield(mpc,'vsc_current_limit') && ...
++        any(mpc.vsc_current_limit(:)>0)
++    error('runpf_vsc_mtdc:current_limit_method', ...
++        'An active vsc_current_limit requires the unified method.');
++end
+ opt = vsc_mtdc_options(mpopt);
+ if vsc_pf_capability_enabled(opt)
+     [results, success] = runpf_vsc_capability_loop(mpc, mpopt, opt, ...

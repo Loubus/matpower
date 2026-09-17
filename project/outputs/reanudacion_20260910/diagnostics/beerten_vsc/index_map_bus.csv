@@ -1,0 +1,7 @@
+run_id,bus_row,bus_ext,base_kv,bus_type
+beerten_vsc,1,1,230,3
+beerten_vsc,2,2,230,1
+beerten_vsc,3,3,230,1
+beerten_vsc,4,4,230,1
+beerten_vsc,5,5,230,1
+beerten_vsc,6,7,230,1

@@ -1,0 +1,11 @@
+{
+  "name": "t_mpoption",
+  "planned": 171,
+  "executed": 171,
+  "passed": 171,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 0.0814605,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

@@ -1,0 +1,284 @@
+1..281
+not ok 1 - shunt_only.endpoint: requested loading reached
+ok 2 - shunt_only.cpf.success: success; nonlinear residual 1.54243408197e-11 <= 1e-08
+ok 3 - shunt_only.cpf.ac_balance: complete station-network AC balance 6.75683864741e-11 pu
+ok 4 - shunt_only.cpf.converter_balance: converter power balance 3.43252093415e-13 pu
+ok 5 - shunt_only.cpf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 6 - shunt_only.cpf.dc_balance: DC nodal balance 1.43218770177e-14 pu
+ok 7 - shunt_only.policy: controls active with original stop policy and no freeze event
+ok 8 - shunt_only.shunt_event: a post-base switched-shunt event is accepted after electrical correction
+ok 9 - shunt_only.point1.fixed_pf.success: success; nonlinear residual 1.07992059739e-10 <= 1e-08
+ok 10 - shunt_only.point1.fixed_pf.ac_balance: complete station-network AC balance 1.14107308676e-09 pu
+ok 11 - shunt_only.point1.fixed_pf.converter_balance: converter power balance 1.45224254844e-11 pu
+ok 12 - shunt_only.point1.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 13 - shunt_only.point1.fixed_pf.dc_balance: DC nodal balance 1.66533453694e-14 pu
+ok 14 - shunt_only.point1.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 15 - shunt_only.point1.cpf_ac_balance: actual CPF full station-network balance 1.14107308676e-09 pu
+ok 16 - shunt_only.point1.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 17 - shunt_only.point1.pf_cpf_converter: converter injections and losses agree at matched state
+ok 18 - shunt_only.point1.load: accepted demand equals affine loading at reported lambda
+ok 19 - shunt_only.point1.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 20 - shunt_only.point1.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 21 - shunt_only.point1.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 22 - shunt_only.point1.generator_bounds: original generator Q bounds are respected
+ok 23 - shunt_only.point1.converter_balance: converter power balance 1.45224254844e-11 pu
+ok 24 - shunt_only.point1.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 25 - shunt_only.point1.dc_balance: DC nodal balance 1.66533453694e-14 pu
+ok 26 - shunt_only.point2.fixed_pf.success: success; nonlinear residual 1.40003830751e-09 <= 1e-08
+ok 27 - shunt_only.point2.fixed_pf.ac_balance: complete station-network AC balance 1.61723957986e-09 pu
+ok 28 - shunt_only.point2.fixed_pf.converter_balance: converter power balance 5.24582977057e-11 pu
+ok 29 - shunt_only.point2.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 30 - shunt_only.point2.fixed_pf.dc_balance: DC nodal balance 1.07858166842e-13 pu
+ok 31 - shunt_only.point2.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 32 - shunt_only.point2.cpf_ac_balance: actual CPF full station-network balance 9.59300833327e-11 pu
+ok 33 - shunt_only.point2.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 34 - shunt_only.point2.pf_cpf_converter: converter injections and losses agree at matched state
+ok 35 - shunt_only.point2.load: accepted demand equals affine loading at reported lambda
+ok 36 - shunt_only.point2.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 37 - shunt_only.point2.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 38 - shunt_only.point2.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 39 - shunt_only.point2.generator_bounds: original generator Q bounds are respected
+ok 40 - shunt_only.point2.converter_balance: converter power balance 5.09370323698e-15 pu
+ok 41 - shunt_only.point2.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 42 - shunt_only.point2.dc_balance: DC nodal balance 4.38538094727e-15 pu
+ok 43 - shunt_only.point3.fixed_pf.success: success; nonlinear residual 3.97507027294e-12 <= 1e-08
+ok 44 - shunt_only.point3.fixed_pf.ac_balance: complete station-network AC balance 6.38783859142e-10 pu
+ok 45 - shunt_only.point3.fixed_pf.converter_balance: converter power balance 6.8123284791e-15 pu
+ok 46 - shunt_only.point3.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 47 - shunt_only.point3.fixed_pf.dc_balance: DC nodal balance 1.11577413975e-14 pu
+ok 48 - shunt_only.point3.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 49 - shunt_only.point3.cpf_ac_balance: actual CPF full station-network balance 6.37925823277e-10 pu
+ok 50 - shunt_only.point3.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 51 - shunt_only.point3.pf_cpf_converter: converter injections and losses agree at matched state
+ok 52 - shunt_only.point3.load: accepted demand equals affine loading at reported lambda
+ok 53 - shunt_only.point3.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 54 - shunt_only.point3.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 55 - shunt_only.point3.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 56 - shunt_only.point3.generator_bounds: original generator Q bounds are respected
+ok 57 - shunt_only.point3.converter_balance: converter power balance 1.55431223448e-17 pu
+ok 58 - shunt_only.point3.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 59 - shunt_only.point3.dc_balance: DC nodal balance 2.99760216649e-15 pu
+ok 60 - shunt_only.point4.fixed_pf.success: success; nonlinear residual 2.53844167908e-12 <= 1e-08
+ok 61 - shunt_only.point4.fixed_pf.ac_balance: complete station-network AC balance 6.26658669401e-10 pu
+ok 62 - shunt_only.point4.fixed_pf.converter_balance: converter power balance 1.00919272938e-14 pu
+ok 63 - shunt_only.point4.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 64 - shunt_only.point4.fixed_pf.dc_balance: DC nodal balance 9.32587340685e-15 pu
+ok 65 - shunt_only.point4.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 66 - shunt_only.point4.cpf_ac_balance: actual CPF full station-network balance 6.26137641735e-10 pu
+ok 67 - shunt_only.point4.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 68 - shunt_only.point4.pf_cpf_converter: converter injections and losses agree at matched state
+ok 69 - shunt_only.point4.load: accepted demand equals affine loading at reported lambda
+ok 70 - shunt_only.point4.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 71 - shunt_only.point4.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 72 - shunt_only.point4.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 73 - shunt_only.point4.generator_bounds: original generator Q bounds are respected
+ok 74 - shunt_only.point4.converter_balance: converter power balance 1.02540198554e-14 pu
+ok 75 - shunt_only.point4.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 76 - shunt_only.point4.dc_balance: DC nodal balance 8.99280649946e-15 pu
+ok 77 - shunt_only.point5.fixed_pf.success: success; nonlinear residual 4.67516303448e-12 <= 1e-08
+ok 78 - shunt_only.point5.fixed_pf.ac_balance: complete station-network AC balance 6.99395985571e-10 pu
+ok 79 - shunt_only.point5.fixed_pf.converter_balance: converter power balance 3.88578058619e-15 pu
+ok 80 - shunt_only.point5.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 81 - shunt_only.point5.fixed_pf.dc_balance: DC nodal balance 1.53765888911e-14 pu
+ok 82 - shunt_only.point5.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 83 - shunt_only.point5.cpf_ac_balance: actual CPF full station-network balance 7.0478006764e-10 pu
+ok 84 - shunt_only.point5.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 85 - shunt_only.point5.pf_cpf_converter: converter injections and losses agree at matched state
+ok 86 - shunt_only.point5.load: accepted demand equals affine loading at reported lambda
+ok 87 - shunt_only.point5.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 88 - shunt_only.point5.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 89 - shunt_only.point5.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 90 - shunt_only.point5.generator_bounds: original generator Q bounds are respected
+ok 91 - shunt_only.point5.converter_balance: converter power balance 4.00124378075e-15 pu
+ok 92 - shunt_only.point5.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 93 - shunt_only.point5.dc_balance: DC nodal balance 1.66533453694e-15 pu
+ok 94 - shunt_only.point6.fixed_pf.success: success; nonlinear residual 3.2497060598e-12 <= 1e-08
+ok 95 - shunt_only.point6.fixed_pf.ac_balance: complete station-network AC balance 9.22023846162e-10 pu
+ok 96 - shunt_only.point6.fixed_pf.converter_balance: converter power balance 4.94937424378e-15 pu
+ok 97 - shunt_only.point6.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 98 - shunt_only.point6.fixed_pf.dc_balance: DC nodal balance 7.9936057773e-15 pu
+ok 99 - shunt_only.point6.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 100 - shunt_only.point6.cpf_ac_balance: actual CPF full station-network balance 7.90178545564e-09 pu
+ok 101 - shunt_only.point6.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 102 - shunt_only.point6.pf_cpf_converter: converter injections and losses agree at matched state
+ok 103 - shunt_only.point6.load: accepted demand equals affine loading at reported lambda
+ok 104 - shunt_only.point6.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 105 - shunt_only.point6.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 106 - shunt_only.point6.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 107 - shunt_only.point6.generator_bounds: original generator Q bounds are respected
+ok 108 - shunt_only.point6.converter_balance: converter power balance 6.2541356538e-11 pu
+ok 109 - shunt_only.point6.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 110 - shunt_only.point6.dc_balance: DC nodal balance 1.26598731498e-12 pu
+ok 111 - shunt_only.point7.fixed_pf.success: success; nonlinear residual 5.16509057746e-12 <= 1e-08
+ok 112 - shunt_only.point7.fixed_pf.ac_balance: complete station-network AC balance 7.51700368626e-11 pu
+ok 113 - shunt_only.point7.fixed_pf.converter_balance: converter power balance 2.54907206454e-15 pu
+ok 114 - shunt_only.point7.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 115 - shunt_only.point7.fixed_pf.dc_balance: DC nodal balance 1.33226762955e-14 pu
+ok 116 - shunt_only.point7.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 117 - shunt_only.point7.cpf_ac_balance: actual CPF full station-network balance 6.75683864741e-11 pu
+ok 118 - shunt_only.point7.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 119 - shunt_only.point7.pf_cpf_converter: converter injections and losses agree at matched state
+ok 120 - shunt_only.point7.load: accepted demand equals affine loading at reported lambda
+ok 121 - shunt_only.point7.fixed_tap: shunt-only fixture retains fixed transformer ratios
+ok 122 - shunt_only.point7.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 123 - shunt_only.point7.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 124 - shunt_only.point7.generator_bounds: original generator Q bounds are respected
+ok 125 - shunt_only.point7.converter_balance: converter power balance 3.43252093415e-13 pu
+ok 126 - shunt_only.point7.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 127 - shunt_only.point7.dc_balance: DC nodal balance 1.43218770177e-14 pu
+ok 128 - shunt_only.automatic_pf.success: success; nonlinear residual 6.88605628074e-09 <= 1e-08
+ok 129 - shunt_only.automatic_pf.ac_balance: complete station-network AC balance 7.92824299245e-09 pu
+ok 130 - shunt_only.automatic_pf.converter_balance: converter power balance 6.1979750221e-11 pu
+ok 131 - shunt_only.automatic_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 132 - shunt_only.automatic_pf.dc_balance: DC nodal balance 1.27986510279e-12 pu
+ok 133 - shunt_only.automatic_agreement: independent automatic PF reaches the same endpoint control state and voltage
+ok 134 - shunt_only.raw_sync: RAW BINIT plus original fixed susceptance equals exported BS
+ok 135 - shunt_only.half_step.success: success; nonlinear residual 1.26102509453e-11 <= 1e-08
+ok 136 - shunt_only.half_step.ac_balance: complete station-network AC balance 1.67739483562e-09 pu
+ok 137 - shunt_only.half_step.converter_balance: converter power balance 2.97140090311e-13 pu
+ok 138 - shunt_only.half_step.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 139 - shunt_only.half_step.dc_balance: DC nodal balance 2.33146835171e-15 pu
+ok 140 - shunt_only.step_sensitivity: halved continuation step retains matched endpoint and control state
+not ok 141 - combined.endpoint: requested loading reached
+ok 142 - combined.cpf.success: success; nonlinear residual 1.56645363438e-11 <= 1e-08
+ok 143 - combined.cpf.ac_balance: complete station-network AC balance 2.61048083337e-10 pu
+ok 144 - combined.cpf.converter_balance: converter power balance 3.39632766355e-13 pu
+ok 145 - combined.cpf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 146 - combined.cpf.dc_balance: DC nodal balance 2.57016630201e-14 pu
+ok 147 - combined.policy: controls active with original stop policy and no freeze event
+ok 148 - combined.initial_tap: combined controls normalize the original off-grid tap and electrically correct it
+ok 149 - combined.shunt_event: a post-base switched-shunt event is accepted after electrical correction
+ok 150 - combined.point1.fixed_pf.success: success; nonlinear residual 1.19015380884e-10 <= 1e-08
+ok 151 - combined.point1.fixed_pf.ac_balance: complete station-network AC balance 1.62141267591e-09 pu
+ok 152 - combined.point1.fixed_pf.converter_balance: converter power balance 2.34107422337e-11 pu
+ok 153 - combined.point1.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 154 - combined.point1.fixed_pf.dc_balance: DC nodal balance 2.38697950294e-14 pu
+ok 155 - combined.point1.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 156 - combined.point1.cpf_ac_balance: actual CPF full station-network balance 1.40909369416e-09 pu
+ok 157 - combined.point1.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 158 - combined.point1.pf_cpf_converter: converter injections and losses agree at matched state
+ok 159 - combined.point1.load: accepted demand equals affine loading at reported lambda
+ok 160 - combined.point1.tap_grid: accepted taps remain on original grid
+ok 161 - combined.point1.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 162 - combined.point1.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 163 - combined.point1.generator_bounds: original generator Q bounds are respected
+ok 164 - combined.point1.converter_balance: converter power balance 3.35953487252e-15 pu
+ok 165 - combined.point1.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 166 - combined.point1.dc_balance: DC nodal balance 1.23234755733e-14 pu
+ok 167 - combined.point2.fixed_pf.success: success; nonlinear residual 1.47621248558e-09 <= 1e-08
+ok 168 - combined.point2.fixed_pf.ac_balance: complete station-network AC balance 1.49830042968e-09 pu
+ok 169 - combined.point2.fixed_pf.converter_balance: converter power balance 7.13970593758e-11 pu
+ok 170 - combined.point2.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 171 - combined.point2.fixed_pf.dc_balance: DC nodal balance 1.33615341014e-13 pu
+ok 172 - combined.point2.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 173 - combined.point2.cpf_ac_balance: actual CPF full station-network balance 5.85367837536e-10 pu
+ok 174 - combined.point2.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 175 - combined.point2.pf_cpf_converter: converter injections and losses agree at matched state
+ok 176 - combined.point2.load: accepted demand equals affine loading at reported lambda
+ok 177 - combined.point2.tap_grid: accepted taps remain on original grid
+ok 178 - combined.point2.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 179 - combined.point2.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 180 - combined.point2.generator_bounds: original generator Q bounds are respected
+ok 181 - combined.point2.converter_balance: converter power balance 3.80584452842e-15 pu
+ok 182 - combined.point2.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 183 - combined.point2.dc_balance: DC nodal balance 8.881784197e-16 pu
+ok 184 - combined.point3.fixed_pf.success: success; nonlinear residual 1.74561684983e-12 <= 1e-08
+ok 185 - combined.point3.fixed_pf.ac_balance: complete station-network AC balance 7.54458662211e-10 pu
+ok 186 - combined.point3.fixed_pf.converter_balance: converter power balance 4.81836792687e-15 pu
+ok 187 - combined.point3.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 188 - combined.point3.fixed_pf.dc_balance: DC nodal balance 2.94209101526e-15 pu
+ok 189 - combined.point3.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 190 - combined.point3.cpf_ac_balance: actual CPF full station-network balance 7.54550394389e-10 pu
+ok 191 - combined.point3.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 192 - combined.point3.pf_cpf_converter: converter injections and losses agree at matched state
+ok 193 - combined.point3.load: accepted demand equals affine loading at reported lambda
+ok 194 - combined.point3.tap_grid: accepted taps remain on original grid
+ok 195 - combined.point3.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 196 - combined.point3.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 197 - combined.point3.generator_bounds: original generator Q bounds are respected
+ok 198 - combined.point3.converter_balance: converter power balance 5.52891066263e-16 pu
+ok 199 - combined.point3.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 200 - combined.point3.dc_balance: DC nodal balance 2.50910403565e-14 pu
+ok 201 - combined.point4.fixed_pf.success: success; nonlinear residual 3.32250893464e-12 <= 1e-08
+ok 202 - combined.point4.fixed_pf.ac_balance: complete station-network AC balance 3.44243245218e-11 pu
+ok 203 - combined.point4.fixed_pf.converter_balance: converter power balance 6.83897383169e-16 pu
+ok 204 - combined.point4.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 205 - combined.point4.fixed_pf.dc_balance: DC nodal balance 1.0325074129e-14 pu
+ok 206 - combined.point4.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 207 - combined.point4.cpf_ac_balance: actual CPF full station-network balance 3.7648301145e-11 pu
+ok 208 - combined.point4.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 209 - combined.point4.pf_cpf_converter: converter injections and losses agree at matched state
+ok 210 - combined.point4.load: accepted demand equals affine loading at reported lambda
+ok 211 - combined.point4.tap_grid: accepted taps remain on original grid
+ok 212 - combined.point4.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 213 - combined.point4.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 214 - combined.point4.generator_bounds: original generator Q bounds are respected
+ok 215 - combined.point4.converter_balance: converter power balance 8.52651282912e-16 pu
+ok 216 - combined.point4.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 217 - combined.point4.dc_balance: DC nodal balance 3.60822483003e-15 pu
+ok 218 - combined.point5.fixed_pf.success: success; nonlinear residual 4.16230938605e-12 <= 1e-08
+ok 219 - combined.point5.fixed_pf.ac_balance: complete station-network AC balance 3.42287753697e-10 pu
+ok 220 - combined.point5.fixed_pf.converter_balance: converter power balance 5.36681810104e-15 pu
+ok 221 - combined.point5.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 222 - combined.point5.fixed_pf.dc_balance: DC nodal balance 4.21884749358e-15 pu
+ok 223 - combined.point5.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 224 - combined.point5.cpf_ac_balance: actual CPF full station-network balance 3.40903805187e-10 pu
+ok 225 - combined.point5.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 226 - combined.point5.pf_cpf_converter: converter injections and losses agree at matched state
+ok 227 - combined.point5.load: accepted demand equals affine loading at reported lambda
+ok 228 - combined.point5.tap_grid: accepted taps remain on original grid
+ok 229 - combined.point5.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 230 - combined.point5.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 231 - combined.point5.generator_bounds: original generator Q bounds are respected
+ok 232 - combined.point5.converter_balance: converter power balance 2.16493489802e-15 pu
+ok 233 - combined.point5.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 234 - combined.point5.dc_balance: DC nodal balance 1.1990408666e-14 pu
+ok 235 - combined.point6.fixed_pf.success: success; nonlinear residual 3.60140629734e-12 <= 1e-08
+ok 236 - combined.point6.fixed_pf.ac_balance: complete station-network AC balance 5.1986043248e-10 pu
+ok 237 - combined.point6.fixed_pf.converter_balance: converter power balance 1.01030295241e-14 pu
+ok 238 - combined.point6.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 239 - combined.point6.fixed_pf.dc_balance: DC nodal balance 1.45439216226e-14 pu
+ok 240 - combined.point6.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 241 - combined.point6.cpf_ac_balance: actual CPF full station-network balance 7.89829338595e-09 pu
+ok 242 - combined.point6.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 243 - combined.point6.pf_cpf_converter: converter injections and losses agree at matched state
+ok 244 - combined.point6.load: accepted demand equals affine loading at reported lambda
+ok 245 - combined.point6.tap_grid: accepted taps remain on original grid
+ok 246 - combined.point6.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 247 - combined.point6.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 248 - combined.point6.generator_bounds: original generator Q bounds are respected
+ok 249 - combined.point6.converter_balance: converter power balance 6.25162366319e-11 pu
+ok 250 - combined.point6.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 251 - combined.point6.dc_balance: DC nodal balance 1.27781119019e-12 pu
+ok 252 - combined.point7.fixed_pf.success: success; nonlinear residual 1.06673003764e-12 <= 1e-08
+ok 253 - combined.point7.fixed_pf.ac_balance: complete station-network AC balance 2.53685517039e-10 pu
+ok 254 - combined.point7.fixed_pf.converter_balance: converter power balance 5.73097125312e-15 pu
+ok 255 - combined.point7.fixed_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 256 - combined.point7.fixed_pf.dc_balance: DC nodal balance 8.881784197e-16 pu
+ok 257 - combined.point7.cpf_state_identity: stored state reproduces the accepted bus and converter trace
+ok 258 - combined.point7.cpf_ac_balance: actual CPF full station-network balance 2.61048083337e-10 pu
+ok 259 - combined.point7.pf_cpf_voltage: complex bus voltages agree at matched load and discrete state
+ok 260 - combined.point7.pf_cpf_converter: converter injections and losses agree at matched state
+ok 261 - combined.point7.load: accepted demand equals affine loading at reported lambda
+ok 262 - combined.point7.tap_grid: accepted taps remain on original grid
+ok 263 - combined.point7.shunt_grid: every accepted shunt state is on unchanged finite RAW grid
+ok 264 - combined.point7.shunt_injection: local-voltage-squared reactive injection is finite; nodal balance independently includes bus BS
+ok 265 - combined.point7.generator_bounds: original generator Q bounds are respected
+ok 266 - combined.point7.converter_balance: converter power balance 3.39632766355e-13 pu
+ok 267 - combined.point7.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 268 - combined.point7.dc_balance: DC nodal balance 2.57016630201e-14 pu
+ok 269 - combined.automatic_pf.success: success; nonlinear residual 6.88323098519e-09 <= 1e-08
+ok 270 - combined.automatic_pf.ac_balance: complete station-network AC balance 7.92545316349e-09 pu
+ok 271 - combined.automatic_pf.converter_balance: converter power balance 6.19568885085e-11 pu
+ok 272 - combined.automatic_pf.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 273 - combined.automatic_pf.dc_balance: DC nodal balance 1.26848531679e-12 pu
+ok 274 - combined.automatic_agreement: independent automatic PF reaches the same endpoint control state and voltage
+ok 275 - combined.raw_sync: RAW BINIT plus original fixed susceptance equals exported BS
+ok 276 - combined.half_step.success: success; nonlinear residual 1.3039546354e-11 <= 1e-08
+ok 277 - combined.half_step.ac_balance: complete station-network AC balance 5.84331420793e-10 pu
+ok 278 - combined.half_step.converter_balance: converter power balance 3.03850278272e-13 pu
+ok 279 - combined.half_step.loss_equation: unchanged converter loss equation and nonnegative losses
+ok 280 - combined.half_step.dc_balance: DC nodal balance 2.99760216649e-15 pu
+ok 281 - combined.step_sensitivity: halved continuation step retains matched endpoint and control state
+Ran 281 of 281 tests: 279 passed, 2 failed
+Elapsed time 0.01 seconds.

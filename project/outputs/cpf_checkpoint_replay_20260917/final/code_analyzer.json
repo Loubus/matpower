@@ -1,0 +1,96 @@
+{
+  "matpower_lib_runcpf_vsc_mtdc_m": [
+    {
+      "id": "AGROW",
+      "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+      "fix": 0,
+      "line": 928,
+      "column": [
+        25,
+        36
+      ]
+    },
+    {
+      "id": "AGROW",
+      "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+      "fix": 0,
+      "line": 957,
+      "column": [
+        33,
+        46
+      ]
+    },
+    {
+      "id": "AGROW",
+      "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+      "fix": 0,
+      "line": 976,
+      "column": [
+        21,
+        32
+      ]
+    },
+    {
+      "id": "AGROW",
+      "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+      "fix": 0,
+      "line": 1038,
+      "column": [
+        21,
+        38
+      ]
+    },
+    {
+      "id": "DEFNU",
+      "message": "Function might be unused.",
+      "fix": 0,
+      "line": 1806,
+      "column": [
+        20,
+        33
+      ]
+    }
+  ],
+  "matpower_lib_mpoption_m": [
+    {
+      "id": "STCI",
+      "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+      "fix": 1,
+      "line": 1278,
+      "column": [
+        4,
+        9
+      ]
+    },
+    {
+      "id": "STCI",
+      "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+      "fix": 1,
+      "line": 1313,
+      "column": [
+        4,
+        9
+      ]
+    },
+    {
+      "id": "STCI",
+      "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+      "fix": 1,
+      "line": 1436,
+      "column": [
+        4,
+        9
+      ]
+    }
+  ],
+  "tests_t_cpf_checkpoint_replay_m": {
+    "id": "NOCOMMA",
+    "message": "Extra comma is unnecessary.",
+    "fix": 1,
+    "line": 46,
+    "column": [
+      8,
+      8
+    ]
+  }
+}

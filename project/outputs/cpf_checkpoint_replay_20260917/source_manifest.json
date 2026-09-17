@@ -1,0 +1,22 @@
+[
+  {
+    "path": "matpower/lib/runcpf_vsc_mtdc.m",
+    "before_sha256": "0bf1c381e9ec0a71bda337a666ff88a3d7d8a833493ec62587c294c82bfc23d7",
+    "after_sha256": "ee21b879926a440ca21fb60f29bc3a4f0422b776f9b835cbccc739c66ebbd2ec"
+  },
+  {
+    "path": "matpower/lib/mpoption.m",
+    "before_sha256": "1d759de433c2b55736bea3bd3036aeeb7007cb5a37d5e3dc3cbd9166ec196109",
+    "after_sha256": "b8e85cc5f32aaf78ec86d4b76339692f397337b69cfa5a2f8a60ffdea9f49487"
+  },
+  {
+    "path": "docs/CPF_LIMIT_CONTINUATION.md",
+    "before_sha256": "93ba9c7521e776c98468880b05260cf041e010304ebbf2d02657f8da5bc14991",
+    "after_sha256": "39ed79b03008a4a9a331c3ecb043822c2c5c29f1c1aa0518c8255fa74ebd7e54"
+  },
+  {
+    "path": "tests/t_cpf_checkpoint_replay.m",
+    "before_sha256": null,
+    "after_sha256": "c7171cf5e6d10156923bbac4a25c963b4379c784747959bb1aaf217cdfd830f9"
+  }
+]

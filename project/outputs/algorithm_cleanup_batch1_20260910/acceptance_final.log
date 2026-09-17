@@ -1,0 +1,47 @@
+1..43
+ok 1 - shunt_pf.success: success=1
+ok 2 - shunt_pf.solver_residual: mismatch=3.71261910104e-11 configured_tol=1e-08
+not ok 3 - shunt_pf.ac_balance: extended AC nodal mismatch=0.220712400453 pu
+ok 4 - shunt_pf.converter_balance: converter balance=4.60709248529e-13 pu
+ok 5 - shunt_pf.dc_balance: DC nodal power mismatch=2.99760216649e-15 pu
+ok 6 - shunt_cpf.success: success=1
+ok 7 - shunt_cpf.solver_residual: mismatch=1.82640119486e-12 configured_tol=1e-08
+not ok 8 - shunt_cpf.ac_balance: extended AC nodal mismatch=0.216444659515 pu
+ok 9 - shunt_cpf.converter_balance: converter balance=1.0413891971e-15 pu
+ok 10 - shunt_cpf.dc_balance: DC nodal power mismatch=3.38618022511e-15 pu
+ok 11 - genq_cpf.success: success=1
+ok 12 - genq_cpf.solver_residual: mismatch=1.24729629849e-12 configured_tol=1e-08
+not ok 13 - genq_cpf.ac_balance: extended AC nodal mismatch=0.227975847591 pu
+ok 14 - genq_cpf.converter_balance: converter balance=9.9364960704e-15 pu
+ok 15 - genq_cpf.dc_balance: DC nodal power mismatch=2.22044604925e-15 pu
+ok 16 - shunt_pf.legal_state: BINIT=9; legal grid=0:10
+not ok 17 - shunt_pf.state_sync: BS top/ac=0/0 fixed+BINIT=9
+not ok 18 - shunt_pf.settled_voltage: solved Vm5=0.990329389197; this fixture has reachable deadband
+ok 19 - shunt_cpf.legal_state: BINIT=6; legal grid=0:10
+ok 20 - shunt_cpf.state_sync: BS top/ac=6/6 fixed+BINIT=6
+ok 21 - shunt_cpf.settled_voltage: solved Vm5=0.995198526875; this fixture has reachable deadband
+ok 22 - genq.original_bounds: QG=-33.8559377465 original range=[-100,-20]
+not ok 23 - genq.reported_binding_limit: limited=1 at_max=1 QG=-33.8559377465
+ok 24 - genq.fixed_q_equation: matrix QMIN/QMAX/QG=-100/-20/-33.8559377465
+not ok 25 - genq.mode_consistency: single local generator: limited=1 bus_type=2
+not ok 26 - genq.pv_voltage_schedule: PV Vm=0.998636016202 VG=1
+not ok 27 - expansion.shunt_state: BS5 before/after expansion=9/0
+not ok 28 - expansion.genq_mode: bus2 type before/after expansion=1/2
+ok 29 - matched_fixed_B0: CPF/PF success=1/1 max dVm=1.75415237891e-12 pu
+ok 30 - disabled_B0: disabled automatic adjustment preserves chosen state
+ok 31 - matched_fixed_B6: CPF/PF success=1/1 max dVm=1.24178445304e-12 pu
+ok 32 - disabled_B6: disabled automatic adjustment preserves chosen state
+ok 33 - matched_fixed_B9: CPF/PF success=1/1 max dVm=1.46949119539e-12 pu
+ok 34 - disabled_B9: disabled automatic adjustment preserves chosen state
+ok 35 - matched_fixed_B10: CPF/PF success=1/1 max dVm=1.34292577059e-12 pu
+ok 36 - disabled_B10: disabled automatic adjustment preserves chosen state
+ok 37 - direction_0.98: Vm=0.980 BINIT=3 fixed part=5
+ok 38 - direction_1.00: Vm=1.000 BINIT=2 fixed part=5
+ok 39 - direction_1.02: Vm=1.020 BINIT=1 fixed part=5
+ok 40 - saturated_B0: outward request preserves physical bound and reports blocked regulation
+ok 41 - saturated_B10: outward request preserves physical bound and reports blocked regulation
+ok 42 - remote_measurement: low remote Vm4 requests capacitance even when local Vm5 is in band
+ok 43 - out_of_service: out-of-service shunt neither adjusts nor injects
+Ran 43 of 43 tests: 33 passed, 10 failed
+Elapsed time 0.00 seconds.
+Numerical fixtures and checks elapsed 2.874 seconds.

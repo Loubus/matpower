@@ -1,0 +1,302 @@
+--- a/matpower/lib/+mp/psse_swshunt_control.m
++++ b/matpower/lib/+mp/psse_swshunt_control.m
+@@ -177,7 +177,8 @@
+     reg = state.group.reg_bus_idx(gg);
+     members = state.group.members{gg};
+     v = vm(reg);
+-    [direction, target, active_members] = group_action(state, members, v);
++    [direction, target, active_members] = mp.psse_swshunt_group_action( ...
++        state, members, v, state.controllable);
+     if direction == 0
+         continue;
+     end
+@@ -187,7 +188,7 @@
+     for jj = 1:length(active_members)
+         k = active_members(jj);
+         if state.modsw(k) == 1
+-            b = discrete_next_b(state, k, direction);
++            b = mp.psse_swshunt_discrete_next(state, k, direction);
+         else
+             b = continuous_next_b(state, k, v, target, direction, sens);
+         end
+@@ -196,57 +197,6 @@
+             new_direction(k) = sign(b - state.current_b(k));
+         end
+     end
+-end
+-
+-function [direction, target, active_members] = group_action(state, members, v)
+-% Determine one voltage-control direction for all shunts in a group.
+-err = zeros(length(members), 1);
+-target_k = NaN(length(members), 1);
+-for jj = 1:length(members)
+-    k = members(jj);
+-    [lo, hi] = voltage_band(state, k);
+-    if isnan(lo) || isnan(hi)
+-        continue;
+-    end
+-    if state.modsw(k) == 1
+-        if v < lo - state.vtol
+-            target_k(jj) = lo;
+-            err(jj) = lo - v;
+-        elseif v > hi + state.vtol
+-            target_k(jj) = hi;
+-            err(jj) = hi - v;
+-        end
+-    elseif state.modsw(k) == 2
+-        target_k(jj) = (lo + hi) / 2;
+-        if abs(target_k(jj) - v) > state.vtol
+-            err(jj) = target_k(jj) - v;
+-        end
+-    end
+-end
+-
+-up = find(err > 0);
+-dn = find(err < 0);
+-up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
+-dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
+-if up_score == 0 && dn_score == 0
+-    direction = 0;
+-    target = NaN;
+-    active_members = [];
+-    return;
+-elseif up_score >= dn_score
+-    direction = 1;
+-    active = up;
+-else
+-    direction = -1;
+-    active = dn;
+-end
+-
+-active_members = members(active);
+-weights = state.rmpct(active_members);
+-if isempty(weights) || sum(weights) == 0
+-    target = mean(target_k(active));
+-else
+-    target = sum(target_k(active) .* weights) / sum(weights);
+ end
+ 
+ function [lo, hi] = voltage_band(state, k)
+@@ -261,26 +211,6 @@
+     hi = lo;
+     lo = tmp;
+ end
+-
+-function b = discrete_next_b(state, k, direction)
+-% Advance one admissible discrete block state for ADJM = 0.
+-states = state.states{k};
+-[~, cur] = min(abs(states - state.current_b(k)));
+-if direction > 0
+-    cand = find(states > states(cur) + 1e-9);
+-else
+-    cand = find(states < states(cur) - 1e-9);
+-end
+-if isempty(cand)
+-    b = state.current_b(k);
+-    return;
+-end
+-
+-step_idx = cand(1);
+-if direction < 0
+-    step_idx = cand(end);
+-end
+-b = states(step_idx);
+ 
+ function b = continuous_next_b(state, k, v, target, direction, sens)
+ % Compute the continuous BINIT move, bounded by the RAW block range.
+--- a/matpower/lib/+mp/psse_unified_control_update.m
++++ b/matpower/lib/+mp/psse_unified_control_update.m
+@@ -249,58 +249,19 @@
+ for gg = 1:length(state.group.reg_bus_idx)
+     reg = state.group.reg_bus_idx(gg);
+     members = state.group.members{gg};
+-    % Groups were built before the explicit unified lock mask was applied.
+-    % Exclude locked rows from both voting and movement in this pass.
+-    members = members(state.controllable(members));
+-    [direction, active_members] = swshunt_group_action(state, members, vm(reg));
++    [direction, ~, active_members] = mp.psse_swshunt_group_action( ...
++        state, members, vm(reg), state.controllable);
+     if direction == 0
+         continue;
+     end
+     for jj = 1:length(active_members)
+         k = active_members(jj);
+         if state.modsw(k) == 1
+-            new_b(k) = discrete_next_b(state, k, direction);
++            new_b(k) = mp.psse_swshunt_discrete_next(state, k, direction);
+         elseif state.modsw(k) == 2
+             new_b(k) = continuous_next_b(state, k, direction);
+         end
+     end
+-end
+-
+-function [direction, active_members] = swshunt_group_action(state, members, v)
+-err = zeros(length(members), 1);
+-for jj = 1:length(members)
+-    k = members(jj);
+-    [lo, hi] = swshunt_voltage_band(state, k);
+-    if isnan(lo) || isnan(hi)
+-        continue;
+-    end
+-    if state.modsw(k) == 1
+-        if v < lo - state.vtol
+-            err(jj) = lo - v;
+-        elseif v > hi + state.vtol
+-            err(jj) = hi - v;
+-        end
+-    elseif state.modsw(k) == 2
+-        target = (lo + hi) / 2;
+-        if abs(target - v) > state.vtol
+-            err(jj) = target - v;
+-        end
+-    end
+-end
+-
+-up = find(err > 0);
+-dn = find(err < 0);
+-up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
+-dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
+-if up_score == 0 && dn_score == 0
+-    direction = 0;
+-    active_members = [];
+-elseif up_score >= dn_score
+-    direction = 1;
+-    active_members = members(up);
+-else
+-    direction = -1;
+-    active_members = members(dn);
+ end
+ 
+ function [lo, hi] = swshunt_voltage_band(state, k)
+@@ -355,24 +316,6 @@
+     TorF = isempty(find(states < state.current_b(k) - 1e-9, 1));
+ end
+ 
+-function b = discrete_next_b(state, k, direction)
+-states = state.states{k};
+-if isempty(states)
+-    b = state.current_b(k);
+-    return;
+-end
+-[~, cur] = min(abs(states - state.current_b(k)));
+-if direction > 0
+-    cand = find(states > states(cur) + 1e-9, 1);
+-else
+-    cand = find(states < states(cur) - 1e-9, 1, 'last');
+-end
+-if isempty(cand)
+-    b = state.current_b(k);
+-else
+-    b = states(cand);
+-end
+-
+ function b = continuous_next_b(state, k, direction)
+ span = max(state.bmax(k) - state.bmin(k), 0);
+ if span == 0
+--- a/matpower/lib/+mp/psse_swshunt_group_action.m
++++ b/matpower/lib/+mp/psse_swshunt_group_action.m
+@@ -0,0 +1,74 @@
++function [direction, target, active_members] = psse_swshunt_group_action(state, members, v, eligible)
++%PSSE_SWSHUNT_GROUP_ACTION Pure weighted request for one regulated-bus group.
++% See docs/SWSHUNT_DECISION_CONTRACT.md for the shared acceptance boundary.
++% The caller supplies current eligibility, including locks applied after
++% construction of the group. No electrical acceptance or recovery occurs here.
++%
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   This file is part of MATPOWER, covered by the 3-clause BSD License.
++%   See LICENSE and https://matpower.org for details.
++
++members = members(eligible(members));
++err = zeros(length(members), 1);
++target_k = NaN(length(members), 1);
++for jj = 1:length(members)
++    k = members(jj);
++    [lo, hi] = voltage_band(state, k);
++    if isnan(lo) || isnan(hi)
++        continue;
++    end
++    if state.modsw(k) == 1
++        if v < lo - state.vtol
++            target_k(jj) = lo;
++            err(jj) = lo - v;
++        elseif v > hi + state.vtol
++            target_k(jj) = hi;
++            err(jj) = hi - v;
++        end
++    elseif state.modsw(k) == 2
++        target_k(jj) = (lo + hi) / 2;
++        if abs(target_k(jj) - v) > state.vtol
++            err(jj) = target_k(jj) - v;
++        end
++    end
++end
++
++up = find(err > 0);
++dn = find(err < 0);
++up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
++dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
++if up_score == 0 && dn_score == 0
++    direction = 0;
++    target = NaN;
++    active_members = [];
++    return;
++elseif up_score >= dn_score
++    direction = 1;
++    active = up;
++else
++    direction = -1;
++    active = dn;
++end
++
++active_members = members(active);
++weights = state.rmpct(active_members);
++if isempty(weights) || sum(weights) == 0
++    target = mean(target_k(active));
++else
++    target = sum(target_k(active) .* weights) / sum(weights);
++end
++
++function [lo, hi] = voltage_band(state, k)
++% Return a normalized voltage band for one switched shunt.
++lo = state.vswlo(k);
++hi = state.vswhi(k);
++if isnan(lo) || isnan(hi)
++    return;
++end
++if hi < lo
++    tmp = hi;
++    hi = lo;
++    lo = tmp;
++end
++
+--- a/matpower/lib/+mp/psse_swshunt_discrete_next.m
++++ b/matpower/lib/+mp/psse_swshunt_discrete_next.m
+@@ -0,0 +1,27 @@
++function b = psse_swshunt_discrete_next(state, k, direction)
++%PSSE_SWSHUNT_DISCRETE_NEXT One adjacent admissible BINIT, or unchanged bound.
++% Sorted constructor grid and normalized current state are required.
++% See docs/SWSHUNT_DECISION_CONTRACT.md. This does not accept an electrical state.
++%
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   This file is part of MATPOWER, covered by the 3-clause BSD License.
++%   See LICENSE and https://matpower.org for details.
++
++states = state.states{k};
++if isempty(states)
++    b = state.current_b(k);
++    return;
++end
++[~, cur] = min(abs(states - state.current_b(k)));
++if direction > 0
++    cand = find(states > states(cur) + 1e-9, 1);
++else
++    cand = find(states < states(cur) - 1e-9, 1, 'last');
++end
++if isempty(cand)
++    b = state.current_b(k);
++else
++    b = states(cand);
++end
++

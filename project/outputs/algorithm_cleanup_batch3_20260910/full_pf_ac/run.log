@@ -1,0 +1,949 @@
+1..726
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 1 - AC PF - Newton (default, power-polar) : success
+ok 2 - AC PF - Newton (default, power-polar) : bus
+ok 3 - AC PF - Newton (default, power-polar) : gen
+ok 4 - AC PF - Newton (default, power-polar) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 5 - AC PF - Newton (default, power-polar) : success
+ok 6 - AC PF - Newton (default, power-polar) : bus
+ok 7 - AC PF - Newton (default, power-polar) : gen
+ok 8 - AC PF - Newton (default, power-polar) : branch
+ok 9 - NR - Vg ~= 1 : success
+ok 10 - NR - Vg ~= 1 : bus
+ok 11 - NR - Vg ~= 1 : gen
+ok 12 - NR - Vg ~= 1 : branch
+ok 13 - NR - check Qg : success
+ok 14 - NR - check Qg : single gen, Qmin = Qmax
+ok 15 - NR - check Qg : success
+ok 16 - NR - check Qg : 2 gens, Qmin = Qmax for one
+ok 17 - NR - check Qg : success
+ok 18 - NR - check Qg : 2 gens, Qmin = Qmax for both
+ok 19 - NR - check Qg : success
+ok 20 - NR - check Qg : 2 gens, proportional
+ok 21 - NR - check Qg : success
+ok 22 - NR - check Qg : 2 gens, proportional
+ok 23 - NR - check Qg : success
+ok 24 - NR - check Qg : 2 gens, one infinite range
+ok 25 - NR - check Qg : success
+ok 26 - NR - check Qg : 2 gens, both infinite range
+ok 27 - NR - check Qg : success
+ok 28 - NR - check Qg : 2 gens, both infinite range
+ok 29 - NR - check Qg : success
+ok 30 - NR - check Qg : 2 gens, both infinite range
+ok 31 - NR - reactive generation allocation : success
+ok 32 - NR - reactive generation allocation : PV bus
+ok 33 - NR - reactive generation allocation : PQ bus
+ok 34 - NR - network w/islands : AC PF : success
+ok 35 - NR - network w/islands : AC PF : voltage angles 1
+ok 36 - NR - network w/islands : AC PF : voltage angles 2
+ok 37 - NR - network w/islands : AC PF : active power generation 1
+ok 38 - NR - network w/islands : AC PF : active power generation 2
+ok 39 - NR - all buses isolated : success = 0
+ok 40 - NR - pf.enforce_q_lims == 0 : success
+ok 41 - NR - pf.enforce_q_lims == 0 : bus type
+ok 42 - NR - pf.enforce_q_lims == 0 : Qg
+ok 43 - NR - pf.enforce_q_lims == 1 : success = 0
+ok 44 - NR - pf.enforce_q_lims == 1 : bus type
+ok 45 - NR - pf.enforce_q_lims == 1 : Qg
+ok 46 - NR - pf.enforce_q_lims == 2 : success
+ok 47 - NR - pf.enforce_q_lims == 2 : bus type
+ok 48 - NR - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 49 - AC PF - Newton (power-polar) : success
+ok 50 - AC PF - Newton (power-polar) : bus
+ok 51 - AC PF - Newton (power-polar) : gen
+ok 52 - AC PF - Newton (power-polar) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 53 - AC PF - Newton (power-polar) : success
+ok 54 - AC PF - Newton (power-polar) : bus
+ok 55 - AC PF - Newton (power-polar) : gen
+ok 56 - AC PF - Newton (power-polar) : branch
+ok 57 - NR-SP - Vg ~= 1 : success
+ok 58 - NR-SP - Vg ~= 1 : bus
+ok 59 - NR-SP - Vg ~= 1 : gen
+ok 60 - NR-SP - Vg ~= 1 : branch
+ok 61 - NR-SP - check Qg : success
+ok 62 - NR-SP - check Qg : single gen, Qmin = Qmax
+ok 63 - NR-SP - check Qg : success
+ok 64 - NR-SP - check Qg : 2 gens, Qmin = Qmax for one
+ok 65 - NR-SP - check Qg : success
+ok 66 - NR-SP - check Qg : 2 gens, Qmin = Qmax for both
+ok 67 - NR-SP - check Qg : success
+ok 68 - NR-SP - check Qg : 2 gens, proportional
+ok 69 - NR-SP - check Qg : success
+ok 70 - NR-SP - check Qg : 2 gens, proportional
+ok 71 - NR-SP - check Qg : success
+ok 72 - NR-SP - check Qg : 2 gens, one infinite range
+ok 73 - NR-SP - check Qg : success
+ok 74 - NR-SP - check Qg : 2 gens, both infinite range
+ok 75 - NR-SP - check Qg : success
+ok 76 - NR-SP - check Qg : 2 gens, both infinite range
+ok 77 - NR-SP - check Qg : success
+ok 78 - NR-SP - check Qg : 2 gens, both infinite range
+ok 79 - NR-SP - reactive generation allocation : success
+ok 80 - NR-SP - reactive generation allocation : PV bus
+ok 81 - NR-SP - reactive generation allocation : PQ bus
+ok 82 - NR-SP - network w/islands : AC PF : success
+ok 83 - NR-SP - network w/islands : AC PF : voltage angles 1
+ok 84 - NR-SP - network w/islands : AC PF : voltage angles 2
+ok 85 - NR-SP - network w/islands : AC PF : active power generation 1
+ok 86 - NR-SP - network w/islands : AC PF : active power generation 2
+ok 87 - NR-SP - all buses isolated : success = 0
+ok 88 - NR-SP - pf.enforce_q_lims == 0 : success
+ok 89 - NR-SP - pf.enforce_q_lims == 0 : bus type
+ok 90 - NR-SP - pf.enforce_q_lims == 0 : Qg
+ok 91 - NR-SP - pf.enforce_q_lims == 1 : success = 0
+ok 92 - NR-SP - pf.enforce_q_lims == 1 : bus type
+ok 93 - NR-SP - pf.enforce_q_lims == 1 : Qg
+ok 94 - NR-SP - pf.enforce_q_lims == 2 : success
+ok 95 - NR-SP - pf.enforce_q_lims == 2 : bus type
+ok 96 - NR-SP - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 97 - AC PF - Newton (power-cartesian) : success
+ok 98 - AC PF - Newton (power-cartesian) : bus
+ok 99 - AC PF - Newton (power-cartesian) : gen
+ok 100 - AC PF - Newton (power-cartesian) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-power formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 101 - AC PF - Newton (power-cartesian) : success
+ok 102 - AC PF - Newton (power-cartesian) : bus
+ok 103 - AC PF - Newton (power-cartesian) : gen
+ok 104 - AC PF - Newton (power-cartesian) : branch
+ok 105 - NR-SC - Vg ~= 1 : success
+ok 106 - NR-SC - Vg ~= 1 : bus
+ok 107 - NR-SC - Vg ~= 1 : gen
+ok 108 - NR-SC - Vg ~= 1 : branch
+ok 109 - NR-SC - check Qg : success
+ok 110 - NR-SC - check Qg : single gen, Qmin = Qmax
+ok 111 - NR-SC - check Qg : success
+ok 112 - NR-SC - check Qg : 2 gens, Qmin = Qmax for one
+ok 113 - NR-SC - check Qg : success
+ok 114 - NR-SC - check Qg : 2 gens, Qmin = Qmax for both
+ok 115 - NR-SC - check Qg : success
+ok 116 - NR-SC - check Qg : 2 gens, proportional
+ok 117 - NR-SC - check Qg : success
+ok 118 - NR-SC - check Qg : 2 gens, proportional
+ok 119 - NR-SC - check Qg : success
+ok 120 - NR-SC - check Qg : 2 gens, one infinite range
+ok 121 - NR-SC - check Qg : success
+ok 122 - NR-SC - check Qg : 2 gens, both infinite range
+ok 123 - NR-SC - check Qg : success
+ok 124 - NR-SC - check Qg : 2 gens, both infinite range
+ok 125 - NR-SC - check Qg : success
+ok 126 - NR-SC - check Qg : 2 gens, both infinite range
+ok 127 - NR-SC - reactive generation allocation : success
+ok 128 - NR-SC - reactive generation allocation : PV bus
+ok 129 - NR-SC - reactive generation allocation : PQ bus
+ok 130 - NR-SC - network w/islands : AC PF : success
+ok 131 - NR-SC - network w/islands : AC PF : voltage angles 1
+ok 132 - NR-SC - network w/islands : AC PF : voltage angles 2
+ok 133 - NR-SC - network w/islands : AC PF : active power generation 1
+ok 134 - NR-SC - network w/islands : AC PF : active power generation 2
+ok 135 - NR-SC - all buses isolated : success = 0
+ok 136 - NR-SC - pf.enforce_q_lims == 0 : success
+ok 137 - NR-SC - pf.enforce_q_lims == 0 : bus type
+ok 138 - NR-SC - pf.enforce_q_lims == 0 : Qg
+ok 139 - NR-SC - pf.enforce_q_lims == 1 : success = 0
+ok 140 - NR-SC - pf.enforce_q_lims == 1 : bus type
+ok 141 - NR-SC - pf.enforce_q_lims == 1 : Qg
+ok 142 - NR-SC - pf.enforce_q_lims == 2 : success
+ok 143 - NR-SC - pf.enforce_q_lims == 2 : bus type
+ok 144 - NR-SC - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026 -- AC Power Flow (Newton-SH)
+
+Newton's method power flow (power balance, hybrid) converged in 4 iterations.
+ok 145 - AC PF - Newton (power-hybrid) : success
+ok 146 - AC PF - Newton (power-hybrid) : bus
+ok 147 - AC PF - Newton (power-hybrid) : gen
+ok 148 - AC PF - Newton (power-hybrid) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026 -- AC Power Flow (Newton-SH)
+
+Newton's method power flow (power balance, hybrid) converged in 4 iterations.
+ok 149 - AC PF - Newton (power-hybrid) : success
+ok 150 - AC PF - Newton (power-hybrid) : bus
+ok 151 - AC PF - Newton (power-hybrid) : gen
+ok 152 - AC PF - Newton (power-hybrid) : branch
+ok 153 - NR-SH - Vg ~= 1 : success
+ok 154 - NR-SH - Vg ~= 1 : bus
+ok 155 - NR-SH - Vg ~= 1 : gen
+ok 156 - NR-SH - Vg ~= 1 : branch
+ok 157 - NR-SH - check Qg : success
+ok 158 - NR-SH - check Qg : single gen, Qmin = Qmax
+ok 159 - NR-SH - check Qg : success
+ok 160 - NR-SH - check Qg : 2 gens, Qmin = Qmax for one
+ok 161 - NR-SH - check Qg : success
+ok 162 - NR-SH - check Qg : 2 gens, Qmin = Qmax for both
+ok 163 - NR-SH - check Qg : success
+ok 164 - NR-SH - check Qg : 2 gens, proportional
+ok 165 - NR-SH - check Qg : success
+ok 166 - NR-SH - check Qg : 2 gens, proportional
+ok 167 - NR-SH - check Qg : success
+ok 168 - NR-SH - check Qg : 2 gens, one infinite range
+ok 169 - NR-SH - check Qg : success
+ok 170 - NR-SH - check Qg : 2 gens, both infinite range
+ok 171 - NR-SH - check Qg : success
+ok 172 - NR-SH - check Qg : 2 gens, both infinite range
+ok 173 - NR-SH - check Qg : success
+ok 174 - NR-SH - check Qg : 2 gens, both infinite range
+ok 175 - NR-SH - reactive generation allocation : success
+ok 176 - NR-SH - reactive generation allocation : PV bus
+ok 177 - NR-SH - reactive generation allocation : PQ bus
+ok 178 - NR-SH - network w/islands : AC PF : success
+ok 179 - NR-SH - network w/islands : AC PF : voltage angles 1
+ok 180 - NR-SH - network w/islands : AC PF : voltage angles 2
+ok 181 - NR-SH - network w/islands : AC PF : active power generation 1
+ok 182 - NR-SH - network w/islands : AC PF : active power generation 2
+ok 183 - NR-SH - all buses isolated : success = 0
+ok 184 - NR-SH - pf.enforce_q_lims == 0 : success
+ok 185 - NR-SH - pf.enforce_q_lims == 0 : bus type
+ok 186 - NR-SH - pf.enforce_q_lims == 0 : Qg
+ok 187 - NR-SH - pf.enforce_q_lims == 1 : success = 0
+ok 188 - NR-SH - pf.enforce_q_lims == 1 : bus type
+ok 189 - NR-SH - pf.enforce_q_lims == 1 : Qg
+ok 190 - NR-SH - pf.enforce_q_lims == 2 : success
+ok 191 - NR-SH - pf.enforce_q_lims == 2 : bus type
+ok 192 - NR-SH - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-current formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 193 - AC PF - Newton (current-polar) : success
+ok 194 - AC PF - Newton (current-polar) : bus
+ok 195 - AC PF - Newton (current-polar) : gen
+ok 196 - AC PF - Newton (current-polar) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-current formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 197 - AC PF - Newton (current-polar) : success
+ok 198 - AC PF - Newton (current-polar) : bus
+ok 199 - AC PF - Newton (current-polar) : gen
+ok 200 - AC PF - Newton (current-polar) : branch
+ok 201 - NR-IP - Vg ~= 1 : success
+ok 202 - NR-IP - Vg ~= 1 : bus
+ok 203 - NR-IP - Vg ~= 1 : gen
+ok 204 - NR-IP - Vg ~= 1 : branch
+ok 205 - NR-IP - check Qg : success
+ok 206 - NR-IP - check Qg : single gen, Qmin = Qmax
+ok 207 - NR-IP - check Qg : success
+ok 208 - NR-IP - check Qg : 2 gens, Qmin = Qmax for one
+ok 209 - NR-IP - check Qg : success
+ok 210 - NR-IP - check Qg : 2 gens, Qmin = Qmax for both
+ok 211 - NR-IP - check Qg : success
+ok 212 - NR-IP - check Qg : 2 gens, proportional
+ok 213 - NR-IP - check Qg : success
+ok 214 - NR-IP - check Qg : 2 gens, proportional
+ok 215 - NR-IP - check Qg : success
+ok 216 - NR-IP - check Qg : 2 gens, one infinite range
+ok 217 - NR-IP - check Qg : success
+ok 218 - NR-IP - check Qg : 2 gens, both infinite range
+ok 219 - NR-IP - check Qg : success
+ok 220 - NR-IP - check Qg : 2 gens, both infinite range
+ok 221 - NR-IP - check Qg : success
+ok 222 - NR-IP - check Qg : 2 gens, both infinite range
+ok 223 - NR-IP - reactive generation allocation : success
+ok 224 - NR-IP - reactive generation allocation : PV bus
+ok 225 - NR-IP - reactive generation allocation : PQ bus
+ok 226 - NR-IP - network w/islands : AC PF : success
+ok 227 - NR-IP - network w/islands : AC PF : voltage angles 1
+ok 228 - NR-IP - network w/islands : AC PF : voltage angles 2
+ok 229 - NR-IP - network w/islands : AC PF : active power generation 1
+ok 230 - NR-IP - network w/islands : AC PF : active power generation 2
+ok 231 - NR-IP - all buses isolated : success = 0
+ok 232 - NR-IP - pf.enforce_q_lims == 0 : success
+ok 233 - NR-IP - pf.enforce_q_lims == 0 : bus type
+ok 234 - NR-IP - pf.enforce_q_lims == 0 : Qg
+ok 235 - NR-IP - pf.enforce_q_lims == 1 : success = 0
+ok 236 - NR-IP - pf.enforce_q_lims == 1 : bus type
+ok 237 - NR-IP - pf.enforce_q_lims == 1 : Qg
+ok 238 - NR-IP - pf.enforce_q_lims == 2 : success
+ok 239 - NR-IP - pf.enforce_q_lims == 2 : bus type
+ok 240 - NR-IP - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-current formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 241 - AC PF - Newton (current-cartesian) : success
+ok 242 - AC PF - Newton (current-cartesian) : bus
+ok 243 - AC PF - Newton (current-cartesian) : gen
+ok 244 - AC PF - Newton (current-cartesian) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-current formulation
+
+Newton's method converged in 4 iterations.
+PF successful
+ok 245 - AC PF - Newton (current-cartesian) : success
+ok 246 - AC PF - Newton (current-cartesian) : bus
+ok 247 - AC PF - Newton (current-cartesian) : gen
+ok 248 - AC PF - Newton (current-cartesian) : branch
+ok 249 - NR-IC - Vg ~= 1 : success
+ok 250 - NR-IC - Vg ~= 1 : bus
+ok 251 - NR-IC - Vg ~= 1 : gen
+ok 252 - NR-IC - Vg ~= 1 : branch
+ok 253 - NR-IC - check Qg : success
+ok 254 - NR-IC - check Qg : single gen, Qmin = Qmax
+ok 255 - NR-IC - check Qg : success
+ok 256 - NR-IC - check Qg : 2 gens, Qmin = Qmax for one
+ok 257 - NR-IC - check Qg : success
+ok 258 - NR-IC - check Qg : 2 gens, Qmin = Qmax for both
+ok 259 - NR-IC - check Qg : success
+ok 260 - NR-IC - check Qg : 2 gens, proportional
+ok 261 - NR-IC - check Qg : success
+ok 262 - NR-IC - check Qg : 2 gens, proportional
+ok 263 - NR-IC - check Qg : success
+ok 264 - NR-IC - check Qg : 2 gens, one infinite range
+ok 265 - NR-IC - check Qg : success
+ok 266 - NR-IC - check Qg : 2 gens, both infinite range
+ok 267 - NR-IC - check Qg : success
+ok 268 - NR-IC - check Qg : 2 gens, both infinite range
+ok 269 - NR-IC - check Qg : success
+ok 270 - NR-IC - check Qg : 2 gens, both infinite range
+ok 271 - NR-IC - reactive generation allocation : success
+ok 272 - NR-IC - reactive generation allocation : PV bus
+ok 273 - NR-IC - reactive generation allocation : PQ bus
+ok 274 - NR-IC - network w/islands : AC PF : success
+ok 275 - NR-IC - network w/islands : AC PF : voltage angles 1
+ok 276 - NR-IC - network w/islands : AC PF : voltage angles 2
+ok 277 - NR-IC - network w/islands : AC PF : active power generation 1
+ok 278 - NR-IC - network w/islands : AC PF : active power generation 2
+ok 279 - NR-IC - all buses isolated : success = 0
+ok 280 - NR-IC - pf.enforce_q_lims == 0 : success
+ok 281 - NR-IC - pf.enforce_q_lims == 0 : bus type
+ok 282 - NR-IC - pf.enforce_q_lims == 0 : Qg
+ok 283 - NR-IC - pf.enforce_q_lims == 1 : success = 0
+ok 284 - NR-IC - pf.enforce_q_lims == 1 : bus type
+ok 285 - NR-IC - pf.enforce_q_lims == 1 : Qg
+ok 286 - NR-IC - pf.enforce_q_lims == 2 : success
+ok 287 - NR-IC - pf.enforce_q_lims == 2 : bus type
+ok 288 - NR-IC - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026 -- AC Power Flow (Newton-IH)
+
+Newton's method power flow (current balance, hybrid) converged in 4 iterations.
+ok 289 - AC PF - Newton (current-hybrid) : success
+ok 290 - AC PF - Newton (current-hybrid) : bus
+ok 291 - AC PF - Newton (current-hybrid) : gen
+ok 292 - AC PF - Newton (current-hybrid) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026 -- AC Power Flow (Newton-IH)
+
+Newton's method power flow (current balance, hybrid) converged in 4 iterations.
+ok 293 - AC PF - Newton (current-hybrid) : success
+ok 294 - AC PF - Newton (current-hybrid) : bus
+ok 295 - AC PF - Newton (current-hybrid) : gen
+ok 296 - AC PF - Newton (current-hybrid) : branch
+ok 297 - NR-IH - Vg ~= 1 : success
+ok 298 - NR-IH - Vg ~= 1 : bus
+ok 299 - NR-IH - Vg ~= 1 : gen
+ok 300 - NR-IH - Vg ~= 1 : branch
+ok 301 - NR-IH - check Qg : success
+ok 302 - NR-IH - check Qg : single gen, Qmin = Qmax
+ok 303 - NR-IH - check Qg : success
+ok 304 - NR-IH - check Qg : 2 gens, Qmin = Qmax for one
+ok 305 - NR-IH - check Qg : success
+ok 306 - NR-IH - check Qg : 2 gens, Qmin = Qmax for both
+ok 307 - NR-IH - check Qg : success
+ok 308 - NR-IH - check Qg : 2 gens, proportional
+ok 309 - NR-IH - check Qg : success
+ok 310 - NR-IH - check Qg : 2 gens, proportional
+ok 311 - NR-IH - check Qg : success
+ok 312 - NR-IH - check Qg : 2 gens, one infinite range
+ok 313 - NR-IH - check Qg : success
+ok 314 - NR-IH - check Qg : 2 gens, both infinite range
+ok 315 - NR-IH - check Qg : success
+ok 316 - NR-IH - check Qg : 2 gens, both infinite range
+ok 317 - NR-IH - check Qg : success
+ok 318 - NR-IH - check Qg : 2 gens, both infinite range
+ok 319 - NR-IH - reactive generation allocation : success
+ok 320 - NR-IH - reactive generation allocation : PV bus
+ok 321 - NR-IH - reactive generation allocation : PQ bus
+ok 322 - NR-IH - network w/islands : AC PF : success
+ok 323 - NR-IH - network w/islands : AC PF : voltage angles 1
+ok 324 - NR-IH - network w/islands : AC PF : voltage angles 2
+ok 325 - NR-IH - network w/islands : AC PF : active power generation 1
+ok 326 - NR-IH - network w/islands : AC PF : active power generation 2
+ok 327 - NR-IH - all buses isolated : success = 0
+ok 328 - NR-IH - pf.enforce_q_lims == 0 : success
+ok 329 - NR-IH - pf.enforce_q_lims == 0 : bus type
+ok 330 - NR-IH - pf.enforce_q_lims == 0 : Qg
+ok 331 - NR-IH - pf.enforce_q_lims == 1 : success = 0
+ok 332 - NR-IH - pf.enforce_q_lims == 1 : bus type
+ok 333 - NR-IH - pf.enforce_q_lims == 1 : Qg
+ok 334 - NR-IH - pf.enforce_q_lims == 2 : success
+ok 335 - NR-IH - pf.enforce_q_lims == 2 : bus type
+ok 336 - NR-IH - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Fast-decoupled Newton's method converged in 9 P- and 8 Q-iterations.
+PF successful
+ok 337 - AC PF - Fast Decoupled (XB) : success
+ok 338 - AC PF - Fast Decoupled (XB) : bus
+ok 339 - AC PF - Fast Decoupled (XB) : gen
+ok 340 - AC PF - Fast Decoupled (XB) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Fast-decoupled Newton's method converged in 9 P- and 8 Q-iterations.
+PF successful
+ok 341 - AC PF - Fast Decoupled (XB) : success
+ok 342 - AC PF - Fast Decoupled (XB) : bus
+ok 343 - AC PF - Fast Decoupled (XB) : gen
+ok 344 - AC PF - Fast Decoupled (XB) : branch
+ok 345 - FDXB - Vg ~= 1 : success
+ok 346 - FDXB - Vg ~= 1 : bus
+ok 347 - FDXB - Vg ~= 1 : gen
+ok 348 - FDXB - Vg ~= 1 : branch
+ok 349 - FDXB - check Qg : success
+ok 350 - FDXB - check Qg : single gen, Qmin = Qmax
+ok 351 - FDXB - check Qg : success
+ok 352 - FDXB - check Qg : 2 gens, Qmin = Qmax for one
+ok 353 - FDXB - check Qg : success
+ok 354 - FDXB - check Qg : 2 gens, Qmin = Qmax for both
+ok 355 - FDXB - check Qg : success
+ok 356 - FDXB - check Qg : 2 gens, proportional
+ok 357 - FDXB - check Qg : success
+ok 358 - FDXB - check Qg : 2 gens, proportional
+ok 359 - FDXB - check Qg : success
+ok 360 - FDXB - check Qg : 2 gens, one infinite range
+ok 361 - FDXB - check Qg : success
+ok 362 - FDXB - check Qg : 2 gens, both infinite range
+ok 363 - FDXB - check Qg : success
+ok 364 - FDXB - check Qg : 2 gens, both infinite range
+ok 365 - FDXB - check Qg : success
+ok 366 - FDXB - check Qg : 2 gens, both infinite range
+ok 367 - FDXB - reactive generation allocation : success
+ok 368 - FDXB - reactive generation allocation : PV bus
+ok 369 - FDXB - reactive generation allocation : PQ bus
+ok 370 - FDXB - network w/islands : AC PF : success
+ok 371 - FDXB - network w/islands : AC PF : voltage angles 1
+ok 372 - FDXB - network w/islands : AC PF : voltage angles 2
+ok 373 - FDXB - network w/islands : AC PF : active power generation 1
+ok 374 - FDXB - network w/islands : AC PF : active power generation 2
+ok 375 - FDXB - all buses isolated : success = 0
+ok 376 - FDXB - pf.enforce_q_lims == 0 : success
+ok 377 - FDXB - pf.enforce_q_lims == 0 : bus type
+ok 378 - FDXB - pf.enforce_q_lims == 0 : Qg
+ok 379 - FDXB - pf.enforce_q_lims == 1 : success = 0
+ok 380 - FDXB - pf.enforce_q_lims == 1 : bus type
+ok 381 - FDXB - pf.enforce_q_lims == 1 : Qg
+ok 382 - FDXB - pf.enforce_q_lims == 2 : success
+ok 383 - FDXB - pf.enforce_q_lims == 2 : bus type
+ok 384 - FDXB - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Fast-decoupled Newton's method converged in 8 P- and 8 Q-iterations.
+PF successful
+ok 385 - AC PF - Fast Decoupled (BX) : success
+ok 386 - AC PF - Fast Decoupled (BX) : bus
+ok 387 - AC PF - Fast Decoupled (BX) : gen
+ok 388 - AC PF - Fast Decoupled (BX) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Fast-decoupled Newton's method converged in 8 P- and 8 Q-iterations.
+PF successful
+ok 389 - AC PF - Fast Decoupled (BX) : success
+ok 390 - AC PF - Fast Decoupled (BX) : bus
+ok 391 - AC PF - Fast Decoupled (BX) : gen
+ok 392 - AC PF - Fast Decoupled (BX) : branch
+ok 393 - FDBX - Vg ~= 1 : success
+ok 394 - FDBX - Vg ~= 1 : bus
+ok 395 - FDBX - Vg ~= 1 : gen
+ok 396 - FDBX - Vg ~= 1 : branch
+ok 397 - FDBX - check Qg : success
+ok 398 - FDBX - check Qg : single gen, Qmin = Qmax
+ok 399 - FDBX - check Qg : success
+ok 400 - FDBX - check Qg : 2 gens, Qmin = Qmax for one
+ok 401 - FDBX - check Qg : success
+ok 402 - FDBX - check Qg : 2 gens, Qmin = Qmax for both
+ok 403 - FDBX - check Qg : success
+ok 404 - FDBX - check Qg : 2 gens, proportional
+ok 405 - FDBX - check Qg : success
+ok 406 - FDBX - check Qg : 2 gens, proportional
+ok 407 - FDBX - check Qg : success
+ok 408 - FDBX - check Qg : 2 gens, one infinite range
+ok 409 - FDBX - check Qg : success
+ok 410 - FDBX - check Qg : 2 gens, both infinite range
+ok 411 - FDBX - check Qg : success
+ok 412 - FDBX - check Qg : 2 gens, both infinite range
+ok 413 - FDBX - check Qg : success
+ok 414 - FDBX - check Qg : 2 gens, both infinite range
+ok 415 - FDBX - reactive generation allocation : success
+ok 416 - FDBX - reactive generation allocation : PV bus
+ok 417 - FDBX - reactive generation allocation : PQ bus
+ok 418 - FDBX - network w/islands : AC PF : success
+ok 419 - FDBX - network w/islands : AC PF : voltage angles 1
+ok 420 - FDBX - network w/islands : AC PF : voltage angles 2
+ok 421 - FDBX - network w/islands : AC PF : active power generation 1
+ok 422 - FDBX - network w/islands : AC PF : active power generation 2
+ok 423 - FDBX - all buses isolated : success = 0
+ok 424 - FDBX - pf.enforce_q_lims == 0 : success
+ok 425 - FDBX - pf.enforce_q_lims == 0 : bus type
+ok 426 - FDBX - pf.enforce_q_lims == 0 : Qg
+ok 427 - FDBX - pf.enforce_q_lims == 1 : success = 0
+ok 428 - FDBX - pf.enforce_q_lims == 1 : bus type
+ok 429 - FDBX - pf.enforce_q_lims == 1 : Qg
+ok 430 - FDBX - pf.enforce_q_lims == 2 : success
+ok 431 - FDBX - pf.enforce_q_lims == 2 : bus type
+ok 432 - FDBX - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Gauss-Seidel method converged in 241 iterations.
+PF successful
+ok 433 - AC PF - Gauss-Seidel : success
+ok 434 - AC PF - Gauss-Seidel : bus
+ok 435 - AC PF - Gauss-Seidel : gen
+ok 436 - AC PF - Gauss-Seidel : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Gauss-Seidel method converged in 241 iterations.
+PF successful
+ok 437 - AC PF - Gauss-Seidel : success
+ok 438 - AC PF - Gauss-Seidel : bus
+ok 439 - AC PF - Gauss-Seidel : gen
+ok 440 - AC PF - Gauss-Seidel : branch
+ok 441 - GS - Vg ~= 1 : success
+ok 442 - GS - Vg ~= 1 : bus
+ok 443 - GS - Vg ~= 1 : gen
+ok 444 - GS - Vg ~= 1 : branch
+ok 445 - GS - check Qg : success
+ok 446 - GS - check Qg : single gen, Qmin = Qmax
+ok 447 - GS - check Qg : success
+ok 448 - GS - check Qg : 2 gens, Qmin = Qmax for one
+ok 449 - GS - check Qg : success
+ok 450 - GS - check Qg : 2 gens, Qmin = Qmax for both
+ok 451 - GS - check Qg : success
+ok 452 - GS - check Qg : 2 gens, proportional
+ok 453 - GS - check Qg : success
+ok 454 - GS - check Qg : 2 gens, proportional
+ok 455 - GS - check Qg : success
+ok 456 - GS - check Qg : 2 gens, one infinite range
+ok 457 - GS - check Qg : success
+ok 458 - GS - check Qg : 2 gens, both infinite range
+ok 459 - GS - check Qg : success
+ok 460 - GS - check Qg : 2 gens, both infinite range
+ok 461 - GS - check Qg : success
+ok 462 - GS - check Qg : 2 gens, both infinite range
+ok 463 - GS - reactive generation allocation : success
+ok 464 - GS - reactive generation allocation : PV bus
+ok 465 - GS - reactive generation allocation : PQ bus
+ok 466 - GS - network w/islands : AC PF : success
+ok 467 - GS - network w/islands : AC PF : voltage angles 1
+ok 468 - GS - network w/islands : AC PF : voltage angles 2
+ok 469 - GS - network w/islands : AC PF : active power generation 1
+ok 470 - GS - network w/islands : AC PF : active power generation 2
+ok 471 - GS - all buses isolated : success = 0
+ok 472 - GS - pf.enforce_q_lims == 0 : success
+ok 473 - GS - pf.enforce_q_lims == 0 : bus type
+ok 474 - GS - pf.enforce_q_lims == 0 : Qg
+ok 475 - GS - pf.enforce_q_lims == 1 : success = 0
+ok 476 - GS - pf.enforce_q_lims == 1 : bus type
+ok 477 - GS - pf.enforce_q_lims == 1 : Qg
+ok 478 - GS - pf.enforce_q_lims == 2 : success
+ok 479 - GS - pf.enforce_q_lims == 2 : bus type
+ok 480 - GS - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Implicit Z-bus Gauss method converged in 19 iterations.
+PF successful
+ok 481 - AC PF - Implicit Z-bus Gauss : success
+ok 482 - AC PF - Implicit Z-bus Gauss : bus
+ok 483 - AC PF - Implicit Z-bus Gauss : gen
+ok 484 - AC PF - Implicit Z-bus Gauss : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+Implicit Z-bus Gauss method converged in 19 iterations.
+PF successful
+ok 485 - AC PF - Implicit Z-bus Gauss : success
+ok 486 - AC PF - Implicit Z-bus Gauss : bus
+ok 487 - AC PF - Implicit Z-bus Gauss : gen
+ok 488 - AC PF - Implicit Z-bus Gauss : branch
+ok 489 - ZG - Vg ~= 1 : success
+ok 490 - ZG - Vg ~= 1 : bus
+ok 491 - ZG - Vg ~= 1 : gen
+ok 492 - ZG - Vg ~= 1 : branch
+ok 493 - ZG - check Qg : success
+ok 494 - ZG - check Qg : single gen, Qmin = Qmax
+ok 495 - ZG - check Qg : success
+ok 496 - ZG - check Qg : 2 gens, Qmin = Qmax for one
+ok 497 - ZG - check Qg : success
+ok 498 - ZG - check Qg : 2 gens, Qmin = Qmax for both
+ok 499 - ZG - check Qg : success
+ok 500 - ZG - check Qg : 2 gens, proportional
+ok 501 - ZG - check Qg : success
+ok 502 - ZG - check Qg : 2 gens, proportional
+ok 503 - ZG - check Qg : success
+ok 504 - ZG - check Qg : 2 gens, one infinite range
+ok 505 - ZG - check Qg : success
+ok 506 - ZG - check Qg : 2 gens, both infinite range
+ok 507 - ZG - check Qg : success
+ok 508 - ZG - check Qg : 2 gens, both infinite range
+ok 509 - ZG - check Qg : success
+ok 510 - ZG - check Qg : 2 gens, both infinite range
+ok 511 - ZG - reactive generation allocation : success
+ok 512 - ZG - reactive generation allocation : PV bus
+ok 513 - ZG - reactive generation allocation : PQ bus
+ok 514 - ZG - network w/islands : AC PF : success
+ok 515 - ZG - network w/islands : AC PF : voltage angles 1
+ok 516 - ZG - network w/islands : AC PF : voltage angles 2
+ok 517 - ZG - network w/islands : AC PF : active power generation 1
+ok 518 - ZG - network w/islands : AC PF : active power generation 2
+ok 519 - ZG - all buses isolated : success = 0
+ok 520 - ZG - pf.enforce_q_lims == 0 : success
+ok 521 - ZG - pf.enforce_q_lims == 0 : bus type
+ok 522 - ZG - pf.enforce_q_lims == 0 : Qg
+ok 523 - ZG - pf.enforce_q_lims == 1 : success = 0
+ok 524 - ZG - pf.enforce_q_lims == 1 : bus type
+ok 525 - ZG - pf.enforce_q_lims == 1 : Qg
+ok 526 - ZG - pf.enforce_q_lims == 2 : success
+ok 527 - ZG - pf.enforce_q_lims == 2 : bus type
+ok 528 - ZG - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','1.951830e-12','1.000000e-09','5.879601e-27','3.162278e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 529 - AC PF - fsolve (power-polar) : success
+ok 530 - AC PF - fsolve (power-polar) : bus
+ok 531 - AC PF - fsolve (power-polar) : gen
+ok 532 - AC PF - fsolve (power-polar) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-power formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','1.951830e-12','1.000000e-09','5.879601e-27','3.162278e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 533 - AC PF - fsolve (power-polar) : success
+ok 534 - AC PF - fsolve (power-polar) : bus
+ok 535 - AC PF - fsolve (power-polar) : gen
+ok 536 - AC PF - fsolve (power-polar) : branch
+ok 537 - FSOLVE - Vg ~= 1 : success
+ok 538 - FSOLVE - Vg ~= 1 : bus
+ok 539 - FSOLVE - Vg ~= 1 : gen
+ok 540 - FSOLVE - Vg ~= 1 : branch
+ok 541 - FSOLVE - check Qg : success
+ok 542 - FSOLVE - check Qg : single gen, Qmin = Qmax
+ok 543 - FSOLVE - check Qg : success
+ok 544 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for one
+ok 545 - FSOLVE - check Qg : success
+ok 546 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for both
+ok 547 - FSOLVE - check Qg : success
+ok 548 - FSOLVE - check Qg : 2 gens, proportional
+ok 549 - FSOLVE - check Qg : success
+ok 550 - FSOLVE - check Qg : 2 gens, proportional
+ok 551 - FSOLVE - check Qg : success
+ok 552 - FSOLVE - check Qg : 2 gens, one infinite range
+ok 553 - FSOLVE - check Qg : success
+ok 554 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 555 - FSOLVE - check Qg : success
+ok 556 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 557 - FSOLVE - check Qg : success
+ok 558 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 559 - FSOLVE - reactive generation allocation : success
+ok 560 - FSOLVE - reactive generation allocation : PV bus
+ok 561 - FSOLVE - reactive generation allocation : PQ bus
+ok 562 - FSOLVE - network w/islands : AC PF : success
+ok 563 - FSOLVE - network w/islands : AC PF : voltage angles 1
+ok 564 - FSOLVE - network w/islands : AC PF : voltage angles 2
+ok 565 - FSOLVE - network w/islands : AC PF : active power generation 1
+ok 566 - FSOLVE - network w/islands : AC PF : active power generation 2
+ok 567 - FSOLVE - all buses isolated : success = 0
+ok 568 - FSOLVE - pf.enforce_q_lims == 0 : success
+ok 569 - FSOLVE - pf.enforce_q_lims == 0 : bus type
+ok 570 - FSOLVE - pf.enforce_q_lims == 0 : Qg
+ok 571 - FSOLVE - pf.enforce_q_lims == 1 : success = 0
+ok 572 - FSOLVE - pf.enforce_q_lims == 1 : bus type
+ok 573 - FSOLVE - pf.enforce_q_lims == 1 : Qg
+ok 574 - FSOLVE - pf.enforce_q_lims == 2 : success
+ok 575 - FSOLVE - pf.enforce_q_lims == 2 : bus type
+ok 576 - FSOLVE - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-power formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','5.732650e-13','1.000000e-09','1.647362e-27','3.162278e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 577 - AC PF - fsolve (power-cartesian) : success
+ok 578 - AC PF - fsolve (power-cartesian) : bus
+ok 579 - AC PF - fsolve (power-cartesian) : gen
+ok 580 - AC PF - fsolve (power-cartesian) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-power formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','5.732650e-13','1.000000e-09','1.647362e-27','3.162278e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 581 - AC PF - fsolve (power-cartesian) : success
+ok 582 - AC PF - fsolve (power-cartesian) : bus
+ok 583 - AC PF - fsolve (power-cartesian) : gen
+ok 584 - AC PF - fsolve (power-cartesian) : branch
+ok 585 - FSOLVE - Vg ~= 1 : success
+ok 586 - FSOLVE - Vg ~= 1 : bus
+ok 587 - FSOLVE - Vg ~= 1 : gen
+ok 588 - FSOLVE - Vg ~= 1 : branch
+ok 589 - FSOLVE - check Qg : success
+ok 590 - FSOLVE - check Qg : single gen, Qmin = Qmax
+ok 591 - FSOLVE - check Qg : success
+ok 592 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for one
+ok 593 - FSOLVE - check Qg : success
+ok 594 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for both
+ok 595 - FSOLVE - check Qg : success
+ok 596 - FSOLVE - check Qg : 2 gens, proportional
+ok 597 - FSOLVE - check Qg : success
+ok 598 - FSOLVE - check Qg : 2 gens, proportional
+ok 599 - FSOLVE - check Qg : success
+ok 600 - FSOLVE - check Qg : 2 gens, one infinite range
+ok 601 - FSOLVE - check Qg : success
+ok 602 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 603 - FSOLVE - check Qg : success
+ok 604 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 605 - FSOLVE - check Qg : success
+ok 606 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 607 - FSOLVE - reactive generation allocation : success
+ok 608 - FSOLVE - reactive generation allocation : PV bus
+ok 609 - FSOLVE - reactive generation allocation : PQ bus
+ok 610 - FSOLVE - network w/islands : AC PF : success
+ok 611 - FSOLVE - network w/islands : AC PF : voltage angles 1
+ok 612 - FSOLVE - network w/islands : AC PF : voltage angles 2
+ok 613 - FSOLVE - network w/islands : AC PF : active power generation 1
+ok 614 - FSOLVE - network w/islands : AC PF : active power generation 2
+ok 615 - FSOLVE - all buses isolated : success = 0
+ok 616 - FSOLVE - pf.enforce_q_lims == 0 : success
+ok 617 - FSOLVE - pf.enforce_q_lims == 0 : bus type
+ok 618 - FSOLVE - pf.enforce_q_lims == 0 : Qg
+ok 619 - FSOLVE - pf.enforce_q_lims == 1 : success = 0
+ok 620 - FSOLVE - pf.enforce_q_lims == 1 : bus type
+ok 621 - FSOLVE - pf.enforce_q_lims == 1 : Qg
+ok 622 - FSOLVE - pf.enforce_q_lims == 2 : success
+ok 623 - FSOLVE - pf.enforce_q_lims == 2 : bus type
+ok 624 - FSOLVE - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-current formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','1.378081e-13','1.000000e-10','2.392024e-29','1.000000e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 625 - AC PF - fsolve (current-polar) : success
+ok 626 - AC PF - fsolve (current-polar) : bus
+ok 627 - AC PF - fsolve (current-polar) : gen
+ok 628 - AC PF - fsolve (current-polar) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-polar-current formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','1.378081e-13','1.000000e-10','2.392024e-29','1.000000e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 629 - AC PF - fsolve (current-polar) : success
+ok 630 - AC PF - fsolve (current-polar) : bus
+ok 631 - AC PF - fsolve (current-polar) : gen
+ok 632 - AC PF - fsolve (current-polar) : branch
+ok 633 - FSOLVE - Vg ~= 1 : success
+ok 634 - FSOLVE - Vg ~= 1 : bus
+ok 635 - FSOLVE - Vg ~= 1 : gen
+ok 636 - FSOLVE - Vg ~= 1 : branch
+ok 637 - FSOLVE - check Qg : success
+ok 638 - FSOLVE - check Qg : single gen, Qmin = Qmax
+ok 639 - FSOLVE - check Qg : success
+ok 640 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for one
+ok 641 - FSOLVE - check Qg : success
+ok 642 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for both
+ok 643 - FSOLVE - check Qg : success
+ok 644 - FSOLVE - check Qg : 2 gens, proportional
+ok 645 - FSOLVE - check Qg : success
+ok 646 - FSOLVE - check Qg : 2 gens, proportional
+ok 647 - FSOLVE - check Qg : success
+ok 648 - FSOLVE - check Qg : 2 gens, one infinite range
+ok 649 - FSOLVE - check Qg : success
+ok 650 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 651 - FSOLVE - check Qg : success
+ok 652 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 653 - FSOLVE - check Qg : success
+ok 654 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 655 - FSOLVE - reactive generation allocation : success
+ok 656 - FSOLVE - reactive generation allocation : PV bus
+ok 657 - FSOLVE - reactive generation allocation : PQ bus
+ok 658 - FSOLVE - network w/islands : AC PF : success
+ok 659 - FSOLVE - network w/islands : AC PF : voltage angles 1
+ok 660 - FSOLVE - network w/islands : AC PF : voltage angles 2
+ok 661 - FSOLVE - network w/islands : AC PF : active power generation 1
+ok 662 - FSOLVE - network w/islands : AC PF : active power generation 2
+ok 663 - FSOLVE - all buses isolated : success = 0
+ok 664 - FSOLVE - pf.enforce_q_lims == 0 : success
+ok 665 - FSOLVE - pf.enforce_q_lims == 0 : bus type
+ok 666 - FSOLVE - pf.enforce_q_lims == 0 : Qg
+ok 667 - FSOLVE - pf.enforce_q_lims == 1 : success = 0
+ok 668 - FSOLVE - pf.enforce_q_lims == 1 : bus type
+ok 669 - FSOLVE - pf.enforce_q_lims == 1 : Qg
+ok 670 - FSOLVE - pf.enforce_q_lims == 2 : success
+ok 671 - FSOLVE - pf.enforce_q_lims == 2 : bus type
+ok 672 - FSOLVE - pf.enforce_q_lims == 2 : Qg
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-current formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','3.135620e-13','1.000000e-10','6.348867e-29','1.000000e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 673 - AC PF - fsolve (current-cartesian) : success
+ok 674 - AC PF - fsolve (current-cartesian) : bus
+ok 675 - AC PF - fsolve (current-cartesian) : gen
+ok 676 - AC PF - fsolve (current-cartesian) : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- AC-cartesian-current formulation
+
+<a href = "matlab: helpview('optim','eqn_solved','CSHelpWindow');">Equation solved</a>.
+
+fsolve completed because the vector of function values is near zero
+as measured by the value of the <a href = "matlab: helpview('optim','fcn_tolerance_fsolve','CSHelpWindow');">function tolerance</a>, and
+the <a href = "matlab: helpview('optim','appears_regular','CSHelpWindow');">problem appears regular</a> as measured by the gradient.
+
+<<a href = "matlab: createExitMsg({'optim:fsolve:Exit1basic','fsolve'},{'optim:fsolve:Exit1detailed','3.135620e-13','1.000000e-10','6.348867e-29','1.000000e-05'},true,true);;">stopping criteria details</a>>
+PF successful
+ok 677 - AC PF - fsolve (current-cartesian) : success
+ok 678 - AC PF - fsolve (current-cartesian) : bus
+ok 679 - AC PF - fsolve (current-cartesian) : gen
+ok 680 - AC PF - fsolve (current-cartesian) : branch
+ok 681 - FSOLVE - Vg ~= 1 : success
+ok 682 - FSOLVE - Vg ~= 1 : bus
+ok 683 - FSOLVE - Vg ~= 1 : gen
+ok 684 - FSOLVE - Vg ~= 1 : branch
+ok 685 - FSOLVE - check Qg : success
+ok 686 - FSOLVE - check Qg : single gen, Qmin = Qmax
+ok 687 - FSOLVE - check Qg : success
+ok 688 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for one
+ok 689 - FSOLVE - check Qg : success
+ok 690 - FSOLVE - check Qg : 2 gens, Qmin = Qmax for both
+ok 691 - FSOLVE - check Qg : success
+ok 692 - FSOLVE - check Qg : 2 gens, proportional
+ok 693 - FSOLVE - check Qg : success
+ok 694 - FSOLVE - check Qg : 2 gens, proportional
+ok 695 - FSOLVE - check Qg : success
+ok 696 - FSOLVE - check Qg : 2 gens, one infinite range
+ok 697 - FSOLVE - check Qg : success
+ok 698 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 699 - FSOLVE - check Qg : success
+ok 700 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 701 - FSOLVE - check Qg : success
+ok 702 - FSOLVE - check Qg : 2 gens, both infinite range
+ok 703 - FSOLVE - reactive generation allocation : success
+ok 704 - FSOLVE - reactive generation allocation : PV bus
+ok 705 - FSOLVE - reactive generation allocation : PQ bus
+ok 706 - FSOLVE - network w/islands : AC PF : success
+ok 707 - FSOLVE - network w/islands : AC PF : voltage angles 1
+ok 708 - FSOLVE - network w/islands : AC PF : voltage angles 2
+ok 709 - FSOLVE - network w/islands : AC PF : active power generation 1
+ok 710 - FSOLVE - network w/islands : AC PF : active power generation 2
+ok 711 - FSOLVE - all buses isolated : success = 0
+ok 712 - FSOLVE - pf.enforce_q_lims == 0 : success
+ok 713 - FSOLVE - pf.enforce_q_lims == 0 : bus type
+ok 714 - FSOLVE - pf.enforce_q_lims == 0 : Qg
+ok 715 - FSOLVE - pf.enforce_q_lims == 1 : success = 0
+ok 716 - FSOLVE - pf.enforce_q_lims == 1 : bus type
+ok 717 - FSOLVE - pf.enforce_q_lims == 1 : Qg
+ok 718 - FSOLVE - pf.enforce_q_lims == 2 : success
+ok 719 - FSOLVE - pf.enforce_q_lims == 2 : bus type
+ok 720 - FSOLVE - pf.enforce_q_lims == 2 : Qg
+ok 721 - NR-SP - pf.enforce_q_lims == 1 : success
+ok 722 - NR-SP - pf.enforce_q_lims == 1 : iterations
+ok 723 - NR-SP - pf.enforce_q_lims == 1 : ref bus Va = 0
+ok 724 - NR-IC - pf.enforce_q_lims == 1 : success
+ok 725 - NR-IC - pf.enforce_q_lims == 1 : iterations
+ok 726 - NR-IC - pf.enforce_q_lims == 1 : ref bus Va = 0
+All tests successful (726 of 726)
+Elapsed time 20.15 seconds.

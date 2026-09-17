@@ -1,0 +1,6 @@
+{
+  "matpower/lib/runcpf_vsc_mtdc.m": "ed4817fa178f5b219d43f8a4a45aa764ac3e1c32644835e0c643801f97996c14",
+  "tests/README.md": "b18efc14fd9f2f93479418df221a47ee2c8efd499b98741c8ec2d45857bf85f5",
+  "tests/t_beerten_termination_batch5.m": "2e87a8bc87501145ddf2cf749970c681050ad343a3ecb76965204d8adda6a638",
+  "docs/CPF_TERMINATION_CONTRACT.md": "75d2dde10154a2816b5e8e86adce928536f25cfb064ba5b3c826921e5971aeb6"
+}

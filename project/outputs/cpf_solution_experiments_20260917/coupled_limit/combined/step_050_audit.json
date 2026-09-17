@@ -1,0 +1,397 @@
+{
+  "success": true,
+  "points": 201,
+  "termination": {
+    "cause": "step_limit",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "FULL",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": 1.2455364171960479,
+    "last_accepted_index": 201,
+    "nose_detected": false,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "endpoint": {
+    "lambda": 1.2455364171960479,
+    "V5": 0.69805478512216879,
+    "V7": 0.96730628018839315,
+    "V3": 0.97892824438838177,
+    "tap9": 0.96666666666666667,
+    "B5": 15,
+    "Qshunt5": 7.3092072454793584,
+    "Pg1": 412.50390030736338,
+    "Pg2": 150,
+    "Pg2_requested": 338.92874012705147,
+    "Qg2": 112.5,
+    "Qc2": 145.48721416728264,
+    "C2mode": 1,
+    "C2Vdc": 1,
+    "Ic1": 0.50807884255338287,
+    "Ic2": 1.000000000000002,
+    "Ic3": 0.33765581931285366,
+    "Uc1": 0.92900779478188689,
+    "Uc2": 1.0373661651012751,
+    "Uc3": 0.70159859060426633,
+    "AC_error_MVA": 1.3875393960510166E-10,
+    "DC_error_MW": 2.3447910280083306E-13,
+    "bridge_error_MW": 7.8514972301491071E-13,
+    "station_U_error_pu": 6.2616578588858829E-14,
+    "station_I_error_pu": 1.0818013151947525E-12,
+    "station_S_error_MVA": 1.7804822817671223E-10,
+    "loss_error_MW": 0,
+    "PQ_schedule_error": 1.2853718089900212E-10,
+    "cap_margin_MVA": 1.5855743559647474E-10,
+    "bus6_type": 1,
+    "Pload5": 358.92874012705147,
+    "Qload5": 59.821456687841916
+  },
+  "checks": {
+    "ac_balance": true,
+    "dc_balance": true,
+    "bridge_balance": true,
+    "station_phasor_match": true,
+    "loss_match": true,
+    "constant_PCC_PQ": true,
+    "Vdc_preserved": true,
+    "current_limits": true,
+    "internal_upper_voltage_limit": true,
+    "ULTC_settled": true,
+    "ULTC_range": true,
+    "ULTC_grid": true,
+    "shunt_range_grid": true,
+    "shunt_in_band_or_at_bound": true,
+    "no_accepted_tap_reversal": false,
+    "no_accepted_shunt_reversal": true
+  },
+  "checks_passed": 15,
+  "checks_total": 16,
+  "ULTC_tolerance_pu": 0.005,
+  "shunt_tolerance_pu": 1E-5,
+  "max_residuals": {
+    "max_AC_error_MVA": 8.4940006724642211E-7,
+    "max_DC_error_MW": 2.3231015688907064E-7,
+    "max_bridge_error_MW": 6.9206576025493405E-9,
+    "max_station_U_error_pu": 6.9622085874243567E-13,
+    "max_station_I_error_pu": 1.8949841695814484E-11,
+    "max_station_S_error_MVA": 1.3505724217966317E-8,
+    "max_loss_error_MW": 4.4408920985006262E-16,
+    "max_PQ_schedule_error": 2.3479423560957002E-7
+  },
+  "max_C2Vdc_error": 0,
+  "max_current_ratio": 1.0000000000032128,
+  "max_internal_voltage": 1.0815750970452769,
+  "minimum_capability_margin_MVA": -4.0915857425977321E-10,
+  "max_tap_grid_error": 2.6645352591003757E-15,
+  "max_shunt_grid_error": 0,
+  "control_transitions": [
+    {
+      "lambda": 0,
+      "V5": 0.99507338209899687,
+      "V7": 0.98125242023762826,
+      "tap9": 1.0111111111111111,
+      "B5": 0,
+      "C2mode": 2,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 0.36117266977623924,
+      "V5": 0.95289856836009479,
+      "V7": 0.9762699149858759,
+      "tap9": 1.0111111111111111,
+      "B5": 5,
+      "C2mode": 2,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 0.40489606461747862,
+      "V5": 0.95097631538530314,
+      "V7": 0.97599078440929654,
+      "tap9": 1.0111111111111111,
+      "B5": 10,
+      "C2mode": 2,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 0.44827683535920532,
+      "V5": 0.94889902333522835,
+      "V7": 0.97568257129659,
+      "tap9": 1.0111111111111111,
+      "B5": 15,
+      "C2mode": 2,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 1.2053110861580965,
+      "V5": 0.73385530905077778,
+      "V7": 0.96069676397875192,
+      "tap9": 0.98888888888888893,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 1.2438606139734951,
+      "V5": 0.68417813205220279,
+      "V7": 0.95929135942244526,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 2
+    },
+    {
+      "lambda": 1.2439024557559437,
+      "V5": 0.66541795631346656,
+      "V7": 0.94917918393108591,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2394943544960317,
+      "V5": 0.64693138083045743,
+      "V7": 0.96134578627341383,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2040732810562611,
+      "V5": 0.78980539399486349,
+      "V7": 1.0188182022443695,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2393719488938346,
+      "V5": 0.646537196195008,
+      "V7": 0.9611237043748061,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2043824516799115,
+      "V5": 0.789439943808837,
+      "V7": 1.0186119194202585,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2392488649286635,
+      "V5": 0.64614442676732242,
+      "V7": 0.96090244358804677,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.204689463387731,
+      "V5": 0.78907562049616609,
+      "V7": 1.0184062785059433,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2391251033094171,
+      "V5": 0.64575303478975066,
+      "V7": 0.96068198243731129,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2049943559876801,
+      "V5": 0.7887123907702398,
+      "V7": 1.0182012606952036,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2390006646836471,
+      "V5": 0.64536298382429413,
+      "V7": 0.96046230019834811,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2052971678226372,
+      "V5": 0.78835022252114273,
+      "V7": 1.0179968478483037,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2388755496368504,
+      "V5": 0.64497423866644732,
+      "V7": 0.9602433768512697,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.20559793590173,
+      "V5": 0.7879890846798473,
+      "V7": 1.0177930224138,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2387497586831318,
+      "V5": 0.64458676527205316,
+      "V7": 0.960025193036871,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2058966959186082,
+      "V5": 0.78762894722688348,
+      "V7": 1.0175897674348606,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2386232922888607,
+      "V5": 0.64420053075127137,
+      "V7": 0.9598077300547081,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2061934823158083,
+      "V5": 0.78726978113497037,
+      "V7": 1.0173870665155644,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2384961508579591,
+      "V5": 0.64381550327206682,
+      "V7": 0.95959096980667224,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2064883283634171,
+      "V5": 0.7869115582949584,
+      "V7": 1.0171849037798348,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2383683347316101,
+      "V5": 0.643431651999948,
+      "V7": 0.95937489476457771,
+      "tap9": 0.94444444444444453,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    },
+    {
+      "lambda": 1.2067812662202309,
+      "V5": 0.78655425147065172,
+      "V7": 1.0169832638456175,
+      "tap9": 0.96666666666666667,
+      "B5": 15,
+      "C2mode": 1,
+      "bus6_type": 1
+    }
+  ],
+  "generator_P_clamp_first_accepted_lambda": 0.48901670874226333,
+  "max_lambda": 1.2458697162694021,
+  "max_lambda_index": 46,
+  "negative_lambda_steps": 79,
+  "journal": [
+    {
+      "kind": "current_activate",
+      "lambda": 1.1925831111656879,
+      "converter": 2,
+      "P": 19.871748943675314,
+      "Q": 152.22660860302611,
+      "V": 1,
+      "Ilim_system_pu": 1.5
+    }
+  ],
+  "transitions": [
+    {
+      "stage": "gen",
+      "candidate_index": 11,
+      "lambda_before": 0.49127949752636246,
+      "lambda_after": 0.48901670874226333,
+      "lambda_shift": -0.0022627887840991345,
+      "incoming_lambda_tangent": 0.85422906610158067,
+      "hyperplane_residual": 4.2045360248987862E-16,
+      "residual": 1.8054936062505674E-9,
+      "iterations": 2,
+      "success": true,
+      "state_size_before": 26,
+      "state_size_after": 26,
+      "state_correction_norm": 0.01324852092207229
+    },
+    {
+      "stage": "vsc",
+      "candidate_index": 38,
+      "lambda_before": 1.1925831111656879,
+      "lambda_after": 1.2053110861580965,
+      "lambda_shift": 0.012727974992408519,
+      "incoming_lambda_tangent": 0.26125548185308528,
+      "hyperplane_residual": 6.2103100439969694E-16,
+      "residual": 1.753891465876238E-12,
+      "iterations": 3,
+      "success": true,
+      "state_size_before": 26,
+      "state_size_after": 26,
+      "state_correction_norm": 0.049254884949154774
+    },
+    {
+      "stage": "gen",
+      "candidate_index": 42,
+      "lambda_before": 1.2513266785468191,
+      "lambda_after": 1.2439024557559437,
+      "lambda_shift": -0.007424222790875401,
+      "incoming_lambda_tangent": 0.12053095335151769,
+      "hyperplane_residual": -2.1608149297636103E-16,
+      "residual": 2.7239372463403884E-12,
+      "iterations": 3,
+      "success": true,
+      "state_size_before": 26,
+      "state_size_after": 27,
+      "state_correction_norm": 0.010699636046312383
+    }
+  ],
+  "elapsed": 7.5822737,
+  "warning": ""
+}

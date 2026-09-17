@@ -24,6 +24,8 @@ switch lower(op)
         varargout{1} = load_equiv_changed(varargin{:});
     case 'has_genq_control'
         varargout{1} = has_genq_control(varargin{:});
+    case 'fixed_q_changed'
+        varargout{1} = fixed_q_changed(varargin{:});
     case 'copy_control_fields'
         varargout{1} = copy_control_fields(varargin{:});
     otherwise
@@ -34,14 +36,20 @@ end
 
 function sig = active_set_signature(mpc)
 [~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
-[~, ~, ~, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
+[GEN_BUS, ~, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
 [~, ~, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, ...
     TAP, SHIFT, BR_STATUS] = idx_brch;
 bus_cols = existing_cols([BUS_TYPE PD QD GS BS], mpc.bus, mpc.bus);
 gen_cols = existing_cols([QMAX QMIN VG GEN_STATUS], mpc.gen, mpc.gen);
 branch_cols = existing_cols([BR_R BR_X BR_B RATE_A RATE_B RATE_C ...
     TAP SHIFT BR_STATUS], mpc.branch, mpc.branch);
+[~, brow] = ismember(mpc.gen(:, GEN_BUS), mpc.bus(:, 1));
+fixed_q = zeros(size(mpc.gen, 1), 1);
+k = find(brow > 0 & mpc.gen(:, GEN_STATUS) > 0);
+k = k(mpc.bus(brow(k), BUS_TYPE) == 1);
+fixed_q(k) = mpc.gen(k, QG);
 vals = [
+    fixed_q;
     reshape(mpc.bus(:, bus_cols), [], 1);
     reshape(mpc.gen(:, gen_cols), [], 1);
     reshape(mpc.branch(:, branch_cols), [], 1);
@@ -99,6 +107,15 @@ end
 
 function ac = control_case_from_unified_result(r)
 ac = r.ac;
+% Unit-scale PQBRAK metadata is a cache of nominal demands, not a load
+% schedule. A CPF projection contains the current step's demands. Rebuild
+% this cache rather than replaying pd0/qd0 from a previous auxiliary solve.
+% Keep non-unit characteristics and other equivalent injections intact.
+if isfield(ac, 'psse') && isfield(ac.psse, 'pqbrak') && ...
+        isfield(ac.psse.pqbrak, 'scale') && ...
+        all(ac.psse.pqbrak.scale(:) == 1) && ~load_equiv_changed(ac)
+    ac.psse = rmfield(ac.psse, 'pqbrak');
+end
 drop = {'busdc', 'branchdc', 'vsc', 'vsc_state', 'cpf', ...
     'om', 'order', 'et', 'success', 'iterations', 'convergence'};
 for dd = 1:length(drop)
@@ -219,3 +236,17 @@ end
 
 function cols = existing_cols(cols, a, b)
 cols = cols(cols <= size(a, 2) & cols <= size(b, 2));
+
+
+function changed = fixed_q_changed(current, ac, tol)
+% QG is an active-set input only at an in-service PQ generator. PV solved
+% reactive output must not trigger an active-set rebuild at every CPF step.
+[PQ, ~, ~, ~, BUS_I, BUS_TYPE] = idx_bus;
+[GEN_BUS, ~, QG, ~, ~, ~, ~, GEN_STATUS] = idx_gen;
+n = size(current.gen, 1);
+changed = false(n, 1);
+if ~has_genq_control(current), return; end
+[found, b] = ismember(ac.gen(1:n, GEN_BUS), ac.bus(:, BUS_I));
+k = find(found & ac.gen(1:n, GEN_STATUS) > 0);
+k = k(ac.bus(b(k), BUS_TYPE) == PQ);
+changed(k) = abs(current.gen(k, QG) - ac.gen(k, QG)) > tol;

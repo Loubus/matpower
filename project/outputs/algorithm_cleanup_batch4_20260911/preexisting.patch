@@ -1,0 +1,1359 @@
+diff --git a/lib/+mp/psse_branch_collapse.m b/lib/+mp/psse_branch_collapse.m
+index 64959ecb..1831a02e 100644
+--- a/lib/+mp/psse_branch_collapse.m
++++ b/lib/+mp/psse_branch_collapse.m
+@@ -112,6 +112,9 @@ else
+     state.original_bus_name = [];
+ end
+ state.original_gen = mpc.gen;
++if isfield(mpc.psse, 'swshunt')
++    state.original_swshunt = mpc.psse.swshunt;
++end
+ state.original_branch = mpc.branch;
+ if isfield(mpc, 'dcline')
+     state.original_dcline = mpc.dcline;
+diff --git a/lib/+mp/psse_branch_expand.m b/lib/+mp/psse_branch_expand.m
+index 49089cbe..f4f3aa58 100644
+--- a/lib/+mp/psse_branch_expand.m
++++ b/lib/+mp/psse_branch_expand.m
+@@ -38,7 +38,7 @@ for kk = find(tf(:))'
+     bus(kk, BUS_I) = orig_ext(kk);
+     bus(kk, [BUS_TYPE PD QD GS BS]) = bus0(kk, [BUS_TYPE PD QD GS BS]);
+ end
+-results.bus = bus;
++results.bus = mp.psse_expand_bus_controls(results, state, bus);
+ 
+ if isfield(results, 'gen') && ~isempty(results.gen) && ...
+         isfield(state, 'original_gen') && ~isempty(state.original_gen)
+@@ -72,7 +72,8 @@ end
+ if isfield(results, 'psse')
+     results.psse.branch_collapsed = rmfield(state, intersect( ...
+         fieldnames(state), {'original_bus', 'original_gen', ...
+-        'original_bus_name', 'original_branch', 'original_dcline'}));
++        'original_bus_name', 'original_branch', 'original_dcline', ...
++        'original_swshunt'}));
+ end
+ 
+ if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...
+diff --git a/lib/+mp/psse_genq_states.m b/lib/+mp/psse_genq_states.m
+index eb605920..33aae3ff 100644
+--- a/lib/+mp/psse_genq_states.m
++++ b/lib/+mp/psse_genq_states.m
+@@ -136,6 +136,13 @@ state.at_min = state.active & state.current_q <= state.qmin + state.qtol;
+ state.at_max = state.active & state.current_q >= state.qmax - state.qtol;
+ state.limited = state.active & ~state.swing & state.varlim_enabled & ...
+     state.qmax <= state.qmin + state.qtol;
++% Recreating an auxiliary case must retain an accepted binding mode. The
++% controller, not the serializer, owns subsequent release decisions.
++if isfield(gq, 'limited') && length(gq.limited) == n
++    state.limited = state.limited | (logical(gq.limited(:)) & ...
++        state.active & ~state.swing & state.varlim_enabled & ...
++        (state.at_min | state.at_max));
++end
+ state.controllable_local = state.active & state.local & ~state.swing;
+ state.controllable_remote = state.active & state.remote & ~state.swing;
+ state.unmapped = state.status ~= 0 & state.gen_idx <= 0;
+diff --git a/lib/+mp/psse_swdev_collapse.m b/lib/+mp/psse_swdev_collapse.m
+index b37bed31..ed3a7d43 100644
+--- a/lib/+mp/psse_swdev_collapse.m
++++ b/lib/+mp/psse_swdev_collapse.m
+@@ -101,6 +101,9 @@ else
+     state.original_bus_name = [];
+ end
+ state.original_gen = mpc.gen;
++if isfield(mpc.psse, 'swshunt')
++    state.original_swshunt = mpc.psse.swshunt;
++end
+ state.original_branch = mpc.branch;
+ if isfield(mpc, 'dcline')
+     state.original_dcline = mpc.dcline;
+diff --git a/lib/+mp/psse_swdev_expand.m b/lib/+mp/psse_swdev_expand.m
+index 946738af..c949de16 100644
+--- a/lib/+mp/psse_swdev_expand.m
++++ b/lib/+mp/psse_swdev_expand.m
+@@ -38,7 +38,7 @@ for kk = find(tf(:))'
+     bus(kk, BUS_I) = orig_ext(kk);
+     bus(kk, [BUS_TYPE PD QD GS BS]) = bus0(kk, [BUS_TYPE PD QD GS BS]);
+ end
+-results.bus = bus;
++results.bus = mp.psse_expand_bus_controls(results, state, bus);
+ 
+ if isfield(results, 'gen') && ~isempty(results.gen) && ...
+         isfield(state, 'original_gen') && ~isempty(state.original_gen)
+@@ -72,7 +72,8 @@ end
+ if isfield(results, 'psse')
+     results.psse.swdev_collapsed = rmfield(state, intersect( ...
+         fieldnames(state), {'original_bus', 'original_gen', ...
+-        'original_bus_name', 'original_branch', 'original_dcline'}));
++        'original_bus_name', 'original_branch', 'original_dcline', ...
++        'original_swshunt'}));
+ end
+ 
+ if isfield(results, 'bus_name') && isfield(state, 'original_bus_name') && ...
+diff --git a/lib/+mp/psse_twodc_control.m b/lib/+mp/psse_twodc_control.m
+index a92317e3..df5bd05e 100644
+--- a/lib/+mp/psse_twodc_control.m
++++ b/lib/+mp/psse_twodc_control.m
+@@ -69,7 +69,7 @@ if ~isempty(nm) && isobject(nm) && isprop(nm, 'soln') && ...
+     vm = abs(nm.soln.v);
+ end
+ state0 = state;
+-if solved_snapshot_mode(state) || ~twodc_coupled_voltage_enabled(mpopt)
++if ~twodc_coupled_voltage_enabled(mpopt)
+     [vm, state] = mp.psse_twodc_ac_vm(dm.source, state, vm, mpopt);
+ else
+     state.ac_pf_success = 0;
+diff --git a/lib/+mp/psse_unified_active_set.m b/lib/+mp/psse_unified_active_set.m
+index 002b31fb..c794050a 100644
+--- a/lib/+mp/psse_unified_active_set.m
++++ b/lib/+mp/psse_unified_active_set.m
+@@ -24,6 +24,8 @@ switch lower(op)
+         varargout{1} = load_equiv_changed(varargin{:});
+     case 'has_genq_control'
+         varargout{1} = has_genq_control(varargin{:});
++    case 'fixed_q_changed'
++        varargout{1} = fixed_q_changed(varargin{:});
+     case 'copy_control_fields'
+         varargout{1} = copy_control_fields(varargin{:});
+     otherwise
+@@ -34,14 +36,20 @@ end
+ 
+ function sig = active_set_signature(mpc)
+ [~, ~, ~, ~, ~, BUS_TYPE, PD, QD, GS, BS] = idx_bus;
+-[~, ~, ~, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
++[GEN_BUS, ~, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
+ [~, ~, BR_R, BR_X, BR_B, RATE_A, RATE_B, RATE_C, ...
+     TAP, SHIFT, BR_STATUS] = idx_brch;
+ bus_cols = existing_cols([BUS_TYPE PD QD GS BS], mpc.bus, mpc.bus);
+ gen_cols = existing_cols([QMAX QMIN VG GEN_STATUS], mpc.gen, mpc.gen);
+ branch_cols = existing_cols([BR_R BR_X BR_B RATE_A RATE_B RATE_C ...
+     TAP SHIFT BR_STATUS], mpc.branch, mpc.branch);
++[~, brow] = ismember(mpc.gen(:, GEN_BUS), mpc.bus(:, 1));
++fixed_q = zeros(size(mpc.gen, 1), 1);
++k = find(brow > 0 & mpc.gen(:, GEN_STATUS) > 0);
++k = k(mpc.bus(brow(k), BUS_TYPE) == 1);
++fixed_q(k) = mpc.gen(k, QG);
+ vals = [
++    fixed_q;
+     reshape(mpc.bus(:, bus_cols), [], 1);
+     reshape(mpc.gen(:, gen_cols), [], 1);
+     reshape(mpc.branch(:, branch_cols), [], 1);
+@@ -99,6 +107,15 @@ end
+ 
+ function ac = control_case_from_unified_result(r)
+ ac = r.ac;
++% Unit-scale PQBRAK metadata is a cache of nominal demands, not a load
++% schedule. A CPF projection contains the current step's demands. Rebuild
++% this cache rather than replaying pd0/qd0 from a previous auxiliary solve.
++% Keep non-unit characteristics and other equivalent injections intact.
++if isfield(ac, 'psse') && isfield(ac.psse, 'pqbrak') && ...
++        isfield(ac.psse.pqbrak, 'scale') && ...
++        all(ac.psse.pqbrak.scale(:) == 1) && ~load_equiv_changed(ac)
++    ac.psse = rmfield(ac.psse, 'pqbrak');
++end
+ drop = {'busdc', 'branchdc', 'vsc', 'vsc_state', 'cpf', ...
+     'om', 'order', 'et', 'success', 'iterations', 'convergence'};
+ for dd = 1:length(drop)
+@@ -219,3 +236,17 @@ end
+ 
+ function cols = existing_cols(cols, a, b)
+ cols = cols(cols <= size(a, 2) & cols <= size(b, 2));
++
++
++function changed = fixed_q_changed(current, ac, tol)
++% QG is an active-set input only at an in-service PQ generator. PV solved
++% reactive output must not trigger an active-set rebuild at every CPF step.
++[PQ, ~, ~, ~, BUS_I, BUS_TYPE] = idx_bus;
++[GEN_BUS, ~, QG, ~, ~, ~, ~, GEN_STATUS] = idx_gen;
++n = size(current.gen, 1);
++changed = false(n, 1);
++if ~has_genq_control(current), return; end
++[found, b] = ismember(ac.gen(1:n, GEN_BUS), ac.bus(:, BUS_I));
++k = find(found & ac.gen(1:n, GEN_STATUS) > 0);
++k = k(ac.bus(b(k), BUS_TYPE) == PQ);
++changed(k) = abs(current.gen(k, QG) - ac.gen(k, QG)) > tol;
+diff --git a/lib/+mp/psse_unified_control_update.m b/lib/+mp/psse_unified_control_update.m
+index 304cb542..39f8f969 100644
+--- a/lib/+mp/psse_unified_control_update.m
++++ b/lib/+mp/psse_unified_control_update.m
+@@ -89,10 +89,16 @@ end
+ 
+ function [mpc, state] = direct_xfmr_control(mpc, vm)
+ state = mp.psse_xfmr_states(mpc);
++% Preserve explicit study locks and rejected-rebuild locks loaded from RAW
++% control metadata. The unified solver mask adds locks; it cannot release them.
++inherited_locked = state.locked_out;
+ state = apply_control_lockout(state, mpc, 'xfmr');
++state.locked_out = state.locked_out | inherited_locked;
++state.controllable(state.locked_out) = false;
+ state.iterations = state.iterations + 1;
+ state = classify_xfmr_state(state, vm);
+-[new_raw, new_tap] = next_xfmr_tap_state(state, vm);
++[new_raw, new_tap] = mp.psse_xfmr_tap_decision(state, vm, ...
++    state.controllable & state.reg_bus_idx > 0);
+ moved = abs(new_tap - state.current_tap) > 1e-9;
+ if any(moved)
+     state.current_raw(moved) = new_raw(moved);
+@@ -185,40 +191,6 @@ for kk = 1:length(idx)
+ end
+ state.blocked_violations = nnz(state.blocked_low | state.blocked_high);
+ 
+-function [new_raw, new_tap] = next_xfmr_tap_state(state, vm)
+-new_raw = state.current_raw;
+-new_tap = state.current_tap;
+-idx = find(state.controllable & state.reg_bus_idx > 0);
+-for kk = 1:length(idx)
+-    k = idx(kk);
+-    v = vm(state.reg_bus_idx(k));
+-    lo = min(state.vmi(k), state.vma(k));
+-    hi = max(state.vmi(k), state.vma(k));
+-    if v < lo - state.vtol
+-        voltage_dir = 1;
+-    elseif v > hi + state.vtol
+-        voltage_dir = -1;
+-    else
+-        continue;
+-    end
+-
+-    states = state.states_tap{k};
+-    raw_states = state.states_raw{k};
+-    if isempty(states)
+-        continue;
+-    end
+-    tap_dir = voltage_dir * state.side_sign(k);
+-    if tap_dir > 0
+-        cand = find(states > state.current_tap(k) + 1e-9, 1);
+-    else
+-        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
+-    end
+-    if ~isempty(cand)
+-        new_tap(k) = states(cand);
+-        new_raw(k) = raw_states(cand);
+-    end
+-end
+-
+ function [mpc, state] = direct_swshunt_control(mpc, vm)
+ state = mp.psse_swshunt_states(mpc);
+ state = apply_control_lockout(state, mpc, 'swshunt');
+diff --git a/lib/+mp/psse_xfmr_control.m b/lib/+mp/psse_xfmr_control.m
+index 51f16758..48198df1 100644
+--- a/lib/+mp/psse_xfmr_control.m
++++ b/lib/+mp/psse_xfmr_control.m
+@@ -141,7 +141,8 @@ if state.last_score < state.best_score
+     state.best_violation_sum = state.last_violation_sum;
+ end
+ 
+-[new_raw, new_tap] = next_tap_state(state, vm);
++[new_raw, new_tap] = mp.psse_xfmr_tap_decision(state, vm, ...
++    active_control_idx(state));
+ changed = state.needs_initial_update || any(abs(new_tap - state.current_tap) > 1e-9);
+ state.needs_initial_update = 0;
+ 
+@@ -206,6 +207,17 @@ if isfield(state, 'locked_margin')
+ end
+ state.at_min(:) = false;
+ state.at_max(:) = false;
++if ~isfield(state, 'blocked_low') || isempty(state.blocked_low)
++    state.blocked_low = false(state.n, 1);
++else
++    state.blocked_low(:) = false;
++end
++if ~isfield(state, 'blocked_high') || isempty(state.blocked_high)
++    state.blocked_high = false(state.n, 1);
++else
++    state.blocked_high(:) = false;
++end
++state.blocked_violations = 0;
+ idx = find(active_control_idx(state));
+ for kk = 1:length(idx)
+     k = idx(kk);
+@@ -224,6 +236,17 @@ for kk = 1:length(idx)
+         state.at_min(k) = abs(state.current_tap(k) - states(1)) < 1e-9;
+         state.at_max(k) = abs(state.current_tap(k) - states(end)) < 1e-9;
+     end
++    if state.last_margin(k) ~= 0 && ~isempty(states)
++        voltage_dir = -sign(state.last_margin(k));
++        tap_dir = voltage_dir * state.side_sign(k);
++        blocked = (tap_dir > 0 && state.at_max(k)) || ...
++            (tap_dir < 0 && state.at_min(k));
++        if blocked && state.last_margin(k) < 0
++            state.blocked_low(k) = true;
++        elseif blocked && state.last_margin(k) > 0
++            state.blocked_high(k) = true;
++        end
++    end
+     state.last_vm_final(k) = v;
+ end
+ locked_idx = locked_control_idx(state);
+@@ -251,6 +274,9 @@ margin = state.last_margin(idx);
+ margin = margin(~isnan(margin));
+ state.last_violations = nnz(margin ~= 0);
+ state.last_violation_sum = sum(abs(margin));
++if isfield(state, 'blocked_low') && isfield(state, 'blocked_high')
++    state.blocked_violations = nnz(state.blocked_low | state.blocked_high);
++end
+ if isfield(state, 'locked_margin') && ~isempty(state.locked_margin)
+     locked_margin = state.locked_margin(locked_idx);
+     locked_margin = locked_margin(~isnan(locked_margin));
+@@ -261,41 +287,6 @@ tap_preference = sum(abs(state.current_tap(idx) - state.base_tap(idx)));
+ state.last_score = state.last_violations * 1e6 + ...
+     state.last_violation_sum + 1e-3 * tap_preference;
+ 
+-function [new_raw, new_tap] = next_tap_state(state, vm)
+-% Select the next discrete tap state for each violating controller.
+-new_raw = state.current_raw;
+-new_tap = state.current_tap;
+-idx = find(active_control_idx(state));
+-for kk = 1:length(idx)
+-    k = idx(kk);
+-    v = vm(state.reg_bus_idx(k));
+-    lo = min(state.vmi(k), state.vma(k));
+-    hi = max(state.vmi(k), state.vma(k));
+-    if v < lo - state.vtol
+-        voltage_dir = 1;       %% raise controlled voltage
+-    elseif v > hi + state.vtol
+-        voltage_dir = -1;      %% lower controlled voltage
+-    else
+-        continue;
+-    end
+-
+-    tap_dir = voltage_dir * state.side_sign(k);
+-    states = state.states_tap{k};
+-    raw_states = state.states_raw{k};
+-    if isempty(states)
+-        continue;
+-    end
+-    if tap_dir > 0
+-        cand = find(states > state.current_tap(k) + 1e-9, 1);
+-    else
+-        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
+-    end
+-    if ~isempty(cand)
+-        new_tap(k) = states(cand);
+-        new_raw(k) = raw_states(cand);
+-    end
+-end
+-
+ function sig = state_signature(tap)
+ % Build a compact key for cycle detection.
+ sig = sprintf('%.9g,', round(tap(:)' * 1e9) / 1e9);
+diff --git a/lib/+mp/psse_xfmr_report.m b/lib/+mp/psse_xfmr_report.m
+index 2d08987f..63e58639 100644
+--- a/lib/+mp/psse_xfmr_report.m
++++ b/lib/+mp/psse_xfmr_report.m
+@@ -68,6 +68,18 @@ else
+     report.locked_out = 0;
+     report.locked_rows = [];
+ end
++if isfield(state, 'study_locked_rows')
++    report.study_locked_rows = state.study_locked_rows;
++    report.study_locked = numel(state.study_locked_rows);
++else
++    report.study_locked_rows = [];
++    report.study_locked = 0;
++end
++if isfield(state, 'study_lock_label')
++    report.study_lock_label = state.study_lock_label;
++else
++    report.study_lock_label = '';
++end
+ if isfield(state, 'rebuild_rejected')
+     report.rebuild_rejected = state.rebuild_rejected;
+ else
+diff --git a/lib/+mp/psse_xfmr_states.m b/lib/+mp/psse_xfmr_states.m
+index 30a487aa..e0aad1f0 100644
+--- a/lib/+mp/psse_xfmr_states.m
++++ b/lib/+mp/psse_xfmr_states.m
+@@ -131,9 +131,15 @@ state.states_tap = cell(state.n, 1);
+ state.initial_tap_normalized = false(state.n, 1);
+ state.at_min = false(state.n, 1);
+ state.at_max = false(state.n, 1);
++state.blocked_low = false(state.n, 1);
++state.blocked_high = false(state.n, 1);
++state.blocked_violations = 0;
+ state.locked_out = false(state.n, 1);
++state.study_locked_rows = [];
++state.study_lock_label = '';
+ state.rebuild_rejected = 0;
+ state.rebuild_rejected_rows = [];
++initial_tap_snap_tol = 1e-5;
+ 
+ for k = 1:state.n
+     if state.branch_idx(k) > 0
+@@ -153,10 +159,14 @@ for k = 1:state.n
+     state.states_tap{k} = tap_states;
+     if state.controllable(k) && ~isempty(tap_states)
+         jj = nearest_tap_state_idx(tap_states, state.current_tap(k));
+-        state.current_tap(k) = tap_states(jj);
+-        state.current_raw(k) = raw_states(jj);
+-        state.initial_tap_normalized(k) = ...
+-            abs(state.current_tap(k) - state.base_tap(k)) > 1e-9;
++        if abs(tap_states(jj) - state.base_tap(k)) <= initial_tap_snap_tol
++            state.current_tap(k) = state.base_tap(k);
++            state.current_raw(k) = state.windv(k);
++        else
++            state.current_tap(k) = tap_states(jj);
++            state.current_raw(k) = raw_states(jj);
++            state.initial_tap_normalized(k) = true;
++        end
+     end
+ end
+ 
+@@ -167,12 +177,23 @@ if isfield(xf, 'control_current_tap') && ...
+     state.current_tap = xf.control_current_tap(:);
+     state.current_raw = xf.control_current_raw(:);
+     state.initial_tap_normalized = state.controllable & ...
+-        abs(state.current_tap - state.base_tap) > 1e-9;
++        abs(state.current_tap - state.base_tap) > initial_tap_snap_tol;
+ end
+ if isfield(xf, 'control_locked_out') && ...
+         numel(xf.control_locked_out) == state.n
+     state.locked_out = logical(xf.control_locked_out(:));
+ end
++if isfield(xf, 'control_study_locked_rows') && ...
++        ~isempty(xf.control_study_locked_rows)
++    rows = unique(xf.control_study_locked_rows(:));
++    rows = rows(rows >= 1 & rows <= state.n);
++    state.study_locked_rows = rows;
++    state.locked_out(rows) = true;
++end
++if isfield(xf, 'control_study_lock_label') && ...
++        ~isempty(xf.control_study_lock_label)
++    state.study_lock_label = char(xf.control_study_lock_label);
++end
+ if isfield(xf, 'control') && isstruct(xf.control)
+     if isfield(xf.control, 'rebuild_rejected') && ...
+             ~isempty(xf.control.rebuild_rejected)
+@@ -183,7 +204,11 @@ if isfield(xf, 'control') && isstruct(xf.control)
+     end
+ end
+ 
+-state.needs_initial_update = state.enabled && any(state.controllable & ...
++initial_update_idx = state.controllable;
++if ~isempty(state.locked_out)
++    initial_update_idx = initial_update_idx & ~state.locked_out;
++end
++state.needs_initial_update = state.enabled && any(initial_update_idx & ...
+     abs(state.current_tap - state.base_tap) > 1e-9);
+ 
+ state.last_vm_final = NaN(state.n, 1);
+@@ -394,7 +419,7 @@ cand = find(dist <= min_dist + tie_tol);
+ jj = cand(end);
+ 
+ function tap = raw_to_tap(state, mpc, k, raw)
+-[~, T_BUS] = idx_brch;
++[F_BUS, T_BUS] = idx_brch;
+ [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
+ if state.kind(k) == 2
+     w2 = state.windv2(k);
+@@ -405,6 +430,9 @@ if state.kind(k) == 2
+     if state.cw(k) == 2
+         f = state.bus_idx(k);
+         br = state.branch_idx(k);
++        if f <= 0
++            f = branch_bus_row(mpc, br, F_BUS);
++        end
+         if isfield(mpc, 'order') && isfield(mpc.order, 'bus')
+             t = mpc.branch(br, T_BUS);
+         else
+@@ -423,6 +451,10 @@ if state.kind(k) == 2
+ else
+     tap = raw;
+     f = state.bus_idx(k);
++    br = state.branch_idx(k);
++    if f <= 0
++        f = branch_bus_row(mpc, br, F_BUS);
++    end
+     if state.cw(k) == 2 && f > 0
+         tap = tap ./ mpc.bus(f, BASE_KV);
+     elseif state.cw(k) == 3
+@@ -433,6 +465,26 @@ else
+     end
+ end
+ 
++function row = branch_bus_row(mpc, br, col)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++row = 0;
++if br <= 0 || br > size(mpc.branch, 1)
++    return;
++end
++b = mpc.branch(br, col);
++if isnan(b) || b <= 0
++    return;
++end
++nb = size(mpc.bus, 1);
++if b <= nb && abs(b - round(b)) < 1e-9 && mpc.bus(b, BUS_I) == b
++    row = b;
++else
++    row = psse_bus_map(mpc, b);
++end
++if row <= 0 && b <= nb && abs(b - round(b)) < 1e-9
++    row = b;
++end
++
+ function idx = psse_bus_map(mpc, bus)
+ [~, ~, ~, ~, BUS_I] = idx_bus;
+ idx = zeros(size(bus));
+diff --git a/lib/+mp/psse_xfmr_update.m b/lib/+mp/psse_xfmr_update.m
+index 79df74fb..14bb6c1a 100644
+--- a/lib/+mp/psse_xfmr_update.m
++++ b/lib/+mp/psse_xfmr_update.m
+@@ -16,7 +16,7 @@ function mpc = psse_xfmr_update(mpc, state)
+ %   Covered by the 3-clause BSD License (see LICENSE file for details).
+ %   See https://matpower.org for more info.
+ 
+-[~, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
++[F_BUS, ~, BR_R, BR_X, ~, ~, ~, ~, TAP] = idx_brch;
+ [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, BASE_KV] = idx_bus;
+ 
+ idx = find(state.branch_idx > 0);
+@@ -28,9 +28,13 @@ idx = find(state.branch_idx > 0 & state.tab_applied & ...
+     ~isnan(state.nominal_r) & ~isnan(state.nominal_x));
+ if ~isempty(idx) && isfield(mpc, 'psse') && isfield(mpc.psse, 'impcor')
+     ratio = state.current_raw(idx);
+-    k = state.cw(idx) == 2 & state.bus_idx(idx) > 0;
++    k = state.cw(idx) == 2;
+     if any(k)
+-        ratio(k) = ratio(k) ./ mpc.bus(state.bus_idx(idx(k)), BASE_KV);
++        rows = xfmr_base_kv_rows(mpc, state, idx(k), F_BUS);
++        ok = rows > 0;
++        ratio_k = ratio(k);
++        ratio_k(ok) = ratio_k(ok) ./ mpc.bus(rows(ok), BASE_KV);
++        ratio(k) = ratio_k;
+     end
+     [factor, applied] = mp.psse_xfmr_tab_factor( ...
+         mpc.psse.impcor, state.tab(idx), ratio, state.ang(idx));
+@@ -63,3 +67,65 @@ end
+ mpc.psse.xfmr.control_current_tap = state.current_tap;
+ mpc.psse.xfmr.control_current_raw = state.current_raw;
+ mpc.psse.xfmr.control = mp.psse_xfmr_report(state);
++
++function rows = xfmr_base_kv_rows(mpc, state, idx, branch_bus_col)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++rows = state.bus_idx(idx);
++missing = rows <= 0;
++for kk = find(missing(:))'
++    br = state.branch_idx(idx(kk));
++    if br <= 0 || br > size(mpc.branch, 1)
++        continue;
++    end
++    b = mpc.branch(br, branch_bus_col);
++    rows(kk) = branch_bus_row(mpc, b, BUS_I);
++end
++
++function row = branch_bus_row(mpc, bus, bus_i_col)
++row = 0;
++if isnan(bus) || bus <= 0
++    return;
++end
++nb = size(mpc.bus, 1);
++if bus <= nb && abs(bus - round(bus)) < 1e-9 && ...
++        mpc.bus(bus, bus_i_col) == bus
++    row = bus;
++    return;
++end
++idx = psse_bus_map(mpc, bus);
++if idx > 0
++    row = idx;
++elseif bus <= nb && abs(bus - round(bus)) < 1e-9
++    row = bus;
++end
++
++function idx = psse_bus_map(mpc, bus)
++[~, ~, ~, ~, BUS_I] = idx_bus;
++idx = 0;
++if isfield(mpc, 'psse') && isfield(mpc.psse, 'xfmr') && ...
++        isfield(mpc.psse.xfmr, 'control_bus_i2e') && ...
++        ~isempty(mpc.psse.xfmr.control_bus_i2e) && ...
++        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
++    i2e = mpc.psse.xfmr.control_bus_i2e(:);
++    idx = bus_lookup(i2e, bus);
++elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
++        isfield(mpc.order.bus, 'i2e') && ~isempty(mpc.order.bus.i2e) && ...
++        isequal(mpc.bus(:, BUS_I), (1:size(mpc.bus, 1))')
++    idx = bus_lookup(mpc.order.bus.i2e(:), bus);
++elseif isfield(mpc, 'order') && isfield(mpc.order, 'bus') && ...
++        isfield(mpc.order.bus, 'e2i') && ~isempty(mpc.order.bus.e2i)
++    e2i = mpc.order.bus.e2i;
++    if bus <= size(e2i, 1)
++        idx = full(e2i(bus));
++    end
++else
++    idx = bus_lookup(mpc.bus(:, BUS_I), bus);
++end
++
++function idx = bus_lookup(i2e, bus)
++idx = 0;
++if bus > max(i2e)
++    return;
++end
++e2i = sparse(i2e, ones(length(i2e), 1), (1:length(i2e))', max(i2e), 1);
++idx = full(e2i(bus));
+diff --git a/lib/+mp/task_cpf_psse.m b/lib/+mp/task_cpf_psse.m
+index 948088c9..86a45521 100644
+--- a/lib/+mp/task_cpf_psse.m
++++ b/lib/+mp/task_cpf_psse.m
+@@ -34,6 +34,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+         psse_stop_after_rollback = false   % stop controls after rollback solve
+         psse_pending_control = ''      % control family awaiting CPF acceptance
+         psse_pending_source = []       % source MPC for pending control family
++        psse_pending_xfmr_state = []   % accepted xfmr state before pending move
+         psse_pending_lambda = NaN      % lambda at which the pending control changed
+         psse_target_source = []        % CPF target source preserved across rebuilds
+         psse_failed_control = ''       % control family whose rebuild failed
+@@ -153,6 +154,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                     ~isempty(obj.psse_last_success_source)
+                 obj.psse_failed_control = obj.psse_pending_control;
+                 src = obj.psse_last_success_source;
++                if strcmp(obj.psse_pending_control, 'xfmr')
++                    [src, rejected] = obj.reject_pending_xfmr_rebuild(src, mpopt);
++                    if rejected
++                        obj.psse_pending_control = '';
++                        obj.psse_pending_source = [];
++                        obj.psse_pending_xfmr_state = [];
++                        obj.psse_pending_lambda = NaN;
++                        dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
++                        return;
++                    end
++                end
+                 if ~isfield(src, 'psse') || isempty(src.psse)
+                     src.psse = struct();
+                 end
+@@ -165,6 +177,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                 obj.psse_failed_after_rollback = true;
+                 obj.psse_pending_control = '';
+                 obj.psse_pending_source = [];
++                obj.psse_pending_xfmr_state = [];
+                 obj.psse_pending_lambda = NaN;
+                 dm = obj.data_model_build(src, obj.dmc, mpopt, mpx);
+                 return;
+@@ -183,6 +196,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_last_success_source = dm0.source;
+             obj.psse_pending_control = '';
+             obj.psse_pending_source = [];
++            obj.psse_pending_xfmr_state = [];
+             obj.psse_pending_lambda = NaN;
+             if obj.psse_stop_after_rollback
+                 obj.psse_stop_after_rollback = false;
+@@ -213,6 +227,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             end
+ 
+             psse_warmstart = obj.psse_reorient_after_warmstart;
++            psse_warmstart_control = obj.psse_pending_control;
+             if psse_warmstart
+                 nx = obj.reorient_after_psse_warmstart(nx, mm, nm);
+                 [nx, s] = obj.suppress_warmstart_nose_event(nx, s);
+@@ -227,6 +242,8 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_pending_lambda = NaN;
+             if ~psse_warmstart
+                 obj.reset_control_cycle_window(nx.x(end));
++            else
++                obj.reset_control_cycle_after_warmstart(psse_warmstart_control);
+             end
+ 
+             mpx = obj.psse_mpx_from_options(mpopt);
+@@ -342,6 +359,7 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             % pending source so callback_psse() can re-correct the same CPF
+             % loading point after any PSS/E active-set change.
+ 
++            accepted_xfmr_state = [];
+             switch name
+                 case 'pqbrak'
+                     dm = [];
+@@ -350,6 +368,12 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+                             obj, mm, nm, dm0, mpopt, mpx, obj.psse_pqbrak);
+                     end
+                 case 'xfmr'
++                    accepted_xfmr_state = obj.psse_xfmr;
++                    if isempty(accepted_xfmr_state) && ...
++                            isfield(dm0.source, 'psse') && ...
++                            isfield(dm0.source.psse, 'xfmr')
++                        accepted_xfmr_state = mp.psse_xfmr_states(dm0.source);
++                    end
+                     [dm, obj.psse_xfmr] = mp.psse_xfmr_control( ...
+                         obj, mm, nm, dm0, mpopt, mpx, obj.psse_xfmr);
+                 case 'genq'
+@@ -384,6 +408,11 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             if ~isempty(dm)
+                 obj.psse_pending_control = name;
+                 obj.psse_pending_source = dm.source;
++                if strcmp(name, 'xfmr')
++                    obj.psse_pending_xfmr_state = accepted_xfmr_state;
++                else
++                    obj.psse_pending_xfmr_state = [];
++                end
+             end
+         end
+ 
+@@ -629,6 +658,41 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             end
+         end
+ 
++        function [src, rejected] = reject_pending_xfmr_rebuild(obj, src, mpopt)
++            % Reject transformer tap rows whose rebuilt CPF point failed.
++
++            rejected = false;
++            candidate = obj.psse_xfmr;
++            state = obj.psse_pending_xfmr_state;
++            if isempty(state) || ~isstruct(state) || ...
++                    isempty(candidate) || ~isstruct(candidate) || ...
++                    ~isfield(src, 'psse') || ~isfield(src.psse, 'xfmr')
++                return;
++            end
++            if ~isfield(candidate, 'current_tap') || ...
++                    numel(candidate.current_tap) ~= state.n || ...
++                    ~isfield(candidate, 'current_raw') || ...
++                    numel(candidate.current_raw) ~= state.n
++                return;
++            end
++
++            moved = abs(candidate.current_tap(:) - state.current_tap(:)) > 1e-9;
++            moved = moved & state.controllable(:);
++            if ~any(moved)
++                return;
++            end
++
++            if ~isfield(state, 'locked_out') || isempty(state.locked_out)
++                state.locked_out = false(state.n, 1);
++            end
++            state = mp.psse_xfmr_guard_candidate(src, state, candidate, ...
++                mpopt);
++
++            src = mp.psse_xfmr_update(src, state);
++            obj.psse_xfmr = state;
++            rejected = true;
++        end
++
+         function reset_control_cycle_window(obj, lam)
+             % Clear per-loading-point PSS/E control cycle memory.
+             %
+@@ -647,6 +711,17 @@ classdef task_cpf_psse < mp.task_cpf_legacy
+             obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
+         end
+ 
++        function reset_control_cycle_after_warmstart(obj, trigger)
++            % Clear stale cycle memory after another family changes equations.
++
++            if ~strcmp(trigger, 'xfmr')
++                obj.psse_xfmr = psse_reset_cycle_state(obj.psse_xfmr);
++            end
++            if ~strcmp(trigger, 'swshunt')
++                obj.psse_swshunt = psse_reset_cycle_state(obj.psse_swshunt);
++            end
++        end
++
+         function reset_gen_pq_trace(obj, mpopt)
+             % Initialize optional generator P/Q trace capture.
+ 
+diff --git a/lib/runcpf_vsc_mtdc.m b/lib/runcpf_vsc_mtdc.m
+index 410865c5..a228d72e 100644
+--- a/lib/runcpf_vsc_mtdc.m
++++ b/lib/runcpf_vsc_mtdc.m
+@@ -3184,6 +3184,8 @@ end
+             current.gen, ac.gen(1:ng, :));
+         gen_delta = matrix_delta(current.gen(:, gen_cols), ...
+             ac.gen(1:ng, gen_cols), tol);
++        gen_delta = gen_delta | mp.psse_unified_active_set( ...
++            'fixed_q_changed', current, ac, tol);
+ 
+         branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
+             RATE_C2 TAP2 SHIFT2 BR_STATUS2], current.branch, ...
+@@ -3345,6 +3347,8 @@ end
+             current.gen, ac_gen);
+         gen_rows = any(abs(current.gen(:, gen_active_cols) - ...
+             ac_gen(:, gen_active_cols)) > tol, 2);
++        gen_rows = gen_rows | mp.psse_unified_active_set( ...
++            'fixed_q_changed', current, ac, tol);
+         gen_copy_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+             bnext.gen, ac_gen);
+         bnext.gen(gen_rows, gen_copy_cols) = ac_gen(gen_rows, gen_copy_cols);
+@@ -3420,7 +3424,7 @@ end
+         profile_cleanup = profile_time_scope('solve_pf_at_lambda'); %#ok<NASGU>
+         x = x0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+         success = normF < ctx.opt.tol;
+         iterations = 0;
+         max_it = max(ctx.opt.max_it, 30);
+@@ -3437,13 +3441,27 @@ end
+         end
+     end
+ 
++    function value = unified_residual_norm(F, model)
++        % Retain every scalar equation (including CPF parameterization), and
++        % also require the complex nodal power mismatch to meet the same tol.
++        % Separate P/Q components can each pass while hypot(P,Q) exceeds tol.
++        np = length(model.nonref);
++        nq = length(model.qeq);
++        ac_mismatch = complex(zeros(model.nb, 1));
++        ac_mismatch(model.nonref) = F(1:np);
++        ac_mismatch(model.qeq) = ac_mismatch(model.qeq) + ...
++            1j * F(np + (1:nq));
++        % A single norm preserves NaN propagation from any scalar equation.
++        value = norm([F; ac_mismatch], Inf);
++    end
++
+     function [x, F, eval, normF, ctx_lam] = unified_accept_pf_step( ...
+             ctx, lam, Sdelta, x0, dx, normF0)
+         alpha = 1;
+         while alpha >= 1/1024
+             xt = x0 + alpha * dx;
+             [Ft, evalt, ctx_t] = unified_eval_at_lambda(ctx, xt, lam, Sdelta);
+-            normFt = norm(Ft, Inf);
++            normFt = unified_residual_norm(Ft, ctx.model);
+             if isfinite(normFt) && normFt < normF0
+                 x = xt;
+                 F = Ft;
+@@ -3456,7 +3474,7 @@ end
+         end
+         x = x0 + dx;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+     end
+ 
+     function [x, lam, eval, normF, iterations, success] = ...
+@@ -3468,7 +3486,7 @@ end
+         iterations = 0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+         P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-        normF = norm([F; P], Inf);
++        normF = unified_residual_norm([F; P], ctx.model);
+         while normF >= ctx.opt.tol && iterations < ctx.opt.max_it
+             if isempty(eval) || ~isfinite(normF)
+                 break;
+@@ -3484,7 +3502,7 @@ end
+             lam = lam + dx(end);
+             [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+             P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-            normF = norm([F; P], Inf);
++            normF = unified_residual_norm([F; P], ctx.model);
+         end
+         success = normF < ctx.opt.tol;
+     end
+@@ -3516,9 +3534,9 @@ end
+         hlo = 0;
+         hhi = hstep;
+         [Flo, eval_lo] = unified_eval_at_lambda(ctx, xlo, lamlo, Sdelta);
+-        norm_lo = norm(Flo, Inf);
++        norm_lo = unified_residual_norm(Flo, ctx.model);
+         [Fhi, eval_hi] = unified_eval_at_lambda(ctx, xhi, lamhi, Sdelta);
+-        norm_hi = norm(Fhi, Inf);
++        norm_hi = unified_residual_norm(Fhi, ctx.model);
+ 
+         for ii = 1:max_loc_it
+             if abs(zhi(end)) <= tol || abs(zlo(end)) <= tol || ...
+diff --git a/lib/runpf_psse.m b/lib/runpf_psse.m
+index cd6d2c53..5d44953a 100644
+--- a/lib/runpf_psse.m
++++ b/lib/runpf_psse.m
+@@ -575,7 +575,7 @@ end
+ if isfield(results, 'psse')
+     results.psse.solver_options = psse_solver_policy;
+ end
+-if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse)
++if ~success && use_mp_core && psse_swdev_retry_needed(swdev_collapse, results)
+     mpc_retry = mpc_psse_source;
+     if isfield(mpc_retry, 'psse') && isfield(mpc_retry.psse, 'swdev')
+         mpc_retry.psse = rmfield(mpc_retry.psse, 'swdev');
+@@ -753,9 +753,15 @@ else
+     TorF = 0;
+ end
+ 
+-function TorF = psse_swdev_retry_needed(swdev_collapse)
++function TorF = psse_swdev_retry_needed(swdev_collapse, results)
+ TorF = ~isempty(swdev_collapse) && isfield(swdev_collapse, 'active') && ...
+     swdev_collapse.active;
++if TorF && isfield(results, 'psse') && ...
++        isfield(results.psse, 'control_failure') && ...
++        isfield(results.psse.control_failure, 'stage') && ...
++        strcmp(results.psse.control_failure.stage, 'control_settlement')
++    TorF = 0;
++end
+ 
+ function TorF = psse_twodc_aux_voltage_retry_needed(results, mpopt)
+ TorF = 0;
+diff --git a/lib/runpf_vsc_mtdc_unified.m b/lib/runpf_vsc_mtdc_unified.m
+index 72bbf8ed..dae58d76 100644
+--- a/lib/runpf_vsc_mtdc_unified.m
++++ b/lib/runpf_vsc_mtdc_unified.m
+@@ -274,7 +274,7 @@ for ctrl_it = 1:ctx.opt.psse_control_max_it
+     report.changed = 1;
+     sig = psse_active_set_signature(mpc_next);
+     if any(strcmp(visited(1:nvisited), sig))
+-        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
++        [direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
+         if direct_report.supported && ~direct_report.changed && ...
+                 psse_control_violations(direct) == 0
+             mpc = copy_psse_control_fields(mpc, direct);
+@@ -340,7 +340,7 @@ report = struct('changed_buses', 0, 'changed_gens', 0, ...
+     'changed_branches', 0);
+ ok = 1;
+ 
+-[direct, direct_report] = mp.psse_unified_control_update(mpc, r.bus);
++[direct, direct_report] = mp.psse_unified_control_update(mpc, r.ac.bus);
+ if direct_report.supported
+     ac_controlled = psse_control_case_from_unified_result(r);
+     ac_controlled = copy_original_active_set_to_ac(ac_controlled, direct);
+@@ -432,6 +432,8 @@ gen_cols = existing_cols([QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+     mpc.gen, ac.gen(1:ng, :));
+ gen_delta = matrix_delta(mpc.gen(:, gen_cols), ...
+     ac.gen(1:ng, gen_cols), tol);
++gen_delta = gen_delta | mp.psse_unified_active_set( ...
++    'fixed_q_changed', mpc, ac, tol);
+ 
+ branch_cols = existing_cols([BR_R2 BR_X2 BR_B2 RATE_A2 RATE_B2 ...
+     RATE_C2 TAP2 SHIFT2 BR_STATUS2], mpc.branch, ...
+@@ -499,6 +501,8 @@ gen_active_cols = existing_cols([QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+     mpc.gen, ac_gen);
+ gen_rows = any(abs(mpc.gen(:, gen_active_cols) - ...
+     ac_gen(:, gen_active_cols)) > tol, 2);
++gen_rows = gen_rows | mp.psse_unified_active_set( ...
++    'fixed_q_changed', mpc, ac, tol);
+ gen_copy_cols = existing_cols([QG2 QMAX2 QMIN2 VG2 GEN_STATUS2], ...
+     mpc_next.gen, ac_gen);
+ mpc_next.gen(gen_rows, gen_copy_cols) = ac_gen(gen_rows, gen_copy_cols);
+@@ -709,6 +713,16 @@ model = struct('nb', nb, 'active', active, 'ref', ref(:), ...
+     'slack_vsc', slack_vsc, 'fixed_dc', fixed_dc, ...
+     'map', map, 'Gdc', Gdc, 'fixed_vm', ac.bus(:, idx.VM));
+ 
++% VM is a voltage initialization, not a local generator's regulation target.
++% Use VG for online generators on PV/REF buses, as in the AC PF initializer.
++on = find(ac.gen(:, idx.GEN_STATUS) > 0);
++for g = on'
++    b = ac.gen(g, idx.GEN_BUS);
++    if ac.bus(b, idx.BUS_TYPE) == idx.PV || ac.bus(b, idx.BUS_TYPE) == idx.REF
++        model.fixed_vm(b) = ac.gen(g, idx.VG);
++    end
++end
++
+ neq = length(nonref) + length(qeq) + length(vctrl) + ...
+     length(pac_vars) + length(dc_var);
+ nx = length(nonref) + length(vm_vars) + length(pac_vars) + length(dc_var);
+@@ -1068,6 +1082,7 @@ normF = norm(F, Inf);
+ function ac = build_ac_results(ac, map, eval, Ybus, Yf, Yt, mpc, idx, mpopt)
+ c = idx.c;
+ vsc = mpc.vsc;
++ng_original = size(ac.gen, 1);
+ active = find(vsc(:, c.VSC_STATUS) > 0);
+ ac.bus(:, idx.VM) = abs(eval.V);
+ ac.bus(:, idx.VA) = angle(eval.V) * 180 / pi;
+@@ -1109,7 +1124,45 @@ ac.branch(on, [idx.PF idx.QF idx.PT idx.QT]) = ...
+ [ref, pv, pq] = bustypes(ac.bus, ac.gen);
+ [ac.bus, ac.gen, ac.branch] = pfsoln(ac.baseMVA, ac.bus, ac.gen, ...
+     ac.branch, Ybus, Yf, Yt, eval.V, ref, pv, pq, mpopt);
++% Proxy generators were appended after ext2int built the original mapping.
++% Preserve their solved injections explicitly, including external bus IDs.
++proxy_int = ac.gen(ng_original+1:end, :);
++proxy = proxy_int;
++ac.gen = ac.gen(1:ng_original, :);  % int2ext also sizes generator-aligned fields
++proxy(:, idx.GEN_BUS) = ac.order.bus.i2e(proxy(:, idx.GEN_BUS));
+ ac = int2ext(ac);
++if ~isempty(proxy)
++    ng_external = size(ac.gen, 1);
++    rows = ng_external + (1:size(proxy, 1))';
++    ac.gen(rows, :) = proxy;
++    ac.order.int.gen = [ac.order.int.gen; proxy_int];
++    if isfield(ac, 'gencost')
++        ac.gencost = append_proxy_cost(ac.gencost, ng_external, size(proxy, 1));
++    end
++    for field = {'gentype', 'genfuel'}
++        name = field{1};
++        if isfield(ac, name)
++            ac.(name)(rows, :) = {''};
++        end
++    end
++    % Extend the generator maps so later indexing round trips are consistent.
++    perm = length(ac.order.gen.i2e) + (1:size(proxy, 1))';
++    ac.order.gen.status.on = [ac.order.gen.status.on; rows];
++    ac.order.gen.i2e = [ac.order.gen.i2e; perm];
++    ac.order.gen.e2i = [ac.order.gen.e2i; perm];
++end
++
++
++function cost = append_proxy_cost(cost, ng, np)
++% Zero-cost algebraic proxies preserve both P-only and P/Q cost row layouts.
++zero = zeros(np, size(cost, 2));
++zero(:, 1) = 2;  % polynomial
++zero(:, 4) = 1;  % one zero constant coefficient
++if size(cost, 1) == 2*ng
++    cost = [cost(1:ng, :); zero; cost(ng+1:end, :); zero];
++else
++    cost = [cost; zero];
++end
+ 
+ 
+ function [busdc, branchdc] = build_dc_results(mpc, eval, idx)
+diff --git a/lib/t/t_mpxt_psse.m b/lib/t/t_mpxt_psse.m
+index 8c0b2156..d294f014 100644
+--- a/lib/t/t_mpxt_psse.m
++++ b/lib/t/t_mpxt_psse.m
+@@ -12,7 +12,7 @@ if nargin < 1
+     quiet = 0;
+ end
+ 
+-num_tests = 491;
++num_tests = 508;
+ 
+ t_begin(num_tests, quiet);
+ 
+@@ -680,6 +680,20 @@ else
+         '3-winding W1 TAB CW=2 WINDV matches PSS/E direction');
+ end
+ 
++mpc = psse_case3w_xfmr_cw2_missing_bus_tab();
++state = mp.psse_xfmr_states(mpc);
++t_is(state.states_tap{1}, [0.9; 1.0; 1.1], 10, ...
++    '3-winding CW=2 missing winding bus uses branch bus base kV');
++t_is(state.current_raw(1), 230, 10, ...
++    '3-winding CW=2 missing winding bus preserves RAW initial WINDV');
++state.current_raw(1) = 207;
++state.current_tap(1) = 0.9;
++mpc = mp.psse_xfmr_update(mpc, state);
++t_is(mpc.branch(1, [BR_R BR_X]), [0.009 0.09], 10, ...
++    '3-winding CW=2 TAB correction uses branch bus base kV');
++t_is(mpc.psse.xfmr.three.num(1, 24), 207, 10, ...
++    '3-winding CW=2 missing winding bus writes final WINDV');
++
+ mpc = psse_case3_xfmr_tap_remote();
+ r = runpf_psse(mpc, mpopt);
+ t_is(r.branch(1, TAP), 1.05, 10, 'remote transformer tap reaches voltage band');
+@@ -721,6 +735,10 @@ mpc = psse_case2_xfmr_tap(1, 1, -2, 0.90, 1.09, 1.08, 1.1, 0.9, 5, 100, 50);
+ r = runpf_psse(mpc, mpopt);
+ t_is(r.branch(1, TAP), 0.90, 10, 'transformer tap lower limit is respected');
+ t_is(r.psse.xfmr.control.at_min, 1, 10, 'transformer lower limit reported');
++t_is(r.psse.xfmr.control.blocked_low, 1, 10, ...
++    'transformer lower-limit low-voltage violation reported');
++t_is(r.psse.xfmr.control.blocked_violations, 1, 10, ...
++    'transformer limit-blocked violation counted');
+ 
+ mpc = psse_case3_two_xfmr_guard();
+ state0 = mp.psse_xfmr_states(mpc);
+@@ -741,6 +759,36 @@ t_ok(ismember(2, accepted.rebuild_replay_rejected_rows), ...
+ t_ok(accepted.locked_out(2), ...
+     'guarded transformer candidate locks rejected singleton row');
+ 
++cpf_task = mp.task_cpf_psse();
++cpf_task.psse_xfmr = target;
++cpf_task.psse_pending_xfmr_state = state0;
++[src, rejected] = cpf_task.reject_pending_xfmr_rebuild(mpc, mpopt);
++t_ok(rejected, 'CPF transformer rebuild guard rejects failed candidate batch');
++t_is(src.psse.xfmr.control_current_tap(1), 0.95, 10, ...
++    'CPF transformer rebuild guard preserves valid tap row');
++t_is(src.psse.xfmr.control_current_tap(2), 1.00, 10, ...
++    'CPF transformer rebuild guard restores rejected tap row');
++t_ok(ismember(1, src.psse.xfmr.control.rebuild_replay_accepted_rows), ...
++    'CPF transformer rebuild guard reports accepted row');
++t_ok(ismember(2, src.psse.xfmr.control.locked_rows), ...
++    'CPF transformer rebuild guard reports locked rejected row');
++
++cpf_task = mp.task_cpf_psse();
++cpf_task.psse_xfmr = psse_cycle_state_stub();
++cpf_task.psse_swshunt = psse_cycle_state_stub();
++cpf_task.reset_control_cycle_after_warmstart('twodc');
++t_is(cpf_task.psse_xfmr.cycle_resolved, 0, 10, ...
++    'CPF same-lambda non-transformer warmstart resets transformer cycle state');
++t_is(cpf_task.psse_swshunt.cycle_resolved, 0, 10, ...
++    'CPF same-lambda non-shunt warmstart resets shunt cycle state');
++cpf_task.psse_xfmr = psse_cycle_state_stub();
++cpf_task.psse_swshunt = psse_cycle_state_stub();
++cpf_task.reset_control_cycle_after_warmstart('xfmr');
++t_is(cpf_task.psse_xfmr.cycle_resolved, 1, 10, ...
++    'CPF transformer warmstart preserves transformer cycle state');
++t_is(cpf_task.psse_swshunt.cycle_resolved, 0, 10, ...
++    'CPF transformer warmstart resets other family cycle state');
++
+ %% PSS/E two-terminal DC MDC=0 remains blocked
+ mpc = psse_case4_twodc_blocked();
+ r = runpf_psse(mpc, mpopt);
+@@ -836,6 +884,14 @@ psse_is_close([r.psse.twodc.control.alpha_deg(1) ...
+         r.psse.twodc.control.gamma_deg(1)], ...
+     [16.02 17.00], 0.1, 'TWO DC no-loss firing angles match PSS/E');
+ 
++mpc = psse_case4_twodc_current_mode(0);
++mpc.psse.solved_snapshot_detection = struct('active', 1, ...
++    'reason', 'test');
++r = runpf_psse(mpc, mpopt);
++t_ok(r.success, 'TWO DC solved-snapshot control success');
++t_ok(strcmp(r.psse.twodc.control.ac_pf_status, 'coupled_solution'), ...
++    'TWO DC solved-snapshot control uses coupled solved voltage');
++
+ mpc = psse_case4_twodc_current_mode(10);
+ r = runpf_psse(mpc, mpopt);
+ t_ok(r.success, 'TWO DC current control loss success');
+@@ -1244,35 +1300,25 @@ end
+ 
+ function genq_dir = psse_genq_audit_dir()
+ genq_dir = '';
+-root = fileparts(which('t_mpxt_psse'));
+-for k = 1:8
+-    candidate = fullfile(root, 'auditoria_psse_matpower', ...
+-        'psse_validation_cases_genq');
+-    if exist(candidate, 'dir') == 7
+-        genq_dir = candidate;
+-        return;
+-    end
+-    parent = fileparts(root);
+-    if isempty(parent) || strcmp(parent, root)
+-        break;
+-    end
+-    root = parent;
+-end
+-
+-candidate = fullfile(pwd, 'auditoria_psse_matpower', ...
+-    'psse_validation_cases_genq');
+-if exist(candidate, 'dir') == 7
+-    genq_dir = candidate;
++case_file = psse_auditoria_case_file(fullfile( ...
++    'psse_validation_cases_genq', 'psse_genq_3bus_local_inband.raw'));
++if ~isempty(case_file)
++    genq_dir = fileparts(case_file);
+ end
+ 
+ function case_file = psse_auditoria_case_file(rel_path)
+ case_file = '';
+ root = fileparts(which('t_mpxt_psse'));
+ for k = 1:8
+-    candidate = fullfile(root, 'auditoria_psse_matpower', rel_path);
+-    if exist(candidate, 'file') == 2
+-        case_file = candidate;
+-        return;
++    candidates = {
++        fullfile(root, 'tests', 'fixtures', 'controls', 'legacy_regression', rel_path)
++        fullfile(root, 'auditoria_psse_matpower', rel_path)
++        };
++    for j = 1:numel(candidates)
++        if exist(candidates{j}, 'file') == 2
++            case_file = candidates{j};
++            return;
++        end
+     end
+     parent = fileparts(root);
+     if isempty(parent) || strcmp(parent, root)
+@@ -1281,9 +1327,15 @@ for k = 1:8
+     root = parent;
+ end
+ 
+-candidate = fullfile(pwd, 'auditoria_psse_matpower', rel_path);
+-if exist(candidate, 'file') == 2
+-    case_file = candidate;
++candidates = {
++    fullfile(pwd, 'tests', 'fixtures', 'controls', 'legacy_regression', rel_path)
++    fullfile(pwd, 'auditoria_psse_matpower', rel_path)
++    };
++for j = 1:numel(candidates)
++    if exist(candidates{j}, 'file') == 2
++        case_file = candidates{j};
++        return;
++    end
+ end
+ 
+ function r = psse_runpf_quiet_singular(mpc, mpopt)
+@@ -1595,6 +1647,97 @@ mpc.psse.impcor = struct( ...
+     'txt', {cell(2, 4)} ...
+ );
+ 
++function mpc = psse_case3w_xfmr_cw2_missing_bus_tab()
++mpc.version = '2';
++mpc.baseMVA = 100;
++mpc.bus = [
++    1 3 0 0 0 0 1 1.00 0 230 1 1.1 0.9
++    2 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
++    3 1 0 0 0 0 1 1.00 0 115 1 1.1 0.9
++];
++mpc.gen = [
++    1 0 0 300 -300 1 100 1 200 0 0 0 0 0 0 0 0 0 0 0 0
++];
++mpc.branch = [
++    101 2 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++    2 102 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++    2 103 0.01 0.10 0 250 250 250 1.00 0 1 -360 360
++];
++
++cols = {'I', 'J', 'K', 'CKT', 'CW', 'CZ', 'CM', 'MAG1', ...
++    'MAG2', 'NMETR', 'NAME', 'STAT', 'O1', 'F1', 'O2', 'F2', ...
++    'O3', 'F3', 'O4', 'F4', 'R1_2', 'X1_2', 'SBASE1_2', ...
++    'WINDV1', 'NOMV1', 'ANG1', ...
++    'RATE11', 'RATE21', 'RATE31', 'RATE41', 'RATE51', 'RATE61', ...
++    'RATE71', 'RATE81', 'RATE91', 'RATE101', 'RATE111', 'RATE121', ...
++    'RATE131', 'RATE141', 'RATE151', 'RATE161', 'RATE171', 'RATE181', ...
++    'RATE191', 'RATE201', 'RATE211', 'RATE221', 'RATE231', 'RATE241', ...
++    'COD1', 'CONT1', 'RMA1', 'RMI1', 'VMA1', 'VMI1', ...
++    'NTP1', 'TAB1', 'CR1', 'CX1', 'CNXA1', 'NOD1', ...
++    'WINDV2', 'NOMV2', 'ANG2', 'RATE12', 'RATE22', 'RATE32', ...
++    'COD2', 'CONT2', 'RMA2', 'RMI2', 'VMA2', 'VMI2', ...
++    'NTP2', 'TAB2', 'CR2', 'CX2', 'CNXA2', 'NOD2', ...
++    'WINDV3', 'NOMV3', 'ANG3', 'RATE13', 'RATE23', 'RATE33', ...
++    'COD3', 'CONT3', 'RMA3', 'RMI3', 'VMA3', 'VMI3', ...
++    'NTP3', 'TAB3', 'CR3', 'CX3', 'CNXA3', 'NOD3'};
++col = struct();
++for k = 1:length(cols)
++    col.(lower(regexprep(cols{k}, '[^A-Za-z0-9_]', '_'))) = k;
++end
++num = nan(1, length(cols));
++num([col.i col.j col.k col.cw col.cz col.cm col.stat ...
++        col.r1_2 col.x1_2 col.sbase1_2 col.windv1 col.nomv1 ...
++        col.ang1 col.cod1 col.cont1 col.rma1 col.rmi1 col.vma1 ...
++        col.vmi1 col.ntp1 col.tab1 col.cr1 col.cx1 col.windv2 ...
++        col.nomv2 col.ang2 col.windv3 col.nomv3 col.ang3]) = ...
++    [999 102 103 2 1 1 1 0.01 0.10 100 230 230 0 ...
++        1 -102 253 207 1.03 0.97 3 1 0 0 115 115 0 115 115 0];
++mpc.psse.rev = 34;
++mpc.psse.system.solver.ACTAPS = 1;
++mpc.psse.system.adjust.MXTPSS = 10;
++nominal_rx = NaN(1, 3, 2);
++nominal_rx(1, 1, :) = [0.01 0.10];
++mpc.psse.xfmr.two = struct( ...
++    'colnames', {{}}, ...
++    'num', zeros(0, 52), ...
++    'txt', {cell(0, 52)}, ...
++    'branch_idx', zeros(0, 1), ...
++    'col', struct() ...
++);
++mpc.psse.xfmr.three = struct( ...
++    'colnames', {cols}, ...
++    'num', num, ...
++    'txt', {cell(1, length(cols))}, ...
++    'branch_idx', [1 2 3], ...
++    'col', col, ...
++    'tab_applied', [true false false], ...
++    'tab_factor', complex(ones(1, 3)), ...
++    'nominal_rx', nominal_rx ...
++);
++mpc.psse.xfmr.control_bus_i2e = [101; 102; 103];
++mpc.psse.impcor = struct( ...
++    'colnames', {{'I', 'T', 'RE', 'IM'}}, ...
++    'num', [1 0.90 0.90 0; 1 1.10 1.10 0], ...
++    'txt', {cell(2, 4)} ...
++);
++
++function state = psse_cycle_state_stub()
++state = struct( ...
++    'initialized', 1, ...
++    'visited_signatures', {{'cycle'}}, ...
++    'iterations', 3, ...
++    'max_iter_reached', 1, ...
++    'best_score', 1, ...
++    'best_tap', 0.95, ...
++    'current_tap', 1.00, ...
++    'best_raw', 0.95, ...
++    'current_raw', 1.00, ...
++    'best_violations', 1, ...
++    'best_violation_sum', 0.1, ...
++    'cycle_resolved', 1, ...
++    'cycle_probe_attempted', 1, ...
++    'cycle_probe_pending', 1);
++
+ function mpc = psse_case3_xfmr_tap_remote()
+ mpc = psse_case2_xfmr_tap(1, 1, -3, 1.00, 0.98, 0.95, 1.1, 0.9, 5, 0, 0);
+ mpc.bus = [
+diff --git a/lib/t/t_vsc_mtdc.m b/lib/t/t_vsc_mtdc.m
+index 4815c2ab..4e501142 100644
+--- a/lib/t/t_vsc_mtdc.m
++++ b/lib/t/t_vsc_mtdc.m
+@@ -1,4 +1,4 @@
+-function t_vsc_mtdc(quiet)
++function t_vsc_mtdc(quiet, legacy_auxiliary_expectations)
+ % t_vsc_mtdc - Tests for AC/DC VSC-MTDC power flow.
+ 
+ %   MATPOWER
+@@ -12,14 +12,18 @@ if nargin < 1
+     quiet = 0;
+ end
+ 
++% Set the second argument true to replay the original defective-auxiliary
++% snapshots. Default checks follow the repaired model and physical equations.
++if nargin < 2, legacy_auxiliary_expectations = false; end
++
+ num_tests = 330;
+ 
+ t_begin(num_tests, quiet);
+ 
+ %% define named indices into data matrices
+-[PQ, ~, REF, ~, BUS_I, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
++[PQ, PV, REF, ~, BUS_I, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
+ [F_BUS, T_BUS, BR_R, BR_X, ~, ~, ~, ~, TAP, ~, BR_STATUS, PF, QF, ~, QT] = idx_brch;
+-[GEN_BUS, PG, QG, QMAX, ~, ~, ~, GEN_STATUS] = idx_gen;
++[GEN_BUS, PG, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
+ c = idx_vsc;
+ bdc = idx_busdc;
+ brdc = idx_branchdc;
+@@ -366,10 +370,32 @@ mpcps_pf = vsc_psse_swshunt_case(mpcb);
+ t_ok(success, 'runpf_psse unified VSC-MTDC PF settles PSS/E switched shunt');
+ t_ok(rpsse_sw_pf.convergence.psse_controls.changed, ...
+     'runpf_psse unified VSC-MTDC PF reports switched shunt active-set change');
+-t_is(rpsse_sw_pf.bus(5, BS), 9, 10, ...
+-    'runpf_psse unified VSC-MTDC PF applies switched shunt BS');
+-t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), 9, 10, ...
+-    'runpf_psse unified VSC-MTDC PF syncs switched shunt BINIT');
++if legacy_auxiliary_expectations
++    t_is(rpsse_sw_pf.bus(5, BS), 9, 10, ...
++        'runpf_psse unified VSC-MTDC PF applies switched shunt BS');
++    t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), 9, 10, ...
++        'runpf_psse unified VSC-MTDC PF syncs switched shunt BINIT');
++else
++    % Enumerate the unchanged legal grid on the full AC/DC equations. The
++    % old value 9 came from an AC projection missing a converter injection.
++    legal_b = 0:10;
++    feasible_b = false(size(legal_b));
++    for kk = 1:length(legal_b)
++        candidate = mpcps_pf;
++        candidate.bus(5, BS) = legal_b(kk);
++        candidate.psse.swshunt.num(1, 10) = legal_b(kk);
++        candidate = runpf_vsc_mtdc(candidate, mpopt_u);
++        assert(candidate.success, 'Fixed shunt grid candidate did not solve');
++        feasible_b(kk) = candidate.ac.bus(5, VM) >= 0.995-1e-5 && ...
++            candidate.ac.bus(5, VM) <= 1.005+1e-5;
++    end
++    assert(any(feasible_b), 'No legal shunt state reaches the specified band');
++    expected_b = legal_b(find(feasible_b, 1));
++    t_is(rpsse_sw_pf.bus(5, BS), expected_b, 10, ...
++        'runpf_psse full model selects first reachable legal shunt state');
++    t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), expected_b, 10, ...
++        'runpf_psse switched shunt BINIT agrees with electrical state');
++end
+ 
+ mpcpt_pf = vsc_psse_xfmr_tap_case(mpcb);
+ [rpsse_tap_pf, success] = runpf_psse(mpcpt_pf, mpopt_u);
+@@ -1081,13 +1107,33 @@ t_str_match(rpsse_genq.cpf.events(1).name, 'PSSE_CONTROL', ...
+     'runcpf_psse unified VSC-MTDC GENQ labels PSS/E control event');
+ t_is(rpsse_genq.cpf.events(1).k, 0, 12, ...
+     'runcpf_psse unified VSC-MTDC GENQ does not repeat at later lambdas');
+-t_is(rpsse_genq.bus(2, BUS_TYPE), PQ, 12, ...
+-    'runcpf_psse unified VSC-MTDC applies GENQ bus-type change');
+-t_is(rpsse_genq.gen(2, QG), rpsse_genq.gen(2, QMAX), 10, ...
+-    'runcpf_psse unified VSC-MTDC applies GENQ QMAX limit');
+-t_ok(rpsse_genq.psse.genq.control.limited(2) && ...
+-    rpsse_genq.psse.genq.control.at_max(2), ...
+-    'runcpf_psse unified VSC-MTDC reports GENQ limit active set');
++if legacy_auxiliary_expectations
++    t_is(rpsse_genq.bus(2, BUS_TYPE), PQ, 12, ...
++        'runcpf_psse unified VSC-MTDC applies GENQ bus-type change');
++    t_is(rpsse_genq.gen(2, QG), rpsse_genq.gen(2, QMAX), 10, ...
++        'runcpf_psse unified VSC-MTDC applies GENQ QMAX limit');
++    t_ok(rpsse_genq.psse.genq.control.limited(2) && ...
++        rpsse_genq.psse.genq.control.at_max(2), ...
++        'runcpf_psse unified VSC-MTDC reports GENQ limit active set');
++else
++    % With the complete converter injection the unchanged fixture is inside
++    % its original Q interval. Check the PV equation and its physical Q
++    % balance, rather than requiring an infeasible auxiliary model's clamp.
++    t_is(rpsse_genq.bus(2, BUS_TYPE), PV, 12, ...
++        'runcpf_psse unified VSC-MTDC preserves feasible GENQ PV mode');
++    ai = ext2int(rpsse_genq.ac);
++    vi = ai.bus(:, VM).*exp(1j*pi/180*ai.bus(:, VA));
++    yi = makeYbus(ai.baseMVA, ai.bus, ai.branch);
++    qi = imag(vi.*conj(yi*vi))*ai.baseMVA + ai.bus(:, QD);
++    row = find(ai.order.bus.i2e == mpcpg.gen(2, GEN_BUS), 1);
++    t_is(rpsse_genq.gen(2, QG), qi(row), 10, ...
++        'runcpf_psse GENQ reactive output satisfies full AC nodal equation');
++    t_ok(~rpsse_genq.psse.genq.control.limited(2) && ...
++        rpsse_genq.gen(2, QG) > mpcpg.gen(2, QMIN) && ...
++        rpsse_genq.gen(2, QG) < mpcpg.gen(2, QMAX) && ...
++        abs(rpsse_genq.bus(2, VM)-mpcpg.gen(2, VG)) <= 1e-6, ...
++        'runcpf_psse GENQ free report agrees with original bounds and VG');
++end
+ 
+ mpcpcl = loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
+ mpctpcl = mpcpcl;

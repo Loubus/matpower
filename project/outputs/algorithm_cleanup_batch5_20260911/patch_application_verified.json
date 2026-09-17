@@ -1,0 +1,13 @@
+{
+  "check_exit": 0,
+  "check_output": "",
+  "apply_exit": 0,
+  "matches": {
+    "matpower/lib/runcpf_vsc_mtdc.m": true,
+    "tests/README.md": true,
+    "tests/t_beerten_termination_batch5.m": true,
+    "docs/CPF_TERMINATION_CONTRACT.md": true
+  },
+  "all_match": true,
+  "normalization": "UTF-8, CRLF/LF normalized for scratch comparison only"
+}

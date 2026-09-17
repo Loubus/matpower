@@ -1,0 +1,53 @@
+{
+  "root_git_operational": false,
+  "repositories": {
+    "matpower": {
+      "head": "7f04707f15c8348e7952f70c18933ca332a2fe60",
+      "changed_or_untracked_paths": 1709,
+      "changed_lib_or_data": [
+        "lib/+mp/psse_twodc_control.m",
+        "lib/+mp/psse_xfmr_control.m",
+        "lib/+mp/psse_xfmr_report.m",
+        "lib/+mp/psse_xfmr_states.m",
+        "lib/+mp/psse_xfmr_update.m",
+        "lib/+mp/task_cpf_psse.m",
+        "lib/runpf_psse.m",
+        "lib/t/t_mpxt_psse.m"
+      ],
+      "tracked_count": 818,
+      "tracked_groups": {
+        "docs/sphinx": 554,
+        "lib/+mp": 6,
+        "lib/runpf_psse.m": 1,
+        "lib/t": 1,
+        "mips/docs": 17,
+        "most/docs": 66,
+        "mp-opt-model/docs": 154,
+        "mptest/docs": 19
+      },
+      "untracked_count": 891,
+      "untracked_groups": {
+        "docs/sphinx": 851,
+        "mp-opt-model/docs": 40
+      }
+    },
+    "matpower-extras": {
+      "head": "bc217527ce5f2c958226d1c501971bd6527a9532",
+      "changed_or_untracked_paths": 0,
+      "changed_lib_or_data": []
+    }
+  },
+  "inventory_files": 16664,
+  "inventory_excludes": [
+    ".git",
+    ".venv",
+    "outputs\\repo_cleanup_preflight_20260910"
+  ],
+  "checkpoint_files": 2035,
+  "checkpoint_bytes": 12817689,
+  "archive_members_verified": true,
+  "source_files_unchanged": true,
+  "git_status_unchanged": true,
+  "numerical_runs": 0,
+  "scope": "Code/input checkpoint only, not a complete backup of historical results, dependencies, configuration, or Git objects."
+}

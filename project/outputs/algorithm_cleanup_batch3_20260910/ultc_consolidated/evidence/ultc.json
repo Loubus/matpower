@@ -1,0 +1,252 @@
+[
+  {
+    "id": "terminal1.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal1.physical_direction",
+    "passed": true,
+    "detail": "electrical re-solve raises the regulated voltage"
+  },
+  {
+    "id": "terminal1.balance",
+    "passed": true,
+    "detail": "success and AC residual 6.92856459457e-09 pu"
+  },
+  {
+    "id": "terminal2.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal2.physical_direction",
+    "passed": true,
+    "detail": "electrical re-solve raises the regulated voltage"
+  },
+  {
+    "id": "terminal2.balance",
+    "passed": true,
+    "detail": "success and AC residual 6.92856459457e-09 pu"
+  },
+  {
+    "id": "terminal3.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal4.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal4.physical_direction",
+    "passed": true,
+    "detail": "electrical re-solve raises the regulated voltage"
+  },
+  {
+    "id": "terminal4.balance",
+    "passed": true,
+    "detail": "success and AC residual 1.42718727194e-15 pu"
+  },
+  {
+    "id": "terminal5.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal5.physical_direction",
+    "passed": true,
+    "detail": "electrical re-solve raises the regulated voltage"
+  },
+  {
+    "id": "terminal5.balance",
+    "passed": true,
+    "detail": "success and AC residual 1.74665491312e-09 pu"
+  },
+  {
+    "id": "terminal6.step",
+    "passed": true,
+    "detail": "both paths take the declared adjacent step"
+  },
+  {
+    "id": "terminal6.physical_direction",
+    "passed": true,
+    "detail": "electrical re-solve raises the regulated voltage"
+  },
+  {
+    "id": "terminal6.balance",
+    "passed": true,
+    "detail": "success and AC residual 3.49751639121e-10 pu"
+  },
+  {
+    "id": "mapping.remote_identity",
+    "passed": true,
+    "detail": "measurement joins by bus identity, not row"
+  },
+  {
+    "id": "mapping.balance",
+    "passed": true,
+    "detail": "success and AC residual 4.04263270694e-09 pu"
+  },
+  {
+    "id": "mapping.export",
+    "passed": true,
+    "detail": "AC internal mapping returns original identifiers"
+  },
+  {
+    "id": "cw2.raw",
+    "passed": true,
+    "detail": "CW=2 writes kV WINDV for the selected per-unit tap"
+  },
+  {
+    "id": "cw2.tab",
+    "passed": true,
+    "detail": "TAB scales nominal impedance using per-unit winding ratio"
+  },
+  {
+    "id": "cw2.balance",
+    "passed": true,
+    "detail": "success and AC residual 7.81187616634e-09 pu"
+  },
+  {
+    "id": "three_winding1.interface",
+    "passed": true,
+    "detail": "three-winding CW/TAB candidates agree between paths"
+  },
+  {
+    "id": "three_winding1.balance",
+    "passed": true,
+    "detail": "success and AC residual 2.38971323051e-14 pu"
+  },
+  {
+    "id": "three_winding2.interface",
+    "passed": true,
+    "detail": "three-winding CW/TAB candidates agree between paths"
+  },
+  {
+    "id": "three_winding2.balance",
+    "passed": true,
+    "detail": "success and AC residual 2.38971323051e-14 pu"
+  },
+  {
+    "id": "disabled1",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled2",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled3",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled4",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled5",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled6",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "disabled7",
+    "passed": true,
+    "detail": "disabled device stays fixed in both paths"
+  },
+  {
+    "id": "deadband_0.96999000",
+    "passed": true,
+    "detail": "deadband and tolerance edges are inclusive"
+  },
+  {
+    "id": "deadband_1.03001000",
+    "passed": true,
+    "detail": "deadband and tolerance edges are inclusive"
+  },
+  {
+    "id": "deadband_1.00000000",
+    "passed": true,
+    "detail": "deadband and tolerance edges are inclusive"
+  },
+  {
+    "id": "bound0.9",
+    "passed": true,
+    "detail": "saturation is a physical bound, not a numerical or implicit lock"
+  },
+  {
+    "id": "bound1.1",
+    "passed": true,
+    "detail": "saturation is a physical bound, not a numerical or implicit lock"
+  },
+  {
+    "id": "lock1.unified",
+    "passed": true,
+    "detail": "declared lock survives unified handoff and prevents movement"
+  },
+  {
+    "id": "lock1.ac",
+    "passed": true,
+    "detail": "AC reports locked voltage separately from physical saturation"
+  },
+  {
+    "id": "lock2.unified",
+    "passed": true,
+    "detail": "declared lock survives unified handoff and prevents movement"
+  },
+  {
+    "id": "lock2.ac",
+    "passed": true,
+    "detail": "AC reports locked voltage separately from physical saturation"
+  },
+  {
+    "id": "lock3.unified",
+    "passed": true,
+    "detail": "declared lock survives unified handoff and prevents movement"
+  },
+  {
+    "id": "interaction.simultaneous",
+    "passed": true,
+    "detail": "all eligible devices step from the same solved voltage"
+  },
+  {
+    "id": "interaction.order",
+    "passed": true,
+    "detail": "permuting device metadata does not introduce sequential voltage updates"
+  },
+  {
+    "id": "interaction.balance",
+    "passed": true,
+    "detail": "success and AC residual 2.72050970413e-09 pu"
+  },
+  {
+    "id": "cycle.detected",
+    "passed": true,
+    "detail": "AC resolves a repeated grid state without inventing a lock"
+  },
+  {
+    "id": "cycle.balance",
+    "passed": true,
+    "detail": "success and AC residual 2.83237092389e-09 pu"
+  },
+  {
+    "id": "cycle.unified_pass",
+    "passed": true,
+    "detail": "direct unified pass can reverse; solver layer owns cycling"
+  },
+  {
+    "id": "numerical.rejection",
+    "passed": true,
+    "detail": "failed electrical replay restores state and records numerical cause, not saturation"
+  }
+]

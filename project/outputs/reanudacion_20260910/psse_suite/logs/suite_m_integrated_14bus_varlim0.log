@@ -1,0 +1,816 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_m_integrated_14bus_varlim0.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 1 0 0 1 2 0 0 0
+Solver option array values: 1 0 0 1 2 0 0 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 1: enable transformer tap stepping adjustment.
+- Option 2, area interchange adjustment flag = 0: disable area interchange adjustment.
+- Option 3, phase shift adjustment flag = 0: disable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 2: enable switched-shunt continuous mode and disable discrete mode.
+- Option 6, flat start flag = 0: do not flat start; use voltages already present in the RAW/case.
+- Option 7, VAR limit flag = 0: apply generator reactive power limits immediately.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW GENERAL, PQBRAK=0.9700: set with BAT_SOLUTION_PARAMETERS_4 REALAR(10).
+- RAW NEWTON, ITMXN=40: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(2).
+- RAW NEWTON, VCTOLQ=0.10000: set with BAT_SOLUTION_PARAMETERS_4 REALAR(17).
+- RAW NEWTON, VCTOLV=0.00001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(18).
+- RAW ADJUST, MXTPSS=25: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(4).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, ACTAPS=1, AREAIN=0, PHSHFT=0, DCTAPS=1, SWSHNT=2, FACTS=1, FLATST=0, VARLIM=0, NONDIV=0
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_m_integrated_14bus_varlim0.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 40 20 25 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.97 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 1 0 0 1 2 0 0 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_m_integrated_14bus_varlim0_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_m_integrated_14bus_varlim0.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:23
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Reading non-transformer branch data...
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Messages for two-winding transformer circuit "1" from 9 [XFMR_HV     230.00] to 10 [XFMR_LV     115.00]:   (004616)
+  Warn: Magnetizing susceptance MAG2 (.100000E-02) is positive   (004666)
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ No power flow solution parameters changed
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 12   Off-diagonals = 11   Maximum size = 22
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         1.2519(      5     )    0.7811(     10     )
+                                                             0.04082(      6     )   0.16221(     10     )
+   1         0.0676(      5     )    1.7056(      5     )
+                                                             0.06720(     10     )   0.00374(      5     )
+   2         0.0057(      8     )    0.0966(      5     )
+                                                             0.00751(     11     )   0.00304(      8     )
+   3         0.0007(     10     )    0.0004(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      9     [XFMR_HV     230.00]      10     [XFMR_LV     115.00]  1  1.00000   0.97500   -0.02500
+
+ 1 tap ratios adjusted
+
+   3         0.0296(      9     )    0.2339(      9     )
+                                                             0.02863(     10     )   0.00210(     10     )
+   4         0.0040(     10     )    0.0081(     10     )
+                                                             0.00232(     10     )   0.00104(     10     )
+
+ TAP RATIOS ADJUSTED:
+ X------ ADJUSTABLE SIDE ------X  X------------ TO -------------X CKT   OLD       NEW       CHANGE
+      9     [XFMR_HV     230.00]      10     [XFMR_LV     115.00]  1  0.97500   0.95000   -0.02500
+
+ 1 tap ratios adjusted
+
+   5         0.0316(      9     )    0.2526(      9     )
+                                                             0.02923(     10     )   0.00172(     10     )
+   6         0.0022(     10     )    0.0076(     10     )
+                                                             0.00204(     10     )   0.00041(     10     )
+   7         0.0000(      5     )    0.0002(     11     )
+
+
+ Reached tolerance in 7 iterations
+
+ Largest mismatch:     -0.00 MW      0.02 Mvar      0.02 MVA at bus 11 [DC_RECT     230.00]
+ System total absolute mismatch:                    0.04 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     SLACK       230.00      81.0    400.0  -100.0     -95.2    500.0  -500.0
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_M_INTEGRATED_14BUS_VARLIM0                                 %MVA FOR TRANSFORMERS
+                         INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR            % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     SLACK       230.00    1 1.0200    0.0    81.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 234.60          -95.2R     0.0    -0.0      2     GEN_R_A     230.00    1  1    36.6  -58.4                   170  23   753A
+                                                                                3     GEN_R_B     230.00    1  1    44.3  -36.9                   142  19   753A
+      2     GEN_R_A     230.00    1 1.0470   -1.1    95.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 240.81          140.0H     0.0    -0.0      1     SLACK       230.00    1  1   -36.4   60.6                   170  23   753A
+                                                                                4     TIE_230     230.00    1  1   131.4   79.4                   368  49   753A
+      3     GEN_R_B     230.00    1 1.0362   -1.3    75.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 238.32           90.0H     0.0    -0.0      1     SLACK       230.00    1  1   -44.2   38.5                   142  19   753A
+                                                                                4     TIE_230     230.00    1  1   119.2   51.5                   315  42   753A
+      4     TIE_230     230.00    1 1.0115   -3.8     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 232.64            0.0      0.0    -0.0      2     GEN_R_A     230.00    1  1  -130.3  -70.8                   368  49   753A
+                                                                                3     GEN_R_B     230.00    1  1  -118.4  -45.2                   315  42   753A
+                                                                                5     REG_230     230.00    1  1   183.5   79.2                   496  66   753A
+                                                                               11     DC_RECT     230.00    1  1    40.2   24.7                   117  23   502A
+                                                                               13     SW_LOAD     230.00    1  @1   25.0   12.0                    69  18   377A
+      5     REG_230     230.00    1 0.9545  -10.5     0.0    119.9     0.0 -------------------------------------------------------------------------------------
+                                  1 219.54            0.0     74.9    -0.0      4     TIE_230     230.00    1  1  -180.8  -53.9                   496  66   753A
+                                                                                6     SHUNT_A     230.00    1  1     0.0   -0.0                     0   0   502A
+                                                                                7     SHUNT_B     230.00    1  1    30.0   21.1                    97  19   502A
+                                                                                8     STATCON     230.00    1  1     0.6  -82.5                   217  43   502A
+                                                                                9     XFMR_HV     230.00    1  1    25.3    9.4                    71  14   502A
+                                                                               12     DC_INV      230.00    1  1     5.0   30.9                    82  16   502A
+      6     SHUNT_A     230.00    1 0.9545  -10.5     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 219.54            0.0      0.0    -0.0      5     REG_230     230.00    1  1    -0.0    0.0                     0   0   502A
+
+      7     SHUNT_B     230.00    1 0.9340  -11.9     0.0     29.9     0.0 -------------------------------------------------------------------------------------
+                                  1 214.81            0.0     19.9    -0.0      5     REG_230     230.00    1  1   -29.9  -19.9                    97  19   502A
+
+      8     STATCON     230.00    1 1.0150  -11.0     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 233.45            0.0      0.0    -0.0 STATCON SHUNT                      STA    0.0  -87.8 "STATCON INT "    217  72   301A
+                                                                                5     REG_230     230.00    1  1     0.0   87.8                   217  43   502A
+      9     XFMR_HV     230.00    1 0.9433  -11.9     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 216.95            0.0      0.0    -0.0      5     REG_230     230.00    1  1   -25.2   -8.7                    71  14   502A
+                                                                               10     XFMR_LV     115.00    1  1    25.2    8.7 0.950RG            71  18   150M
+     10     XFMR_LV     115.00    1 0.9818  -13.4     0.0     55.0     0.0 -------------------------------------------------------------------------------------
+                                  1 112.91            0.0     32.0    -0.0      9     XFMR_HV     230.00    1  1   -25.2   -8.1 1.000UN           135  18   150M
+                                                                               14     GEN_LOCAL   115.00    1  1   -29.8  -23.9                   196  32   602A
+     11     DC_RECT     230.00    1 0.9950   -4.9     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 228.86            0.0      0.0    -0.0     12     DC_INV      230.00    1 2DR   40.0   23.6 1.250HI  30.4HI   117 "DC INT"
+                                                                                4     TIE_230     230.00    1  1   -40.0  -23.6                   117  23   502A
+     12     DC_INV      230.00    1 0.9363  -10.6     0.0     44.8     0.0 -------------------------------------------------------------------------------------
+                                  1 215.35            0.0     17.9    -0.0     11     DC_RECT     230.00    1 2DI  -40.0   12.4 1.305HI  17.0LO   112 "DC INT"
+                                                                                5     REG_230     230.00    1  1    -4.9  -30.3                    82  16   502A
+     13     SW_LOAD     230.00    1 1.0115   -3.8     0.0     25.0     0.0 -------------------------------------------------------------------------------------
+                                  1 232.64            0.0     12.0    -0.0      4     TIE_230     230.00    1  @1  -25.0  -12.0                    69  18   377A
+
+     14     GEN_LOCAL   115.00    1 1.0021  -12.3    30.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 115.24           25.0H     0.0    -0.0     10     XFMR_LV     115.00    1  1    30.0   25.0                   196  32   602A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                         RATING   %MVA FOR TRANSFORMERS
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                    SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     SLACK       230.00 CKT     MW     MVAR     MVA   % 1.0200PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                         81.0   -95.2R  125.0 125 234.60KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      2     GEN_R_A     230.00  1     36.6   -58.4    68.9  23                       0.23    2.28    1 AREA1           1 ZONE1
+  TO      3     GEN_R_B     230.00  1     44.3   -36.9    57.7  19                       0.16    1.60    1 AREA1           1 ZONE1
+
+ BUS      2     GEN_R_A     230.00 CKT     MW     MVAR     MVA   % 1.0470PU   -1.14  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      2
+  FROM GENERATION                         95.0   140.0H  169.2 169 240.81KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      1     SLACK       230.00  1    -36.4    60.6    70.7  23                       0.23    2.28    1 AREA1           1 ZONE1
+  TO      4     TIE_230     230.00  1    131.4    79.4   153.5  49                       1.07    8.60    1 AREA1           1 ZONE1
+
+ BUS      3     GEN_R_B     230.00 CKT     MW     MVAR     MVA   % 1.0362PU   -1.30  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      3
+  FROM GENERATION                         75.0    90.0H  117.2 117 238.32KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      1     SLACK       230.00  1    -44.2    38.5    58.6  19                       0.16    1.60    1 AREA1           1 ZONE1
+  TO      4     TIE_230     230.00  1    119.2    51.5   129.8  42                       0.79    6.28    1 AREA1           1 ZONE1
+
+ BUS      4     TIE_230     230.00 CKT     MW     MVAR     MVA   % 1.0115PU   -3.77  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      4
+                                                                   232.64KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      2     GEN_R_A     230.00  1   -130.3   -70.8   148.3  49                       1.07    8.60    1 AREA1           1 ZONE1
+  TO      3     GEN_R_B     230.00  1   -118.4   -45.2   126.7  42                       0.79    6.28    1 AREA1           1 ZONE1
+  TO      5     REG_230     230.00  1    183.5    79.2   199.9  66                       2.73   25.39    1 AREA1           1 ZONE1
+  TO     11     DC_RECT     230.00  1     40.2    24.7    47.2  23                       0.17    1.20    1 AREA1           1 ZONE1
+  TO     13     SW_LOAD     230.00  @1    25.0    12.0    27.7  18                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS      5     REG_230     230.00 CKT     MW     MVAR     MVA   % 0.9545PU  -10.54  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      5
+                                                                   219.54KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                             119.9    74.9   141.4
+  TO      4     TIE_230     230.00  1   -180.8   -53.9   188.7  66                       2.73   25.39    1 AREA1           1 ZONE1
+  TO      6     SHUNT_A     230.00  1      0.0    -0.0     0.0   0                       0.00    0.00    1 AREA1           1 ZONE1
+  TO      7     SHUNT_B     230.00  1     30.0    21.1    36.7  19                       0.15    1.18    1 AREA1           1 ZONE1
+  TO      8     STATCON     230.00  1      0.6   -82.5    82.5  43                       0.60    5.23    1 AREA1           1 ZONE1
+  TO      9     XFMR_HV     230.00  1     25.3     9.4    27.0  14                       0.08    0.72    1 AREA1           1 ZONE1
+  TO     12     DC_INV      230.00  1      5.0    30.9    31.3  16                       0.09    0.59    1 AREA1           1 ZONE1
+
+ BUS      6     SHUNT_A     230.00 CKT     MW     MVAR     MVA   % 0.9545PU  -10.54  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      6
+                                                                   219.54KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO SWITCHED SHUNT                        0.0    -0.0     0.0
+  TO      5     REG_230     230.00  1     -0.0     0.0     0.0   0                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS      7     SHUNT_B     230.00 CKT     MW     MVAR     MVA   % 0.9340PU  -11.94  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      7
+                                                                   214.81KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              29.9    19.9    35.9
+  TO SWITCHED SHUNT                        0.0    -0.0     0.0
+  TO      5     REG_230     230.00  1    -29.9   -19.9    35.9  19                       0.15    1.18    1 AREA1           1 ZONE1
+
+ BUS      8     STATCON     230.00 CKT     MW     MVAR     MVA   % 1.0150PU  -10.95  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      8
+                                                                   233.45KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO STATCON SHUNT                 STA     0.0   -87.8    87.8  72                                                                        "STATCON INT"
+  TO      5     REG_230     230.00  1      0.0    87.8    87.8  43                       0.60    5.23    1 AREA1           1 ZONE1
+
+ BUS      9     XFMR_HV     230.00 CKT     MW     MVAR     MVA   % 0.9433PU  -11.93  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      9
+                                                                   216.95KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      5     REG_230     230.00  1    -25.2    -8.7    26.7  14                       0.08    0.72    1 AREA1           1 ZONE1
+  TO     10     XFMR_LV     115.00  1     25.2     8.7    26.7  18 0.9500RG              0.07    0.72    1 AREA1           1 ZONE1
+
+ BUS     10     XFMR_LV     115.00 CKT     MW     MVAR     MVA   % 0.9818PU  -13.36  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     10
+                                                                   112.91KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              55.0    32.0    63.6
+  TO      9     XFMR_HV     230.00  1    -25.2    -8.1    26.4  18 1.0000UN              0.07    0.72    1 AREA1           1 ZONE1
+  TO     14     GEN_LOCAL   115.00  1    -29.8   -23.9    38.3  32                       0.15    1.06    1 AREA1           1 ZONE1
+
+ BUS     11     DC_RECT     230.00 CKT     MW     MVAR     MVA   % 0.9950PU   -4.91  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     11
+                                                                   228.86KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     12     DC_INV      230.00 2DR    40.0    23.6    46.4     1.2500HI   30.41HI    0.02   35.95    1 AREA1           1 ZONE1        "DC INT"
+  TO      4     TIE_230     230.00  1    -40.0   -23.6    46.4  23                       0.17    1.20    1 AREA1           1 ZONE1
+
+ BUS     12     DC_INV      230.00 CKT     MW     MVAR     MVA   % 0.9363PU  -10.55  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     12
+                                                                   215.35KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              44.8    17.9    48.3
+  TO     11     DC_RECT     230.00 2DI   -40.0    12.4    41.8     1.3050HI   17.00LO    0.02   35.95    1 AREA1           1 ZONE1        "DC INT"
+  TO      5     REG_230     230.00  1     -4.9   -30.3    30.7  16                       0.09    0.59    1 AREA1           1 ZONE1
+
+ BUS     13     SW_LOAD     230.00 CKT     MW     MVAR     MVA   % 1.0115PU   -3.77  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     13
+                                                                   232.64KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              25.0    12.0    27.7
+  TO      4     TIE_230     230.00  @1   -25.0   -12.0    27.7  18                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS     14     GEN_LOCAL   115.00 CKT     MW     MVAR     MVA   % 1.0021PU  -12.28  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     14
+  FROM GENERATION                         30.0    25.0H   39.1  39 115.24KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     10     XFMR_LV     115.00  1     30.0    25.0    39.1  32                       0.15    1.06    1 AREA1           1 ZONE1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_M_INTEGRATED_14BUS_VARLIM0                                 %MVA FOR TRANSFORMERS
+                         INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR            % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     SLACK       230.00    1 1.0200    0.0    81.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 234.60          -95.2R     0.0    -0.0      2     GEN_R_A     230.00    1  1     36.6   -58.4                   23   300
+                                                                                3     GEN_R_B     230.00    1  1     44.3   -36.9                   19   300
+      2     GEN_R_A     230.00    1 1.0470   -1.1    95.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 240.81          140.0H     0.0    -0.0      1     SLACK       230.00    1  1    -36.4    60.6                   23   300
+                                                                                4     TIE_230     230.00    1  1    131.4    79.4                   49   300
+      3     GEN_R_B     230.00    1 1.0362   -1.3    75.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 238.32           90.0H     0.0    -0.0      1     SLACK       230.00    1  1    -44.2    38.5                   19   300
+                                                                                4     TIE_230     230.00    1  1    119.2    51.5                   42   300
+      4     TIE_230     230.00    1 1.0115   -3.8     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 232.64            0.0      0.0    -0.0      2     GEN_R_A     230.00    1  1   -130.3   -70.8                   49   300
+                                                                                3     GEN_R_B     230.00    1  1   -118.4   -45.2                   42   300
+                                                                                5     REG_230     230.00    1  1    183.5    79.2                   66   300
+                                                                               11     DC_RECT     230.00    1  1     40.2    24.7                   23   200
+                                                                               13     SW_LOAD     230.00    1  @1    25.0    12.0                   18   150
+      5     REG_230     230.00    1 0.9545  -10.5     0.0    119.9     0.0 ---------------------------------------------------------------------------------
+                                  1 219.54            0.0     74.9    -0.0      4     TIE_230     230.00    1  1   -180.8   -53.9                   66   300
+                                                                                6     SHUNT_A     230.00    1  1      0.0    -0.0                    0   200
+                                                                                7     SHUNT_B     230.00    1  1     30.0    21.1                   19   200
+                                                                                8     STATCON     230.00    1  1      0.6   -82.5                   43   200
+                                                                                9     XFMR_HV     230.00    1  1     25.3     9.4                   14   200
+                                                                               12     DC_INV      230.00    1  1      5.0    30.9                   16   200
+      6     SHUNT_A     230.00    1 0.9545  -10.5     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 219.54            0.0      0.0    -0.0      5     REG_230     230.00    1  1     -0.0     0.0                    0   200
+
+      7     SHUNT_B     230.00    1 0.9340  -11.9     0.0     29.9     0.0 ---------------------------------------------------------------------------------
+                                  1 214.81            0.0     19.9    -0.0      5     REG_230     230.00    1  1    -29.9   -19.9                   19   200
+
+      8     STATCON     230.00    1 1.0150  -11.0     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 233.45            0.0      0.0    -0.0 STATCON SHUNT                      STA     0.0   -87.8  "STATCON INT "   72   120
+                                                                                5     REG_230     230.00    1  1      0.0    87.8                   43   200
+      9     XFMR_HV     230.00    1 0.9433  -11.9     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 216.95            0.0      0.0    -0.0      5     REG_230     230.00    1  1    -25.2    -8.7                   14   200
+                                                                               10     XFMR_LV     115.00    1  1     25.2     8.7  0.950RG          18   150
+     10     XFMR_LV     115.00    1 0.9818  -13.4     0.0     55.0     0.0 ---------------------------------------------------------------------------------
+                                  1 112.91            0.0     32.0    -0.0      9     XFMR_HV     230.00    1  1    -25.2    -8.1  1.000UN          18   150
+                                                                               14     GEN_LOCAL   115.00    1  1    -29.8   -23.9                   32   120
+     11     DC_RECT     230.00    1 0.9950   -4.9     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 228.86            0.0      0.0    -0.0     12     DC_INV      230.00    1 2DR    40.0    23.6  1.250HI  30.4HI "DC INT"
+                                                                                4     TIE_230     230.00    1  1    -40.0   -23.6                   23   200
+     12     DC_INV      230.00    1 0.9363  -10.6     0.0     44.8     0.0 ---------------------------------------------------------------------------------
+                                  1 215.35            0.0     17.9    -0.0     11     DC_RECT     230.00    1 2DI   -40.0    12.4  1.305HI  17.0LO "DC INT"
+                                                                                5     REG_230     230.00    1  1     -4.9   -30.3                   16   200
+     13     SW_LOAD     230.00    1 1.0115   -3.8     0.0     25.0     0.0 ---------------------------------------------------------------------------------
+                                  1 232.64            0.0     12.0    -0.0      4     TIE_230     230.00    1  @1   -25.0   -12.0                   18   150
+
+     14     GEN_LOCAL   115.00    1 1.0021  -12.3    30.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 115.24           25.0H     0.0    -0.0     10     XFMR_LV     115.00    1  1     30.0    25.0                   32   120
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+      7     SHUNT_B     230.00    1 0.9340 214.81         9     XFMR_HV     230.00    1 0.9433 216.95
+     12     DC_INV      230.00    1 0.9363 215.35
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+
+                                   * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [SLACK       230.00] 1.02000 234.6         1.02000                      LOCAL  GENERATION      1     [SLACK       230.00]
+
+      5     [REG_230     230.00] 0.95451 219.5         1.02000     -0.06549  -15.06 REMOTE GENERATION      2     [GEN_R_A     230.00]
+                                                       1.02000     -0.06549  -15.06 REMOTE GENERATION      3     [GEN_R_B     230.00]
+                                                   0.99500 1.02500 -0.04049   -9.31 REMOTE SWICH SHNT      6     [SHUNT_A     230.00]
+                                                   0.99500 1.02500 -0.04049   -9.31 REMOTE SWICH SHNT      7     [SHUNT_B     230.00]
+
+      8     [STATCON     230.00] 1.01500 233.4         1.01500                      LOCAL  SHUNT ELEM      8     [STATCON     230.00] FACTS DEVICE "STATCON INT"
+
+     10     [XFMR_LV     115.00] 0.98182 112.9     0.98000 1.02000                  XFRMER CKT 1  BUS      9     [XFMR_HV     230.00] TO     10     [XFMR_LV     115.00]
+
+     14     [GEN_LOCAL   115.00] 1.00210 115.2         1.03000     -0.02790   -3.21 LOCAL  GENERATION     14     [GEN_LOCAL   115.00]
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                          SHUNT
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                   SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+      6     SHUNT_A     230.00   1       1                 0.0  0.95451  SWITCHED  1    0       0.0      30.0
+      7     SHUNT_B     230.00   1       1                 0.0  0.93395  SWITCHED  1    0       0.0      30.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                 SYSTEM SUMMARY
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+     14      5      5      0      3      1      0      5      4      4      0      0      2      0      0     1     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     SLACK       230.00
+     14      0     12      1      1     14      0     0      0      0    1    0   0     1     1     1     0
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW       281.0      0.0      0.0    274.6      0.0      0.0      0.0      0.0      0.0      6.3     81.0
+ MVAR     159.8      0.0      0.0    156.8      0.0      0.0    -87.8      0.0      0.0     90.8    -95.2
+
+ TOTAL MISMATCH =    0.04 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.02 MVA     11     DC_RECT     230.00  0.000100  0.970   5.00 100.00   25
+   HIGH VOLTAGE = 1.04702 PU       2     GEN_R_A     230.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 0.93395 PU       7     SHUNT_B     230.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010  40 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                        WORST
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+     11     DC_RECT     230.00      0.00     -0.02      0.02
+      5     REG_230     230.00      0.00      0.00      0.01
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                     RATING SET
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR               UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                14
+      2      RATE2   RATING SET 2                                14
+      3      RATE3   RATING SET 3                                14
+      4      RATE4   RATING SET 4                                 1
+      5      RATE5   RATING SET 5                                 1
+      6      RATE6   RATING SET 6                                 1
+      7      RATE7   RATING SET 7                                 1
+      8      RATE8   RATING SET 8                                 1
+      9      RATE9   RATING SET 9                                 1
+     10      RATE10  RATING SET 10                                1
+     11      RATE11  RATING SET 11                                1
+     12      RATE12  RATING SET 12                                1
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                       BUS DATA
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     SLACK       230.00   3    0     0      0    1.02000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      2     GEN_R_A     230.00  -2    0     0      0    1.04702   -1.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+      3     GEN_R_B     230.00  -2    0     0      0    1.03618   -1.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+      4     TIE_230     230.00   1    0     0      0    1.01148   -3.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+      5     REG_230     230.00   1    1     0      0    0.95451  -10.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+      6     SHUNT_A     230.00   1    0     0      1    0.95451  -10.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+      7     SHUNT_B     230.00   1    1     0      1    0.93395  -11.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+      8     STATCON     230.00   1    0     0      0    1.01500  -11.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      9     XFMR_HV     230.00   1    0     0      0    0.94325  -11.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+     10     XFMR_LV     115.00   1    1     0      0    0.98182  -13.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+     11     DC_RECT     230.00   1    0     0      0    0.99505   -4.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+     12     DC_INV      230.00   1    1     0      0    0.93629  -10.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+     13     SW_LOAD     230.00   1    1     0      0    1.01148   -3.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+     14     GEN_LOCAL   115.00  -2    0     0      0    1.00210  -12.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                      SWITCHED
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+      6     SHUNT_A     230.00  1  1  0 1.0250 0.9950     0.00  6:   5.00                                100.0      5     REG_230     230.00    0
+      7     SHUNT_B     230.00  1  1  0 1.0250 0.9950     0.00  6:   5.00                                100.0      5     REG_230     230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                     GENERATING
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     SLACK       230.00  3   1   81.0  -95.2  500.0 -500.0 1.0200 1.0200  100.0      1     SLACK       230.00    0
+      2     GEN_R_A     230.00 -2   1   95.0  140.0  140.0  -40.0 1.0200 0.9545   60.0      5     REG_230     230.00    0
+      3     GEN_R_B     230.00 -2   1   75.0   90.0   90.0  -30.0 1.0200 0.9545   40.0      5     REG_230     230.00    0
+     14     GEN_LOCAL   115.00 -2   1   30.0   25.0   25.0  -20.0 1.0300 1.0021  100.0     14     GEN_LOCAL   115.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                      GENERATOR
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                 UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     SLACK       230.00  3 1  1   81.0  -95.2  500.0 -500.0  400.0 -100.0    1 1.000             100.0 0.0000 1.0000
+      2     GEN_R_A     230.00 -2 1  1   95.0  140.0  140.0  -40.0  160.0    0.0    1 1.000             100.0 0.0000 1.0000
+      3     GEN_R_B     230.00 -2 1  1   75.0   90.0   90.0  -30.0  120.0    0.0    1 1.000             100.0 0.0000 1.0000
+     14     GEN_LOCAL   115.00 -2 1  1   30.0   25.0   25.0  -20.0   60.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                    BRANCH DATA
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3  RATE4  RATE5  RATE6  RATE7  RATE8  RATE9 RATE10 RATE11 RATE12 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     GEN_R_A     230.00  1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      1     SLACK       230.00*      3     GEN_R_B     230.00  1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_R_A     230.00*      4     TIE_230     230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_R_B     230.00*      4     TIE_230     230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00*      5     REG_230     230.00  1   0.00700  0.06500  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00*     11     DC_RECT     230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00      13     SW_LOAD     230.00* @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+      5     REG_230     230.00*      6     SHUNT_A     230.00  1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      7     SHUNT_B     230.00  1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      8     STATCON     230.00  1   0.00800  0.07000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      9     XFMR_HV     230.00  1   0.01000  0.09000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00      12     DC_INV      230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     10     XFMR_LV     115.00*     14     GEN_LOCAL   115.00  1   0.01000  0.07000  0.00000   1  120.0  120.0  120.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                    BRANCH DATA
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3  RATE4  RATE5  RATE6  RATE7  RATE8  RATE9 RATE10 RATE11 RATE12 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     GEN_R_A     230.00  1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      1     SLACK       230.00*      3     GEN_R_B     230.00  1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_R_A     230.00       1     SLACK       230.00* 1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_R_A     230.00*      4     TIE_230     230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_R_B     230.00       1     SLACK       230.00* 1   0.00500  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_R_B     230.00*      4     TIE_230     230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00       2     GEN_R_A     230.00* 1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00       3     GEN_R_B     230.00* 1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00*      5     REG_230     230.00  1   0.00700  0.06500  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00*     11     DC_RECT     230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     TIE_230     230.00      13     SW_LOAD     230.00* @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+      5     REG_230     230.00       4     TIE_230     230.00* 1   0.00700  0.06500  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      6     SHUNT_A     230.00  1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      7     SHUNT_B     230.00  1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      8     STATCON     230.00  1   0.00800  0.07000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00*      9     XFMR_HV     230.00  1   0.01000  0.09000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     REG_230     230.00      12     DC_INV      230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      6     SHUNT_A     230.00       5     REG_230     230.00* 1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     SHUNT_B     230.00       5     REG_230     230.00* 1   0.01000  0.08000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      8     STATCON     230.00       5     REG_230     230.00* 1   0.00800  0.07000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      9     XFMR_HV     230.00       5     REG_230     230.00* 1   0.01000  0.09000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     10     XFMR_LV     115.00*     14     GEN_LOCAL   115.00  1   0.01000  0.07000  0.00000   1  120.0  120.0  120.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     11     DC_RECT     230.00       4     TIE_230     230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     12     DC_INV      230.00*      5     REG_230     230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     SW_LOAD     230.00*      4     TIE_230     230.00  @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+     14     GEN_LOCAL   115.00      10     XFMR_LV     115.00* 1   0.01000  0.07000  0.00000   1  120.0  120.0  120.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                   TWO-TERMINAL
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR              DC LINE DATA
+ X-- NAME --X MDC   RDC    RCOMP   DELTI SETVAL VSCHED DCVMIN VCMODE DCAMPS  VCOMP METER CCC_ITMAX CCC_ACC
+ DC INT        1  10.000  10.000  0.1000   40.0  400.0    0.0  390.0   46.9  852.0  RECT   100    1.00000
+
+      BUS#-SCT X-- NAME --X BASKV  ALF/GAM    MIN     MAX     PAC     QAC     VDC NB  EBASE RC-OHMS XC-OHMS XCCC-OHMS  TR
+ R:     11     DC_RECT     230.00   30.41   12.50   17.50    40.0    23.6   852.0  4  230.0  0.000   5.000   0.000  1.00000
+ I:     12     DC_INV      230.00   17.00   17.00   17.00   -40.0    12.4   851.6  4  230.0  0.000   5.000   0.000  1.00000
+
+                                    X-------- MEASURING BUS ---------X X----- WINDING 1 SIDE ------X X----- WINDING 2 SIDE ------X
+      TAP    TAPMIN  TAPMAX  TAPSTP   BUS#-SCT X-- NAME --X BASKV NODE   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV CKT  RATIO
+ R: 1.25000 0.92500 1.25000 0.01250      0                           0
+ I: 1.30500 0.96600 1.30500 0.01250      0                           0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                      LOAD DATA
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+      5     REG_230     230.00 1   1 1  1.000  120.0   75.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+      7     SHUNT_B     230.00 1   1 1  1.000   30.0   20.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     10     XFMR_LV     115.00 1   1 1  1.000   55.0   32.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     12     DC_INV      230.00 1   1 1  1.000   45.0   18.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     13     SW_LOAD     230.00 1   1 1  1.000   25.0   12.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                  FACTS SENDING
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+ STATCON INT       8     STATCON     230.00                                 1  1.0150  120.0  100.0     0.0     1      8     STATCON     230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                 FACTS TERMINAL
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR               END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+ STATCON INT       8     STATCON     230.00                                 1    0.0    0.0 1.1000 0.9000 1.0000   0.0 0.05000   0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                        FIXED
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                    AREA TOTALS
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1           281.0      0.0      0.0    274.6      0.0      0.0      0.0      0.0      6.3      0.0      0.0      0.0
+ AREA1          159.8      0.0      0.0    156.8    -87.8      0.0     -0.1      0.0     90.8      0.0      0.0
+
+ COLUMN         281.0      0.0      0.0    274.6      0.0      0.0      0.0      0.0      6.3      0.0      0.0      0.0
+ TOTALS         159.8      0.0      0.0    156.8    -87.8      0.0     -0.1      0.0     90.8      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_M_INTEGRATED_14BUS_VARLIM0                                    ZONE TOTALS
+ INTEGRATED CONTROLS WITH IMMEDIATE VAR-LIMIT BEHAVIOR                IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1           281.0      0.0      0.0    274.6      0.0      0.0      0.0      0.0      6.3      0.0      0.0
+ ZONE1          159.8      0.0      0.0    156.8    -87.8      0.0     -0.1      0.0     90.8      0.0      0.0
+
+ COLUMN         281.0      0.0      0.0    274.6      0.0      0.0      0.0      0.0      6.3      0.0      0.0
+ TOTALS         159.8      0.0      0.0    156.8    -87.8      0.0     -0.1      0.0     90.8      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_m_integrated_14bus_varlim0.sav on THU, SEP 10 2026  11:23
+ Batch command complete.
+ : 

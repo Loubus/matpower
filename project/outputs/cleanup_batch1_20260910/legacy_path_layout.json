@@ -1,0 +1,17 @@
+[
+  {
+    "physical_path": "auditoria_psse_matpower",
+    "archive_junction": "archive/psse_compatibility/auditoria_psse_matpower",
+    "reason": "Preserve MATLAB mfilename-relative project roots without modifying historical scripts"
+  },
+  {
+    "physical_path": "auditoria_psse_matpower/transpa_reduccion",
+    "archive_junction": "archive/transpa_reduction_v1/studies",
+    "reason": "Preserve MATLAB mfilename-relative project roots without modifying historical scripts"
+  },
+  {
+    "physical_path": "auditoria_psse_matpower/results/transpa_reduccion_v1",
+    "archive_junction": "archive/transpa_reduction_v1/results",
+    "reason": "Preserve MATLAB mfilename-relative project roots without modifying historical scripts"
+  }
+]

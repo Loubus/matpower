@@ -1,0 +1,54 @@
+{
+  "uniform": {
+    "accepted_points": 9,
+    "lambda": 0.6,
+    "taps": 1.0111111111111111,
+    "events": {
+      "k": 0,
+      "name": "PSSE_CONTROL",
+      "idx": 1,
+      "msg": "PSS/E active-set update at lambda = 0; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+    },
+    "automatic_pf_vm_error": 2.7466040553036919E-10,
+    "half_step_vm_error": 2.7416735548513316E-10,
+    "endpoint_mismatch": 4.9924610838145477E-9,
+    "half_step_mismatch": 9.9811322924841077E-12
+  },
+  "load_side": {
+    "accepted_points": 12,
+    "lambda": 0.79999998452182952,
+    "taps": [
+      0.98888888888888893,
+      1.0111111111111111
+    ],
+    "events": [
+      {
+        "k": 0,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+      },
+      {
+        "k": 9,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0.76914586; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+      }
+    ],
+    "automatic_pf_vm_error": 1.148858785882112E-12,
+    "half_step_vm_error": 3.8476222208316813E-11,
+    "endpoint_mismatch": 3.6667664157619262E-12,
+    "half_step_mismatch": 2.6232090974060811E-12
+  },
+  "pre_post_extraction": {
+    "terminal1": true,
+    "terminal2": true,
+    "terminal3": true,
+    "terminal4": true,
+    "terminal5": true,
+    "terminal6": true,
+    "lock1": true,
+    "lock2": true,
+    "lock3": true
+  }
+}

@@ -1,4 +1,4 @@
-function t_vsc_mtdc(quiet)
+function t_vsc_mtdc(quiet, legacy_auxiliary_expectations)
 % t_vsc_mtdc - Tests for AC/DC VSC-MTDC power flow.
 
 %   MATPOWER
@@ -8,18 +8,25 @@ function t_vsc_mtdc(quiet)
 %   Covered by the 3-clause BSD License (see LICENSE file for details).
 %   See https://matpower.org for more info.
 
+% Persistent MCP sessions must test the current composed solver files.
+clear runpf_vsc_mtdc_unified runcpf_vsc_mtdc
+
 if nargin < 1
     quiet = 0;
 end
+
+% Set the second argument true to replay the original defective-auxiliary
+% snapshots. Default checks follow the repaired model and physical equations.
+if nargin < 2, legacy_auxiliary_expectations = false; end
 
 num_tests = 330;
 
 t_begin(num_tests, quiet);
 
 %% define named indices into data matrices
-[PQ, ~, REF, ~, BUS_I, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
+[PQ, PV, REF, ~, BUS_I, BUS_TYPE, PD, QD, ~, BS, ~, VM, VA] = idx_bus;
 [F_BUS, T_BUS, BR_R, BR_X, ~, ~, ~, ~, TAP, ~, BR_STATUS, PF, QF, ~, QT] = idx_brch;
-[GEN_BUS, PG, QG, QMAX, ~, ~, ~, GEN_STATUS] = idx_gen;
+[GEN_BUS, PG, QG, QMAX, QMIN, VG, ~, GEN_STATUS] = idx_gen;
 c = idx_vsc;
 bdc = idx_busdc;
 brdc = idx_branchdc;
@@ -39,7 +46,7 @@ t_is(full(Gdc), [100 -100; -100 100], 12, 'makeGdc ignores out-of-service DC bra
 [r2, success] = runpf_vsc_mtdc(mpc2, mpopt_seq);
 t_ok(success, '2-terminal VSC-MTDC PF success');
 t_ok(r2.iterations > 0 && r2.iterations <= 20, '2-terminal iteration count');
-t_is(r2.vsc(active2, c.PAC) + r2.vsc(active2, c.PDC) + r2.vsc(active2, c.PLOSS), ...
+t_is(r2.vsc(active2, c.PCONV) + r2.vsc(active2, c.PDC) + r2.vsc(active2, c.PLOSS), ...
     zeros(length(active2), 1), 6, '2-terminal VSC power balance');
 t_is(r2.busdc(:, bdc.VDC), [1; 1.0049752469181], 8, '2-terminal DC voltages');
 slack2 = find(r2.vsc(:, c.IS_DC_SLACK) > 0);
@@ -124,7 +131,7 @@ active3 = find(mpc3.vsc(:, c.VSC_STATUS) > 0);
 [r3, success] = runpf_vsc_mtdc(mpc3, mpopt_seq);
 t_ok(success, '3-terminal VSC-MTDC PF success');
 t_ok(r3.iterations > 0 && r3.iterations <= 20, '3-terminal iteration count');
-t_is(r3.vsc(active3, c.PAC) + r3.vsc(active3, c.PDC) + r3.vsc(active3, c.PLOSS), ...
+t_is(r3.vsc(active3, c.PCONV) + r3.vsc(active3, c.PDC) + r3.vsc(active3, c.PLOSS), ...
     zeros(length(active3), 1), 6, '3-terminal VSC power balance');
 t_is(r3.busdc(:, bdc.VDC), [1; 1.00482815597738; 1.00451086157824], 8, ...
     '3-terminal DC voltages');
@@ -205,7 +212,7 @@ t_ok(max(abs(-rb.vsc(:, c.PDC) - paper_vsc(:, 9))) < 0.1, ...
     'Beerten DC powers match published table sign convention');
 t_ok(max(abs(rb.vsc(:, c.VDC) - paper_vsc(:, 10))) < 1e-3, ...
     'Beerten DC voltages match published table');
-t_is(rb.vsc(:, c.PAC) + rb.vsc(:, c.PDC) + rb.vsc(:, c.PLOSS), ...
+t_is(rb.vsc(:, c.PCONV) + rb.vsc(:, c.PDC) + rb.vsc(:, c.PLOSS), ...
     zeros(size(rb.vsc, 1), 1), 6, 'Beerten VSC power balance');
 
 [ru, success] = runpf_vsc_mtdc(mpcb, mpopt_u);
@@ -366,13 +373,36 @@ mpcps_pf = vsc_psse_swshunt_case(mpcb);
 t_ok(success, 'runpf_psse unified VSC-MTDC PF settles PSS/E switched shunt');
 t_ok(rpsse_sw_pf.convergence.psse_controls.changed, ...
     'runpf_psse unified VSC-MTDC PF reports switched shunt active-set change');
-t_is(rpsse_sw_pf.bus(5, BS), 9, 10, ...
-    'runpf_psse unified VSC-MTDC PF applies switched shunt BS');
-t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), 9, 10, ...
-    'runpf_psse unified VSC-MTDC PF syncs switched shunt BINIT');
+if legacy_auxiliary_expectations
+    t_is(rpsse_sw_pf.bus(5, BS), 9, 10, ...
+        'runpf_psse unified VSC-MTDC PF applies switched shunt BS');
+    t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), 9, 10, ...
+        'runpf_psse unified VSC-MTDC PF syncs switched shunt BINIT');
+else
+    % Enumerate the unchanged legal grid on the full AC/DC equations. The
+    % old value 9 came from an AC projection missing a converter injection.
+    legal_b = 0:10;
+    feasible_b = false(size(legal_b));
+    for kk = 1:length(legal_b)
+        candidate = mpcps_pf;
+        candidate.bus(5, BS) = legal_b(kk);
+        candidate.psse.swshunt.num(1, 10) = legal_b(kk);
+        candidate = runpf_vsc_mtdc(candidate, mpopt_u);
+        assert(candidate.success, 'Fixed shunt grid candidate did not solve');
+        feasible_b(kk) = candidate.ac.bus(5, VM) >= 0.995-1e-5 && ...
+            candidate.ac.bus(5, VM) <= 1.005+1e-5;
+    end
+    assert(any(feasible_b), 'No legal shunt state reaches the specified band');
+    expected_b = legal_b(find(feasible_b, 1));
+    t_is(rpsse_sw_pf.bus(5, BS), expected_b, 10, ...
+        'runpf_psse full model selects first reachable legal shunt state');
+    t_is(rpsse_sw_pf.psse.swshunt.num(1, 10), expected_b, 10, ...
+        'runpf_psse switched shunt BINIT agrees with electrical state');
+end
 
 mpcpt_pf = vsc_psse_xfmr_tap_case(mpcb);
-[rpsse_tap_pf, success] = runpf_psse(mpcpt_pf, mpopt_u);
+[rpsse_tap_pf, success] = runpf_psse(mpcpt_pf, ...
+    mpoption(mpopt_u, 'vsc_mtdc.psse_control_limit', 'stop'));
 t_ok(~success, 'runpf_psse unified VSC-MTDC PF rejects infeasible transformer tap band');
 t_ok(rpsse_tap_pf.convergence.psse_controls.changed, ...
     'runpf_psse unified VSC-MTDC PF reports transformer active-set change');
@@ -436,7 +466,9 @@ mpopt_cap.vsc_mtdc.method = 'unified';
 mpopt_cap.vsc_mtdc.cpf_max_lam = 20;
 mpopt_cap.vsc_mtdc.cpf_max_it = 80;
 mpopt_cap.vsc_mtdc.capability_enforce = 1;
-mpopt_cap.vsc_mtdc.capability_vsc_smax = 250;
+% The corrected PCC station curve admits more Q than the former mixed-port
+% approximation. Use an explicit test-only C2 rating to exercise V-to-Q.
+mpopt_cap.vsc_mtdc.capability_vsc_smax = [250 200 250];
 mpopt_cap.vsc_mtdc.capability_gen_smax = 250;
 mpct_cap_pf = mpct_cap;
 mpct_cap_pf.vsc_capability = struct('Snom', 70 * ones(1, size(mpct_cap.vsc, 1)));
@@ -802,7 +834,7 @@ t_ok(isfield(mpca, 'psse') && isfield(mpca.psse, 'xfmr') && ...
     'all-controls Beerten case carries PSS/E tap and shunt metadata');
 [rall_pf, success] = runpf_vsc_mtdc(mpca, mpopt_u);
 t_ok(success, 'all-controls Beerten VSC-MTDC PF succeeds');
-t_is(max(abs(rall_pf.vsc(:, c.PAC) + rall_pf.vsc(:, c.PDC) + ...
+t_is(max(abs(rall_pf.vsc(:, c.PCONV) + rall_pf.vsc(:, c.PDC) + ...
         rall_pf.vsc(:, c.PLOSS))), 0, 7, ...
     'all-controls Beerten PF satisfies VSC power balance');
 t_ok(isfield(mpcta, 'vsc_hvdc_dispatch'), ...
@@ -984,9 +1016,11 @@ if isfield(rpap_full.cpf, 'events') && ~isempty(rpap_full.cpf.events)
 end
 t_ok(success && rpap_full.cpf.iterations < ...
         mpopt_pap_full.vsc_mtdc.cpf_max_it + 1 && ...
-        ~isempty(strfind(rpap_full.cpf.done_msg, ...
-        'VSC capability loading limit')), ...
-    'paper-control FULL CPF reaches true VSC capability loading limit');
+        rpap_full.cpf.termination.requested_endpoint_reached && ...
+        strcmp(rpap_full.cpf.termination.cause,'full_trace_complete') && ...
+        abs(rpap_full.cpf.lam(end)) <= mpopt_pap_full.cpf.target_lam_tol && ...
+        rpap_full.cpf.termination.nose_detected, ...
+    'paper-control FULL CPF records a turn and reaches descending lambda zero');
 t_ok(~any(ismember(full_event_names, {'NOSE_STALL', ...
         'FULL_SWITCH_TO_VOLTAGE', 'FULL_SWITCH_TO_LAMBDA', ...
         'FULL_TRACE_LIMIT'})), ...
@@ -997,16 +1031,17 @@ t_ok(~isfield(rpap_full.cpf, 'parameterization_mode') && ...
 t_ok(~isfield(rpap_full.cpf, 'vsc_hvdc_dispatch') || ...
         ~rpap_full.cpf.vsc_hvdc_dispatch.uses_pdc_set, ...
     'paper-control FULL CPF keeps HVDC redispatch disabled');
-% The PCC-voltage VSC capability curve is more restrictive than the previous
-% internal-voltage interpretation, so this base FULL trace stops at a physical
-% VSC limit instead of closing the lower branch.
+% Coupled-current correction and tangent transport close this fixture's
+% lower branch under its explicitly declared freeze recovery policy.
 
 mpcpgf = mpcpap;
 mpctpgf = mpctpap;
 mpcpgf.vsc_capability.Snom = 500 * ones(1, size(mpcpgf.vsc, 1));
 mpctpgf.vsc_capability.Snom = 500 * ones(1, size(mpctpgf.vsc, 1));
-mpcpgf.gen_capability.Snom = [500 90];
-mpctpgf.gen_capability.Snom = [500 90];
+% With PCC Q orders the original 90-MVA fixture violates underexcitation
+% already at the base point. Keep the base feasible and exercise later freeze.
+mpcpgf.gen_capability.Snom = [500 100];
+mpctpgf.gen_capability.Snom = [500 100];
 mpctpgf.gen(2, PG) = 100;
 mpopt_gen_freeze = mpopt_pap_freeze;
 mpopt_gen_freeze.vsc_mtdc.cpf_max_lam = 4;
@@ -1026,9 +1061,9 @@ t_ok(any(strcmp({rgen_freeze.cpf.events.name}, ...
     'generator capability freeze records freeze event');
 ev_gen_freeze = rgen_freeze.cpf.events(strcmp( ...
     {rgen_freeze.cpf.events.name}, 'GEN_CAPABILITY_FREEZE'));
-t_is(ev_gen_freeze(1).frozen_gen_idx, 2, 12, ...
+t_ok(~isempty(ev_gen_freeze) && ev_gen_freeze(1).frozen_gen_idx == 2, ...
     'generator capability freeze uses original redispatch participant');
-t_ok(rgen_freeze.cpf.max_lam > ev_gen_freeze(1).lambda_freeze, ...
+t_ok(~isempty(ev_gen_freeze) && rgen_freeze.cpf.max_lam > ev_gen_freeze(1).lambda_freeze, ...
     'generator capability freeze continues after redispatch is frozen');
 
 [rpsse, success] = runcpf_psse(mpcb, mpct, mpopt_cpf);
@@ -1056,7 +1091,8 @@ t_is(rpsse_sw.psse.swshunt.num(1, 10), 6, 10, ...
 mpcpt = vsc_psse_xfmr_tap_case(mpcb);
 mpctpt = mpcpt;
 mpctpt.bus(:, [PD QD]) = 1.02 * mpcpt.bus(:, [PD QD]);
-[rpsse_tap, success] = runcpf_psse(mpcpt, mpctpt, mpopt_ps);
+[rpsse_tap, success] = runcpf_psse(mpcpt, mpctpt, ...
+    mpoption(mpopt_ps, 'vsc_mtdc.psse_control_limit', 'stop'));
 t_ok(~success, 'runcpf_psse unified VSC-MTDC rejects infeasible transformer tap band');
 t_is(length(rpsse_tap.cpf.events), 0, 12, ...
     'runcpf_psse unified VSC-MTDC tap rejects before CPF events');
@@ -1081,13 +1117,33 @@ t_str_match(rpsse_genq.cpf.events(1).name, 'PSSE_CONTROL', ...
     'runcpf_psse unified VSC-MTDC GENQ labels PSS/E control event');
 t_is(rpsse_genq.cpf.events(1).k, 0, 12, ...
     'runcpf_psse unified VSC-MTDC GENQ does not repeat at later lambdas');
-t_is(rpsse_genq.bus(2, BUS_TYPE), PQ, 12, ...
-    'runcpf_psse unified VSC-MTDC applies GENQ bus-type change');
-t_is(rpsse_genq.gen(2, QG), rpsse_genq.gen(2, QMAX), 10, ...
-    'runcpf_psse unified VSC-MTDC applies GENQ QMAX limit');
-t_ok(rpsse_genq.psse.genq.control.limited(2) && ...
-    rpsse_genq.psse.genq.control.at_max(2), ...
-    'runcpf_psse unified VSC-MTDC reports GENQ limit active set');
+if legacy_auxiliary_expectations
+    t_is(rpsse_genq.bus(2, BUS_TYPE), PQ, 12, ...
+        'runcpf_psse unified VSC-MTDC applies GENQ bus-type change');
+    t_is(rpsse_genq.gen(2, QG), rpsse_genq.gen(2, QMAX), 10, ...
+        'runcpf_psse unified VSC-MTDC applies GENQ QMAX limit');
+    t_ok(rpsse_genq.psse.genq.control.limited(2) && ...
+        rpsse_genq.psse.genq.control.at_max(2), ...
+        'runcpf_psse unified VSC-MTDC reports GENQ limit active set');
+else
+    % With the complete converter injection the unchanged fixture is inside
+    % its original Q interval. Check the PV equation and its physical Q
+    % balance, rather than requiring an infeasible auxiliary model's clamp.
+    t_is(rpsse_genq.bus(2, BUS_TYPE), PV, 12, ...
+        'runcpf_psse unified VSC-MTDC preserves feasible GENQ PV mode');
+    ai = ext2int(rpsse_genq.ac);
+    vi = ai.bus(:, VM).*exp(1j*pi/180*ai.bus(:, VA));
+    yi = makeYbus(ai.baseMVA, ai.bus, ai.branch);
+    qi = imag(vi.*conj(yi*vi))*ai.baseMVA + ai.bus(:, QD);
+    row = find(ai.order.bus.i2e == mpcpg.gen(2, GEN_BUS), 1);
+    t_is(rpsse_genq.gen(2, QG), qi(row), 10, ...
+        'runcpf_psse GENQ reactive output satisfies full AC nodal equation');
+    t_ok(~rpsse_genq.psse.genq.control.limited(2) && ...
+        rpsse_genq.gen(2, QG) > mpcpg.gen(2, QMIN) && ...
+        rpsse_genq.gen(2, QG) < mpcpg.gen(2, QMAX) && ...
+        abs(rpsse_genq.bus(2, VM)-mpcpg.gen(2, VG)) <= 1e-6, ...
+        'runcpf_psse GENQ free report agrees with original bounds and VG');
+end
 
 mpcpcl = loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
 mpctpcl = mpcpcl;
@@ -1099,6 +1155,8 @@ mpopt_pcl = mpoption(mpopt, 'cpf.stop_at', 'FULL', ...
 mpopt_pcl.vsc_mtdc.cpf_max_lam = 20;
 mpopt_pcl.vsc_mtdc.cpf_max_it = 260;
 mpopt_pcl.vsc_mtdc.psse_control_max_it = 60;
+% Historical stop-policy reference remains explicit after saturation default.
+mpopt_pcl.vsc_mtdc.psse_control_limit = 'stop';
 [rpsse_pcl, success] = runcpf_psse(mpcpcl, mpctpcl, mpopt_pcl);
 t_ok(success, ...
     'runcpf_psse unified VSC-MTDC backs off PSS/E control failures');
@@ -1108,7 +1166,8 @@ t_str_match(rpsse_pcl.cpf.active_set_failure_policy.psse_control.observed_policy
     'stop', 'runcpf_psse unified VSC-MTDC reports PSS/E stop');
 t_str_match(rpsse_pcl.cpf.events(end).name, 'PSSE_CONTROL_LIMIT', ...
     'runcpf_psse unified VSC-MTDC reports PSS/E control loading limit');
-t_ok(rpsse_pcl.cpf.max_lam > 1.34 && rpsse_pcl.cpf.max_lam < 1.35 && ...
+% PCC-port snapshot independently bracketed by fresh PF at lambda +/-1e-4.
+t_ok(rpsse_pcl.cpf.max_lam > 1.36 && rpsse_pcl.cpf.max_lam < 1.37 && ...
     rpsse_pcl.bus(5, BS) == 15 && ...
     abs(rpsse_pcl.branch(rpsse_pcl.psse.xfmr.two.branch_idx, TAP) - 1.011111111111111) < 1e-10, ...
     'runcpf_psse unified VSC-MTDC locates first blocked PSS/E control limit');
@@ -1148,8 +1207,10 @@ t_ok(abs(rnose.cpf.z(end, end)) <= 10 * mpopt_nose.cpf.nose_tol, ...
     'monolithic unified CPF locates nose tangent zero');
 t_ok(abs(rnose.cpf.max_lam - rnose.cpf.lam(end)) < 1e-8, ...
     'monolithic unified CPF stores nose as maximum lambda');
-t_is(rnose.cpf.max_lam, 5.607430878086, 5, ...
-    'monolithic unified CPF matches Beerten nose lambda benchmark');
+% Unconstrained mathematical nose, verified at two continuation step sizes.
+% This is a PCC-model regression value, not a published/equipment margin.
+t_is(rnose.cpf.max_lam, 5.624068103929, 5, ...
+    'monolithic unified CPF matches five-bus PCC-model nose benchmark');
 
 mpopt_cpf_seq = mpopt_cpf;
 mpopt_cpf_seq.vsc_mtdc.method = 'sequential';

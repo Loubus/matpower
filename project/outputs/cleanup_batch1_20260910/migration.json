@@ -1,0 +1,284 @@
+[
+  {
+    "action": "copy",
+    "source": "iniciar_proyecto.m",
+    "target": "outputs/cleanup_batch1_20260910/before/iniciar_proyecto.m",
+    "sha256": "07B11F2EA8C29C726679E99CF597CFEB6CC918173ACD4176AB0810D23AC2FBD8"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/lib/t/t_mpxt_psse.m",
+    "target": "outputs/cleanup_batch1_20260910/before/t_mpxt_psse.m",
+    "sha256": "237A27C94F2AA91A57B5A10DFD25B789F7F1E379BD3FB26CC2058249989F3754"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/beerten_5bus/cpf_runner/beerten_cpf_run.m",
+    "target": "outputs/cleanup_batch1_20260910/before/beerten_cpf_run.m",
+    "sha256": "3E5C998560B1B12492DC37DB0A9C57C606BF0DC1C1622F3804FC8C4BDCA88825"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_3bus_local_inband.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_local_inband.raw",
+    "sha256": "0F9B93EC0A3587D58AFF078587805C1AD58E5CB52B954F138F8ECA9D1A327FB0"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_3bus_qmax.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmax.raw",
+    "sha256": "3E65D89B8C3BD047319D763EEE4EDDDC18CA58AE7F10FD09140E00B3A67797DE"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_3bus_qmin.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmin.raw",
+    "sha256": "F8252377CD032FBFDEA7AE7108C7B22D29136D29D8326B678429D0C4D17A5ADE"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_3bus_qmin_qmax_zero.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmin_qmax_zero.raw",
+    "sha256": "A7CDD06D4E37985199575F397D05773BA4E67F1BE45C868033C084CF442AB4D2"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_3bus_slack_q_limit.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_slack_q_limit.raw",
+    "sha256": "714F9687C8EA53AEE42BE61EA946D28EA17F4555BAF82B540AB283A818D0D75C"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_4bus_remote_single.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_4bus_remote_single.raw",
+    "sha256": "129D55B3578C1D2442611C3B4E693F5226C958B0346291F8A10993B764DDE6AD"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_5bus_remote_group.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group.raw",
+    "sha256": "8794FF59907D56DE0CAF1B6200F97C817699D7CD7C265053B2F428848700446E"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_5bus_remote_group_all_limited.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group_all_limited.raw",
+    "sha256": "2D9DCD76857E2A81CBAAB65A2C09A49E7CCBBAE35958E38E13428CE2230C54BB"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_genq/psse_genq_5bus_remote_group_one_limited.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group_one_limited.raw",
+    "sha256": "676CD5B21573E0FED06171A9DA6BD3B88B9FE7A33D06C3867FC572E8DBCB8649"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_cases_integrated/psse_integrated_controls_40bus.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_cases_integrated/psse_integrated_controls_40bus.raw",
+    "sha256": "B58AF43C22D027277069B7F893861CDF6EF8F4A866031CD6946524AA6CA5A800"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_suite/suite_u_ultc_3w_tab.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_u_ultc_3w_tab.raw",
+    "sha256": "A66BFAC33ADD4DD4370FBE5DC5BDB097A4C0755DD577519F1B147AA290466F18"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_suite/suite_u_ultc_3w_tab_cw2.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_u_ultc_3w_tab_cw2.raw",
+    "sha256": "F23FB43DC7D5C7B34520BED987B31D0BE1824874208EBC47DEC707270F9C04E1"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_suite/suite_m_integrated_30bus_nominal.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_m_integrated_30bus_nominal.raw",
+    "sha256": "A854CE6ADE0053B03DDCA867AC95593D6523F1A4D46EFD6398C0F7EBE248C5FB"
+  },
+  {
+    "action": "copy",
+    "source": "auditoria_psse_matpower/psse_validation_suite/suite_m_integrated_14bus_nominal.raw",
+    "target": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_m_integrated_14bus_nominal.raw",
+    "sha256": "4B822AF99CBDE6422F24EA605FA6DC794A22DC3F16331E759393C361917EA9A9"
+  },
+  {
+    "action": "copy",
+    "source": "PSSE/V26p_Trs_2532.raw",
+    "target": "cases/full_network/raw/V26p_Trs_2532.raw",
+    "sha256": "9711A9049066A2F0DB0D0C21548CADD483A667C94D3A9315C8D2F7DA16D99541"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case14.m",
+    "target": "cases/ieee/14/case14.m",
+    "sha256": "9B8626E4FF5F26DF428C1CAF4BB5CA5B468C2F9233AD2661E17053B0F09C0929"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case_ieee30.m",
+    "target": "cases/ieee/30/case_ieee30.m",
+    "sha256": "02CD8D83A9BE68D94B6297FCE181A7D712D027C937042261983C32D11B8F93E6"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case39.m",
+    "target": "cases/ieee/39/case39.m",
+    "sha256": "E3E44AF0F0112FDD3EBD2C88210B2238698F8215D30AD0C9E628EEE9E1FA0C6B"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case57.m",
+    "target": "cases/ieee/57/case57.m",
+    "sha256": "7D0FC9FC4470391CF303B56CA72FDA92D526AEAC9533EA964C88D5C9CE664E8A"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_all_controls_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_explicit.m",
+    "sha256": "4B7C52D0BFC3049327B085F8802EDD6AACEB545596C473C60F9A187C7F9F62E3"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_all_controls_target_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_target_explicit.m",
+    "sha256": "592DD9879FCA1CEF112D1D1CD5E424E94CCDC23EB43A46DE36BE08DD03564999"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_all_controls_target.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_target.m",
+    "sha256": "67BC2615A5B2068EA321ACBC19CF6CE3EACAD022320862C9E5EDD9C5BE656072"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_all_controls.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls.m",
+    "sha256": "4162B199178BBC52B3A833590160764390F1E866489417E05CB8B8C3CBC89C16"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_droop_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_explicit.m",
+    "sha256": "E1E746177859123360D65706F80242EEA263214067D59A9333F36A2E54BB1F05"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_droop_target_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_target_explicit.m",
+    "sha256": "9ABDE833C1FED3BAEA424B07F605062CCB5C8D666707A3CE3F215E88B7158FE4"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_droop_target.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_target.m",
+    "sha256": "B3DE55E21C994276CA49FFD80584C1C997C82D68480AE372221A970D3EB558CC"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_droop.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop.m",
+    "sha256": "6CA7DC06B6890A40154FD016E3FB4814BB7241F09E85210763064FF0235A89B8"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_target.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_target.m",
+    "sha256": "22C4D42A4D4D571DCD3CD1C664539CB5CBF8CC5E2A98D8106F2AECDA9989A2DE"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt_target.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt_target.m",
+    "sha256": "25DD0D93200656138D947E74D01DD64DA46E4868277D016AE6696DCCE5B87F90"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt.m",
+    "sha256": "28016FC9D8C672C9576E56CB8E42A0B11B574AE9F7FBFC5B913AF6B40A353F77"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_gen_redispatch.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch.m",
+    "sha256": "E8F5F74F1B0E999919C89B6C12C3274A6F28942C250DCCA9CE81A23F1ADB6F1D"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_paper_controls_cap_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_explicit.m",
+    "sha256": "81E42AAA187438D0351CCAA1BBF63E7EF94300820CFA370BFE1AAFEBAF5C247F"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit.m",
+    "sha256": "F796C7DA82C135EEC123429F1EB2FECC94B0BED8A8D557EC0D7CE457F69F8E5E"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten_ultc_swshunt.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten_ultc_swshunt.m",
+    "sha256": "DC30AC369300747B44D17B0445F47989EB0D8E2082B6B76E93E222C2FCCB91D1"
+  },
+  {
+    "action": "copy",
+    "source": "matpower/data/case5_vsc_mtdc_beerten.m",
+    "target": "cases/beerten/variants/case5_vsc_mtdc_beerten.m",
+    "sha256": "F4395B040338F33A1EBC58DA1E6782B6DAEF19F458E27BCC5EB958D2B43F371B"
+  },
+  {
+    "action": "move_directory",
+    "source": "outputs/thesis_scope_20260910/upstream/Nordic",
+    "target": "cases/nordic/upstream",
+    "compatibility_junction": false
+  },
+  {
+    "action": "move_directory",
+    "source": "outputs/thesis_scope_20260910/upstream/CIGRE_implementation",
+    "target": "cases/cigre/upstream",
+    "compatibility_junction": false
+  },
+  {
+    "action": "move_directory",
+    "source": "outputs/thesis_scope_20260910/upstream/PowerModelsACDC",
+    "target": "cases/ieee/upstream/PowerModelsACDC",
+    "compatibility_junction": false
+  },
+  {
+    "action": "move_directory",
+    "source": "outputs/thesis_scope_20260910/upstream/MatACDC_cases",
+    "target": "cases/beerten/upstream/MatACDC_cases",
+    "compatibility_junction": false
+  },
+  {
+    "action": "copy",
+    "source": "outputs/thesis_scope_20260910/upstream/MatACDC1_0.zip",
+    "target": "cases/beerten/upstream/MatACDC1_0.zip",
+    "sha256": "1CB50CE28CDE3C2C0D9FBA6063EE4C5B795B296315655ED0D98683F96257E01C"
+  },
+  {
+    "action": "move_directory",
+    "source": "auditoria_psse_matpower/beerten_5bus",
+    "target": "studies/beerten",
+    "compatibility_junction": true
+  },
+  {
+    "action": "move_directory",
+    "source": "auditoria_psse_matpower/results/transpa_reduccion_v1",
+    "target": "archive/transpa_reduction_v1/results",
+    "compatibility_junction": true
+  },
+  {
+    "action": "move_directory",
+    "source": "auditoria_psse_matpower/transpa_reduccion",
+    "target": "archive/transpa_reduction_v1/studies",
+    "compatibility_junction": true
+  },
+  {
+    "action": "move_directory",
+    "source": "auditoria_psse_matpower",
+    "target": "archive/psse_compatibility/auditoria_psse_matpower",
+    "compatibility_junction": true
+  }
+]

@@ -1,0 +1,74 @@
+{
+  "matpower/lib/+mp/psse_xfmr_control.m": {
+    "recorded_sha256": "59731b70b31c8c33ae88058f7bb2d8bb0cd5208a7961441d2f7396eeb76be707",
+    "revalidation_entry_sha256": "59731b70b31c8c33ae88058f7bb2d8bb0cd5208a7961441d2f7396eeb76be707",
+    "matches_recorded_batch3": true,
+    "current_sha256": "59731b70b31c8c33ae88058f7bb2d8bb0cd5208a7961441d2f7396eeb76be707"
+  },
+  "matpower/lib/+mp/psse_unified_control_update.m": {
+    "recorded_sha256": "0d898fd999b37931a77d7f798c48948c94668530513d44a9679e728e10293124",
+    "revalidation_entry_sha256": "0d898fd999b37931a77d7f798c48948c94668530513d44a9679e728e10293124",
+    "matches_recorded_batch3": true,
+    "current_sha256": "0d898fd999b37931a77d7f798c48948c94668530513d44a9679e728e10293124"
+  },
+  "matpower/lib/+mp/psse_xfmr_tap_decision.m": {
+    "recorded_sha256": "9290e761d81e43e84464f2e43019b4fee65706d28b9f987f4c3466c1cf5338f8",
+    "revalidation_entry_sha256": "9290e761d81e43e84464f2e43019b4fee65706d28b9f987f4c3466c1cf5338f8",
+    "matches_recorded_batch3": true,
+    "current_sha256": "9290e761d81e43e84464f2e43019b4fee65706d28b9f987f4c3466c1cf5338f8"
+  },
+  "matpower/lib/runcpf_vsc_mtdc.m": {
+    "recorded_sha256": "a5cc7442d175f0919042cfd6ed6ab4dfe3d878a8b3fdbd4e208f0581a1dfd5fd",
+    "revalidation_entry_sha256": "a5cc7442d175f0919042cfd6ed6ab4dfe3d878a8b3fdbd4e208f0581a1dfd5fd",
+    "matches_recorded_batch3": true,
+    "current_sha256": "a5cc7442d175f0919042cfd6ed6ab4dfe3d878a8b3fdbd4e208f0581a1dfd5fd"
+  },
+  "tests/t_ultc_acceptance_batch3.m": {
+    "recorded_sha256": "551518b2bd684166ec1b9254965f10c389e412f25de82eddde29f906ed52835b",
+    "revalidation_entry_sha256": "551518b2bd684166ec1b9254965f10c389e412f25de82eddde29f906ed52835b",
+    "matches_recorded_batch3": true,
+    "current_sha256": "551518b2bd684166ec1b9254965f10c389e412f25de82eddde29f906ed52835b"
+  },
+  "tests/t_ultc_beerten_batch3.m": {
+    "recorded_sha256": "6a853601acfe99aee37b6d4b54632a1f3926ce67aada24dec4c2c7c97003e9a4",
+    "revalidation_entry_sha256": "6a853601acfe99aee37b6d4b54632a1f3926ce67aada24dec4c2c7c97003e9a4",
+    "matches_recorded_batch3": true,
+    "current_sha256": "6a853601acfe99aee37b6d4b54632a1f3926ce67aada24dec4c2c7c97003e9a4"
+  },
+  "docs/ULTC_DECISION_CONTRACT.md": {
+    "recorded_sha256": "de4537b0bf39f3dd49edd576f04711d7d50e3d5befe4ae2eef77d47a182f6374",
+    "revalidation_entry_sha256": "de4537b0bf39f3dd49edd576f04711d7d50e3d5befe4ae2eef77d47a182f6374",
+    "matches_recorded_batch3": true,
+    "current_sha256": "de4537b0bf39f3dd49edd576f04711d7d50e3d5befe4ae2eef77d47a182f6374"
+  },
+  "docs/CONTROL_ACCEPTANCE.md": {
+    "recorded_sha256": "4bcefbf2304645dba673c997956fad9ba05989ba49c55f64ae27c5795bf721b6",
+    "revalidation_entry_sha256": "4bcefbf2304645dba673c997956fad9ba05989ba49c55f64ae27c5795bf721b6",
+    "matches_recorded_batch3": true,
+    "current_sha256": "4bcefbf2304645dba673c997956fad9ba05989ba49c55f64ae27c5795bf721b6"
+  },
+  "tests/README.md": {
+    "recorded_sha256": "c79ba970f719a3316147bf68199228828f2a37a1f0b85f411b74203db3666632",
+    "revalidation_entry_sha256": "c79ba970f719a3316147bf68199228828f2a37a1f0b85f411b74203db3666632",
+    "matches_recorded_batch3": true,
+    "current_sha256": "c79ba970f719a3316147bf68199228828f2a37a1f0b85f411b74203db3666632"
+  },
+  "outputs/algorithm_cleanup_batch3_20260910/run_batch3_suite.m": {
+    "recorded_sha256": "6aedcf336e96a9614b335d08e7b703ac8b0ae77795612da0ea80a68fa96c56b3",
+    "revalidation_entry_sha256": "6aedcf336e96a9614b335d08e7b703ac8b0ae77795612da0ea80a68fa96c56b3",
+    "matches_recorded_batch3": true,
+    "current_sha256": "6aedcf336e96a9614b335d08e7b703ac8b0ae77795612da0ea80a68fa96c56b3"
+  },
+  "outputs/algorithm_cleanup_batch3_20260910/capture_patch.py": {
+    "recorded_sha256": "d310e021c224882f6c2e1568929cc947cc81d841d974b16fb54115f34cd21ed5",
+    "revalidation_entry_sha256": "d310e021c224882f6c2e1568929cc947cc81d841d974b16fb54115f34cd21ed5",
+    "matches_recorded_batch3": true,
+    "current_sha256": "d310e021c224882f6c2e1568929cc947cc81d841d974b16fb54115f34cd21ed5"
+  },
+  "outputs/algorithm_cleanup_batch3_20260910/REPORT.md": {
+    "recorded_sha256": "96d6e6b6149eca70046fa93449a56e9c773739fd98d625e6c07ddb7f5d48953d",
+    "revalidation_entry_sha256": "96d6e6b6149eca70046fa93449a56e9c773739fd98d625e6c07ddb7f5d48953d",
+    "matches_recorded_batch3": true,
+    "current_sha256": "189a118b3b0fa672c77ee1173cc0f94aa8ed896a0e286224bf40c46e7951b6f0"
+  }
+}

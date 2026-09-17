@@ -1,0 +1,83 @@
+--- production
++++ isolated diagnostic copy
+@@ -1,5 +1,5 @@
+ function [results, success] = ...
+-    runcpf_vsc_mtdc(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++    g150_cpf_probe(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+ % runcpf_vsc_mtdc - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+@@ -1301,6 +1301,7 @@
+             profile_count('vsc_capability_settle_iteration');
+             [changed, mpcb_next, mpct_next, report] = ...
+                 unified_vsc_capability_update(r, lam);
++        g150_log('append',struct('kind','before','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+             if ~changed
+                 profile_count('vsc_capability_settle_no_change');
+                 V = original_ac_voltage_for_result(r, bus_ids);
+@@ -1350,6 +1351,8 @@
+             clear event_cleanup;
+             if ~ok
+                 profile_count('vsc_capability_recorr_failed_inner');
++        g150_log('append',struct('kind','inner_pf_failed','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
++                g150_log('failure',struct('ctx',ctx,'ctxt',ctxt,'Sdelta',Sdelta,'x',x,'lambda',lam,'base',mpcb,'target',mpct,'options',mpopt_pf,'normF',normF));
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 success = 0;
+                 return;
+@@ -1357,6 +1360,7 @@
+             profile_count('vsc_capability_recorr_success');
+             r = build_unified_cpf_result(ctx, x, eval, lam, it, normF);
+             [r, ~] = stamp_original_ac_solution(r, bus_ids, nbranch, ngen);
++        g150_log('append',struct('kind','after_pf','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+             complete_event_cleanup = profile_time_scope( ...
+                 'vsc_capability_event_completion'); %#ok<NASGU>
+             if record_event
+@@ -1382,6 +1386,7 @@
+                     bus_ids, nbranch, ngen, event_k);
+                 ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
+                 if ~handoff_ok
++        g150_log('append',struct('kind','control_handoff_failed','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+                     success = 0;
+                     return;
+                 end
+@@ -1392,6 +1397,8 @@
+                 end
+             end
+         end
++        g150_log('append',struct('kind','iteration_budget_exhausted','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
++        g150_log('failure',struct('ctx',ctx,'ctxt',ctxt,'Sdelta',Sdelta,'x',x,'lambda',lam,'base',mpcb,'target',mpct,'options',mpopt_pf,'normF',normF));
+         V = original_ac_voltage_for_result(r, bus_ids);
+         success = 0;
+     end
+@@ -1801,6 +1808,7 @@
+         for ctrl_it = 1:max_it
+             [changed, mpcb_next, mpct_next, report] = ...
+                 unified_gen_capability_update(r, lam);
++        g150_log('append',struct('kind','gen_before','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+             if ~changed
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 return;
+@@ -1848,6 +1856,7 @@
+                     [gen_capability_recorded_idx(:); report.changed_idx(:)]);
+             end
+             if ~ok
++        g150_log('append',struct('kind','gen_inner_pf_failed','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 success = 0;
+                 return;
+@@ -1876,6 +1885,7 @@
+                     bus_ids, nbranch, ngen, event_k);
+                 ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
+                 if ~handoff_ok
++        g150_log('append',struct('kind','gen_handoff_failed','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+                     success = 0;
+                     return;
+                 end
+@@ -1886,6 +1896,7 @@
+                 bus_ids, nbranch, ngen, event_k);
+             ev = vsc_mtdc_cpf_append_event(ev, handoff_events);
+             if ~handoff_ok
++        g150_log('append',struct('kind','gen_handoff_failed','lambda',lam,'iteration',ctrl_it,'k',event_k,'bus',r.bus,'branch',r.branch,'gen',r.gen,'vsc',r.vsc,'report',report,'normF',normF));
+                 success = 0;
+                 return;
+             end

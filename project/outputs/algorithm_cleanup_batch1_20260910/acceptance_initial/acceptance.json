@@ -1,0 +1,230 @@
+{
+  "checks": [
+    {
+      "id": "shunt_pf.success",
+      "passed": true,
+      "detail": "success=1"
+    },
+    {
+      "id": "shunt_pf.solver_residual",
+      "passed": true,
+      "detail": "mismatch=3.71261910104e-11 configured_tol=1e-08"
+    },
+    {
+      "id": "shunt_pf.ac_balance",
+      "passed": false,
+      "detail": "extended AC nodal mismatch=0.220712400453 pu"
+    },
+    {
+      "id": "shunt_pf.converter_balance",
+      "passed": true,
+      "detail": "converter balance=4.60709248529e-13 pu"
+    },
+    {
+      "id": "shunt_pf.dc_balance",
+      "passed": true,
+      "detail": "DC nodal power mismatch=2.99760216649e-15 pu"
+    },
+    {
+      "id": "shunt_cpf.success",
+      "passed": true,
+      "detail": "success=1"
+    },
+    {
+      "id": "shunt_cpf.solver_residual",
+      "passed": true,
+      "detail": "mismatch=1.82640119486e-12 configured_tol=1e-08"
+    },
+    {
+      "id": "shunt_cpf.ac_balance",
+      "passed": false,
+      "detail": "extended AC nodal mismatch=0.216444659515 pu"
+    },
+    {
+      "id": "shunt_cpf.converter_balance",
+      "passed": true,
+      "detail": "converter balance=1.0413891971e-15 pu"
+    },
+    {
+      "id": "shunt_cpf.dc_balance",
+      "passed": true,
+      "detail": "DC nodal power mismatch=3.38618022511e-15 pu"
+    },
+    {
+      "id": "genq_cpf.success",
+      "passed": true,
+      "detail": "success=1"
+    },
+    {
+      "id": "genq_cpf.solver_residual",
+      "passed": true,
+      "detail": "mismatch=1.24729629849e-12 configured_tol=1e-08"
+    },
+    {
+      "id": "genq_cpf.ac_balance",
+      "passed": false,
+      "detail": "extended AC nodal mismatch=0.227975847591 pu"
+    },
+    {
+      "id": "genq_cpf.converter_balance",
+      "passed": true,
+      "detail": "converter balance=9.9364960704e-15 pu"
+    },
+    {
+      "id": "genq_cpf.dc_balance",
+      "passed": true,
+      "detail": "DC nodal power mismatch=2.22044604925e-15 pu"
+    },
+    {
+      "id": "shunt_pf.legal_state",
+      "passed": true,
+      "detail": "BINIT=9; legal grid=0:10"
+    },
+    {
+      "id": "shunt_pf.state_sync",
+      "passed": false,
+      "detail": "BS top/ac=0/0 fixed+BINIT=9"
+    },
+    {
+      "id": "shunt_pf.settled_voltage",
+      "passed": false,
+      "detail": "solved Vm5=0.990329389197; this fixture has reachable deadband"
+    },
+    {
+      "id": "shunt_cpf.legal_state",
+      "passed": true,
+      "detail": "BINIT=6; legal grid=0:10"
+    },
+    {
+      "id": "shunt_cpf.state_sync",
+      "passed": true,
+      "detail": "BS top/ac=6/6 fixed+BINIT=6"
+    },
+    {
+      "id": "shunt_cpf.settled_voltage",
+      "passed": true,
+      "detail": "solved Vm5=0.995198526875; this fixture has reachable deadband"
+    },
+    {
+      "id": "genq.original_bounds",
+      "passed": true,
+      "detail": "QG=-33.8559377465 original range=[-100,-20]"
+    },
+    {
+      "id": "genq.reported_binding_limit",
+      "passed": false,
+      "detail": "limited=1 at_max=1 QG=-33.8559377465"
+    },
+    {
+      "id": "genq.fixed_q_equation",
+      "passed": true,
+      "detail": "matrix QMIN/QMAX/QG=-100/-20/-33.8559377465"
+    },
+    {
+      "id": "genq.mode_consistency",
+      "passed": false,
+      "detail": "single local generator: limited=1 bus_type=2"
+    },
+    {
+      "id": "matched_fixed_B0",
+      "passed": true,
+      "detail": "CPF/PF success=1/1 max dVm=1.75415237891e-12 pu"
+    },
+    {
+      "id": "disabled_B0",
+      "passed": true,
+      "detail": "disabled automatic adjustment preserves chosen state"
+    },
+    {
+      "id": "matched_fixed_B6",
+      "passed": true,
+      "detail": "CPF/PF success=1/1 max dVm=1.24178445304e-12 pu"
+    },
+    {
+      "id": "disabled_B6",
+      "passed": true,
+      "detail": "disabled automatic adjustment preserves chosen state"
+    },
+    {
+      "id": "matched_fixed_B9",
+      "passed": true,
+      "detail": "CPF/PF success=1/1 max dVm=1.46949119539e-12 pu"
+    },
+    {
+      "id": "disabled_B9",
+      "passed": true,
+      "detail": "disabled automatic adjustment preserves chosen state"
+    },
+    {
+      "id": "matched_fixed_B10",
+      "passed": true,
+      "detail": "CPF/PF success=1/1 max dVm=1.34292577059e-12 pu"
+    },
+    {
+      "id": "disabled_B10",
+      "passed": true,
+      "detail": "disabled automatic adjustment preserves chosen state"
+    },
+    {
+      "id": "direction_0.98",
+      "passed": true,
+      "detail": "Vm=0.980 BINIT=3 fixed part=5"
+    },
+    {
+      "id": "direction_1.00",
+      "passed": true,
+      "detail": "Vm=1.000 BINIT=2 fixed part=5"
+    },
+    {
+      "id": "direction_1.02",
+      "passed": true,
+      "detail": "Vm=1.020 BINIT=1 fixed part=5"
+    },
+    {
+      "id": "saturated_B0",
+      "passed": true,
+      "detail": "outward request preserves physical bound and reports blocked regulation"
+    },
+    {
+      "id": "saturated_B10",
+      "passed": true,
+      "detail": "outward request preserves physical bound and reports blocked regulation"
+    },
+    {
+      "id": "remote_measurement",
+      "passed": true,
+      "detail": "low remote Vm4 requests capacitance even when local Vm5 is in band"
+    },
+    {
+      "id": "out_of_service",
+      "passed": true,
+      "detail": "out-of-service shunt neither adjusts nor injects"
+    }
+  ],
+  "legacy": [
+    {
+      "test_number": 110,
+      "actual": 0,
+      "expected": 1,
+      "passed": false
+    },
+    {
+      "test_number": 111,
+      "actual": 0,
+      "expected": 9,
+      "passed": false
+    },
+    {
+      "test_number": 283,
+      "actual": 2,
+      "expected": 1,
+      "passed": false
+    },
+    {
+      "test_number": 284,
+      "actual": -33.855937746502207,
+      "expected": -20,
+      "passed": false
+    }
+  ]
+}

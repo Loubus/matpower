@@ -1,0 +1,13 @@
+{
+  "solver_success": true,
+  "message": "The solution converged.",
+  "lambda": 1.1385328544700895,
+  "equation_residual": 3.815543436758162e-12,
+  "augmented_residual": 1.2046712072333321e-08,
+  "sigma_min": 6.700043276374167e-09,
+  "V5": 0.6681190772297809,
+  "V3": 0.9432453653807576,
+  "Qconverter2": 140.06669878932092,
+  "slack_P": 505.59998737838134,
+  "scope": "Independent fold of fixed taps/shunts, fixed generator Q and implemented converter circle; all-equipment infeasible."
+}

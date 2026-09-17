@@ -1,0 +1,16 @@
+{
+  "apply_exit_code": 0,
+  "matches": {
+    "docs/PQBRAK_MODEL_POLICY.md": true,
+    "matpower/lib/+mp/psse_coordinated_active_set.m": true,
+    "matpower/lib/+mp/psse_pqbrak_prepare.m": true,
+    "matpower/lib/+mp/psse_prepare_case.m": true,
+    "matpower/lib/+mp/psse_solver_options.m": true,
+    "matpower/lib/mpoption.m": true,
+    "matpower/lib/runcpf_vsc_mtdc.m": true,
+    "matpower/lib/t/t_mpoption.m": true,
+    "matpower/lib/t/t_mpxt_psse.m": true,
+    "tests/README.md": true,
+    "tests/t_pqbrak_off_batch5.m": true
+  }
+}

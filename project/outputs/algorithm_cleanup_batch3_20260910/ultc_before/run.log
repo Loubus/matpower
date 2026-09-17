@@ -1,0 +1,53 @@
+1..50
+ok 1 - terminal1.step: both paths take the declared adjacent step
+ok 2 - terminal1.physical_direction: electrical re-solve raises the regulated voltage
+ok 3 - terminal1.balance: success and AC residual 6.92856459457e-09 pu
+ok 4 - terminal2.step: both paths take the declared adjacent step
+ok 5 - terminal2.physical_direction: electrical re-solve raises the regulated voltage
+ok 6 - terminal2.balance: success and AC residual 6.92856459457e-09 pu
+ok 7 - terminal3.step: both paths take the declared adjacent step
+ok 8 - terminal4.step: both paths take the declared adjacent step
+ok 9 - terminal4.physical_direction: electrical re-solve raises the regulated voltage
+ok 10 - terminal4.balance: success and AC residual 1.42718727194e-15 pu
+ok 11 - terminal5.step: both paths take the declared adjacent step
+ok 12 - terminal5.physical_direction: electrical re-solve raises the regulated voltage
+ok 13 - terminal5.balance: success and AC residual 1.74665491312e-09 pu
+ok 14 - terminal6.step: both paths take the declared adjacent step
+ok 15 - terminal6.physical_direction: electrical re-solve raises the regulated voltage
+ok 16 - terminal6.balance: success and AC residual 3.49751639121e-10 pu
+ok 17 - mapping.remote_identity: measurement joins by bus identity, not row
+ok 18 - mapping.balance: success and AC residual 4.04263270694e-09 pu
+ok 19 - mapping.export: AC internal mapping returns original identifiers
+ok 20 - cw2.raw: CW=2 writes kV WINDV for the selected per-unit tap
+ok 21 - cw2.tab: TAB scales nominal impedance using per-unit winding ratio
+ok 22 - cw2.balance: success and AC residual 7.81187616634e-09 pu
+ok 23 - three_winding1.interface: three-winding CW/TAB candidates agree between paths
+ok 24 - three_winding1.balance: success and AC residual 2.38971323051e-14 pu
+ok 25 - three_winding2.interface: three-winding CW/TAB candidates agree between paths
+ok 26 - three_winding2.balance: success and AC residual 2.38971323051e-14 pu
+ok 27 - disabled1: disabled device stays fixed in both paths
+ok 28 - disabled2: disabled device stays fixed in both paths
+ok 29 - disabled3: disabled device stays fixed in both paths
+ok 30 - disabled4: disabled device stays fixed in both paths
+ok 31 - disabled5: disabled device stays fixed in both paths
+ok 32 - disabled6: disabled device stays fixed in both paths
+ok 33 - disabled7: disabled device stays fixed in both paths
+ok 34 - deadband_0.96999000: deadband and tolerance edges are inclusive
+ok 35 - deadband_1.03001000: deadband and tolerance edges are inclusive
+ok 36 - deadband_1.00000000: deadband and tolerance edges are inclusive
+ok 37 - bound0.9: saturation is a physical bound, not a numerical or implicit lock
+ok 38 - bound1.1: saturation is a physical bound, not a numerical or implicit lock
+not ok 39 - lock1.unified: declared lock survives unified handoff and prevents movement
+ok 40 - lock1.ac: AC reports locked voltage separately from physical saturation
+not ok 41 - lock2.unified: declared lock survives unified handoff and prevents movement
+ok 42 - lock2.ac: AC reports locked voltage separately from physical saturation
+ok 43 - lock3.unified: declared lock survives unified handoff and prevents movement
+ok 44 - interaction.simultaneous: all eligible devices step from the same solved voltage
+ok 45 - interaction.order: permuting device metadata does not introduce sequential voltage updates
+ok 46 - interaction.balance: success and AC residual 2.72050970413e-09 pu
+ok 47 - cycle.detected: AC resolves a repeated grid state without inventing a lock
+ok 48 - cycle.balance: success and AC residual 2.83237092389e-09 pu
+ok 49 - cycle.unified_pass: direct unified pass can reverse; solver layer owns cycling
+ok 50 - numerical.rejection: failed electrical replay restores state and records numerical cause, not saturation
+Ran 50 of 50 tests: 48 passed, 2 failed
+Elapsed time 0.00 seconds.

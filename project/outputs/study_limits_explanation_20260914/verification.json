@@ -1,0 +1,35 @@
+{
+  "pdf_pages": 17,
+  "illustrated_figures": 8,
+  "event_rows": 12,
+  "saved_diagnostic_samples": 9,
+  "boundary_schedule_checks_pass": true,
+  "dispatch_acceptance_failures_retained": [
+    {
+      "run": "run_020",
+      "lambda": 0.1827865760606586,
+      "dispatch_error_MW": -3.868778254558066
+    },
+    {
+      "run": "run_020",
+      "lambda": 0.19997104523115158,
+      "dispatch_error_MW": -7.993050855476383
+    },
+    {
+      "run": "run_020",
+      "lambda": 0.2,
+      "dispatch_error_MW": -8.0
+    }
+  ],
+  "production_preservation": {
+    "files_checked": 705,
+    "changed": [],
+    "missing": [],
+    "preserved": true,
+    "scope": "Inspected MATLAB library, Beerten studies, docs and key historical evidence; recorded after first read-only diagnostic."
+  },
+  "source_class_labels": "illustrative / code-derived / measured; historical separated",
+  "visual_qa": "Rendered by Poppler; pages inspected by assistant before delivery.",
+  "new_nose_validated": false,
+  "new_complete_operational_margin_certified": false
+}

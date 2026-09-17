@@ -1,0 +1,11 @@
+{
+  "name": "t_control_acceptance_batch1",
+  "planned": 43,
+  "executed": 43,
+  "passed": 43,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 1.872704,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

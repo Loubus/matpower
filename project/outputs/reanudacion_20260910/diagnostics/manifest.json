@@ -1,0 +1,12 @@
+{
+  "created_by": "psse_study_diagnostics",
+  "outdir": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\reanudacion_20260910\\diagnostics",
+  "run_count": 1,
+  "runs": {
+    "run_id": "beerten_vsc",
+    "source_dir": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\reanudacion_20260910\\beerten_vsc",
+    "max_lambda": 2.930619218921978,
+    "events": 203,
+    "warnings": 1
+  }
+}

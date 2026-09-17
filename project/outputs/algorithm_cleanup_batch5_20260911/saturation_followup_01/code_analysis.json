@@ -1,0 +1,58 @@
+[
+  {
+    "path": "matpower\\lib\\+mp\\psse_unified_control_acceptance.m",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"code_issues\":[]}"
+        }
+      ],
+      "structuredContent": {
+        "code_issues": []
+      }
+    }
+  },
+  {
+    "path": "matpower\\lib\\runpf_vsc_mtdc_unified.m",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"code_issues\":[]}"
+        }
+      ],
+      "structuredContent": {
+        "code_issues": []
+      }
+    }
+  },
+  {
+    "path": "matpower\\lib\\runcpf_vsc_mtdc.m",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"code_issues\":[]}"
+        }
+      ],
+      "structuredContent": {
+        "code_issues": []
+      }
+    }
+  },
+  {
+    "path": "tests\\t_control_saturation_batch5.m",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"code_issues\":[]}"
+        }
+      ],
+      "structuredContent": {
+        "code_issues": []
+      }
+    }
+  }
+]

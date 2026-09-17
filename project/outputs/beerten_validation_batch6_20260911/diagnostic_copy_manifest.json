@@ -1,0 +1,9 @@
+{
+  "source_sha256": "f7dba3a4d8eb080b20c88eb323a3549c29d582ad4a117b19f36bba1656d2e458",
+  "diagnostic_sha256": "9862c63273f46d5030072a9edaf06d466d473e93109be46d662ce64edd3fe724",
+  "changes": [
+    "rename function",
+    "observe update, correction and exhaustion",
+    "append recorder; no changed decisions or tolerances"
+  ]
+}

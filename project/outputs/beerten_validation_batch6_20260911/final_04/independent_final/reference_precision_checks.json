@@ -1,0 +1,80 @@
+[
+  {
+    "quantity": "manual_AC_VM",
+    "max_abs_error": 0.00024050956380539112,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_AC_VA",
+    "max_abs_error": 0.00047618981334229815,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_generators_PQ",
+    "max_abs_error": 0.003247278007506793,
+    "half_last_printed_digit": 0.005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_VSC_PCC_PQ",
+    "max_abs_error": 0.003398032954621044,
+    "half_last_printed_digit": 0.005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_converter_VM",
+    "max_abs_error": 0.0004809931947066248,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_converter_VA",
+    "max_abs_error": 0.00035523576347817887,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_DC_VM",
+    "max_abs_error": 0.00021594042814232495,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_DC_P_MW",
+    "max_abs_error": 0.0004384570345479233,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "manual_AC_branch_PQ",
+    "max_abs_error": 0.00486400985885993,
+    "half_last_printed_digit": 0.005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "paper2010_AC_only_VM",
+    "max_abs_error": 0.00030401498177745623,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "paper2010_AC_only_VA",
+    "max_abs_error": 0.005050538106631919,
+    "half_last_printed_digit": 0.005,
+    "within_rounding": false
+  },
+  {
+    "quantity": "paper2010_AC_with_printed_Ps_VM",
+    "max_abs_error": 0.00024081511079576678,
+    "half_last_printed_digit": 0.0005,
+    "within_rounding": true
+  },
+  {
+    "quantity": "paper2010_AC_with_printed_Ps_VA",
+    "max_abs_error": 0.004991786650893726,
+    "half_last_printed_digit": 0.005,
+    "within_rounding": true
+  }
+]

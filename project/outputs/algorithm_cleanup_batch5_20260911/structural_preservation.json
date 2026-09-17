@@ -1,0 +1,21 @@
+{
+  "unchanged_function_bodies": {
+    "active_set_stage_snapshot": true,
+    "restore_active_set_stage_snapshot": true,
+    "run_active_set_stage": true,
+    "unified_psse_control_update": true,
+    "auxiliary_psse_control_update": true,
+    "apply_psse_active_set_update": true,
+    "unified_x_from_controlled_ac": true,
+    "solve_unified_pf_at_lambda": true,
+    "unified_residual_norm": true,
+    "unified_accept_pf_step": true,
+    "unified_cpf_corrector": true,
+    "unified_cpf_tangent": true,
+    "settle_unified_vsc_capability_controls": true,
+    "settle_unified_gen_capability_controls": true,
+    "settle_unified_hvdc_derating_controls": true
+  },
+  "all_unchanged": true,
+  "comparison": "Exact text after newline normalization"
+}

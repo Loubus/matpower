@@ -569,10 +569,20 @@ if isfield(mpc, 'vsc')
         'Pac', 'Qac', 'Pdc', 'Vdc', 'VacPCC', 'VacFilter', ...
         'VacInternal', 'Ploss', 'PtrLoss', 'PreactorLoss', ...
         'is_dc_slack', 'filter_bus', 'internal_bus', ...
-        'tr_branch', 'reactor_branch'};
+        'tr_branch', 'reactor_branch', 'Pconv', 'Qconv'};
     fprintf(fd, '\n%%%% VSC converter data\n');
     print_header(fd, names, ncols);
     print_matrix(fd, sprintf('%svsc', prefix), mpc.vsc);
+end
+
+if isfield(mpc, 'vsc_loss')
+    fprintf(fd, '\n%%%% VSC directional loss metadata\n');
+    print_case_value(fd, sprintf('%svsc_loss', prefix), mpc.vsc_loss);
+end
+
+if isfield(mpc, 'vsc_current_limit')
+    fprintf(fd, '\n%%%% Active converter current constraints (system p.u.; zero inactive)\n');
+    print_case_value(fd, sprintf('%svsc_current_limit', prefix), mpc.vsc_current_limit);
 end
 
 if isfield(mpc, 'vsc_capability') && ...

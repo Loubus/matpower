@@ -69,7 +69,7 @@ if ~isempty(nm) && isobject(nm) && isprop(nm, 'soln') && ...
     vm = abs(nm.soln.v);
 end
 state0 = state;
-if solved_snapshot_mode(state) || ~twodc_coupled_voltage_enabled(mpopt)
+if ~twodc_coupled_voltage_enabled(mpopt)
     [vm, state] = mp.psse_twodc_ac_vm(dm.source, state, vm, mpopt);
 else
     state.ac_pf_success = 0;

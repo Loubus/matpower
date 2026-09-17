@@ -1,0 +1,13 @@
+Collecting numpy==2.3.5 (from -r auditoria_psse_matpower/transpa_reduccion/requirements.txt (line 2))
+  Downloading numpy-2.3.5-cp312-cp312-win_amd64.whl.metadata (60 kB)
+Collecting Pillow==12.3.0 (from -r auditoria_psse_matpower/transpa_reduccion/requirements.txt (line 3))
+  Downloading pillow-12.3.0-cp312-cp312-win_amd64.whl.metadata (9.3 kB)
+Downloading numpy-2.3.5-cp312-cp312-win_amd64.whl (12.8 MB)
+   ---------------------------------------- 12.8/12.8 MB 2.5 MB/s eta 0:00:00
+Downloading pillow-12.3.0-cp312-cp312-win_amd64.whl (7.2 MB)
+   ---------------------------------------- 7.2/7.2 MB 2.6 MB/s eta 0:00:00
+Installing collected packages: Pillow, numpy
+Successfully installed Pillow-12.3.0 numpy-2.3.5
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\.venv\Scripts\python.exe -m pip install --upgrade pip

@@ -1,0 +1,420 @@
+--- combined/exc_cpf.m
++++ combined_all_controls/exd_cpf.m
+@@ -1,6 +1,6 @@
+ function [results, success] = ...
+-    exc_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+-% exc_cpf - Runs an AC/DC VSC-MTDC continuation PF.
++    exd_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++% exd_cpf - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+ %   RESULTS = RUNCPF_VSC_MTDC(BASECASEDATA, TARGETCASEDATA, MPOPT)
+@@ -451,7 +451,9 @@
+                 break;
+             end
+ 
+-            b17_carried = []; b17_carried_keys = strings(0,1);
++            % AB2: carry the last accepted physical tangent across EVERY stage.
++            % A failed trial restarts here from the restored accepted context.
++            b17_carried = z; b17_carried_keys = b17_state_keys(ctx);
+             ctx_hat = ctx;
+             Sdelta_hat = Sdelta;
+             xhat = x + trial_step * z(1:end-1);
+@@ -837,6 +839,12 @@
+                         znew=unified_cpf_tangent(ctx,xnew,lamnew,Sdelta,...
+                             zseed,xnew,lamnew,3,1);
+                         if dot(znew,zseed)<0, znew=-znew; end
++                        exd_log('append',struct('kind','outgoing_orientation', ...
++                            'candidate_index',cont_steps+1,'lambda',lamnew, ...
++                            'incoming_lambda_tangent',zseed(end),'outgoing_lambda_tangent',znew(end), ...
++                            'orientation_dot',dot(znew,zseed),'matched_states',sum(b17_matched), ...
++                            'new_states',numel(b17_kn)-sum(b17_matched),'tap9',r.branch(9,9)));
++
+                     else
+                         zseed = zeros(length(xnew) + 1, 1);
+                         zseed(end) = direction;
+@@ -1040,8 +1048,8 @@
+         end
+         profile_count('context_cache_miss');
+         validate_unified_cpf_transfer(mpcb, mpct);
+-        ctx = exc_pf('__setup', mpcb, mpopt_pf);
+-        ctxt = exc_pf('__setup', mpct, mpopt_pf);
++        ctx = exd_pf('__setup', mpcb, mpopt_pf);
++        ctxt = exd_pf('__setup', mpct, mpopt_pf);
+         validate_unified_contexts(ctx, ctxt);
+         Sdelta = ctxt.Sbase - ctx.Sbase;
+         ctx = attach_unified_cpf_transfer(ctx, mpcb, mpct, Sdelta);
+@@ -1107,7 +1115,7 @@
+                     Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+                     nbranch, ngen, event_k);
+             otherwise
+-                error('exc_cpf: unknown active-set stage ''%s''', kind);
++                error('exd_cpf: unknown active-set stage ''%s''', kind);
+         end
+ 
+         retry_step = [];
+@@ -1312,12 +1320,12 @@
+         nvisited = 1;
+         for ctrl_it = 1:max_it
+             profile_count('vsc_capability_settle_iteration');
+-            if isfield(mpcb,'exc_current_ilim')
+-                for ja=find(mpcb.exc_current_ilim(:)>0)'
++            if isfield(mpcb,'exd_current_ilim')
++                for ja=find(mpcb.exd_current_ilim(:)>0)'
+                     [ap,~]=cached_vsc_capability_params(mpcb,ja,ja);
+                     if r.vsc(ja,c.VAC_INTERNAL)>ap.Vmax+1e-8 || ...
+-                            abs(r.vsc(ja,c.PAC))>mpcb.exc_current_ilim(ja)*mpcb.baseMVA+1e-6
+-                        exc_log('append',struct('kind','unsupported_second_limit','lambda',lam, ...
++                            abs(r.vsc(ja,c.PAC))>mpcb.exd_current_ilim(ja)*mpcb.baseMVA+1e-6
++                        exd_log('append',struct('kind','unsupported_second_limit','lambda',lam, ...
+                             'converter',ja,'Uc',r.vsc(ja,c.VAC_INTERNAL),'P',r.vsc(ja,c.PAC)));
+                         V=original_ac_voltage_for_result(r,bus_ids); success=0; return;
+                     end
+@@ -1377,7 +1385,7 @@
+             clear event_cleanup;
+             if ~ok
+                 profile_count('vsc_capability_recorr_failed_inner');
+-                exc_log('append',struct('kind','vsc_inner_failed','lambda',lam,'normF',normF));
++                exd_log('append',struct('kind','vsc_inner_failed','lambda',lam,'normF',normF));
+                 V = original_ac_voltage_for_result(r, bus_ids);
+                 success = 0;
+                 return;
+@@ -1457,7 +1465,7 @@
+             if size(r.vsc, 2) < c.QAC || size(r.vsc, 1) < k
+                 continue;
+             end
+-            if isfield(current,'exc_current_ilim') && current.exc_current_ilim(k)>0
++            if isfield(current,'exd_current_ilim') && current.exd_current_ilim(k)>0
+                 % Already enforced in every residual/Jacobian/tangent and PF handoff.
+                 % No release heuristic in this bounded first prototype.
+                 continue;
+@@ -1490,7 +1498,7 @@
+                 clear limit_cleanup;
+             catch me
+                 clear limit_cleanup;
+-                error('exc_cpf: VSC row %d capability evaluation failed: %s', ...
++                error('exd_cpf: VSC row %d capability evaluation failed: %s', ...
+                     k, me.message);
+             end
+             if sat
+@@ -1513,13 +1521,13 @@
+                 % Retain user orders; replace the released Q equation with |Ic|=Imax.
+                 % DC slack stays AC-Q/DC-V: its P is still obtained from bridge balance.
+                 new_vals=[to_mode old_vals(2:3)];
+-                if ~isfield(bnext,'exc_current_ilim')
+-                    bnext.exc_current_ilim=zeros(size(current.vsc,1),1);
+-                    tnext.exc_current_ilim=bnext.exc_current_ilim;
++                if ~isfield(bnext,'exd_current_ilim')
++                    bnext.exd_current_ilim=zeros(size(current.vsc,1),1);
++                    tnext.exd_current_ilim=bnext.exd_current_ilim;
+                 end
+-                bnext.exc_current_ilim(k)=info.Smax/current.baseMVA;
+-                tnext.exc_current_ilim(k)=info.Smax/current.baseMVA;
+-                exc_log('append',struct('kind','current_activate','lambda',lam,'converter',k, ...
++                bnext.exd_current_ilim(k)=info.Smax/current.baseMVA;
++                tnext.exd_current_ilim(k)=info.Smax/current.baseMVA;
++                exd_log('append',struct('kind','current_activate','lambda',lam,'converter',k, ...
+                     'P',P0,'Q',Q0,'V',V0,'Ilim_system_pu',info.Smax/current.baseMVA));
+             end
+             if all(abs(old_vals - new_vals) <= tol) && ~coupled_current
+@@ -1772,14 +1780,14 @@
+         end
+         margin = margin(:);
+         if k < 1 || k > length(margin)
+-            error('exc_cpf: VSC saturation margin vector has invalid length');
++            error('exd_cpf: VSC saturation margin vector has invalid length');
+         end
+         margin = margin(k);
+     end
+ 
+     function validate_vsc_capability_margin_fraction(margin, label)
+         if margin < 0 || margin > 1
+-            error('exc_cpf: VSC %s must be in [0, 1]', ...
++            error('exd_cpf: VSC %s must be in [0, 1]', ...
+                 label);
+         end
+     end
+@@ -1799,7 +1807,7 @@
+         cols = existing_cols([c.AC_MODE c.PAC_SET c.QAC_SET], ...
+             mpc.vsc, mpc.vsc);
+         vals = reshape(mpc.vsc(:, cols), [], 1);
+-        if isfield(mpc,'exc_current_ilim'), vals=[vals;mpc.exc_current_ilim(:)]; end
++        if isfield(mpc,'exd_current_ilim'), vals=[vals;mpc.exd_current_ilim(:)]; end
+         sig = sprintf('%.9g,', round(vals(:)' * 1e9) / 1e9);
+     end
+ 
+@@ -2198,15 +2206,15 @@
+             Smax = gen_capability_metadata_or_option_value(current, opt, ...
+                 {'Snom', 'Smax', 'smax'}, {'capability_gen_smax'}, ...
+                 g, g, gen_capability_default_smax(current, g), ...
+-                'exc_cpf');
++                'exd_cpf');
+             type = gen_capability_metadata_or_option_value(current, opt, ...
+                 {'type', 'gen_type'}, {'capability_gen_type'}, ...
+-                g, g, 2, 'exc_cpf');
++                g, g, 2, 'exd_cpf');
+             try
+                 [sat, Psat, Qsat, ~, info] = ...
+                     gen_capability_curve(P0, Q0, Smax, type);
+             catch me
+-                error('exc_cpf: generator row %d capability evaluation failed: %s', ...
++                error('exd_cpf: generator row %d capability evaluation failed: %s', ...
+                     g, me.message);
+             end
+             if ~sat
+@@ -2607,7 +2615,7 @@
+         val = opt.(name);
+         if ~ischar(val) || ...
+                 ~(strcmpi(val, 'stop') || strcmpi(val, 'freeze'))
+-            error(['exc_cpf: vsc_mtdc.%s must be ''stop'' ' ...
++            error(['exd_cpf: vsc_mtdc.%s must be ''stop'' ' ...
+                 'or ''freeze'''], name);
+         end
+     end
+@@ -3663,7 +3671,7 @@
+             'hyperplane_residual',nt'*([xx;ll]-[xx0;ll0]),'residual',nn, ...
+             'iterations',ii,'success',ok,'state_size_before',length(ko), ...
+             'state_size_after',length(kn),'state_correction_norm',norm(xx-xx0));
+-        exc_transition_journal('append',rr);
++        exd_transition_journal('append',rr);
+         if ok
+             b17_carried=nt; b17_carried_keys=kn;
+         end
+@@ -3683,7 +3691,7 @@
+                 break;
+             end
+             iterations = iterations + 1;
+-            J = exc_pf('__jacobian', ctx_lam, eval, []);
++            J = exd_pf('__jacobian', ctx_lam, eval, []);
+             dx = -J \ F;
+             [x, F, eval, normF, ctx_lam] = unified_accept_pf_step( ...
+                 ctx, lam, Sdelta, x, dx, normF);
+@@ -3742,7 +3750,7 @@
+                 break;
+             end
+             iterations = iterations + 1;
+-            J = exc_pf('__jacobian', ctx_lam, eval, []);
++            J = exd_pf('__jacobian', ctx_lam, eval, []);
+             dF_dlam = unified_dF_dlam(ctx, Sdelta, x, lam);
+             [dPdx, dPdlam] = unified_cpf_p_jac(parm, z, x, lam, ...
+                 xprev, lamprev);
+@@ -3761,7 +3769,7 @@
+             lamprev, parm, direction)
+         profile_cleanup = profile_time_scope('cpf_tangent'); %#ok<NASGU>
+         [~, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        J = exc_pf('__jacobian', ctx_lam, eval, []);
++        J = exd_pf('__jacobian', ctx_lam, eval, []);
+         dF_dlam = unified_dF_dlam(ctx, Sdelta, x, lam);
+         [dPdx, dPdlam] = unified_cpf_p_jac(parm, zprv, x, lam, ...
+             xprev, lamprev);
+@@ -3869,7 +3877,7 @@
+ 
+     function [F, eval] = unified_eval(ctx, x, Sbase)
+         profile_cleanup = profile_time_scope('mismatch_eval'); %#ok<NASGU>
+-        [F, eval] = exc_pf('__mismatch', ctx, x, Sbase);
++        [F, eval] = exd_pf('__mismatch', ctx, x, Sbase);
+     end
+ 
+     function ctx_lam = unified_context_at_lambda(ctx, lam)
+@@ -3886,7 +3894,7 @@
+             [S, ok] = fast_unified_Sbase(ctx, ctx_lam.mpc);
+             if ~ok
+                 profile_count('fast_sbase_fallback');
+-                ctx_eff = exc_pf('__setup', ctx_lam.mpc, ...
++                ctx_eff = exd_pf('__setup', ctx_lam.mpc, ...
+                     mpopt_pf);
+                 S = ctx_eff.Sbase;
+             else
+@@ -3928,8 +3936,8 @@
+             numeric_signature(mpc.branchdc);
+             numeric_signature(mpc.vsc)
+         };
+-        if isfield(mpc,'exc_current_ilim')
+-            parts{end+1}=numeric_signature(mpc.exc_current_ilim);
++        if isfield(mpc,'exd_current_ilim')
++            parts{end+1}=numeric_signature(mpc.exd_current_ilim);
+         end
+         sig = strjoin(parts, ';');
+     end
+@@ -4014,7 +4022,7 @@
+         elseif parm == 3
+             P = z' * ([x; lam] - [xprev; lamprev]) - h;
+         else
+-            error('exc_cpf: unknown CPF parameterization %d', parm);
++            error('exd_cpf: unknown CPF parameterization %d', parm);
+         end
+     end
+ 
+@@ -4037,7 +4045,7 @@
+             dPdx = z(1:end-1)';
+             dPdlam = z(end);
+         else
+-            error('exc_cpf: unknown CPF parameterization %d', parm);
++            error('exd_cpf: unknown CPF parameterization %d', parm);
+         end
+     end
+ 
+@@ -4046,7 +4054,7 @@
+         mpc = vsc_cpf_current_mpc(mpcb, mpct, lam);
+         evaluation_available = ~isempty(eval);
+         if evaluation_available
+-            r = exc_pf('__results', ctx, eval, mpc);
++            r = exd_pf('__results', ctx, eval, mpc);
+         else
+             % Preserve the input and failed iterate without inventing solved
+             % voltages/flows when Newton left the electrical model's domain.
+@@ -4074,7 +4082,7 @@
+ 
+     function V = original_ac_voltage_from_eval(ctx, xhat, lamhat, Sdelta, bus_ids)
+         [~, eval_hat] = unified_eval_at_lambda(ctx, xhat, lamhat, Sdelta);
+-        rhat = exc_pf('__results', ctx, eval_hat, mpcb);
++        rhat = exd_pf('__results', ctx, eval_hat, mpcb);
+         V = original_ac_voltage_for_result(rhat, bus_ids);
+     end
+ 
+@@ -4306,10 +4314,10 @@
+ 
+     function validate_vsc_cpf_cases(b, t)
+         if ~has_vsc_mtdc(b) || ~has_vsc_mtdc(t)
+-            error('exc_cpf: base and target cases must both contain busdc, branchdc and vsc fields');
++            error('exd_cpf: base and target cases must both contain busdc, branchdc and vsc fields');
+         end
+         if b.baseMVA ~= t.baseMVA
+-            error('exc_cpf: base and target baseMVA values must match');
++            error('exd_cpf: base and target baseMVA values must match');
+         end
+         same_size('bus', b.bus, t.bus);
+         same_size('gen', b.gen, t.gen);
+@@ -4321,53 +4329,53 @@
+         [~,~,loss_b] = vsc_loss_coefficients(b.vsc, zeros(size(b.vsc,1),1), b);
+         [~,~,loss_t] = vsc_loss_coefficients(t.vsc, zeros(size(t.vsc,1),1), t);
+         if ~isequal(loss_b,loss_t)
+-            error('exc_cpf: base and target VSC directional loss data must match');
++            error('exd_cpf: base and target VSC directional loss data must match');
+         end
+ 
+         if any(b.bus(:, BUS_I) ~= t.bus(:, BUS_I)) || ...
+                 any(b.bus(:, BUS_TYPE) ~= t.bus(:, BUS_TYPE))
+-            error('exc_cpf: base and target AC bus numbers/types must match');
++            error('exd_cpf: base and target AC bus numbers/types must match');
+         end
+         if any(b.gen(:, GEN_BUS) ~= t.gen(:, GEN_BUS)) || ...
+                 any(b.gen(:, GEN_STATUS) ~= t.gen(:, GEN_STATUS))
+-            error('exc_cpf: base and target generator buses/statuses must match');
++            error('exd_cpf: base and target generator buses/statuses must match');
+         end
+         if any(any(b.branch(:, [F_BUS T_BUS BR_STATUS]) ~= ...
+                 t.branch(:, [F_BUS T_BUS BR_STATUS])))
+-            error('exc_cpf: base and target AC branch topology/status must match');
++            error('exd_cpf: base and target AC branch topology/status must match');
+         end
+         if any(any(b.busdc(:, [bdc.BUSDC_I bdc.BUSDC_STATUS]) ~= ...
+                 t.busdc(:, [bdc.BUSDC_I bdc.BUSDC_STATUS])))
+-            error('exc_cpf: base and target DC bus numbers/statuses must match');
++            error('exd_cpf: base and target DC bus numbers/statuses must match');
+         end
+         if any(any(b.branchdc(:, [brdc.F_BUSDC brdc.T_BUSDC brdc.BRDC_STATUS]) ~= ...
+                 t.branchdc(:, [brdc.F_BUSDC brdc.T_BUSDC brdc.BRDC_STATUS])))
+-            error('exc_cpf: base and target DC branch topology/status must match');
++            error('exd_cpf: base and target DC branch topology/status must match');
+         end
+         fixed_vsc_cols = [c.VSC_BUS c.BUSDC c.VSC_STATUS c.AC_MODE c.DC_MODE ...
+             c.LOSS_A:c.REACTOR_RATE_C];
+         if any(any(b.vsc(:, fixed_vsc_cols) ~= t.vsc(:, fixed_vsc_cols)))
+-            error('exc_cpf: base and target VSC topology, modes and loss/station data must match');
++            error('exd_cpf: base and target VSC topology, modes and loss/station data must match');
+         end
+     end
+ 
+     function validate_unified_cpf_transfer(b, t)
+         tol = 1e-12;
+         if any(any(abs(b.bus(:, [GS BS VM]) - t.bus(:, [GS BS VM])) > tol))
+-            error('exc_cpf: unified monolithic CPF requires constant bus shunts and voltage set points');
++            error('exd_cpf: unified monolithic CPF requires constant bus shunts and voltage set points');
+         end
+         if any(abs(b.gen(:, VG) - t.gen(:, VG)) > tol)
+-            error('exc_cpf: unified monolithic CPF requires constant generator voltage set points');
++            error('exd_cpf: unified monolithic CPF requires constant generator voltage set points');
+         end
+         if any(any(abs(b.branch(:, [BR_R BR_X BR_B TAP SHIFT]) - ...
+                 t.branch(:, [BR_R BR_X BR_B TAP SHIFT])) > tol))
+-            error('exc_cpf: unified monolithic CPF requires constant AC branch admittances');
++            error('exd_cpf: unified monolithic CPF requires constant AC branch admittances');
+         end
+         if any(abs(b.branchdc(:, brdc.BRDC_R) - t.branchdc(:, brdc.BRDC_R)) > tol)
+-            error('exc_cpf: unified monolithic CPF requires constant DC branch resistances');
++            error('exd_cpf: unified monolithic CPF requires constant DC branch resistances');
+         end
+         if any(abs(b.busdc(:, bdc.VDC) - t.busdc(:, bdc.VDC)) > tol)
+-            error('exc_cpf: unified monolithic CPF requires constant initial DC voltages');
++            error('exd_cpf: unified monolithic CPF requires constant initial DC voltages');
+         end
+     end
+ 
+@@ -4379,10 +4387,10 @@
+         same_vector('unified Pac variables', ctx.model.pac_vars, ctxt.model.pac_vars);
+         same_vector('unified DC voltage variables', ctx.model.dc_var, ctxt.model.dc_var);
+         if norm(full(ctx.Ybus - ctxt.Ybus), Inf) > 1e-10
+-            error('exc_cpf: unified monolithic CPF base and target AC admittance matrices differ');
++            error('exd_cpf: unified monolithic CPF base and target AC admittance matrices differ');
+         end
+         if norm(full(ctx.Gdc - ctxt.Gdc), Inf) > 1e-10
+-            error('exc_cpf: unified monolithic CPF base and target DC conductance matrices differ');
++            error('exd_cpf: unified monolithic CPF base and target DC conductance matrices differ');
+         end
+     end
+ 
+@@ -4399,13 +4407,13 @@
+ 
+     function same_vector(name, a, b)
+         if length(a) ~= length(b) || any(a(:) ~= b(:))
+-            error('exc_cpf: base and target %s must match', name);
++            error('exd_cpf: base and target %s must match', name);
+         end
+     end
+ 
+     function same_size(name, a, b)
+         if size(a, 1) ~= size(b, 1) || size(a, 2) ~= size(b, 2)
+-            error('exc_cpf: base and target %s matrices must have the same size', name);
++            error('exd_cpf: base and target %s matrices must have the same size', name);
+         end
+     end
+ 
+@@ -4718,7 +4726,7 @@
+             case '__cpf_system'
+                 out = internal_cpf_system(args, default_mpopt);
+             otherwise
+-                error('exc_cpf: unknown internal operation ''%s''', op);
++                error('exd_cpf: unknown internal operation ''%s''', op);
+         end
+     end
+ 
+@@ -4727,7 +4735,7 @@
+ 
+         [F, eval, ctx_lam] = unified_eval_at_lambda(setup.ctx, ...
+             setup.x, setup.lam, setup.Sdelta);
+-        J = exc_pf('__jacobian', ctx_lam, eval, []);
++        J = exd_pf('__jacobian', ctx_lam, eval, []);
+         dF_dlam = unified_dF_dlam(setup.ctx, setup.Sdelta, setup.x, ...
+             setup.lam);
+         P = unified_cpf_p(setup.parameterization, setup.h, setup.z, ...
+@@ -4763,7 +4771,7 @@
+         % required args: base, target.
+         % optional args: mpopt, x, lam, parameterization, z, h, xprev, lamprev.
+         if ~isfield(args, 'base') || ~isfield(args, 'target')
+-            error('exc_cpf: __cpf_system requires base and target cases');
++            error('exd_cpf: __cpf_system requires base and target cases');
+         end
+         if isfield(args, 'mpopt') && ~isempty(args.mpopt)
+             opt0 = args.mpopt;
+@@ -4788,8 +4796,8 @@
+         end
+         validate_vsc_cpf_cases(b, t);
+         validate_unified_cpf_transfer(b, t);
+-        ctx = exc_pf('__setup', b, opt_pf);
+-        ctxt = exc_pf('__setup', t, opt_pf);
++        ctx = exd_pf('__setup', b, opt_pf);
++        ctxt = exd_pf('__setup', t, opt_pf);
+         validate_unified_contexts(ctx, ctxt);
+         Sdelta = ctxt.Sbase - ctx.Sbase;
+         ctx = attach_unified_cpf_transfer(ctx, b, t, Sdelta);

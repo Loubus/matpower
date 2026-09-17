@@ -1,0 +1,8 @@
+PSSE CLI: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe (RAW output version 34)
+Solving V26p_Trs_2532.raw with FNSL...
+
+Raw               Converged BusReport Saved SolvedRaw BatchErrors ExitCode SavFile                                     
+---               --------- --------- ----- --------- ----------- -------- -------                                     
+V26p_Trs_2532.raw      True      True  True      True       False        0 C:\Users\Santiago\Documents\PROYECTO FINA...
+
+

@@ -1,0 +1,3 @@
+Beerten 5-bus CPF outputs written to:
+  C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\beerten\cleanup_batch1_smoke_20260910
+mode=psse, vsc_hvdc_enabled=1, success=1, max_lambda=0.0499999229727, points=4, events=0, total_seconds=0.930

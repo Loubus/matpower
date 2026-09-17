@@ -1,0 +1,87 @@
+{
+  "scope": "investigation and focused acceptance; no production solver edits",
+  "legacy_vsc": {
+    "failed_test_ids": [
+      110,
+      111,
+      283,
+      284
+    ],
+    "summary": "Ran 330 of 330 tests: 326 passed, 4 failed",
+    "elapsed_seconds": 289.42,
+    "warning_lines": []
+  },
+  "physical_gate": {
+    "total": 43,
+    "passed": 33,
+    "failed": [
+      "shunt_pf.ac_balance",
+      "shunt_cpf.ac_balance",
+      "genq_cpf.ac_balance",
+      "shunt_pf.state_sync",
+      "shunt_pf.settled_voltage",
+      "genq.reported_binding_limit",
+      "genq.mode_consistency",
+      "genq.pv_voltage_schedule",
+      "expansion.shunt_state",
+      "expansion.genq_mode"
+    ],
+    "accepted": false
+  },
+  "legacy_observations": [
+    {
+      "test_number": 110,
+      "actual": 0,
+      "expected": 1,
+      "passed": false
+    },
+    {
+      "test_number": 111,
+      "actual": 0,
+      "expected": 9,
+      "passed": false
+    },
+    {
+      "test_number": 283,
+      "actual": 2,
+      "expected": 1,
+      "passed": false
+    },
+    {
+      "test_number": 284,
+      "actual": -33.85593774650221,
+      "expected": -20,
+      "passed": false
+    }
+  ],
+  "preservation": {
+    "sources": [
+      {
+        "path": "matpower\\lib\\runpf_vsc_mtdc_unified.m",
+        "before": "45141daefaf662bbb99adef47b1fb0f368b34a65995357af74cc8a894fc02a40",
+        "after": "45141daefaf662bbb99adef47b1fb0f368b34a65995357af74cc8a894fc02a40",
+        "unchanged": true
+      },
+      {
+        "path": "matpower\\lib\\runcpf_vsc_mtdc.m",
+        "before": "0fa8d9fa0091d33b787e30e7f979f14986528f8ef7d6bed6ce21e6550e69d04c",
+        "after": "0fa8d9fa0091d33b787e30e7f979f14986528f8ef7d6bed6ce21e6550e69d04c",
+        "unchanged": true
+      },
+      {
+        "path": "matpower\\lib\\t\\t_vsc_mtdc.m",
+        "before": "6ff57519c4ef0c5f98fd60bf4384d578911630ae46a29a79baffc6f66b851f4b",
+        "after": "6ff57519c4ef0c5f98fd60bf4384d578911630ae46a29a79baffc6f66b851f4b",
+        "unchanged": true
+      },
+      {
+        "path": "matpower\\lib\\t\\t_mpxt_psse.m",
+        "before": "5aff1f99cd28ae0dc76fcf78997e4d041bc30f010bfb4a2a5f0b1d50b9716604",
+        "after": "5aff1f99cd28ae0dc76fcf78997e4d041bc30f010bfb4a2a5f0b1d50b9716604",
+        "unchanged": true
+      }
+    ],
+    "tracked_diff_identical": true,
+    "tracked_diff_sha256": "7143752506EED68D69CDB371544216E5F2AEBC762CF7FA7BF1A58F116E776322"
+  }
+}

@@ -1,0 +1,102 @@
+1..99
+ok 1 - default: new explicit default
+not ok 2 - target: unchanged numeric target reached under declared saturation policy
+ok 3 - scope: target completion is not a nose certificate
+ok 4 - saturation_report: accepted physical saturation retains full-model out-of-band report
+ok 5 - no_locks: saturation never locks either controller
+ok 6 - observed: accepted saturation recorded separately from failure
+ok 7 - endpoint.balance: full AC 3.61e-10 DC 6.33e-15 converter 9.16e-15 loss 0 pu
+ok 8 - ratings_preserved: original generator limits and converter loss/station ratings retained
+ok 9 - point1.fixed.balance: full AC 1.62e-09 DC 2.39e-14 converter 2.34e-11 loss 0 pu
+ok 10 - point1.match: independent fixed-state full PF matches accepted CPF voltage
+ok 11 - point1.stored.balance: full AC 1.41e-09 DC 1.23e-14 converter 3.36e-15 loss 0 pu
+ok 12 - point1.legal: original discrete grids
+ok 13 - point2.fixed.balance: full AC 1.5e-09 DC 1.34e-13 converter 7.14e-11 loss 0 pu
+ok 14 - point2.match: independent fixed-state full PF matches accepted CPF voltage
+ok 15 - point2.stored.balance: full AC 5.85e-10 DC 8.88e-16 converter 3.81e-15 loss 0 pu
+ok 16 - point2.legal: original discrete grids
+ok 17 - point3.fixed.balance: full AC 7.54e-10 DC 2.94e-15 converter 4.82e-15 loss 0 pu
+ok 18 - point3.match: independent fixed-state full PF matches accepted CPF voltage
+ok 19 - point3.stored.balance: full AC 7.55e-10 DC 2.51e-14 converter 5.53e-16 loss 0 pu
+ok 20 - point3.legal: original discrete grids
+ok 21 - point4.fixed.balance: full AC 3.44e-11 DC 1.03e-14 converter 6.84e-16 loss 0 pu
+ok 22 - point4.match: independent fixed-state full PF matches accepted CPF voltage
+ok 23 - point4.stored.balance: full AC 3.76e-11 DC 3.61e-15 converter 8.53e-16 loss 0 pu
+ok 24 - point4.legal: original discrete grids
+ok 25 - point5.fixed.balance: full AC 3.42e-10 DC 4.22e-15 converter 5.37e-15 loss 0 pu
+ok 26 - point5.match: independent fixed-state full PF matches accepted CPF voltage
+ok 27 - point5.stored.balance: full AC 3.41e-10 DC 1.2e-14 converter 2.16e-15 loss 0 pu
+ok 28 - point5.legal: original discrete grids
+ok 29 - point6.fixed.balance: full AC 5.2e-10 DC 1.45e-14 converter 1.01e-14 loss 0 pu
+ok 30 - point6.match: independent fixed-state full PF matches accepted CPF voltage
+ok 31 - point6.stored.balance: full AC 7.9e-09 DC 1.28e-12 converter 6.25e-11 loss 0 pu
+ok 32 - point6.legal: original discrete grids
+ok 33 - point7.fixed.balance: full AC 1.13e-09 DC 1.27e-14 converter 4.21e-15 loss 0 pu
+ok 34 - point7.match: independent fixed-state full PF matches accepted CPF voltage
+ok 35 - point7.stored.balance: full AC 1.13e-09 DC 7.11e-15 converter 2.66e-15 loss 0 pu
+ok 36 - point7.legal: original discrete grids
+ok 37 - point8.fixed.balance: full AC 1.05e-10 DC 8.27e-15 converter 2.01e-14 loss 0 pu
+ok 38 - point8.match: independent fixed-state full PF matches accepted CPF voltage
+ok 39 - point8.stored.balance: full AC 1.08e-10 DC 4.94e-15 converter 5.97e-15 loss 2.22e-18 pu
+ok 40 - point8.legal: original discrete grids
+ok 41 - point9.fixed.balance: full AC 1.69e-10 DC 4.83e-15 converter 1.74e-13 loss 2.22e-18 pu
+ok 42 - point9.match: independent fixed-state full PF matches accepted CPF voltage
+ok 43 - point9.stored.balance: full AC 1.91e-10 DC 1.44e-15 converter 5.63e-15 loss 0 pu
+ok 44 - point9.legal: original discrete grids
+ok 45 - point10.fixed.balance: full AC 1.09e-09 DC 3.09e-14 converter 1.16e-12 loss 0 pu
+ok 46 - point10.match: independent fixed-state full PF matches accepted CPF voltage
+ok 47 - point10.stored.balance: full AC 9.49e-10 DC 4.27e-15 converter 1.02e-14 loss 0 pu
+ok 48 - point10.legal: original discrete grids
+ok 49 - point11.fixed.balance: full AC 1.61e-09 DC 1.55e-13 converter 6.48e-12 loss 0 pu
+ok 50 - point11.match: independent fixed-state full PF matches accepted CPF voltage
+ok 51 - point11.stored.balance: full AC 3.77e-10 DC 1.2e-14 converter 3.18e-15 loss 0 pu
+ok 52 - point11.legal: original discrete grids
+ok 53 - point12.fixed.balance: full AC 7.09e-09 DC 7.44e-13 converter 2.87e-11 loss 0 pu
+ok 54 - point12.match: independent fixed-state full PF matches accepted CPF voltage
+ok 55 - point12.stored.balance: full AC 1.01e-09 DC 2.89e-15 converter 4.51e-15 loss 0 pu
+ok 56 - point12.legal: original discrete grids
+ok 57 - point13.fixed.balance: full AC 7.38e-09 DC 7.67e-13 converter 2.99e-11 loss 0 pu
+ok 58 - point13.match: independent fixed-state full PF matches accepted CPF voltage
+ok 59 - point13.stored.balance: full AC 3.61e-10 DC 6.33e-15 converter 9.16e-15 loss 0 pu
+ok 60 - point13.legal: original discrete grids
+ok 61 - auto0.4107047.balance: full AC 7.99e-09 DC 1.28e-12 converter 6.09e-11 loss 0 pu
+ok 62 - auto0.4107047.report: full-model out-of-band voltage cannot be overwritten by auxiliary report
+ok 63 - auto0.45.balance: full AC 8.22e-09 DC 1.35e-12 converter 5.8e-11 loss 2.22e-18 pu
+ok 64 - auto0.45.report: full-model out-of-band voltage cannot be overwritten by auxiliary report
+ok 65 - auto0.8.balance: full AC 6.44e-10 DC 1.22e-14 converter 5.97e-15 loss 0 pu
+ok 66 - auto0.8.report: full-model out-of-band voltage cannot be overwritten by auxiliary report
+ok 67 - automatic_endpoint_match: automatic PF from original controls agrees with CPF
+ok 68 - electrical_failure: saturation cannot accept a failed base electrical solve
+ok 69 - stop_pf: explicit stop rejects regulation while accurately retaining electrical convergence
+not ok 70 - step0.05: same target and state with smaller steps
+ok 71 - step0.025: same target and state with smaller steps
+ok 72 - swshunt.bound-1: outward request at a physical bound is settled
+ok 73 - swshunt.bound-1.reverse: opposite request moves away from bound and requires re-correction
+ok 74 - swshunt.bound-1.changed: saturation cannot excuse unresolved work
+ok 75 - swshunt.bound-1.cycle: saturation cannot excuse unresolved work
+ok 76 - swshunt.bound-1.unsupported: saturation cannot excuse unresolved work
+ok 77 - swshunt.bound-1.unresolved: saturation cannot excuse unresolved work
+ok 78 - swshunt.bound-1.lock: explicit lock is preserved and not reclassified as saturation
+ok 79 - swshunt.bound1: outward request at a physical bound is settled
+ok 80 - swshunt.bound1.reverse: opposite request moves away from bound and requires re-correction
+ok 81 - swshunt.bound1.changed: saturation cannot excuse unresolved work
+ok 82 - swshunt.bound1.cycle: saturation cannot excuse unresolved work
+ok 83 - swshunt.bound1.unsupported: saturation cannot excuse unresolved work
+ok 84 - swshunt.bound1.unresolved: saturation cannot excuse unresolved work
+ok 85 - swshunt.bound1.lock: explicit lock is preserved and not reclassified as saturation
+ok 86 - xfmr.bound-1: outward request at a physical bound is settled
+ok 87 - xfmr.bound-1.reverse: opposite request moves away from bound and requires re-correction
+ok 88 - xfmr.bound-1.changed: saturation cannot excuse unresolved work
+ok 89 - xfmr.bound-1.cycle: saturation cannot excuse unresolved work
+ok 90 - xfmr.bound-1.unsupported: saturation cannot excuse unresolved work
+ok 91 - xfmr.bound-1.unresolved: saturation cannot excuse unresolved work
+ok 92 - xfmr.bound-1.lock: explicit lock is preserved and not reclassified as saturation
+ok 93 - xfmr.bound1: outward request at a physical bound is settled
+ok 94 - xfmr.bound1.reverse: opposite request moves away from bound and requires re-correction
+ok 95 - xfmr.bound1.changed: saturation cannot excuse unresolved work
+ok 96 - xfmr.bound1.cycle: saturation cannot excuse unresolved work
+ok 97 - xfmr.bound1.unsupported: saturation cannot excuse unresolved work
+ok 98 - xfmr.bound1.unresolved: saturation cannot excuse unresolved work
+ok 99 - xfmr.bound1.lock: explicit lock is preserved and not reclassified as saturation
+Ran 99 of 99 tests: 97 passed, 2 failed
+Elapsed time 0.01 seconds.

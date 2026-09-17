@@ -1,0 +1,18 @@
+1..15
+ok 1 - full PF converges
+ok 2 - public voltages and bus modes are solved
+ok 3 - original generator powers and row order
+ok 4 - original branch flows are solved
+ok 5 - slack demand is visible in public audit input
+ok 6 - full PF converges
+ok 7 - public voltages and bus modes are solved
+ok 8 - original generator powers and row order
+ok 9 - original branch flows are solved
+ok 10 - slack demand is visible in public audit input
+ok 11 - full PF converges
+ok 12 - public voltages and bus modes are solved
+ok 13 - original generator powers and row order
+ok 14 - original branch flows are solved
+ok 15 - slack demand is visible in public audit input
+All tests successful (15 of 15)
+Elapsed time 0.06 seconds.

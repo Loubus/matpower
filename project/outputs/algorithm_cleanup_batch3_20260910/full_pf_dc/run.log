@@ -1,0 +1,33 @@
+1..14
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- DC formulation
+PF successful
+ok 1 - DC PF : success
+ok 2 - DC PF : bus
+ok 3 - DC PF : gen
+ok 4 - DC PF : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- DC formulation
+PF successful
+ok 5 - DC PF : success
+ok 6 - DC PF : bus
+ok 7 - DC PF : gen
+ok 8 - DC PF : branch
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- DC formulation
+PF successful
+ok 9 - DC PF - network w/islands : success
+ok 10 - DC PF - network w/islands : voltage angles 1
+ok 11 - DC PF - network w/islands : voltage angles 2
+ok 12 - DC PF - network w/islands : active power generation 1
+ok 13 - DC PF - network w/islands : active power generation 1
+
+MATPOWER Version 8.1.1-dev, 10-Mar-2026
+Power Flow -- DC formulation
+PF failed
+ok 14 - DC PF - network w/islands w/o slack : success = 0
+All tests successful (14 of 14)
+Elapsed time 0.76 seconds.

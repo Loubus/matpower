@@ -1,0 +1,11 @@
+{
+  "name": "t_ultc_beerten_batch3",
+  "planned": 337,
+  "executed": 337,
+  "passed": 333,
+  "failed": 4,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 1.5532646,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

@@ -1,0 +1,109 @@
+{
+  "exploratory_termination": {
+    "cause": "control_cycle",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": 1.9338547707819256,
+    "last_accepted_index": 171,
+    "nose_detected": false,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "candidate_lambda": 1.9338768356204761,
+  "last_lambda": 1.9338547707819256,
+  "candidate_electrical_converged": true,
+  "cause": "control_cycle",
+  "decision_count": 5,
+  "decisions": [
+    {
+      "iteration": 1,
+      "changed": true,
+      "report": {
+        "changed_buses": 1,
+        "changed_gens": 0,
+        "changed_branches": 0,
+        "control_violations": 1,
+        "control_cycles": 0
+      },
+      "tap": 0.98888888888888893,
+      "vm5": 0.678443765031904,
+      "vm7": 0.958239905102233,
+      "residual": 6.0356788639260848E-9
+    },
+    {
+      "iteration": 2,
+      "changed": true,
+      "report": {
+        "changed_buses": 1,
+        "changed_gens": 0,
+        "changed_branches": 0,
+        "control_violations": 1,
+        "control_cycles": 0
+      },
+      "tap": 0.98888888888888893,
+      "vm5": 0.6784644906055769,
+      "vm7": 0.95824290886946228,
+      "residual": 4.759686634516305E-9
+    },
+    {
+      "iteration": 3,
+      "changed": true,
+      "report": {
+        "changed_buses": 1,
+        "changed_gens": 0,
+        "changed_branches": 0,
+        "control_violations": 1,
+        "control_cycles": 0
+      },
+      "tap": 0.98888888888888893,
+      "vm5": 0.67846624539904421,
+      "vm7": 0.9582431631924313,
+      "residual": 5.0166191666631991E-9
+    },
+    {
+      "iteration": 4,
+      "changed": true,
+      "report": {
+        "changed_buses": 1,
+        "changed_gens": 0,
+        "changed_branches": 0,
+        "control_violations": 1,
+        "control_cycles": 0
+      },
+      "tap": 0.98888888888888893,
+      "vm5": 0.67846639398379716,
+      "vm7": 0.95824318472688808,
+      "residual": 5.0383478583317579E-9
+    },
+    {
+      "iteration": 5,
+      "changed": true,
+      "report": {
+        "changed_buses": 1,
+        "changed_gens": 0,
+        "changed_branches": 0,
+        "control_violations": 1,
+        "control_cycles": 0
+      },
+      "tap": 0.98888888888888893,
+      "vm5": 0.67846640656464929,
+      "vm7": 0.95824318655023744,
+      "residual": 5.0390901533681019E-9
+    }
+  ],
+  "restart_termination": {
+    "cause": "base_failure",
+    "success": false,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": [],
+    "last_accepted_index": 0,
+    "nose_detected": false,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false
+  },
+  "restart_origin": 1.9338547707819256
+}

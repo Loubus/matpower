@@ -1,0 +1,23 @@
+{
+  "scenario": {
+    "name": "beerten_constant_pq_nonslack_dispatch",
+    "fixture": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\algorithm_cleanup_batch4_20260911\\beerten_probe.mat",
+    "P5_MW": "60 + 240*lambda",
+    "Q5_MVAr": "10 + 40*lambda",
+    "total_P_MW": "165 + 240*lambda",
+    "total_Q_MVAr": "40 + 40*lambda",
+    "gen_dispatch": "P2=40+240*lambda MW; AC slack supplies the base balance and incremental losses. No automatic reassignment at a limit.",
+    "q_box_option_scope": "requested, but no RAW GENQ metadata in this unified fixture",
+    "stability_margin_validated": false,
+    "parent_scenario": "beerten_constant_pq_supported_capabilities",
+    "slack_mbase_MVA": 1000,
+    "slack_bus": 1,
+    "dispatch_bus": 6,
+    "limit_scope": "Original PMAX/Q boxes and non-slack MBASE/curve retained. Generic slack capability exemption is unchanged. A scheduled point beyond a participant limit is not automatically feasible or reassigned."
+  },
+  "short_cpf_success": true,
+  "lambda": 0.05,
+  "slack_P_MW": 133.98359931199437,
+  "participant_P_MW": 52,
+  "scope": "Scenario construction and short CPF only; not a full limit or nose validation"
+}

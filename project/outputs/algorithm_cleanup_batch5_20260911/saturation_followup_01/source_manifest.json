@@ -1,0 +1,14 @@
+{
+  "matpower/lib/mpoption.m": "4db2627259963153f318eb4551754e6c5a792d01b06390c0288ec0df8645f64a",
+  "matpower/lib/runpf_vsc_mtdc_unified.m": "805512ba3aaa04d402ddcb42d975629e521e11dc03417319edaf5673cd27be89",
+  "matpower/lib/runcpf_vsc_mtdc.m": "246863d09a0cdc1c623b22be89223618abfb06e840cbf3a7f64ef9e5494308c3",
+  "matpower/lib/t/t_vsc_mtdc.m": "3b85b57f2adc6fca38fcb6043837f06c63975d56baa352fe1051580805340d13",
+  "docs/CONTROL_ACCEPTANCE.md": "0481012030158469a2100599d2fc0a9986e09fc64429e3479591d5b5da5912b5",
+  "docs/CPF_TERMINATION_CONTRACT.md": "8d1494f124dc95ea78cc4643f2be2e91c4129c47f2aed408e4efbe61cc9b48d8",
+  "tests/README.md": "6dca732553b00fbe956555fe69407a3a2ee6614b9a313792a9a7773e833ed5e6",
+  "tests/t_ultc_beerten_batch3.m": "ac372d895986436e63d9982b252864a94b12e6974db4b20477d29ec4b4e9ae82",
+  "tests/t_swshunt_beerten_batch4.m": "39abd29a9182ff5bd6296d197b095252684b2eb447913d38ae49c3d2c27490e4",
+  "matpower/lib/+mp/psse_unified_control_acceptance.m": "729d8107a1cdec667413a12ab9f65a5bb40eae2fb8e3da0471f8c8727b982ce0",
+  "tests/t_control_saturation_batch5.m": "c81e459b8d88ad0c9ec158b7c8ff571bbaa43c67a3e544803bccb7cd565fb2f0",
+  "docs/CONTROL_SATURATION_CONTRACT.md": "b1543888398fd24732fe95a9a3a755a82f74bcceb13ba089495e04a8feda4976"
+}

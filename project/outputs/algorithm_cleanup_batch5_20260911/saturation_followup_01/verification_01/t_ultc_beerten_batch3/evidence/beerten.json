@@ -1,0 +1,1792 @@
+[
+  {
+    "id": "uniform.endpoint",
+    "passed": true,
+    "detail": "requested loading reached"
+  },
+  {
+    "id": "uniform.cpf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 4.99246108381e-09 <= 1e-08"
+  },
+  {
+    "id": "uniform.cpf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 4.99246111154e-09 pu"
+  },
+  {
+    "id": "uniform.cpf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.42313325568e-10 pu"
+  },
+  {
+    "id": "uniform.cpf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.cpf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.20989893052e-13 pu"
+  },
+  {
+    "id": "uniform.policy",
+    "passed": false,
+    "detail": "controls active with stop policy and no lock/freeze event"
+  },
+  {
+    "id": "uniform.initial_move",
+    "passed": true,
+    "detail": "initial off-grid tap is normalized and electrically corrected"
+  },
+  {
+    "id": "uniform.point1.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.19015380884e-10 <= 1e-08"
+  },
+  {
+    "id": "uniform.point1.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.62141267591e-09 pu"
+  },
+  {
+    "id": "uniform.point1.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.34107422337e-11 pu"
+  },
+  {
+    "id": "uniform.point1.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point1.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.38697950294e-14 pu"
+  },
+  {
+    "id": "uniform.point1.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point1.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.40909369416e-09 pu"
+  },
+  {
+    "id": "uniform.point1.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point1.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point1.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point1.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point1.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point1.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.35953487252e-15 pu"
+  },
+  {
+    "id": "uniform.point1.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point1.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.23234755733e-14 pu"
+  },
+  {
+    "id": "uniform.point2.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.59962726293e-10 <= 1e-08"
+  },
+  {
+    "id": "uniform.point2.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 3.70455641931e-10 pu"
+  },
+  {
+    "id": "uniform.point2.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.64756122476e-11 pu"
+  },
+  {
+    "id": "uniform.point2.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point2.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 6.2172489379e-14 pu"
+  },
+  {
+    "id": "uniform.point2.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point2.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.04888922337e-10 pu"
+  },
+  {
+    "id": "uniform.point2.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point2.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point2.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point2.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point2.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point2.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.46167539078e-15 pu"
+  },
+  {
+    "id": "uniform.point2.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point2.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.06581410364e-14 pu"
+  },
+  {
+    "id": "uniform.point3.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 9.25411192121e-10 <= 1e-08"
+  },
+  {
+    "id": "uniform.point3.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 9.41377405797e-10 pu"
+  },
+  {
+    "id": "uniform.point3.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 7.60778284814e-11 pu"
+  },
+  {
+    "id": "uniform.point3.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point3.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.38138455808e-14 pu"
+  },
+  {
+    "id": "uniform.point3.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point3.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 3.51690038203e-10 pu"
+  },
+  {
+    "id": "uniform.point3.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point3.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point3.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point3.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point3.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point3.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 9.39248678833e-16 pu"
+  },
+  {
+    "id": "uniform.point3.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point3.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 3.5527136788e-15 pu"
+  },
+  {
+    "id": "uniform.point4.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.16080742188e-09 <= 1e-08"
+  },
+  {
+    "id": "uniform.point4.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 2.19198841327e-09 pu"
+  },
+  {
+    "id": "uniform.point4.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.1695186819e-10 pu"
+  },
+  {
+    "id": "uniform.point4.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point4.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.70086167373e-13 pu"
+  },
+  {
+    "id": "uniform.point4.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point4.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.12912096344e-10 pu"
+  },
+  {
+    "id": "uniform.point4.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point4.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point4.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point4.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point4.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point4.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.96065386149e-15 pu"
+  },
+  {
+    "id": "uniform.point4.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point4.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.43769498715e-15 pu"
+  },
+  {
+    "id": "uniform.point5.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 4.69879724019e-09 <= 1e-08"
+  },
+  {
+    "id": "uniform.point5.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 4.76194424382e-09 pu"
+  },
+  {
+    "id": "uniform.point5.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.84333062148e-10 pu"
+  },
+  {
+    "id": "uniform.point5.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point5.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 3.7148062404e-13 pu"
+  },
+  {
+    "id": "uniform.point5.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point5.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 9.99526182819e-09 pu"
+  },
+  {
+    "id": "uniform.point5.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point5.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point5.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point5.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point5.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point5.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 8.2367127785e-10 pu"
+  },
+  {
+    "id": "uniform.point5.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point5.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.29922805426e-13 pu"
+  },
+  {
+    "id": "uniform.point6.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 9.63654311903e-09 <= 1e-08"
+  },
+  {
+    "id": "uniform.point6.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 9.76589554672e-09 pu"
+  },
+  {
+    "id": "uniform.point6.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.02163736254e-10 pu"
+  },
+  {
+    "id": "uniform.point6.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point6.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 7.36133376478e-13 pu"
+  },
+  {
+    "id": "uniform.point6.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point6.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 9.68896566066e-09 pu"
+  },
+  {
+    "id": "uniform.point6.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point6.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point6.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point6.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point6.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point6.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 6.46952513783e-10 pu"
+  },
+  {
+    "id": "uniform.point6.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point6.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.68305427559e-13 pu"
+  },
+  {
+    "id": "uniform.point7.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.7530399615e-12 <= 1e-08"
+  },
+  {
+    "id": "uniform.point7.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 4.93596774565e-10 pu"
+  },
+  {
+    "id": "uniform.point7.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 8.85957973651e-16 pu"
+  },
+  {
+    "id": "uniform.point7.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point7.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.44328993201e-14 pu"
+  },
+  {
+    "id": "uniform.point7.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point7.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 9.49177931462e-09 pu"
+  },
+  {
+    "id": "uniform.point7.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point7.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point7.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point7.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point7.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point7.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 5.16358467095e-10 pu"
+  },
+  {
+    "id": "uniform.point7.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point7.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.10129741069e-13 pu"
+  },
+  {
+    "id": "uniform.point8.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.28402470399e-12 <= 1e-08"
+  },
+  {
+    "id": "uniform.point8.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 2.58182808466e-10 pu"
+  },
+  {
+    "id": "uniform.point8.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 9.54791801178e-17 pu"
+  },
+  {
+    "id": "uniform.point8.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point8.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.05471187339e-14 pu"
+  },
+  {
+    "id": "uniform.point8.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point8.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.70828688712e-09 pu"
+  },
+  {
+    "id": "uniform.point8.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point8.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point8.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point8.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point8.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point8.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 6.69563893219e-11 pu"
+  },
+  {
+    "id": "uniform.point8.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point8.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.18460796728e-13 pu"
+  },
+  {
+    "id": "uniform.point9.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.54793408594e-12 <= 1e-08"
+  },
+  {
+    "id": "uniform.point9.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.49361067958e-09 pu"
+  },
+  {
+    "id": "uniform.point9.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.62092561595e-15 pu"
+  },
+  {
+    "id": "uniform.point9.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point9.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 4.21884749358e-15 pu"
+  },
+  {
+    "id": "uniform.point9.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "uniform.point9.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 4.99246111154e-09 pu"
+  },
+  {
+    "id": "uniform.point9.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "uniform.point9.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "uniform.point9.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "uniform.point9.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "uniform.point9.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "uniform.point9.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.42313325568e-10 pu"
+  },
+  {
+    "id": "uniform.point9.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.point9.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.20989893052e-13 pu"
+  },
+  {
+    "id": "uniform.automatic_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.55351295664e-12 <= 1e-08"
+  },
+  {
+    "id": "uniform.automatic_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.49549672646e-09 pu"
+  },
+  {
+    "id": "uniform.automatic_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.19886347913e-15 pu"
+  },
+  {
+    "id": "uniform.automatic_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.automatic_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 4.10782519111e-15 pu"
+  },
+  {
+    "id": "uniform.automatic_agreement",
+    "passed": true,
+    "detail": "independent automatic PF reaches the same endpoint control state and voltage"
+  },
+  {
+    "id": "uniform.raw_sync",
+    "passed": true,
+    "detail": "CW=1 WINDV agrees with exported branch tap"
+  },
+  {
+    "id": "uniform.half_step.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 9.98113229248e-12 <= 1e-08"
+  },
+  {
+    "id": "uniform.half_step.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.51128987586e-09 pu"
+  },
+  {
+    "id": "uniform.half_step.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.11592973645e-13 pu"
+  },
+  {
+    "id": "uniform.half_step.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "uniform.half_step.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.77555756156e-15 pu"
+  },
+  {
+    "id": "uniform.step_sensitivity",
+    "passed": true,
+    "detail": "halved continuation step retains matched endpoint and control state"
+  },
+  {
+    "id": "load_side.endpoint",
+    "passed": true,
+    "detail": "requested loading reached"
+  },
+  {
+    "id": "load_side.cpf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.66676641576e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.cpf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.79029824091e-10 pu"
+  },
+  {
+    "id": "load_side.cpf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.66231481305e-15 pu"
+  },
+  {
+    "id": "load_side.cpf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.cpf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 4.66293670343e-15 pu"
+  },
+  {
+    "id": "load_side.policy",
+    "passed": false,
+    "detail": "controls active with stop policy and no lock/freeze event"
+  },
+  {
+    "id": "load_side.initial_move",
+    "passed": true,
+    "detail": "initial off-grid tap is normalized and electrically corrected"
+  },
+  {
+    "id": "load_side.later_move",
+    "passed": true,
+    "detail": "load-side growth triggers an accepted post-base tap event"
+  },
+  {
+    "id": "load_side.point1.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.19015380884e-10 <= 1e-08"
+  },
+  {
+    "id": "load_side.point1.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.62141267591e-09 pu"
+  },
+  {
+    "id": "load_side.point1.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.34107422337e-11 pu"
+  },
+  {
+    "id": "load_side.point1.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point1.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.38697950294e-14 pu"
+  },
+  {
+    "id": "load_side.point1.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point1.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.40909369416e-09 pu"
+  },
+  {
+    "id": "load_side.point1.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point1.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point1.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point1.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point1.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point1.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.35953487252e-15 pu"
+  },
+  {
+    "id": "load_side.point1.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point1.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.23234755733e-14 pu"
+  },
+  {
+    "id": "load_side.point2.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.13479603387e-10 <= 1e-08"
+  },
+  {
+    "id": "load_side.point2.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.59836846249e-09 pu"
+  },
+  {
+    "id": "load_side.point2.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 7.7944597443e-11 pu"
+  },
+  {
+    "id": "load_side.point2.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point2.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 5.12923037377e-14 pu"
+  },
+  {
+    "id": "load_side.point2.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point2.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 8.767707671e-10 pu"
+  },
+  {
+    "id": "load_side.point2.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point2.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point2.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point2.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point2.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point2.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.09201536702e-14 pu"
+  },
+  {
+    "id": "load_side.point2.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point2.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 4.99600361081e-15 pu"
+  },
+  {
+    "id": "load_side.point3.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.29894006662e-09 <= 1e-08"
+  },
+  {
+    "id": "load_side.point3.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.46467132908e-09 pu"
+  },
+  {
+    "id": "load_side.point3.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.02739158794e-10 pu"
+  },
+  {
+    "id": "load_side.point3.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point3.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.05582209642e-13 pu"
+  },
+  {
+    "id": "load_side.point3.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point3.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.00100350021e-10 pu"
+  },
+  {
+    "id": "load_side.point3.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point3.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point3.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point3.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point3.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point3.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.08784117667e-15 pu"
+  },
+  {
+    "id": "load_side.point3.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point3.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.28230759344e-14 pu"
+  },
+  {
+    "id": "load_side.point4.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 4.68609795412e-09 <= 1e-08"
+  },
+  {
+    "id": "load_side.point4.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.28565019671e-09 pu"
+  },
+  {
+    "id": "load_side.point4.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.65090543855e-10 pu"
+  },
+  {
+    "id": "load_side.point4.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point4.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.06779038336e-13 pu"
+  },
+  {
+    "id": "load_side.point4.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point4.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.77011771783e-11 pu"
+  },
+  {
+    "id": "load_side.point4.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point4.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point4.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point4.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point4.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point4.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 5.68656233213e-15 pu"
+  },
+  {
+    "id": "load_side.point4.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point4.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.16013923099e-15 pu"
+  },
+  {
+    "id": "load_side.point5.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.72087344374e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point5.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.82528303372e-10 pu"
+  },
+  {
+    "id": "load_side.point5.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.64517313503e-15 pu"
+  },
+  {
+    "id": "load_side.point5.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point5.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.14908083049e-14 pu"
+  },
+  {
+    "id": "load_side.point5.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point5.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.80635539652e-10 pu"
+  },
+  {
+    "id": "load_side.point5.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point5.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point5.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point5.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point5.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point5.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.00728322852e-15 pu"
+  },
+  {
+    "id": "load_side.point5.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point5.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 2.83106871279e-15 pu"
+  },
+  {
+    "id": "load_side.point6.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.98360772252e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point6.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.08941666591e-10 pu"
+  },
+  {
+    "id": "load_side.point6.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.49880108324e-15 pu"
+  },
+  {
+    "id": "load_side.point6.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point6.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.98174809896e-14 pu"
+  },
+  {
+    "id": "load_side.point6.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point6.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.06958586222e-10 pu"
+  },
+  {
+    "id": "load_side.point6.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point6.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point6.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point6.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point6.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point6.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.58015830923e-15 pu"
+  },
+  {
+    "id": "load_side.point6.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point6.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.08801856413e-14 pu"
+  },
+  {
+    "id": "load_side.point7.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.96354044135e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point7.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 8.79339823183e-10 pu"
+  },
+  {
+    "id": "load_side.point7.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 5.40012479178e-15 pu"
+  },
+  {
+    "id": "load_side.point7.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point7.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.05471187339e-14 pu"
+  },
+  {
+    "id": "load_side.point7.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point7.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 8.80761130695e-10 pu"
+  },
+  {
+    "id": "load_side.point7.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point7.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point7.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point7.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point7.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point7.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.71640479607e-15 pu"
+  },
+  {
+    "id": "load_side.point7.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point7.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.40998324127e-14 pu"
+  },
+  {
+    "id": "load_side.point8.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.14822955179e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point8.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.32590272095e-10 pu"
+  },
+  {
+    "id": "load_side.point8.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.10156328503e-14 pu"
+  },
+  {
+    "id": "load_side.point8.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point8.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.22124532709e-14 pu"
+  },
+  {
+    "id": "load_side.point8.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point8.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.31512578605e-10 pu"
+  },
+  {
+    "id": "load_side.point8.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point8.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point8.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point8.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point8.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point8.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.01900734914e-16 pu"
+  },
+  {
+    "id": "load_side.point8.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point8.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.49240686055e-15 pu"
+  },
+  {
+    "id": "load_side.point9.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 3.53900242445e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point9.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.4754514277e-09 pu"
+  },
+  {
+    "id": "load_side.point9.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.87991852588e-15 pu"
+  },
+  {
+    "id": "load_side.point9.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point9.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.71445146547e-15 pu"
+  },
+  {
+    "id": "load_side.point9.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point9.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.47851419996e-09 pu"
+  },
+  {
+    "id": "load_side.point9.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point9.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point9.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point9.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point9.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point9.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.15383266777e-15 pu"
+  },
+  {
+    "id": "load_side.point9.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point9.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.71445146547e-15 pu"
+  },
+  {
+    "id": "load_side.point10.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.45773775956e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point10.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.50414336542e-09 pu"
+  },
+  {
+    "id": "load_side.point10.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.71560551823e-15 pu"
+  },
+  {
+    "id": "load_side.point10.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point10.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 5.49560397189e-15 pu"
+  },
+  {
+    "id": "load_side.point10.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point10.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 1.52420987846e-09 pu"
+  },
+  {
+    "id": "load_side.point10.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point10.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point10.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point10.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point10.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point10.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.2525315774e-13 pu"
+  },
+  {
+    "id": "load_side.point10.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point10.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.60422844084e-15 pu"
+  },
+  {
+    "id": "load_side.point11.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.11700973361e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point11.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.52791201913e-09 pu"
+  },
+  {
+    "id": "load_side.point11.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.6645352591e-15 pu"
+  },
+  {
+    "id": "load_side.point11.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point11.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 1.12132525487e-14 pu"
+  },
+  {
+    "id": "load_side.point11.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point11.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 2.55200978279e-09 pu"
+  },
+  {
+    "id": "load_side.point11.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point11.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point11.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point11.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point11.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point11.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 7.13388237372e-12 pu"
+  },
+  {
+    "id": "load_side.point11.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point11.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 8.21565038223e-15 pu"
+  },
+  {
+    "id": "load_side.point12.fixed_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.74202319236e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.point12.fixed_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.78940562162e-10 pu"
+  },
+  {
+    "id": "load_side.point12.fixed_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 1.88737914186e-16 pu"
+  },
+  {
+    "id": "load_side.point12.fixed_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point12.fixed_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.7699626167e-15 pu"
+  },
+  {
+    "id": "load_side.point12.cpf_state_identity",
+    "passed": true,
+    "detail": "stored state reproduces the accepted bus and converter trace"
+  },
+  {
+    "id": "load_side.point12.cpf_ac_balance",
+    "passed": true,
+    "detail": "actual CPF full station-network balance 5.79029824091e-10 pu"
+  },
+  {
+    "id": "load_side.point12.pf_cpf_voltage",
+    "passed": true,
+    "detail": "complex bus voltages agree at matched load and discrete state"
+  },
+  {
+    "id": "load_side.point12.pf_cpf_converter",
+    "passed": true,
+    "detail": "converter injections and losses agree at matched state"
+  },
+  {
+    "id": "load_side.point12.load",
+    "passed": true,
+    "detail": "accepted demand equals affine loading at reported lambda"
+  },
+  {
+    "id": "load_side.point12.grid",
+    "passed": true,
+    "detail": "all accepted taps belong to the unchanged finite grid"
+  },
+  {
+    "id": "load_side.point12.generator_bounds",
+    "passed": true,
+    "detail": "original generator Q bounds are respected"
+  },
+  {
+    "id": "load_side.point12.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 2.66231481305e-15 pu"
+  },
+  {
+    "id": "load_side.point12.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.point12.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 4.66293670343e-15 pu"
+  },
+  {
+    "id": "load_side.automatic_pf.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 1.1361633856e-11 <= 1e-08"
+  },
+  {
+    "id": "load_side.automatic_pf.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 5.96740571202e-10 pu"
+  },
+  {
+    "id": "load_side.automatic_pf.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 3.49025253144e-13 pu"
+  },
+  {
+    "id": "load_side.automatic_pf.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.automatic_pf.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 5.77315972805e-15 pu"
+  },
+  {
+    "id": "load_side.automatic_agreement",
+    "passed": true,
+    "detail": "independent automatic PF reaches the same endpoint control state and voltage"
+  },
+  {
+    "id": "load_side.raw_sync",
+    "passed": true,
+    "detail": "CW=1 WINDV agrees with exported branch tap"
+  },
+  {
+    "id": "load_side.half_step.success",
+    "passed": true,
+    "detail": "success; nonlinear residual 2.62320909741e-12 <= 1e-08"
+  },
+  {
+    "id": "load_side.half_step.ac_balance",
+    "passed": true,
+    "detail": "complete station-network AC balance 1.46904544085e-09 pu"
+  },
+  {
+    "id": "load_side.half_step.converter_balance",
+    "passed": true,
+    "detail": "converter power balance 4.71622740861e-15 pu"
+  },
+  {
+    "id": "load_side.half_step.loss_equation",
+    "passed": true,
+    "detail": "unchanged converter loss equation and nonnegative losses"
+  },
+  {
+    "id": "load_side.half_step.dc_balance",
+    "passed": true,
+    "detail": "DC nodal balance 9.27036225562e-15 pu"
+  },
+  {
+    "id": "load_side.step_sensitivity",
+    "passed": true,
+    "detail": "halved continuation step retains matched endpoint and control state"
+  }
+]

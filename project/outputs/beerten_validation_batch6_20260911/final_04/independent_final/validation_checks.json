@@ -1,0 +1,8072 @@
+[
+  {
+    "id": "capability_step_100_point1_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point1_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point2_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point3_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point4_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point5_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point6_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point7_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point8_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point9_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point10_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point11_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point12_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point13_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point14_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point15_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point16_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point17_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point18_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point19_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point20_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point21_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point22_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point23_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point24_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point25_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_point26_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF1",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF2",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF3",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF4",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF5",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF6",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF7",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF8",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF9",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF10",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF11",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF12",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF13",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF14",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF15",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF16",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF17",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF18",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF19",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF20",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF21",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF22",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF23",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF24",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF25",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_PF26",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_100_all_equipment_feasible",
+    "passed": false,
+    "scope": "scientific_acceptance"
+  },
+  {
+    "id": "capability_step_050_point1_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point1_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point2_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point3_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point4_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point5_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point6_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point7_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point8_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point9_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point10_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point11_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point12_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point13_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point14_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point15_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point16_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point17_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point18_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point19_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point20_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point21_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point22_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point23_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point24_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point25_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point26_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point27_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point28_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point29_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point30_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point31_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point32_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point33_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point34_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point35_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point36_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point37_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point38_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point39_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point40_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point41_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point42_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point43_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point44_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_point45_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF1",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF2",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF3",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF4",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF5",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF6",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF7",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF8",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF9",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF10",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF11",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF12",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF13",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF14",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF15",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF16",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF17",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF18",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF19",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF20",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF21",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF22",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF23",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF24",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF25",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF26",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF27",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF28",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF29",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF30",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF31",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF32",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF33",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF34",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF35",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF36",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF37",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF38",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF39",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF40",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF41",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF42",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF43",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF44",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_PF45",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_050_all_equipment_feasible",
+    "passed": false,
+    "scope": "scientific_acceptance"
+  },
+  {
+    "id": "capability_step_025_point1_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point1_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point2_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point3_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point4_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point5_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point6_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point7_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point8_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point9_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point10_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point11_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point12_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point13_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point14_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point15_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point16_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point17_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point18_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point19_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point20_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point21_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point22_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point23_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point24_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point25_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point26_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point27_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point28_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point29_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point30_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point31_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point32_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point33_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point34_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point35_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point36_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point37_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point38_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point39_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point40_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point41_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point42_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point43_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point44_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point45_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point46_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point47_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point48_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point49_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point50_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point51_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point52_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point53_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point54_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point55_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point56_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point57_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point58_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point59_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point60_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point61_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point62_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point63_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point64_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point65_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point66_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point67_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point68_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point69_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point70_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point71_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point72_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point73_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point74_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point75_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point76_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point77_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point78_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point79_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point80_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point81_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point82_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_non_slack_gen_curve",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_converter_geometry",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_point83_actual_converter_station",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF1",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF2",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF3",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF4",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF5",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF6",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF7",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF8",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF9",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF10",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF11",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF12",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF13",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF14",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF15",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF16",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF17",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF18",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF19",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF20",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF21",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF22",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF23",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF24",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF25",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF26",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF27",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF28",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF29",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF30",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF31",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF32",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF33",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF34",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF35",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF36",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF37",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF38",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF39",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF40",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF41",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF42",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF43",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF44",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF45",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF46",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF47",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF48",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF49",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF50",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF51",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF52",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF53",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF54",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF55",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF56",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF57",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF58",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF59",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF60",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF61",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF62",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF63",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF64",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF65",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF66",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF67",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF68",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF69",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF70",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF71",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF72",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF73",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF74",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF75",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF76",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF77",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF78",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF79",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF80",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF81",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF82",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_PF83",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "capability_step_025_all_equipment_feasible",
+    "passed": false,
+    "scope": "scientific_acceptance"
+  },
+  {
+    "id": "unconstrained_point1_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point1_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point1_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point1_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point1_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point2_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point2_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point2_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point2_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point2_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point3_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point3_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point3_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point3_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point3_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point4_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point4_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point4_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point4_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point4_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point5_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point5_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point5_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point5_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point5_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point6_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point6_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point6_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point6_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point6_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point7_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point7_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point7_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point7_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point7_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point8_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point8_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point8_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point8_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point8_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point9_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point9_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point9_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point9_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point9_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point10_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point10_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point10_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point10_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point10_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point11_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point11_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point11_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point11_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point11_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point12_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point12_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point12_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point12_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point12_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point13_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point13_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point13_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point13_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point13_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point14_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point14_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point14_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point14_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point14_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point15_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point15_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point15_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point15_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point15_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point16_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point16_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point16_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point16_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point16_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point17_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point17_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point17_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point17_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point17_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point18_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point18_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point18_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point18_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point18_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point19_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point19_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point19_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point19_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point19_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point20_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point20_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point20_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point20_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point20_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point21_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point21_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point21_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point21_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point21_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point22_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point22_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point22_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point22_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point22_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point23_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point23_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point23_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point23_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point23_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point24_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point24_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point24_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point24_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point24_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point25_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point25_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point25_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point25_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point25_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point26_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point26_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point26_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point26_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point26_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point27_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point27_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point27_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point27_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point27_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point28_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point28_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point28_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point28_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point28_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point29_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point29_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point29_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point29_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point29_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point30_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point30_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point30_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point30_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point30_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point31_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point31_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point31_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point31_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point31_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point32_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point32_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point32_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point32_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point32_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point33_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point33_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point33_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point33_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point33_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point34_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point34_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point34_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point34_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point34_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point35_full_balances",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point35_constant_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point35_effective_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point35_legal_eligible_controls",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_point35_independent_equations",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF1",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF2",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF3",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF4",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF5",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF6",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF7",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF8",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF9",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF10",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF11",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF12",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF13",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF14",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF15",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF16",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF17",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF18",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF19",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF20",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF21",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF22",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF23",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF24",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF25",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF26",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF27",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF28",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF29",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF30",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF31",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF32",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF33",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_PF34",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "unconstrained_all_equipment_feasible",
+    "passed": false,
+    "scope": "scientific_acceptance"
+  },
+  {
+    "id": "manual_AC_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_AC_VA",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_generators_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_VSC_PCC_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_converter_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_converter_VA",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_DC_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_DC_P_MW",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "manual_AC_branch_PQ",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "paper2010_AC_only_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "paper2010_AC_only_VA",
+    "passed": false,
+    "scope": "verification"
+  },
+  {
+    "id": "paper2010_AC_with_printed_Ps_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "paper2010_AC_with_printed_Ps_VA",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "independent_MatACDC_VM",
+    "passed": true,
+    "scope": "verification"
+  },
+  {
+    "id": "independent_MatACDC_PCC",
+    "passed": true,
+    "scope": "verification"
+  }
+]

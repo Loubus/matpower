@@ -1,0 +1,13 @@
+﻿Event,Equation / state effect,O / M action,Classification to report
+Deadband crossed; legal move exists,Tap/B move changes admittance; full electrical re-solve and fresh pass required.,Both: settle before accepting.,control_move; regulation status; monitored bus and tolerance.
+Tap/shunt physical bound; outward request,No further state move; electrical equations retain bounded device.,"Both: accept only solved, settled saturation. Stop O only if a separate criterion fails.",physical_saturation; reserve zero; regulation may fail.
+Generator Q capability / applicable Q box,Replace voltage regulation by Q constraint; preserve scheduled P slope; recheck controls.,Both: continue if corrected state and remaining criteria pass.,capability_mode_change; PV→PQ; Q reserve.
+G2 active capability ceiling,Schedule and capability become incompatible for larger λ.,O: stop at boundary. M with same schedule: stop as dispatch-limited.,dispatch_capability_limit; not collapse.
+VSC capability boundary,Projection can replace AC V/P/Q equations; verify surviving DC control.,Both: re-correct; continue only within declared transfer/control policy.,VSC_mode_change; exact/surrogate margins and ports.
+Bus V outside accepted range,None unless a protection/remedial action is explicitly modeled.,O: stop at first crossing. M: report and continue with label.,"operational_voltage_limit; bus, value, threshold."
+AC/station branch thermal criterion,None without modeled protection. Audit both ends.,O: stop at first crossing. M: report and continue with label.,operational_thermal_limit; branch/end/rating.
+Slack original P/Q box; other physical infeasibility,No implicit resource reassignment.,O: stop. M: stop if maintaining physical model; any bypass is separate.,resource_limit / physical_infeasibility.
+Missing DC or manufacturer limits,No justified equation or numerical threshold available.,Keep status unknown; no complete equipment certification.,not_assessed; missing field/data source.
+"Cycle, unresolved/unsupported control, failed correction",No accepted new state; preserve last accepted state and failed candidate.,Both: bounded diagnosis; stop unresolved run if unsuccessful.,control_failure or numerical_failure; no collapse claim.
+Verified fold / limit-induced endpoint,"Branch endpoint, or admissible branch lost after a mode change.",M: stop at NOSE or localized endpoint; FULL only if requested.,"nose_detected / fold_supported / LIB_supported, with scope."
+"Target, point budget or minimum step",No physical event implied.,Target reached: complete that request. Budget/step: censored or numerical stop.,target_reached / study_cap / numerical_unresolved.

@@ -1,0 +1,4 @@
+run_id,branchdc_row,from_dc_bus_ext,to_dc_bus_ext
+beerten_vsc,1,2,3
+beerten_vsc,2,3,5
+beerten_vsc,3,2,5

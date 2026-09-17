@@ -1,0 +1,11 @@
+{
+  "name": "t_ultc_acceptance_batch3",
+  "planned": 52,
+  "executed": 52,
+  "passed": 52,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 2.0201071,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

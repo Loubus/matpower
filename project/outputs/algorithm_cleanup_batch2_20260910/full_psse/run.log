@@ -1,0 +1,299 @@
+1..296
+ok 1 - [records, sections] = psse_read() : length(records)
+ok 2 - [records, sections] = psse_read() : length(sections)
+ok 3 - psse_parse_line(str1, template) : length
+ok 4 - psse_parse_line(str1, template) :  col 1
+ok 5 - psse_parse_line(str1, template) :  col 2
+ok 6 - psse_parse_line(str1, template) :  col 3
+ok 7 - psse_parse_line(str1, template) :  col 4
+ok 8 - psse_parse_line(str1, template) :  col 5
+ok 9 - psse_parse_line(str1, template) :  col 6
+ok 10 - psse_parse_line(str1, template) :  col 7
+ok 11 - psse_parse_line(str1, template) :  col 8
+ok 12 - psse_parse_line(str1, template) :  col 9
+ok 13 - psse_parse_line(str1, template) :  col 10
+ok 14 - psse_parse_line(str1, template) :  comment
+ok 15 - psse_parse_line(str2, template) : length
+ok 16 - psse_parse_line(str2, template) :  col 1
+ok 17 - psse_parse_line(str2, template) :  col 2
+ok 18 - psse_parse_line(str2, template) :  col 3
+ok 19 - psse_parse_line(str2, template) :  col 4
+ok 20 - psse_parse_line(str2, template) :  col 5
+ok 21 - psse_parse_line(str2, template) :  col 6
+ok 22 - psse_parse_line(str2, template) :  col 7
+ok 23 - psse_parse_line(str2, template) :  col 8
+ok 24 - psse_parse_line(str2, template) :  col 9
+ok 25 - psse_parse_line(str2, template) :  col 10
+ok 26 - psse_parse_line(str2, template) :  comment
+ok 27 - psse_parse_line(str3, template) : length
+ok 28 - psse_parse_line(str3, template) :  col 1
+ok 29 - psse_parse_line(str3, template) :  col 2
+ok 30 - psse_parse_line(str3, template) :  col 3
+ok 31 - psse_parse_line(str3, template) :  col 4
+ok 32 - psse_parse_line(str3, template) :  col 5
+ok 33 - psse_parse_line(str3, template) :  col 6
+ok 34 - psse_parse_line(str3, template) :  col 7
+ok 35 - psse_parse_line(str3, template) :  col 8
+ok 36 - psse_parse_line(str3, template) :  col 9
+ok 37 - psse_parse_line(str3, template) :  col 10
+ok 38 - psse_parse_line(str3, template) :  comment
+ok 39 - psse_parse_line(str4, template) : length
+ok 40 - psse_parse_line(str4, template) :  col 1
+ok 41 - psse_parse_line(str4, template) :  col 2
+ok 42 - psse_parse_line(str4, template) :  col 3
+ok 43 - psse_parse_line(str4, template) :  col 4
+ok 44 - psse_parse_line(str4, template) :  col 5
+ok 45 - psse_parse_line(str4, template) :  col 6
+ok 46 - psse_parse_line(str4, template) :  col 7
+ok 47 - psse_parse_line(str4, template) :  col 8
+ok 48 - psse_parse_line(str4, template) :  col 9
+ok 49 - psse_parse_line(str4, template) :  col 10
+ok 50 - psse_parse_line(str4, template) :  comment
+ok 51 - psse_parse_line : missing optional columns : length
+ok 52 - psse_parse_line : missing optional columns : all empty
+ok 53 - psse_parse_section : struct
+ok 54 - psse_parse_section : size(num)
+ok 55 - psse_parse_section : size(txt)
+ok 56 - psse_parse_section :  num(1,1)
+ok 57 - psse_parse_section :  txt{1,1}
+ok 58 - psse_parse_section :  num(1,2)
+ok 59 - psse_parse_section :  txt{1,2}
+ok 60 - psse_parse_section :  num(1,3)
+ok 61 - psse_parse_section :  txt{1,3}
+ok 62 - psse_parse_section :  num(1,4)
+ok 63 - psse_parse_section :  txt{1,4}
+ok 64 - psse_parse_section :  num(1,5)
+ok 65 - psse_parse_section :  txt{1,5}
+ok 66 - psse_parse_section :  num(1,6)
+ok 67 - psse_parse_section :  txt{1,6}
+ok 68 - psse_parse_section :  num(1,7)
+ok 69 - psse_parse_section :  txt{1,7}
+ok 70 - psse_parse_section :  num(1,8)
+ok 71 - psse_parse_section :  txt{1,8}
+ok 72 - psse_parse_section :  num(1,9)
+ok 73 - psse_parse_section :  txt{1,9}
+ok 74 - psse_parse_section :  num(1,10)
+ok 75 - psse_parse_section :  txt{1,10}
+ok 76 - psse_parse_section :  num(2,1)
+ok 77 - psse_parse_section :  txt{2,1}
+ok 78 - psse_parse_section :  num(2,2)
+ok 79 - psse_parse_section :  txt{2,2}
+ok 80 - psse_parse_section :  num(2,3)
+ok 81 - psse_parse_section :  txt{2,3}
+ok 82 - psse_parse_section :  num(2,4)
+ok 83 - psse_parse_section :  txt{2,4}
+ok 84 - psse_parse_section :  num(2,5)
+ok 85 - psse_parse_section :  txt{2,5}
+ok 86 - psse_parse_section :  num(2,6)
+ok 87 - psse_parse_section :  txt{2,6}
+ok 88 - psse_parse_section :  num(2,7)
+ok 89 - psse_parse_section :  txt{2,7}
+ok 90 - psse_parse_section :  num(2,8)
+ok 91 - psse_parse_section :  txt{2,8}
+ok 92 - psse_parse_section :  num(2,9)
+ok 93 - psse_parse_section :  txt{2,9}
+ok 94 - psse_parse_section :  num(2,10)
+ok 95 - psse_parse_section :  txt{2,10}
+ok 96 - psse_parse_section :  num(3,1)
+ok 97 - psse_parse_section :  txt{3,1}
+ok 98 - psse_parse_section :  num(3,2)
+ok 99 - psse_parse_section :  txt{3,2}
+ok 100 - psse_parse_section :  num(3,3)
+ok 101 - psse_parse_section :  txt{3,3}
+ok 102 - psse_parse_section :  num(3,4)
+ok 103 - psse_parse_section :  txt{3,4}
+ok 104 - psse_parse_section :  num(3,5)
+ok 105 - psse_parse_section :  txt{3,5}
+ok 106 - psse_parse_section :  num(3,6)
+ok 107 - psse_parse_section :  txt{3,6}
+ok 108 - psse_parse_section :  num(3,7)
+ok 109 - psse_parse_section :  txt{3,7}
+ok 110 - psse_parse_section :  num(3,8)
+ok 111 - psse_parse_section :  txt{3,8}
+ok 112 - psse_parse_section :  num(3,9)
+ok 113 - psse_parse_section :  txt{3,9}
+ok 114 - psse_parse_section :  num(3,10)
+ok 115 - psse_parse_section :  txt{3,10}
+ok 116 - psse_parse_section :  num(4,1)
+ok 117 - psse_parse_section :  txt{4,1}
+ok 118 - psse_parse_section :  num(4,2)
+ok 119 - psse_parse_section :  txt{4,2}
+ok 120 - psse_parse_section :  num(4,3)
+ok 121 - psse_parse_section :  txt{4,3}
+ok 122 - psse_parse_section :  num(4,4)
+ok 123 - psse_parse_section :  txt{4,4}
+ok 124 - psse_parse_section :  num(4,5)
+ok 125 - psse_parse_section :  txt{4,5}
+ok 126 - psse_parse_section :  num(4,6)
+ok 127 - psse_parse_section :  txt{4,6}
+ok 128 - psse_parse_section :  num(4,7)
+ok 129 - psse_parse_section :  txt{4,7}
+ok 130 - psse_parse_section :  num(4,8)
+ok 131 - psse_parse_section :  txt{4,8}
+ok 132 - psse_parse_section :  num(4,9)
+ok 133 - psse_parse_section :  txt{4,9}
+ok 134 - psse_parse_section :  num(4,10)
+ok 135 - psse_parse_section :  txt{4,10}
+ok 136 - psse2mpc : rev 34 headers and switching devices : case ID header
+ok 137 - psse2mpc : rev 34 headers and switching devices : system-wide section
+ok 138 - psse2mpc : rev 34 headers and switching devices : SBASE
+ok 139 - psse2mpc : rev 34 headers and switching devices : system-wide parsed
+ok 140 - psse2mpc : rev 34 headers and switching devices : system-wide records
+ok 141 - psse2mpc : rev 34 headers and switching devices : system-wide SWSHNT
+ok 142 - psse2mpc : rev 34 headers and switching devices : area rows and columns
+ok 143 - psse2mpc : rev 34 headers and switching devices : area metadata columns
+ok 144 - psse2mpc : rev 34 headers and switching devices : area name
+ok 145 - psse2mpc : rev 34 headers and switching devices : zone rows and columns
+ok 146 - psse2mpc : rev 34 headers and switching devices : zone IDs
+ok 147 - psse2mpc : rev 34 headers and switching devices : zone name
+ok 148 - psse2mpc : rev 34 headers and switching devices : owner rows and columns
+ok 149 - psse2mpc : rev 34 headers and switching devices : owner IDs
+ok 150 - psse2mpc : rev 34 headers and switching devices : owner name
+ok 151 - psse2mpc : rev 34 headers and switching devices : branch rows
+ok 152 - psse2mpc : rev 34 headers and switching devices : rev 34 branch column count
+ok 153 - psse2mpc : rev 34 headers and switching devices : rev 34 branch RATE1-12 and STAT columns
+ok 154 - psse2mpc : rev 34 headers and switching devices : rev 34 branch terminal shunt columns
+ok 155 - psse2mpc : rev 34 headers and switching devices : rev 34 branch MET LEN and owner columns
+ok 156 - psse2mpc : rev 34 headers and switching devices : rev 34 branch CKT column
+ok 157 - psse2mpc : rev 34 headers and switching devices : rev 34 branch NAME column
+ok 158 - psse2mpc : rev 34 headers and switching devices : switching device rows and columns
+ok 159 - psse2mpc : rev 34 headers and switching devices : switching device core columns
+ok 160 - psse2mpc : rev 34 headers and switching devices : switching device RATE1-12
+ok 161 - psse2mpc : rev 34 headers and switching devices : switching device stuck-closed RATE1-12
+ok 162 - psse2mpc : rev 34 headers and switching devices : FACTS device rows
+ok 163 - psse2mpc : rev 34 headers and switching devices : FACTS device rev 34 columns
+ok 164 - psse2mpc : rev 34 headers and switching devices : FACTS device name
+ok 165 - psse2mpc : rev 34 headers and switching devices : FACTS device columns
+ok 166 - psse2mpc : rev 34 headers and switching devices : two-terminal DC rows and columns
+ok 167 - psse2mpc : rev 34 headers and switching devices : two-terminal DC line control columns
+ok 168 - psse2mpc : rev 34 headers and switching devices : two-terminal DC terminal columns
+ok 169 - psse2mpc : rev 34 headers and switching devices : two-terminal DC blocked name
+ok 170 - psse2mpc : rev 34 headers and switching devices : two-terminal DC meter
+ok 171 - psse2mpc : rev 34 headers and switching devices : transformer rev 34 columns
+ok 172 - psse2mpc : rev 34 headers and switching devices : transformer magnetizing columns
+ok 173 - psse2mpc : rev 34 headers and switching devices : transformer control columns
+ok 174 - psse2mpc : rev 34 headers and switching devices : switched shunt rows
+ok 175 - psse2mpc : rev 34 headers and switching devices : switched shunt rev 34 columns
+ok 176 - psse2mpc : rev 34 headers and switching devices : switched shunt in-service columns
+ok 177 - psse2mpc : rev 34 headers and switching devices : switched shunt out-of-service columns
+ok 178 - psse2mpc : rev 34 headers and switching devices : impedance correction rows
+ok 179 - psse2mpc : rev 34 headers and switching devices : impedance correction table point
+ok 180 - psse2mpc : rev 34 headers and switching devices : bus rows
+ok 181 - psse2mpc : rev 34 headers and switching devices : branch rows with switching devices and transformer
+ok 182 - psse2mpc : rev 34 headers and switching devices : branch electrical conversion
+ok 183 - psse2mpc : rev 34 headers and switching devices : branch RATE_A/B/C conversion
+ok 184 - psse2mpc : rev 34 headers and switching devices : branch BR_STATUS from STAT
+ok 185 - psse2mpc : rev 34 headers and switching devices : switching device conversion
+ok 186 - psse2mpc : rev 34 headers and switching devices : NOMV zero transformer conversion
+ok 187 - psse2mpc : rev 34 headers and switching devices : switched shunt and transformer magnetizing conversion
+ok 188 - psse2mpc : rev 34 headers and switching devices : branch metadata preserved
+ok 189 - psse2mpc : rev 34 headers and switching devices : branch metadata columns
+ok 190 - psse2mpc : rev 34 headers and switching devices : branch metadata size
+ok 191 - psse2mpc : rev 34 headers and switching devices : branch metadata branch mapping
+ok 192 - psse2mpc : rev 34 headers and switching devices : branch metadata bus mapping
+ok 193 - psse2mpc : rev 34 headers and switching devices : branch metadata RATE4-12
+ok 194 - psse2mpc : rev 34 headers and switching devices : branch metadata terminal shunts
+ok 195 - psse2mpc : rev 34 headers and switching devices : branch metadata MET and LEN
+ok 196 - psse2mpc : rev 34 headers and switching devices : branch metadata owners
+ok 197 - psse2mpc : rev 34 headers and switching devices : branch metadata fractions
+ok 198 - psse2mpc : rev 34 headers and switching devices : branch metadata CKT
+ok 199 - psse2mpc : rev 34 headers and switching devices : branch metadata NAME
+ok 200 - psse2mpc : rev 34 headers and switching devices : switched shunt preserved
+ok 201 - psse2mpc : rev 34 headers and switching devices : switching device preserved
+ok 202 - psse2mpc : rev 34 headers and switching devices : switching device metadata columns
+ok 203 - psse2mpc : rev 34 headers and switching devices : switching device metadata size
+ok 204 - psse2mpc : rev 34 headers and switching devices : switching device branch mapping
+ok 205 - psse2mpc : rev 34 headers and switching devices : switching device bus mapping
+ok 206 - psse2mpc : rev 34 headers and switching devices : switching device metadata RATE4-12
+ok 207 - psse2mpc : rev 34 headers and switching devices : switching device raw status
+ok 208 - psse2mpc : rev 34 headers and switching devices : switching device normal status
+ok 209 - psse2mpc : rev 34 headers and switching devices : switching device metered end
+ok 210 - psse2mpc : rev 34 headers and switching devices : switching device type
+ok 211 - psse2mpc : rev 34 headers and switching devices : switching device CKT
+ok 212 - psse2mpc : rev 34 headers and switching devices : switching device NAME
+ok 213 - psse2mpc : rev 34 headers and switching devices : two-terminal DC preserved
+ok 214 - psse2mpc : rev 34 headers and switching devices : two-terminal DC metadata columns
+ok 215 - psse2mpc : rev 34 headers and switching devices : two-terminal DC metadata bus mapping
+ok 216 - psse2mpc : rev 34 headers and switching devices : two-terminal DC metadata loss
+ok 217 - psse2mpc : rev 34 headers and switching devices : two-terminal DC dcline conversion
+ok 218 - psse2mpc : rev 34 headers and switching devices : FACTS device preserved
+ok 219 - psse2mpc : rev 34 headers and switching devices : FACTS device metadata mapping
+ok 220 - psse2mpc : rev 34 headers and switching devices : transformer metadata preserved
+ok 221 - psse2mpc : rev 34 headers and switching devices : impedance correction preserved
+ok 222 - psse2mpc : rev 34 headers and switching devices : impedance correction metadata values
+ok 223 - psse2mpc : rev 34 headers and switching devices : transformer branch mapping
+ok 224 - psse2mpc : rev 34 headers and switching devices : transformer metadata values
+ok 225 - psse2mpc : rev 34 headers and switching devices : area metadata preserved
+ok 226 - psse2mpc : rev 34 headers and switching devices : area IDs
+ok 227 - psse2mpc : rev 34 headers and switching devices : area metadata columns
+ok 228 - psse2mpc : rev 34 headers and switching devices : area metadata name
+ok 229 - psse2mpc : rev 34 headers and switching devices : area ISW bus mapping
+ok 230 - psse2mpc : rev 34 headers and switching devices : area bus counts
+ok 231 - psse2mpc : rev 34 headers and switching devices : area bus mapping
+ok 232 - psse2mpc : rev 34 headers and switching devices : zone metadata preserved
+ok 233 - psse2mpc : rev 34 headers and switching devices : zone IDs
+ok 234 - psse2mpc : rev 34 headers and switching devices : zone metadata name
+ok 235 - psse2mpc : rev 34 headers and switching devices : zone bus counts
+ok 236 - psse2mpc : rev 34 headers and switching devices : zone bus mapping
+ok 237 - psse2mpc : rev 34 headers and switching devices : owner metadata preserved
+ok 238 - psse2mpc : rev 34 headers and switching devices : owner IDs
+ok 239 - psse2mpc : rev 34 headers and switching devices : owner metadata name
+ok 240 - psse2mpc : rev 34 headers and switching devices : owner bus counts
+ok 241 - psse2mpc : rev 34 headers and switching devices : owner bus mapping
+ok 242 - psse2mpc : rev 34 headers and switching devices : owner branch mapping
+ok 243 - psse2mpc : rev 34 headers and switching devices : owner branch counts
+ok 244 - psse2mpc : rev 34 headers and switching devices : owner bus references defined
+ok 245 - psse2mpc : rev 34 headers and switching devices : owner branch references defined
+ok 246 - psse2mpc : rev 34 headers and switching devices : runpf succeeds with and without admin metadata
+ok 247 - psse2mpc : rev 34 headers and switching devices : runpf bus unchanged without admin metadata
+ok 248 - psse2mpc : rev 34 headers and switching devices : runpf gen unchanged without admin metadata
+ok 249 - psse2mpc : rev 34 headers and switching devices : runpf branch unchanged without admin metadata
+ok 250 - psse2mpc : rev 34 headers and switching devices : system-wide preserved
+ok 251 - psse2mpc : rev 34 headers and switching devices : switching device warning
+ok 252 - psse2mpc : rev 34 load metadata : raw LOAD rows and columns
+ok 253 - psse2mpc : rev 34 load metadata : raw LOAD colnames
+ok 254 - psse2mpc : rev 34 load metadata : raw LOAD col map fields
+ok 255 - psse2mpc : rev 34 load metadata : raw LOAD col map
+ok 256 - psse2mpc : rev 34 load metadata : metadata preserved
+ok 257 - psse2mpc : rev 34 load metadata : metadata fields
+ok 258 - psse2mpc : rev 34 load metadata : metadata col map fields
+ok 259 - psse2mpc : rev 34 load metadata : metadata colnames
+ok 260 - psse2mpc : rev 34 load metadata : metadata col map
+ok 261 - psse2mpc : rev 34 load metadata : metadata size
+ok 262 - psse2mpc : rev 34 load metadata : metadata txt ID
+ok 263 - psse2mpc : rev 34 load metadata : metadata raw row index
+ok 264 - psse2mpc : rev 34 load metadata : metadata bus numbers
+ok 265 - psse2mpc : rev 34 load metadata : metadata bus mapping
+ok 266 - psse2mpc : rev 34 load metadata : metadata ID
+ok 267 - psse2mpc : rev 34 load metadata : metadata status
+ok 268 - psse2mpc : rev 34 load metadata : metadata in-service
+ok 269 - psse2mpc : rev 34 load metadata : metadata area zone owner
+ok 270 - psse2mpc : rev 34 load metadata : metadata area zone owner mapping
+ok 271 - psse2mpc : rev 34 load metadata : metadata scale interruptible
+ok 272 - psse2mpc : rev 34 load metadata : metadata load components
+ok 273 - psse2mpc : rev 34 load metadata : metadata load contribution
+ok 274 - psse2mpc : rev 34 load metadata : metadata distributed generation
+ok 275 - psse2mpc : rev 34 load metadata : metadata area references defined
+ok 276 - psse2mpc : rev 34 load metadata : metadata zone references defined
+ok 277 - psse2mpc : rev 34 load metadata : metadata owner references defined
+ok 278 - psse2mpc : rev 34 load metadata : bus aggregate load
+ok 279 - psse2mpc : rev 34 load metadata : runpf succeeds with and without LOAD metadata
+ok 280 - psse2mpc : rev 34 load metadata : runpf bus unchanged without LOAD metadata
+ok 281 - psse2mpc : rev 34 load metadata : runpf gen unchanged without LOAD metadata
+ok 282 - psse2mpc : rev 34 load metadata : runpf branch unchanged without LOAD metadata
+ok 283 - psse2mpc : V26p load metadata audit : LOAD row count
+ok 284 - psse2mpc : V26p load metadata audit : active LOAD count
+ok 285 - psse2mpc : V26p load metadata audit : inactive LOAD count
+ok 286 - psse2mpc : V26p load metadata audit : all LOAD buses mapped
+ok 287 - psse2mpc : V26p load metadata audit : area and zone references defined
+ok 288 - psse2mpc : V26p load metadata audit : undefined owner IDs
+ok 289 - psse2mpc(rawfile, casefile) : t_psse_case2
+ok 290 - psse2mpc(rawfile, casefile) : t_psse_case3
+ok 291 - save2psse -> psse2mpc : bus
+ok 292 - save2psse -> psse2mpc : branch
+ok 293 - save2psse -> psse2mpc : gen
+ok 294 - save2psse -> psse2mpc : dcline
+ok 295 - save2psse -> psse2mpc : bus_name
+ok 296 - save2psse: RAW file match
+All tests successful (296 of 296)
+Elapsed time 10.14 seconds.

@@ -1,0 +1,537 @@
+{
+  "study_date": "2026-09-11",
+  "closure_date": "2026-09-14",
+  "hash_algorithm": "SHA-256",
+  "files": [
+    {
+      "path": ".codex/MATLAB_MCP.md",
+      "bytes": 6064,
+      "sha256": "6ae785e21649022a4f7af999ba59921971f8714c17abffaada69659f7635ec93"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 1428,
+      "sha256": "cea5cb6c901156228d5c200ebfc4d3e48ea06ee0e1e9346f8530f2a7b0c35be1"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC1_0.zip",
+      "bytes": 642557,
+      "sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "bytes": 17166,
+      "sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "bytes": 17453,
+      "sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "bytes": 3055,
+      "sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case3_inf.m",
+      "bytes": 897,
+      "sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg.m",
+      "bytes": 1906,
+      "sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "bytes": 1679,
+      "sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "bytes": 2182,
+      "sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db"
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "bytes": 2043,
+      "sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd"
+    },
+    {
+      "path": "cases/source_manifest.json",
+      "bytes": 19546,
+      "sha256": "380779e0a8e745cd0fe198b8f62f5c15f1fc3b0425f75a53cca10b5f1cb66429"
+    },
+    {
+      "path": "docs/BENCHMARKS.md",
+      "bytes": 11656,
+      "sha256": "c3a2c54cdb4c484e1dce415b596f95219926a9e8eb45e33c43c9ac4e14bf5347"
+    },
+    {
+      "path": "docs/CONTROL_ACCEPTANCE.md",
+      "bytes": 12101,
+      "sha256": "0481012030158469a2100599d2fc0a9986e09fc64429e3479591d5b5da5912b5"
+    },
+    {
+      "path": "docs/CONTROL_SATURATION_CONTRACT.md",
+      "bytes": 4426,
+      "sha256": "b1543888398fd24732fe95a9a3a755a82f74bcceb13ba089495e04a8feda4976"
+    },
+    {
+      "path": "docs/PQBRAK_MODEL_POLICY.md",
+      "bytes": 1710,
+      "sha256": "6de548cad081146532b765bbde16a7d480c4b636dd10329c762d12165ba49267"
+    },
+    {
+      "path": "matpower/lib/runcpf_vsc_mtdc.m",
+      "bytes": 205643,
+      "sha256": "eb1fb0ada54d5a68af335a952da09344adf2e6d97a5b363944138d0573a42f84"
+    },
+    {
+      "path": "matpower/lib/runpf_vsc_mtdc_unified.m",
+      "bytes": 44671,
+      "sha256": "1cec1bec0fa6b08be7c02e3fb91b3d01c6907da0af3a853f20ce43ca32add52b"
+    },
+    {
+      "path": "outputs/algorithm_cleanup_batch4_20260911/beerten_probe.mat",
+      "bytes": 71503,
+      "sha256": "2a4696137234b3d0a2e5faed69fcacb03a456945f681442389b85b2735841351"
+    },
+    {
+      "path": "outputs/algorithm_cleanup_batch5_20260911/pqbrak_off_01/nose_03/nose.mat",
+      "bytes": 1613294,
+      "sha256": "975c1378f97cab4982c6c3d19e5a5536d5383d1bc2af171b0792960cfd6a9831"
+    },
+    {
+      "path": "outputs/algorithm_cleanup_batch5_20260911/pqbrak_off_01/REPORT.md",
+      "bytes": 7441,
+      "sha256": "3d25d8c5279a69425440a63f0e257a756b415c6a039f648275283fe9a7fe92de"
+    },
+    {
+      "path": "outputs/algorithm_cleanup_batch5_20260911/saturation_followup_01/REPORT.md",
+      "bytes": 11066,
+      "sha256": "d6a3eeb9aa7aeb74c7cd3cf6753ee5d5125fcac5f874c2e0d01e125e1c9ffdd4"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/audit_controls_corrected.m",
+      "bytes": 1800,
+      "sha256": "a1071b8ec8da5bbfe59d10b1c4d43410e9a219f90840700a2d1d67d43aa029c9"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/batch6.patch",
+      "bytes": 13913,
+      "sha256": "c47fba5d40209fd95cf8f3edd3e9f0df3943b969d63fcaf74723779f4875b26a"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/build_diagnostic_copy.py",
+      "bytes": 1845,
+      "sha256": "9a18c3de043f26b5d89c0226d8bb9d9de30b2cca9259aa94f3444503cb10936a"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/build_results.py",
+      "bytes": 8533,
+      "sha256": "b09018cb51432e95da4ca98b13e3bc8278357d40b5b18da24d6470dff8364ead"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/close_batch.py",
+      "bytes": 7657,
+      "sha256": "2108de0f71fafe81e4dafbc6713150e1fa5ec2ae6c3717ee3b8c0f634fabaa25"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/diagnose_transitions.py",
+      "bytes": 5449,
+      "sha256": "1c454d91280759985d1e2f488ac46c00dc59db941d992692ea9856d4bf52669e"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/base_pf.json",
+      "bytes": 4085,
+      "sha256": "0c3defe5af2b20a8403a50e8976640ad78fdc2f41776dca25f38fc1e0ea2ac38"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/base_pf.mat",
+      "bytes": 31637,
+      "sha256": "a0bba2b01ec19fd4f069558b52fa64154ac52cf6c9f3d928c1b46141f99b0ae8"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_025.json",
+      "bytes": 728045,
+      "sha256": "2e6b2941977c8915b365603d2f699f2800b2b6eebdd3e401d03d6f1f2f8a5ebb"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_025.mat",
+      "bytes": 4525308,
+      "sha256": "09d68b012d42afaf4892634a49d5ff64c3c476578c303049ae81a9c278eef135"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_050.json",
+      "bytes": 403047,
+      "sha256": "d25f856af1ad71cc1f0a94c2becf06ae2350bde2d3a4a6fcba9a9657ca77283d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_050.mat",
+      "bytes": 3403692,
+      "sha256": "6df3b2ef629f74494b6d08d813b1217f8b01a9088ddf3e088a3a30d21c821d88"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_100.json",
+      "bytes": 241037,
+      "sha256": "e2a746345f5582f629cc34f6781e9e943edbfa9acb1b8886878b604a4440e4d4"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/capability_step_100.mat",
+      "bytes": 2846430,
+      "sha256": "b604ca7124c1c38f0246082b0751c8e7729eeb3089dc8c727af02ad86fb38bcc"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/control_audit_02.json",
+      "bytes": 88783,
+      "sha256": "b0b985c79a49efbf7814f01b3718d5fb5137a069f6cdd6798851749ecf22a6e9"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/diagnostic_copy_manifest.json",
+      "bytes": 338,
+      "sha256": "509617dca498b51152a8ab92fb2b67c353fb18689ee7b171b7344952c41927de"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/diagnostic_trace_equality.json",
+      "bytes": 118,
+      "sha256": "7ca4cbd0840074435b8c8ddbcf8ae17fdee50d258c6393efc9b7a558c1fb8c92"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/author_inputs_mapped.json",
+      "bytes": 4440,
+      "sha256": "5214ce4d1c92af6b153aa7691ef5e4de9a7fbf8a606144b1801b4d6dbf3159da"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/binding_circle_fold.json",
+      "bytes": 501,
+      "sha256": "53ce229e00308628460630bc4916e45a468fc166c7c5ccd5d8a174af448dad1e"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/binding_circle_fold_refinements.json",
+      "bytes": 718,
+      "sha256": "7169dc5b201f54d111ce9ad86c2eb72c6bd5e7c9cc72120ce909d561dc32651c"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/capability_step_025_independent.json",
+      "bytes": 198735,
+      "sha256": "ee4a033b980ea6532d856d36398640b0a73789b9f0a76eb835ecd295ff538ea4"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/capability_step_050_independent.json",
+      "bytes": 107597,
+      "sha256": "87ce86d0d31acfe446a1b97c1a0c9a5addb9231151d85b6eccedbdb072d324fa"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/capability_step_100_independent.json",
+      "bytes": 62378,
+      "sha256": "92c7fca00bac1b509fc93c77e3f43d477eeea082fba967877562488b437772ea"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/independent_summary.json",
+      "bytes": 19907,
+      "sha256": "e44aa53e94dabfcbefa2d6dc1a817d678802dd7c48b1c937dd1c5e4b52f8764a"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/matched_loading_comparison.json",
+      "bytes": 2804,
+      "sha256": "5af74450d091ca37de6f36f73bba28113e514da78578f043bb0bac5788b7d2fd"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/reference_comparison.json",
+      "bytes": 4023,
+      "sha256": "ca00fcac221a5790069628713273e75182c3c42cbafb5f66cabc363c98d00a2d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/reference_precision_checks.json",
+      "bytes": 2143,
+      "sha256": "6b6985a7562b59d3c810dcdc9d0f21f5001c112d6490d0b513836feb3fd97c25"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/transition_diagnostics.json",
+      "bytes": 7263,
+      "sha256": "f85b7e28f1d44544416ff0d4391db5df36582d204d50074ce479b38c955e9561"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/unconstrained_independent.json",
+      "bytes": 83619,
+      "sha256": "a65c5a9dde02509d29a1b032e1a58541ef50795330967c8ab63edbc71cfcc95d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/validation_checks.json",
+      "bytes": 191166,
+      "sha256": "f6c38791edec2b49bd9b6e8dd85f2c0f235a293fe0b47f1b3c882b767f8b3540"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/independent_final/validation_counts.json",
+      "bytes": 102,
+      "sha256": "183a04778eb1c5c94f4ff5e0dfcd3c3972fb52190639edc82874f6380fe648fb"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/options_audit.json",
+      "bytes": 7930,
+      "sha256": "4df00f7af8ad5b2aa7bf2f863635f38836b5f4abe4e137143b0b4d81a330d54f"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/project_summary.json",
+      "bytes": 156999,
+      "sha256": "a0ec30045abf795f658be87791f3f85b02b379105f2b073353cb80c862693a68"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/scenario.mat",
+      "bytes": 7709,
+      "sha256": "25df5295c48a5b8731df79f3318cde3e121a04399a8ebbdf465dc9d7dbc8f8e3"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/termination_diagnostic.json",
+      "bytes": 91925,
+      "sha256": "c88c235711c566de9d38f83257ae11b8568b4eb86cdb8e40e4ae4053cc373500"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/termination_diagnostic.mat",
+      "bytes": 3587535,
+      "sha256": "1b915c749ab7ade7ecc361463b60b23a2f9c5b10c227f0b1f0a5f1f1f63a0ac0"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/final_04/unconstrained.json",
+      "bytes": 281353,
+      "sha256": "9c49a1b5e52321977499cffaa60572308d08555161fa9f03f72befd71d060733"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/independent_validation.py",
+      "bytes": 17050,
+      "sha256": "8580e6640189f8d3cd2397b4be6fc77c82a792b8667cd48cbdeae7f7657820a6"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/inputs.json",
+      "bytes": 9937,
+      "sha256": "745dc307c60cfaba008b0e155a45da247db8fb00db50b14e6e11bddef7fcfa5c"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/brchdcout.m",
+      "bytes": 1507,
+      "sha256": "38cf2783259b4901fa2119687187cf21e550724dd2f2b2b8252d517725e894be"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/brchout.m",
+      "bytes": 1484,
+      "sha256": "899eb38095a08ab22ccd11e0ed1fbff56185ad3225b08b4e8df766ae80c9852b"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/calclossac.m",
+      "bytes": 1884,
+      "sha256": "d672c7f3ad0e9a654fba86b208b219672352ee148575081f918ba559deeb3f01"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/calcslackdroop.m",
+      "bytes": 6774,
+      "sha256": "7f881be9a7e2686ab1d10a78a0eccd7f73bbe70000f8dcd062f6a840d6533eb0"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones.m",
+      "bytes": 17166,
+      "sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones_inf.m",
+      "bytes": 17453,
+      "sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowAC/case3_inf.m",
+      "bytes": 897,
+      "sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowAC/case5_stagg.m",
+      "bytes": 1906,
+      "sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowDC/case24_ieee_rts1996_MTDC.m",
+      "bytes": 3055,
+      "sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowDC/case5_stagg_HVDCptp.m",
+      "bytes": 1679,
+      "sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCdroop.m",
+      "bytes": 2182,
+      "sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCslack.m",
+      "bytes": 2043,
+      "sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/convlim.m",
+      "bytes": 10036,
+      "sha256": "b98fb15d45b6a584bd42069e22af8b402dbcb00c2fe1f560a044cbce4a84896d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/convlimplot.m",
+      "bytes": 5530,
+      "sha256": "c645fc03239bdc58e962eaddd0bc7fd23422528797387c3b17a2b246324f4c0b"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/convout.m",
+      "bytes": 2884,
+      "sha256": "fa79b73011bb6e99dd7b7960e05256b73e5b05bfdedd4820fa67459349d0d424"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/dcnetworkpf.m",
+      "bytes": 3671,
+      "sha256": "bde6988054d7def8edca207413e34b7a5d9fa37e7f8b0bee55dc8412fe92da97"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/define_constantsdc.m",
+      "bytes": 1831,
+      "sha256": "b56ff19bbbf500a5887163f28621bb8ab07075e41a8c5590921165c3fdd12586"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/ext2intac.m",
+      "bytes": 4277,
+      "sha256": "3d2d891ccd2d577f45cb200a766236aac22dceacbeba565fb935e4d5af3f529d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/ext2intdc.m",
+      "bytes": 2950,
+      "sha256": "83b2a6569daa51696a133bec082194f98922b7416dbfff104bb98c3d99ea676e"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/ext2intpu.m",
+      "bytes": 3699,
+      "sha256": "dc9f2a0556177530390c4905bbdb62a035bdb9fdee68cb9d73883484cfe80f02"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/idx_brchdc.m",
+      "bytes": 2399,
+      "sha256": "1e7f9c50eff1cf9eab85020f6f802918b6b50e27cbe0ef42fd35312f961d676b"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/idx_busdc.m",
+      "bytes": 1965,
+      "sha256": "065cda53b5bf37c70935f3aba456bcdae1183f466faf0c836ceb57ba76421027"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/idx_convdc.m",
+      "bytes": 6883,
+      "sha256": "293e0542c656b356f35324479cc16d030ece3f87456a94a61ee4cfbde2a3f0fb"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/int2extac.m",
+      "bytes": 2500,
+      "sha256": "f00ea4d6444effc9012df0e59970b2271b06fa58d7123cab36bd6e23254666b8"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/int2extdc.m",
+      "bytes": 1959,
+      "sha256": "577b9763959236e674af234802c3a7eb4157bc601a29de4d9445e9abb70a59dd"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/int2extpu.m",
+      "bytes": 3399,
+      "sha256": "161568b26e3742e6e5e3f0d83c9678ea53bb90b8e1a885ad3687cae5002599ef"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/loadcasedc.m",
+      "bytes": 6241,
+      "sha256": "204823b593c2d67abce965f600236a47745c62c457f9dc29f5dc45df4fc93c69"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/macdcoption.m",
+      "bytes": 3498,
+      "sha256": "6808aa714c86e2e14c64af1f97b56ceccd48329cec17a7e10ee76b0dea07c127"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/makeYbusdc.m",
+      "bytes": 2381,
+      "sha256": "6c8c807019c9bcbf76f2d7ded98265fdb1202ccf0dc6774781e9a66e49e77e7d"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/printdcpf.m",
+      "bytes": 5851,
+      "sha256": "ff94b1671dffa6648086cbeb1a2413b7a22b97e73972e836f1e7186b9dcda25c"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/runacdcpf.m",
+      "bytes": 32838,
+      "sha256": "1e785fcb8d2dea88cd64ed83bcb7b429ace64434f83e12725798efebcef219db"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/savecasedc.m",
+      "bytes": 3274,
+      "sha256": "92bd0783958ae23d5ba1b516f21c02c4027e5d50d761d8277a3bbee197eda08a"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/test_acdcpf.m",
+      "bytes": 1269,
+      "sha256": "66af96aaa72807b913adc153ceae08a7a3ac90b55027fb576dc278571f3a67f2"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reference/MatACDC1.0/zonecheck.m",
+      "bytes": 5024,
+      "sha256": "21eb137d7964950f3a01e76fe8d0217fd7a5599584efdc57dc1ef4ab83970e3c"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/REPORT.md",
+      "bytes": 26891,
+      "sha256": "ee8b7b760b7ff57e021e9d769706384acf6e3f424a279a4cf922c34b65d3999c"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/reproduce.md",
+      "bytes": 6157,
+      "sha256": "b18148ee0aa7679f006ba438ed8c8f53eb2a789245ef22c71da23dfaf0423849"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/run_author_reference.m",
+      "bytes": 1078,
+      "sha256": "5154878811a5d884a73b4472a9c9a61f118884a3d00a14424a89c1b77a49a4d0"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/run_project_study.m",
+      "bytes": 3806,
+      "sha256": "135e5c89a06348acf3022aa85ec181fd438e62d12b3edef449ad1bc1d7270e6e"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/run_regressions.m",
+      "bytes": 525,
+      "sha256": "ad9336b0b2aa8998d8acaa32ae947aa02129146b265dc9b1c603a8ef86bf6956"
+    },
+    {
+      "path": "outputs/beerten_validation_batch6_20260911/runcpf_vsc_mtdc_b6_diagnostic.m",
+      "bytes": 203753,
+      "sha256": "ade9d6edd72b30df32296b5049c46dd687a9f32061c41132a8868dad4ad6792d"
+    },
+    {
+      "path": "Referencias/Jef Beerten - A Sequential ACDC Power Flow Algorithm for.pdf",
+      "bytes": 677936,
+      "sha256": "a30319a0b9e1d56bcab1398982f53b067e41c798890fc89e4acebeab31a9c8cb"
+    },
+    {
+      "path": "studies/beerten/beerten_constant_pq_capability_batch6.m",
+      "bytes": 1285,
+      "sha256": "814fdc23d85466337c05390f621d9052092b21525165d232c6975bc2c6203288"
+    },
+    {
+      "path": "tests/README.md",
+      "bytes": 7563,
+      "sha256": "02700078e3c4f9542d2a435c3480197da11c86e7a75b632088646e3a98fa726c"
+    },
+    {
+      "path": "tests/t_beerten_capability_batch6.m",
+      "bytes": 3070,
+      "sha256": "761f54d0e65593dad4fd128f82fdcc706f4b25a2ff6719f3de7f8d1ce58e47bd"
+    },
+    {
+      "path": "tests/t_beerten_reporting_batch6.m",
+      "bytes": 884,
+      "sha256": "54834f36afc55dc4317392068dd51b8aebc0f2d2952fb7e1e74f66bb20fbd46f"
+    }
+  ]
+}

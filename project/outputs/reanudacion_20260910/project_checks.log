@@ -1,0 +1,111 @@
+
+START raw_full_pf
+PASS raw_full_pf (17.6 s)
+
+START transpa_baseline_cpf
+TRANSPA CPF outputs written to:
+  C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\transpa_baseline
+mode=psse, success=1, max_lambda=0.239568152635, load_factor=1.23956815263, points=678, events=1, total_seconds=42.630
+PASS transpa_baseline_cpf (62.0 s)
+
+START transpa_controls_cpf
+TRANSPA CPF outputs written to:
+  C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\transpa_controls
+mode=psse, success=0, max_lambda=0.222674742017, load_factor=1.22267474202, points=718, events=28, total_seconds=127.587
+FAIL transpa_controls_cpf: Error using assert
+TRANSPA controlled CPF did not converge
+
+Error in verify_project (line 38)
+                assert(r.success, 'TRANSPA controlled CPF did not converge');
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+START beerten_vsc_cpf
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  2.929461e-17.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  1.171783e-16.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  2.439490e-18.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  9.757960e-18.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  3.903184e-17.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+[Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  1.561273e-16.] 
+[> In runcpf_vsc_mtdc/solve_unified_pf_at_lambda (line 3433)
+In runcpf_vsc_mtdc/settle_unified_vsc_capability_controls (line 1193)
+In runcpf_vsc_mtdc/run_active_set_stage (line 982)
+In runcpf_vsc_mtdc/run_unified_monolithic_cpf (line 532)
+In runcpf_vsc_mtdc (line 184)
+In runcpf_psse (line 82)
+In beerten_cpf_run>run_selected_mode (line 172)
+In beerten_cpf_run (line 27)
+In run_beerten5_cpf (line 15)
+In verify_project (line 42)
+] 
+Beerten 5-bus CPF outputs written to:
+  C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\beerten_vsc
+mode=psse, vsc_hvdc_enabled=1, success=1, max_lambda=2.93061921892, points=82, events=203, total_seconds=649.734
+PASS beerten_vsc_cpf (653.0 s)
+
+START diagnostics
+PSS/E study diagnostics written to:
+  C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\diagnostics
+runs=1
+PASS diagnostics (46.0 s)
+{Error using assert
+One or more project checks failed; see project_checks.json
+
+Error in verify_project (line 62)
+assert(all([checks.success]), 'One or more project checks failed; see project_checks.json');
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+} 

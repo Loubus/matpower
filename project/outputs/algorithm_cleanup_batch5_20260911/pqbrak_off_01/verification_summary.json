@@ -1,0 +1,155 @@
+{
+  "totals": {
+    "planned": 2599,
+    "executed": 2599,
+    "passed": 2502,
+    "failed": 0,
+    "skipped": 97,
+    "exceptions": []
+  },
+  "suites": [
+    {
+      "name": "t_beerten_termination_batch5",
+      "planned": 77,
+      "executed": 77,
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 7.6056705,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_control_acceptance_batch1",
+      "planned": 43,
+      "executed": 43,
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 2.1325895,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_control_handoff_batch2",
+      "planned": 53,
+      "executed": 53,
+      "passed": 53,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 7.283556,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_control_saturation_batch5",
+      "planned": 105,
+      "executed": 105,
+      "passed": 105,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 14.5918326,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_cpf",
+      "planned": 430,
+      "executed": 430,
+      "passed": 333,
+      "failed": 0,
+      "skipped": 97,
+      "exception": "",
+      "elapsed_seconds": 11.8696438,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_mpxt_psse",
+      "planned": 508,
+      "executed": 508,
+      "passed": 508,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 93.04009,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_swshunt_acceptance_batch4",
+      "planned": 67,
+      "executed": 67,
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 3.2294165,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_swshunt_beerten_batch4",
+      "planned": 281,
+      "executed": 281,
+      "passed": 281,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 2.0456694,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_ultc_acceptance_batch3",
+      "planned": 52,
+      "executed": 52,
+      "passed": 52,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 2.0201071,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_ultc_beerten_batch3",
+      "planned": 358,
+      "executed": 358,
+      "passed": 358,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 2.6333165,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_vsc_mtdc",
+      "planned": 330,
+      "executed": 330,
+      "passed": 330,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 370.0124803,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_pqbrak_off_batch5",
+      "planned": 124,
+      "executed": 124,
+      "passed": 124,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 5.7751222,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    },
+    {
+      "name": "t_mpoption",
+      "planned": 171,
+      "executed": 171,
+      "passed": 171,
+      "failed": 0,
+      "skipped": 0,
+      "exception": "",
+      "elapsed_seconds": 0.0814605,
+      "matlab": "25.2.0.2998904 (R2025b)"
+    }
+  ]
+}

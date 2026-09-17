@@ -1,0 +1,377 @@
+[
+  {
+    "id": "outcome",
+    "passed": true,
+    "detail": "automatic target remains unsuccessful under unchanged options"
+  },
+  {
+    "id": "trace_preserved",
+    "passed": true,
+    "detail": "exact historical accepted electrical trace"
+  },
+  {
+    "id": "bound",
+    "passed": true,
+    "detail": "shunt bound, not a tap rejection"
+  },
+  {
+    "id": "no_correction",
+    "passed": true,
+    "detail": "no discrete change or electrical re-correction at rejected point"
+  },
+  {
+    "id": "candidate_solved",
+    "passed": true,
+    "detail": "rejected control candidate has a converged full electrical solve"
+  },
+  {
+    "id": "scoped_convergence",
+    "passed": true,
+    "detail": "electrical convergence applies only to exported accepted point"
+  },
+  {
+    "id": "last_accepted",
+    "passed": true,
+    "detail": "candidate is excluded from accepted trace and result arrays"
+  },
+  {
+    "id": "no_nose",
+    "passed": true,
+    "detail": "failed endpoint is neither requested target nor a validated stability margin"
+  },
+  {
+    "id": "message",
+    "passed": true,
+    "detail": "message names actual rejection"
+  },
+  {
+    "id": "no_recovery",
+    "passed": true,
+    "detail": "no new freeze or lockout policy"
+  },
+  {
+    "id": "threshold",
+    "passed": true,
+    "detail": "last accepted and rejected points bracket unchanged voltage tolerance at maximum B"
+  },
+  {
+    "id": "tap_in_band",
+    "passed": true,
+    "detail": "ULTC regulated bus remains in band"
+  },
+  {
+    "id": "active_set",
+    "passed": true,
+    "detail": "no generator, bus or converter mode switch at rejected candidate"
+  },
+  {
+    "id": "capability",
+    "passed": true,
+    "detail": "original generator and converter capability audit passes"
+  },
+  {
+    "id": "accepted.balance",
+    "passed": true,
+    "detail": "full AC 1.67e-10 DC 6.99e-15 converter 3.94e-15 pu"
+  },
+  {
+    "id": "candidate.balance",
+    "passed": true,
+    "detail": "full AC 1.42e-09 DC 1.44e-14 converter 1.17e-14 pu"
+  },
+  {
+    "id": "point1.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point2.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point3.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point4.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point5.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point6.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point7.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point8.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point9.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "point10.fixed",
+    "passed": true,
+    "detail": "independent full PF matches accepted state"
+  },
+  {
+    "id": "fixed0.41055752.B0.balance",
+    "passed": true,
+    "detail": "full AC 5.86e-10 DC 7.11e-15 converter 1.31e-15 pu"
+  },
+  {
+    "id": "fixed0.41055752.B0.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41055752.B5.balance",
+    "passed": true,
+    "detail": "full AC 1.41e-09 DC 8.88e-16 converter 5.27e-15 pu"
+  },
+  {
+    "id": "fixed0.41055752.B5.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41055752.B10.balance",
+    "passed": true,
+    "detail": "full AC 2.12e-11 DC 1.25e-14 converter 1.27e-15 pu"
+  },
+  {
+    "id": "fixed0.41055752.B10.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41055752.B15.balance",
+    "passed": true,
+    "detail": "full AC 1.65e-10 DC 1.45e-14 converter 3.55e-17 pu"
+  },
+  {
+    "id": "fixed0.41055752.B15.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41070470.B0.balance",
+    "passed": true,
+    "detail": "full AC 3.89e-11 DC 1.13e-14 converter 2.46e-15 pu"
+  },
+  {
+    "id": "fixed0.41070470.B0.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41070470.B0.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.41070470.B5.balance",
+    "passed": true,
+    "detail": "full AC 5.72e-10 DC 5.94e-15 converter 7.64e-15 pu"
+  },
+  {
+    "id": "fixed0.41070470.B5.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41070470.B5.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.41070470.B10.balance",
+    "passed": true,
+    "detail": "full AC 1.38e-10 DC 5.66e-15 converter 4.03e-15 pu"
+  },
+  {
+    "id": "fixed0.41070470.B10.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41070470.B10.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.41070470.B15.balance",
+    "passed": true,
+    "detail": "full AC 1.42e-09 DC 1.4e-14 converter 3.43e-15 pu"
+  },
+  {
+    "id": "fixed0.41070470.B15.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.41070470.B15.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "candidate_pf_match",
+    "passed": true,
+    "detail": "independent full PF reproduces rejected candidate voltage"
+  },
+  {
+    "id": "fixed0.42000000.B0.balance",
+    "passed": true,
+    "detail": "full AC 1.31e-10 DC 1.08e-14 converter 5.35e-16 pu"
+  },
+  {
+    "id": "fixed0.42000000.B0.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.42000000.B0.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.42000000.B5.balance",
+    "passed": true,
+    "detail": "full AC 5.71e-10 DC 3.77e-15 converter 1.86e-15 pu"
+  },
+  {
+    "id": "fixed0.42000000.B5.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.42000000.B5.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.42000000.B10.balance",
+    "passed": true,
+    "detail": "full AC 5.79e-10 DC 1.11e-14 converter 4.03e-15 pu"
+  },
+  {
+    "id": "fixed0.42000000.B10.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.42000000.B10.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.42000000.B15.balance",
+    "passed": true,
+    "detail": "full AC 4.85e-10 DC 2.11e-15 converter 1.77e-15 pu"
+  },
+  {
+    "id": "fixed0.42000000.B15.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.42000000.B15.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.45000000.B0.balance",
+    "passed": true,
+    "detail": "full AC 1.43e-09 DC 9.71e-15 converter 6.51e-16 pu"
+  },
+  {
+    "id": "fixed0.45000000.B0.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.45000000.B0.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.45000000.B5.balance",
+    "passed": true,
+    "detail": "full AC 1.8e-10 DC 6e-15 converter 3.37e-15 pu"
+  },
+  {
+    "id": "fixed0.45000000.B5.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.45000000.B5.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.45000000.B10.balance",
+    "passed": true,
+    "detail": "full AC 1.5e-09 DC 1.13e-14 converter 2.77e-15 pu"
+  },
+  {
+    "id": "fixed0.45000000.B10.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.45000000.B10.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "fixed0.45000000.B15.balance",
+    "passed": true,
+    "detail": "full AC 7.23e-10 DC 1.39e-14 converter 6.05e-15 pu"
+  },
+  {
+    "id": "fixed0.45000000.B15.solved",
+    "passed": true,
+    "detail": "full PF converges with original equations and limits"
+  },
+  {
+    "id": "fixed0.45000000.B15.outside_band",
+    "passed": true,
+    "detail": "all legal B states remain below the band"
+  },
+  {
+    "id": "step0.05",
+    "passed": true,
+    "detail": "same control boundary bracket with finer continuation step"
+  },
+  {
+    "id": "step0.025",
+    "passed": true,
+    "detail": "same control boundary bracket with finer continuation step"
+  },
+  {
+    "id": "requested_success",
+    "passed": true,
+    "detail": "short requested endpoint is explicitly reached"
+  },
+  {
+    "id": "nose_request_bound",
+    "passed": true,
+    "detail": "legacy successful bound stop is explicit and is not a detected nose"
+  }
+]

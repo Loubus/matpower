@@ -1,0 +1,154 @@
+25.2.0.2998904 (R2025b)
+-------------------------------------------------------------------------------------
+MATLAB Version: 25.2.0.2998904 (R2025b)
+MATLAB License Number: 968398
+Operating System: Microsoft Windows 10 IoT Enterprise LTSC Version 10.0 (Build 19044)
+Java Version: Java is not enabled
+-------------------------------------------------------------------------------------
+MATLAB                                                Version 25.2        (R2025b)
+Simulink                                              Version 25.2        (R2025b)
+5G Toolbox                                            Version 25.2        (R2025b)
+AUTOSAR Blockset                                      Version 25.2        (R2025b)
+Aerospace Blockset                                    Version 25.2        (R2025b)
+Aerospace Toolbox                                     Version 25.2        (R2025b)
+Antenna Toolbox                                       Version 25.2        (R2025b)
+Audio Toolbox                                         Version 25.2        (R2025b)
+Automated Driving Toolbox                             Version 25.2        (R2025b)
+Bioinformatics Toolbox                                Version 25.2        (R2025b)
+Bluetooth Toolbox                                     Version 25.2        (R2025b)
+C2000 Microcontroller Blockset                        Version 25.2        (R2025b)
+Communications Toolbox                                Version 25.2        (R2025b)
+Computer Vision Toolbox                               Version 25.2        (R2025b)
+Control System Toolbox                                Version 25.2        (R2025b)
+Curve Fitting Toolbox                                 Version 25.2        (R2025b)
+DDS Blockset                                          Version 25.2        (R2025b)
+DSP HDL Toolbox                                       Version 25.2        (R2025b)
+DSP System Toolbox                                    Version 25.2        (R2025b)
+Data Acquisition Toolbox                              Version 25.2        (R2025b)
+Database Toolbox                                      Version 25.2        (R2025b)
+Datafeed Toolbox                                      Version 25.2        (R2025b)
+Deep Learning HDL Toolbox                             Version 25.2        (R2025b)
+Deep Learning Toolbox                                 Version 25.2        (R2025b)
+Econometrics Toolbox                                  Version 25.2        (R2025b)
+Embedded Coder                                        Version 25.2        (R2025b)
+Financial Instruments Toolbox                         Version 25.2        (R2025b)
+Financial Toolbox                                     Version 25.2        (R2025b)
+Fixed-Point Designer                                  Version 25.2        (R2025b)
+Fuzzy Logic Toolbox                                   Version 25.2        (R2025b)
+GPU Coder                                             Version 25.2        (R2025b)
+Global Optimization Toolbox                           Version 25.2        (R2025b)
+HDL Coder                                             Version 25.2        (R2025b)
+HDL Verifier                                          Version 25.2        (R2025b)
+Image Acquisition Toolbox                             Version 25.2        (R2025b)
+Image Processing Toolbox                              Version 25.2        (R2025b)
+Industrial Communication Toolbox                      Version 25.2        (R2025b)
+Instrument Control Toolbox                            Version 25.2        (R2025b)
+LTE Toolbox                                           Version 25.2        (R2025b)
+Lidar Toolbox                                         Version 25.2        (R2025b)
+MATLAB Coder                                          Version 25.2        (R2025b)
+MATLAB Compiler                                       Version 25.2        (R2025b)
+MATLAB Compiler SDK                                   Version 25.2        (R2025b)
+MATLAB Report Generator                               Version 25.2        (R2025b)
+MATLAB Test                                           Version 25.2        (R2025b)
+Mapping Toolbox                                       Version 25.2        (R2025b)
+Medical Imaging Toolbox                               Version 25.2        (R2025b)
+Mixed-Signal Blockset                                 Version 25.2        (R2025b)
+Model Predictive Control Toolbox                      Version 25.2        (R2025b)
+Model-Based Calibration Toolbox                       Version 25.2        (R2025b)
+Motor Control Blockset                                Version 25.2        (R2025b)
+Navigation Toolbox                                    Version 25.2        (R2025b)
+Optimization Toolbox                                  Version 25.2        (R2025b)
+Parallel Computing Toolbox                            Version 25.2        (R2025b)
+Partial Differential Equation Toolbox                 Version 25.2        (R2025b)
+Phased Array System Toolbox                           Version 25.2        (R2025b)
+Powertrain Blockset                                   Version 25.2        (R2025b)
+Predictive Maintenance Toolbox                        Version 25.2        (R2025b)
+RF Blockset                                           Version 25.2        (R2025b)
+RF PCB Toolbox                                        Version 25.2        (R2025b)
+RF Toolbox                                            Version 25.2        (R2025b)
+ROS Toolbox                                           Version 25.2        (R2025b)
+Radar Toolbox                                         Version 25.2        (R2025b)
+Reinforcement Learning Toolbox                        Version 25.2        (R2025b)
+Requirements Toolbox                                  Version 25.2        (R2025b)
+Risk Management Toolbox                               Version 25.2        (R2025b)
+Robotics System Toolbox                               Version 25.2        (R2025b)
+Robust Control Toolbox                                Version 25.2        (R2025b)
+Satellite Communications Toolbox                      Version 25.2        (R2025b)
+Sensor Fusion and Tracking Toolbox                    Version 25.2        (R2025b)
+SerDes Toolbox                                        Version 25.2        (R2025b)
+Signal Integrity Toolbox                              Version 25.2        (R2025b)
+Signal Processing Toolbox                             Version 25.2        (R2025b)
+SimBiology                                            Version 25.2        (R2025b)
+SimEvents                                             Version 25.2        (R2025b)
+Simscape                                              Version 25.2        (R2025b)
+Simscape Battery                                      Version 25.2        (R2025b)
+Simscape Driveline                                    Version 25.2        (R2025b)
+Simscape Electrical                                   Version 25.2        (R2025b)
+Simscape Fluids                                       Version 25.2        (R2025b)
+Simscape Multibody                                    Version 25.2        (R2025b)
+Simulink 3D Animation                                 Version 25.2        (R2025b)
+Simulink Check                                        Version 25.2        (R2025b)
+Simulink Coder                                        Version 25.2        (R2025b)
+Simulink Compiler                                     Version 25.2        (R2025b)
+Simulink Control Design                               Version 25.2        (R2025b)
+Simulink Coverage                                     Version 25.2        (R2025b)
+Simulink Design Optimization                          Version 25.2        (R2025b)
+Simulink Design Verifier                              Version 25.2        (R2025b)
+Simulink Desktop Real-Time                            Version 25.2        (R2025b)
+Simulink Fault Analyzer                               Version 25.2        (R2025b)
+Simulink PLC Coder                                    Version 25.2        (R2025b)
+Simulink Real-Time                                    Version 25.2        (R2025b)
+Simulink Report Generator                             Version 25.2        (R2025b)
+Simulink Test                                         Version 25.2        (R2025b)
+SoC Blockset                                          Version 25.2        (R2025b)
+Spreadsheet Link                                      Version 25.2        (R2025b)
+Stateflow                                             Version 25.2        (R2025b)
+Statistics and Machine Learning Toolbox               Version 25.2        (R2025b)
+Symbolic Math Toolbox                                 Version 25.2        (R2025b)
+System Composer                                       Version 25.2        (R2025b)
+System Identification Toolbox                         Version 25.2        (R2025b)
+Text Analytics Toolbox                                Version 25.2        (R2025b)
+UAV Toolbox                                           Version 25.2        (R2025b)
+Vehicle Dynamics Blockset                             Version 25.2        (R2025b)
+Vehicle Network Toolbox                               Version 25.2        (R2025b)
+Vision HDL Toolbox                                    Version 25.2        (R2025b)
+WLAN Toolbox                                          Version 25.2        (R2025b)
+Wavelet Toolbox                                       Version 25.2        (R2025b)
+Wireless HDL Toolbox                                  Version 25.2        (R2025b)
+Wireless Testbench                                    Version 25.2        (R2025b)
+C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\matpower\lib\runpf_psse.m
+C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\matpower\lib\runcpf_vsc_mtdc.m
+
+MATPOWER               Version 8.1.1-dev  10-Mar-2026
+MATLAB                 Version 25.2       28-Jul-2025   Release: (R2025b)  
+Optimization Toolbox   Version 25.2       28-Jul-2025   Release: (R2025b)  
+MP-Test                Version 8.1        05-Jul-2025
+MIPS                   Version 1.5.2      12-Jul-2025
+MP-Opt-Model           Version 5.1-dev    10-Dec-2025
+MOST                   Version 1.3.2-dev  16-Feb-2026
+SDP_PF                 -- not installed --
+SynGrid                -- not installed --
+Artelys Knitro         -- not installed --
+BPMPD_MEX              -- not installed --
+CLP                    -- not installed --
+CPLEX                  -- not installed --
+GLPK                   -- not installed --
+Gurobi                 -- not installed --
+HiGHS                  -- not installed --
+IPOPT                  -- not installed --
+MINOPF                 -- not installed --
+MOSEK                  -- not installed --
+OSQP                   -- not installed --
+PARDISO                -- not installed --
+PDIPMOPF               -- not installed --
+SCPDIPMOPF             -- not installed --
+SDPT3                  -- not installed --
+SeDuMi                 -- not installed --
+TRALMOPF               -- not installed --
+YALMIP                 -- not installed --
+Architecture:          PCWIN64
+
+  MATPOWER 8.1.1-dev is distributed under the 3-clause BSD License.
+  Please see the LICENSE file for details.
+
+REANUDACION_MATLAB_OK

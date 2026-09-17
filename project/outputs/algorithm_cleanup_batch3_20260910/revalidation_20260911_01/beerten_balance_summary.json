@@ -1,0 +1,26 @@
+{
+  "ac_balance": {
+    "checks": 27,
+    "maximum_pu": 9.76589554672e-09,
+    "tolerance_pu": 1e-08,
+    "all_passed": true
+  },
+  "cpf_ac_balance": {
+    "checks": 21,
+    "maximum_pu": 9.99526182819e-09,
+    "tolerance_pu": 1e-08,
+    "all_passed": true
+  },
+  "converter_balance": {
+    "checks": 48,
+    "maximum_pu": 8.2367127785e-10,
+    "tolerance_pu": 1e-08,
+    "all_passed": true
+  },
+  "dc_balance": {
+    "checks": 48,
+    "maximum_pu": 9.29922805426e-13,
+    "tolerance_pu": 1e-08,
+    "all_passed": true
+  }
+}

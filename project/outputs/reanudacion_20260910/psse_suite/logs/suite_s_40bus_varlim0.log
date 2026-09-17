@@ -1,0 +1,1293 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_s_40bus_varlim0.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 1 0 0 1 2 0 0 0
+Solver option array values: 1 0 0 1 2 0 0 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 1: enable transformer tap stepping adjustment.
+- Option 2, area interchange adjustment flag = 0: disable area interchange adjustment.
+- Option 3, phase shift adjustment flag = 0: disable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 2: enable switched-shunt continuous mode and disable discrete mode.
+- Option 6, flat start flag = 0: do not flat start; use voltages already present in the RAW/case.
+- Option 7, VAR limit flag = 0: apply generator reactive power limits immediately.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW GENERAL, PQBRAK=0.9700: set with BAT_SOLUTION_PARAMETERS_4 REALAR(10).
+- RAW NEWTON, ITMXN=40: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(2).
+- RAW NEWTON, VCTOLQ=0.10000: set with BAT_SOLUTION_PARAMETERS_4 REALAR(17).
+- RAW NEWTON, VCTOLV=0.00001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(18).
+- RAW ADJUST, MXTPSS=25: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(4).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, ACTAPS=1, AREAIN=0, PHSHFT=0, DCTAPS=1, SWSHNT=2, FACTS=1, FLATST=0, VARLIM=0, NONDIV=0
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_s_40bus_varlim0.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 40 20 25 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.97 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 1 0 0 1 2 0 0 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_s_40bus_varlim0_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_s_40bus_varlim0.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:23
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Reading non-transformer branch data...
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Messages for two-winding transformer circuit "1" from 21 [XF_A_HV     230.00] to 22 [XF_A_LV     115.00]:   (004616)
+  Warn: Magnetizing susceptance MAG2 (.100000E-02) is positive   (004666)
+
+ Messages for two-winding transformer circuit "1" from 24 [XF_B_HV     230.00] to 25 [XF_B_LV     115.00]:   (004616)
+  Warn: Magnetizing susceptance MAG2 (.100000E-02) is positive   (004666)
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ No power flow solution parameters changed
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 38   Off-diagonals = 37   Maximum size = 74
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         0.7336(      6     )    1.4631(     24     )
+                                                             0.16246(     25     )   0.86301(      6     )
+   1         0.0660(     25     )    0.8788(     13     )
+                                                             0.08858(     40     )   0.03989(     17     )
+   2         0.0115(     39     )    0.9782(     12     )
+                                                             0.05579(     26     )   0.04558(     30     )
+   3         0.0053(     12     )    1.3617(     10     )
+                                                             0.30187(     26     )   0.38400(     37     )
+   4         0.1265(     10     )    0.4242(     36     )
+                                                             0.19334(     31     )   0.32053(     30     )
+   5         0.0938(     10     )    0.6118(     18     )
+                                                             0.12116(     33     )   0.17548(     39     )
+   6         0.0375(     12     )    0.2862(     29     )
+                                                             0.11694(     26     )   0.14318(     29     )
+
+ Two-terminal dc line "DC40" blocked due to rectifier ac voltage (0.48887) less than 0.5 pu
+   7         0.3924(     31     )    0.2956(     29     )
+                                                             0.16003(     14     )   0.41822(     37     )
+   8         0.1068(     12     )    0.3394(     37     )
+                                                             0.03393(     38     )   0.10686(     26     )
+   9         0.0091(     13     )    0.0117(     30     )
+                                                             0.01197(     27     )   0.02775(     33     )
+  10         0.0032(     27     )    0.0070(     17     )
+                                                             0.00888(     26     )   0.00669(     26     )
+  11         0.0014(     26     )    0.0021(     17     )
+                                                             0.00667(     27     )   0.01056(     26     )
+  12         0.0018(     27     )    0.0030(     17     )
+                                                             0.00555(     26     )   0.00314(     40     )
+  13         0.0008(     26     )    0.0013(     17     )
+                                                             0.00386(     27     )   0.00570(     26     )
+  14         0.0010(     27     )    0.0017(     17     )
+                                                             0.00313(     26     )   0.00190(     40     )
+  15         0.0005(     26     )    0.0009(     17     )
+
+
+ Reached tolerance in 15 iterations
+
+ Largest mismatch:      0.00 MW      0.09 Mvar      0.09 MVA at bus 17 [FACTS_A     230.00]
+ System total absolute mismatch:                    0.42 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     SLACK       230.00      27.4    700.0  -100.0     -49.0    600.0  -600.0
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_S_40BUS_VARLIM0                                            %MVA FOR TRANSFORMERS
+                         40-BUS STRESS WITH IMMEDIATE VAR LIMITS                          % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     SLACK       230.00    1 1.0200    0.0    27.4      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 234.60          -49.0R     0.0    -0.0      2     GEN_GRP_A   230.00    1  1    12.0  -46.1                   117  13   879A
+                                                                                3     GEN_GRP_B   230.00    1  1    15.5   -2.9                    39   4   879A
+      2     GEN_GRP_A   230.00    1 1.0421   -0.4    70.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 239.67          180.0H     0.0    -0.0      1     SLACK       230.00    1  1   -11.8   47.2                   117  13   879A
+                                                                                7     BACKBONE_7  230.00    1  1    81.8  132.8                   376  50   753A
+      3     GEN_GRP_B   230.00    1 1.0207   -0.4    60.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 234.76           90.0H     0.0    -0.0      1     SLACK       230.00    1  1   -15.5    3.0                    39   4   879A
+                                                                                7     BACKBONE_7  230.00    1  1    75.5   87.0                   283  38   753A
+      4     GEN_REM     230.00    1 0.5698  -39.0    50.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 131.07          100.0H     0.0    -0.0     12     REG_GENQ_2  230.00    1  1    50.0  100.0                   493  78   628A
+
+      5     GEN_LOCAL   230.00    1 0.9239   -3.7    40.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 212.50           50.0H     0.0    -0.0      8     BACKBONE_8  230.00    1  1    40.0   50.0                   174  28   628A
+
+      6     GEN_LIM     230.00    1 0.9586 -135.4    25.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 220.47           25.0H     0.0    -0.0     18     REG_LIM     230.00    1  1    25.0   25.0                    93  17   552A
+
+      7     BACKBONE_7  230.00    1 0.9742   -2.3     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 224.06            0.0      0.0    -0.0      2     GEN_GRP_A   230.00    1  1   -80.5 -121.6                   376  50   753A
+                                                                                3     GEN_GRP_B   230.00    1  1   -74.7  -80.6                   283  38   753A
+                                                                                8     BACKBONE_8  230.00    1  1   121.7  181.2                   562  75   753A
+                                                                               21     XF_A_HV     230.00    1  1    33.5   21.0                   102  20   502A
+      8     BACKBONE_8  230.00    1 0.8944   -4.9     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 205.72            0.0      0.0    -0.0      5     GEN_LOCAL   230.00    1  1   -39.7  -47.6                   174  28   628A
+                                                                                7     BACKBONE_7  230.00    1  1  -119.2 -161.1                   562  75   753A
+                                                                                9     BACKBONE_9  230.00    1  1   158.9  208.7                   736  98   753A
+      9     BACKBONE_9  230.00    1 0.7944   -9.2     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 182.72            0.0      0.0    -0.0      8     BACKBONE_8  230.00    1  1  -154.6 -174.3                   736  98   753A
+                                                                               10     REG_GENQ_1  230.00    1  1   154.6  174.3                   736 117   628A
+     10     REG_GENQ_1  230.00    1 0.6570  -18.1     0.0     19.2     0.0 -------------------------------------------------------------------------------------
+                                  1 151.11            0.0      9.6    -0.0      9     BACKBONE_9  230.00    1  1  -148.6 -122.7                   736 117   628A
+                                                                               11     LOAD_11     230.00    1  1   129.3  113.1                   656 105   628A
+     11     LOAD_11     230.00    1 0.5503  -29.2     0.0     12.5     0.0 -------------------------------------------------------------------------------------
+                                  1 126.56            0.0      6.3    -0.0     10     REG_GENQ_1  230.00    1  1  -124.5  -72.1                   656 105   628A
+                                                                               12     REG_GENQ_2  230.00    1  1   112.0   65.8                   593  94   628A
+                                                                               31     DC_RECT     230.00    1  1    -0.0    0.0                     0   0   502A
+     12     REG_GENQ_2  230.00    1 0.4780  -43.0     0.0     16.9     0.0 -------------------------------------------------------------------------------------
+                                  1 109.94            0.0      9.9    -0.0      4     GEN_REM     230.00    1  1   -47.7  -80.8                   493  78   628A
+                                                                               11     LOAD_11     230.00    1  1  -108.1  -32.4                   593  94   628A
+                                                                               13     REG_FACTS   230.00    1  1   138.8  103.2                   908 145   628A
+     13     REG_FACTS   230.00    1 0.3647  -68.8     0.0      8.0     0.0 -------------------------------------------------------------------------------------
+                                  1 83.879            0.0      3.9    -0.0     12     REG_GENQ_2  230.00    1  1  -129.7  -24.6                   908 145   628A
+                                                                               14     SHUNT_A     230.00    1  1   102.8    8.0                   710 128   552A
+                                                                               24     XF_B_HV     230.00    1  1    10.5    7.7                    90  18   502A
+                                                                               32     DC_INV      230.00    1  1     8.3    4.9                    67  13   502A
+     14     SHUNT_A     230.00    1 0.3808  -99.7     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 87.578            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1   -96.4   47.9                   710 128   552A
+                                                                               15     SHUNT_B     230.00    1  1    96.4  -47.9                   710 128   552A
+     15     SHUNT_B     230.00    1 0.4861 -122.4     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 111.81            0.0      0.0    -0.0     14     SHUNT_A     230.00    1  1   -90.0  103.8                   710 128   552A
+                                                                               16     LOAD_16     230.00    1  1    52.6 -131.3                   731 132   552A
+                                                                               27     PQBRAK_A    230.00    1  1    19.9   14.6                   127  32   402A
+                                                                               28     PQBRAK_B    230.00    1  1    17.5   12.9                   112  28   402A
+     16     LOAD_16     230.00    1 0.6736 -130.7     0.0     13.8     0.0 -------------------------------------------------------------------------------------
+                                  1 154.94            0.0      5.9    -0.0     15     SHUNT_B     230.00    1  1   -45.9  190.6                   731 132   552A
+                                                                               17     FACTS_A     230.00    1  1    32.0 -196.6                   742 134   552A
+     17     FACTS_A     230.00    1 0.8759 -134.4     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 201.46            0.0      0.0    -0.0 STATCON SHUNT                      STA    0.0 -105.1 "STATCON A   "    301 100   301A
+                                                                               16     LOAD_16     230.00    1  1   -25.0  257.7                   742 134   552A
+                                                                               18     REG_LIM     230.00    1  1    24.6  -87.5                   261  47   552A
+                                                                               29     SHUNT_C     230.00    1  1     0.4  -65.0                   186  41   452A
+     18     REG_LIM     230.00    1 0.9440 -136.1     0.0     27.4     0.0 -------------------------------------------------------------------------------------
+                                  1 217.13            0.0     17.0    -0.0      6     GEN_LIM     230.00    1  1   -24.9  -24.3                    93  17   552A
+                                                                               17     FACTS_A     230.00    1  1   -23.7   95.1                   261  47   552A
+                                                                               19     SWD_FROM    230.00    1  1    20.5   -2.7                    55  10   552A
+                                                                               30     FACTS_B     230.00    1  1     0.6  -85.0                   226  50   452A
+     19     SWD_FROM    230.00    1 0.9444 -137.0     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 217.21            0.0      0.0    -0.0     18     REG_LIM     230.00    1  1   -20.5    3.0                    55  10   552A
+                                                                               20     SWD_TIE     230.00    1  1    20.5   -3.0                    55  10   552A
+     20     SWD_TIE     230.00    1 0.9450 -138.0     0.0     15.0     0.0 -------------------------------------------------------------------------------------
+                                  1 217.36            0.0      7.5    -0.0     19     SWD_FROM    230.00    1  1   -20.5    3.4                    55  10   552A
+                                                                               34     SWD_A       230.00    1  1    12.5    6.1                    37  10   377A
+                                                                               36     REMOTE_A    230.00    1  1    -7.0  -17.0                    49  11   452A
+     21     XF_A_HV     230.00    1 0.9587   -3.4     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 220.50            0.0      0.0    -0.0      7     BACKBONE_7  230.00    1  1   -33.4  -20.0                   102  20   502A
+                                                                               22     XF_A_LV     115.00    1  1    33.4   20.0 1.100HI           102  26   150M
+     22     XF_A_LV     115.00    1 0.8454   -5.9     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 97.224            0.0      0.0    -0.0     21     XF_A_HV     230.00    1  1   -33.2  -18.1 1.000UN           224  25   150M
+                                                                               23     XF_A_LOAD   115.00    1  1    33.2   18.1                   224  30   753A
+     23     XF_A_LOAD   115.00    1 0.8249   -7.9     0.0     33.0     0.0 -------------------------------------------------------------------------------------
+                                  1 94.865            0.0     16.5    -0.0     22     XF_A_LV     115.00    1  1   -33.0  -16.5                   224  30   753A
+
+     24     XF_B_HV     230.00    1 0.3500  -71.4     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 80.496            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1   -10.4   -7.0                    90  18   502A
+                                                                               25     XF_B_LV     115.00    1  1    10.4    7.0 0.900LO            90   8   150M
+     25     XF_B_LV     115.00    1 0.3691  -75.3     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 42.442            0.0      0.0    -0.0     24     XF_B_HV     230.00    1  1   -10.3   -5.9 1.000UN           162   8   150M
+                                                                               26     XF_B_LOAD   115.00    1  1    10.3    5.9                   162  22   753A
+     26     XF_B_LOAD   115.00    1 0.3540  -78.6     0.0     10.2     0.0 -------------------------------------------------------------------------------------
+                                  1 40.708            0.0      5.1    -0.0     25     XF_B_LV     115.00    1  1   -10.2   -5.1                   162  22   753A
+
+     27     PQBRAK_A    230.00    1 0.4563 -126.6     0.0     19.6     0.0 -------------------------------------------------------------------------------------
+                                  1 104.96            0.0     12.2    -0.0     15     SHUNT_B     230.00    1  1   -19.6  -12.2                   127  32   402A
+
+     28     PQBRAK_B    230.00    1 0.4595 -126.1     0.0     17.3     0.0 -------------------------------------------------------------------------------------
+                                  1 105.69            0.0     11.1    -0.0     15     SHUNT_B     230.00    1  1   -17.3  -11.1                   112  28   402A
+
+     29     SHUNT_C     230.00    1 0.9279 -134.8     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 213.41            0.0      0.0   -68.9     17     FACTS_A     230.00    1  1     0.0   68.9                   186  41   452A
+
+     30     FACTS_B     230.00    1 1.0070 -136.5     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 231.62            0.0      0.0    -0.0 STATCON SHUNT                      STA    0.0  -90.6 "STATCON B   "    226 100   226A
+                                                                               18     REG_LIM     230.00    1  1     0.0   90.7                   226  50   452A
+     31     DC_RECT     230.00    1 0.5503  -29.2     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 126.56            0.0      0.0    -0.0     11     LOAD_11     230.00    1  1     0.0   -0.0                     0   0   502A
+
+     32     DC_INV      230.00    1 0.3556  -70.7     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 81.790            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1    -8.3   -4.5                    67  13   502A
+                                                                               33     DC_LOAD     230.00    1  1     8.3    4.5                    67  17   402A
+     33     DC_LOAD     230.00    1 0.3463  -72.8     0.0      8.2     0.0 -------------------------------------------------------------------------------------
+                                  1 79.654            0.0      4.1    -0.0     32     DC_INV      230.00    1  1    -8.2   -4.1                    67  17   402A
+
+     34     SWD_A       230.00    1 0.9395 -138.5     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 216.08            0.0      0.0    -0.0     20     SWD_TIE     230.00    1  1   -12.5   -6.0                    37  10   377A
+                                                                               35     SWD_LOAD    230.00    1  @1   12.5    6.0                    37  10   377A
+     35     SWD_LOAD    230.00    1 0.9395 -138.5     0.0     12.5     0.0 -------------------------------------------------------------------------------------
+                                  1 216.08            0.0      6.0    -0.0     34     SWD_A       230.00    1  @1  -12.5   -6.0                    37  10   377A
+
+     36     REMOTE_A    230.00    1 0.9582 -137.7     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 220.39            0.0      0.0    -0.0     20     SWD_TIE     230.00    1  1     7.0   17.2                    49  11   452A
+                                                                               37     REMOTE_B    230.00    1  1    -7.0  -17.2                    49  11   452A
+     37     REMOTE_B    230.00    1 0.9714 -137.5     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 223.43            0.0      0.0    -0.0     36     REMOTE_A    230.00    1  1     7.0   17.5                    49  11   452A
+                                                                               38     LOAD_END_A  230.00    1  1    22.6   10.5                    64  17   377A
+                                                                               39     LOAD_END_B  230.00    1  1   -29.6  -28.0                   105  28   377A
+     38     LOAD_END_A  230.00    1 0.9608 -138.6     0.0     22.5     0.0 -------------------------------------------------------------------------------------
+                                  1 220.99            0.0     10.0    -0.0     37     REMOTE_B    230.00    1  1   -22.5  -10.0                    64  17   377A
+
+     39     LOAD_END_B  230.00    1 0.9975 -136.3     0.0     20.0     0.0 -------------------------------------------------------------------------------------
+                                  1 229.42            0.0      9.0    -0.0     37     REMOTE_B    230.00    1  1    29.8   29.4                   105  28   377A
+                                                                               40     GEN_END     230.00    1  1   -49.8  -38.4                   158  35   452A
+     40     GEN_END     230.00    1 1.0200 -135.0    50.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 234.60           40.4R     0.0    -0.0     39     LOAD_END_B  230.00    1  1    50.0   40.4                   158  35   452A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                    RATING   %MVA FOR TRANSFORMERS
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                                  SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     SLACK       230.00 CKT     MW     MVAR     MVA   % 1.0200PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                         27.4   -49.0R   56.2  56 234.60KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      2     GEN_GRP_A   230.00  1     12.0   -46.1    47.7  13                       0.11    1.09    1 AREA1           1 ZONE1
+  TO      3     GEN_GRP_B   230.00  1     15.5    -2.9    15.7   4                       0.01    0.12    1 AREA1           1 ZONE1
+
+ BUS      2     GEN_GRP_A   230.00 CKT     MW     MVAR     MVA   % 1.0421PU   -0.45  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      2
+  FROM GENERATION                         70.0   180.0H  193.1 193 239.67KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      1     SLACK       230.00  1    -11.8    47.2    48.7  13                       0.11    1.09    1 AREA1           1 ZONE1
+  TO      7     BACKBONE_7  230.00  1     81.8   132.8   156.0  50                       1.34   11.20    1 AREA1           1 ZONE1
+
+ BUS      3     GEN_GRP_B   230.00 CKT     MW     MVAR     MVA   % 1.0207PU   -0.43  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      3
+  FROM GENERATION                         60.0    90.0H  108.2 108 234.76KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      1     SLACK       230.00  1    -15.5     3.0    15.7   4                       0.01    0.12    1 AREA1           1 ZONE1
+  TO      7     BACKBONE_7  230.00  1     75.5    87.0   115.2  38                       0.76    6.36    1 AREA1           1 ZONE1
+
+ BUS      4     GEN_REM     230.00 CKT     MW     MVAR     MVA   % 0.5698PU  -38.96  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      4
+  FROM GENERATION                         50.0   100.0H  111.8 112 131.07KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     12     REG_GENQ_2  230.00  1     50.0   100.0   111.8  78                       2.31   19.25    1 AREA1           1 ZONE1
+
+ BUS      5     GEN_LOCAL   230.00 CKT     MW     MVAR     MVA   % 0.9239PU   -3.73  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      5
+  FROM GENERATION                         40.0    50.0H   64.0  64 212.50KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      8     BACKBONE_8  230.00  1     40.0    50.0    64.0  28                       0.29    2.40    1 AREA1           1 ZONE1
+
+ BUS      6     GEN_LIM     230.00 CKT     MW     MVAR     MVA   % 0.9586PU -135.38  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      6
+  FROM GENERATION                         25.0    25.0H   35.4  35 220.47KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     18     REG_LIM     230.00  1     25.0    25.0    35.4  17                       0.08    0.68    1 AREA1           1 ZONE1
+
+ BUS      7     BACKBONE_7  230.00 CKT     MW     MVAR     MVA   % 0.9742PU   -2.31  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      7
+                                                                   224.06KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      2     GEN_GRP_A   230.00  1    -80.5  -121.6   145.8  50                       1.34   11.20    1 AREA1           1 ZONE1
+  TO      3     GEN_GRP_B   230.00  1    -74.7   -80.6   109.9  38                       0.76    6.36    1 AREA1           1 ZONE1
+  TO      8     BACKBONE_8  230.00  1    121.7   181.2   218.3  75                       2.51   20.08    1 AREA1           1 ZONE1
+  TO     21     XF_A_HV     230.00  1     33.5    21.0    39.5  20                       0.13    0.99    1 AREA1           1 ZONE1
+
+ BUS      8     BACKBONE_8  230.00 CKT     MW     MVAR     MVA   % 0.8944PU   -4.91  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      8
+                                                                   205.72KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      5     GEN_LOCAL   230.00  1    -39.7   -47.6    62.0  28                       0.29    2.40    1 AREA1           1 ZONE1
+  TO      7     BACKBONE_7  230.00  1   -119.2  -161.1   200.4  75                       2.51   20.08    1 AREA1           1 ZONE1
+  TO      9     BACKBONE_9  230.00  1    158.9   208.7   262.3  98                       4.30   34.41    1 AREA1           1 ZONE1
+
+ BUS      9     BACKBONE_9  230.00 CKT     MW     MVAR     MVA   % 0.7944PU   -9.20  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      9
+                                                                   182.72KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      8     BACKBONE_8  230.00  1   -154.6  -174.3   233.0  98                       4.30   34.41    1 AREA1           1 ZONE1
+  TO     10     REG_GENQ_1  230.00  1    154.6   174.3   233.0 117                       6.02   51.61    1 AREA1           1 ZONE1
+
+ BUS     10     REG_GENQ_1  230.00 CKT     MW     MVAR     MVA   % 0.6570PU  -18.08  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     10
+                                                                   151.11KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              19.2     9.6    21.5
+  TO      9     BACKBONE_9  230.00  1   -148.6  -122.7   192.7 117                       6.02   51.61    1 AREA1           1 ZONE1
+  TO     11     LOAD_11     230.00  1    129.3   113.1   171.8 105                       4.79   41.02    1 AREA1           1 ZONE1
+
+ BUS     11     LOAD_11     230.00 CKT     MW     MVAR     MVA   % 0.5503PU  -29.19  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     11
+                                                                   126.56KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              12.5     6.3    14.0
+  TO     10     REG_GENQ_1  230.00  1   -124.5   -72.1   143.9 105                       4.79   41.02    1 AREA1           1 ZONE1
+  TO     12     REG_GENQ_2  230.00  1    112.0    65.8   129.9  94                       3.90   33.44    1 AREA1           1 ZONE1
+  TO     31     DC_RECT     230.00  1     -0.0     0.0     0.0   0                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS     12     REG_GENQ_2  230.00 CKT     MW     MVAR     MVA   % 0.4780PU  -42.96  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     12
+                                                                   109.94KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              16.9     9.9    19.6
+  TO      4     GEN_REM     230.00  1    -47.7   -80.8    93.8  78                       2.31   19.25    1 AREA1           1 ZONE1
+  TO     11     LOAD_11     230.00  1   -108.1   -32.4   112.8  94                       3.90   33.44    1 AREA1           1 ZONE1
+  TO     13     REG_FACTS   230.00  1    138.8   103.2   173.0 145                       9.17   78.59    1 AREA1           1 ZONE1
+
+ BUS     13     REG_FACTS   230.00 CKT     MW     MVAR     MVA   % 0.3647PU  -68.83  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     13
+                                                                   83.879KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                               8.0     3.9     8.9
+  TO     12     REG_GENQ_2  230.00  1   -129.7   -24.6   132.0 145                       9.17   78.59    1 AREA1           1 ZONE1
+  TO     14     SHUNT_A     230.00  1    102.8     8.0   103.1 128                       6.39   55.93    1 AREA1           1 ZONE1
+  TO     24     XF_B_HV     230.00  1     10.5     7.7    13.1  18                       0.10    0.77    1 AREA1           1 ZONE1
+  TO     32     DC_INV      230.00  1      8.3     4.9     9.7  13                       0.06    0.39    1 AREA1           1 ZONE1
+
+ BUS     14     SHUNT_A     230.00 CKT     MW     MVAR     MVA   % 0.3808PU  -99.73  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     14
+                                                                   87.578KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO SWITCHED SHUNT                        0.0    -0.0     0.0
+  TO     13     REG_FACTS   230.00  1    -96.4    47.9   107.6 128                       6.39   55.93    1 AREA1           1 ZONE1
+  TO     15     SHUNT_B     230.00  1     96.4   -47.9   107.6 128                       6.39   55.93    1 AREA1           1 ZONE1
+
+ BUS     15     SHUNT_B     230.00 CKT     MW     MVAR     MVA   % 0.4861PU -122.38  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     15
+                                                                   111.81KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO SWITCHED SHUNT                        0.0    -0.0     0.0
+  TO     14     SHUNT_A     230.00  1    -90.0   103.8   137.4 128                       6.39   55.93    1 AREA1           1 ZONE1
+  TO     16     LOAD_16     230.00  1     52.6  -131.3   141.5 132                       6.78   59.30    1 AREA1           1 ZONE1
+  TO     27     PQBRAK_A    230.00  1     19.9    14.6    24.6  32                       0.26    2.31    1 AREA1           1 ZONE1
+  TO     28     PQBRAK_B    230.00  1     17.5    12.9    21.8  28                       0.20    1.80    1 AREA1           1 ZONE1
+
+ BUS     16     LOAD_16     230.00 CKT     MW     MVAR     MVA   % 0.6736PU -130.70  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     16
+                                                                   154.94KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              13.8     5.9    15.0
+  TO     15     SHUNT_B     230.00  1    -45.9   190.6   196.1 132                       6.78   59.30    1 AREA1           1 ZONE1
+  TO     17     FACTS_A     230.00  1     32.0  -196.6   199.2 134                       6.99   61.18    1 AREA1           1 ZONE1
+
+ BUS     17     FACTS_A     230.00 CKT     MW     MVAR     MVA   % 0.8759PU -134.40  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     17
+                                                                   201.46KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO STATCON SHUNT                 STA     0.0  -105.1   105.1 100                                                                        "STATCON A"
+  TO     16     LOAD_16     230.00  1    -25.0   257.7   259.0 134                       6.99   61.18    1 AREA1           1 ZONE1
+  TO     18     REG_LIM     230.00  1     24.6   -87.5    90.9  47                       0.86    7.54    1 AREA1           1 ZONE1
+  TO     29     SHUNT_C     230.00  1      0.4   -65.0    65.0  41                       0.44    3.86    1 AREA1           1 ZONE1
+
+ BUS     18     REG_LIM     230.00 CKT     MW     MVAR     MVA   % 0.9440PU -136.08  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     18
+                                                                   217.13KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              27.4    17.0    32.3
+  TO      6     GEN_LIM     230.00  1    -24.9   -24.3    34.8  17                       0.08    0.68    1 AREA1           1 ZONE1
+  TO     17     FACTS_A     230.00  1    -23.7    95.1    98.0  47                       0.86    7.54    1 AREA1           1 ZONE1
+  TO     19     SWD_FROM    230.00  1     20.5    -2.7    20.7  10                       0.04    0.34    1 AREA1           1 ZONE1
+  TO     30     FACTS_B     230.00  1      0.6   -85.0    85.0  50                       0.65    5.68    1 AREA1           1 ZONE1
+
+ BUS     19     SWD_FROM    230.00 CKT     MW     MVAR     MVA   % 0.9444PU -137.02  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     19
+                                                                   217.21KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     18     REG_LIM     230.00  1    -20.5     3.0    20.7  10                       0.04    0.34    1 AREA1           1 ZONE1
+  TO     20     SWD_TIE     230.00  1     20.5    -3.0    20.7  10                       0.04    0.34    1 AREA1           1 ZONE1
+
+ BUS     20     SWD_TIE     230.00 CKT     MW     MVAR     MVA   % 0.9450PU -137.96  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     20
+                                                                   217.36KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              15.0     7.5    16.7
+  TO     19     SWD_FROM    230.00  1    -20.5     3.4    20.7  10                       0.04    0.34    1 AREA1           1 ZONE1
+  TO     34     SWD_A       230.00  1     12.5     6.1    13.9  10                       0.02    0.15    1 AREA1           1 ZONE1
+  TO     36     REMOTE_A    230.00  1     -7.0   -17.0    18.4  11                       0.03    0.26    1 AREA1           1 ZONE1
+
+ BUS     21     XF_A_HV     230.00 CKT     MW     MVAR     MVA   % 0.9587PU   -3.44  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     21
+                                                                   220.50KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO      7     BACKBONE_7  230.00  1    -33.4   -20.0    38.9  20                       0.13    0.99    1 AREA1           1 ZONE1
+  TO     22     XF_A_LV     115.00  1     33.4    20.0    38.9  26 1.1000HI              0.20    2.00    1 AREA1           1 ZONE1
+
+ BUS     22     XF_A_LV     115.00 CKT     MW     MVAR     MVA   % 0.8454PU   -5.88  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     22
+                                                                   97.224KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     21     XF_A_HV     230.00  1    -33.2   -18.1    37.8  25 1.0000UN              0.20    2.00    1 AREA1           1 ZONE1
+  TO     23     XF_A_LOAD   115.00  1     33.2    18.1    37.8  30                       0.20    1.60    1 AREA1           1 ZONE1
+
+ BUS     23     XF_A_LOAD   115.00 CKT     MW     MVAR     MVA   % 0.8249PU   -7.91  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     23
+                                                                   94.865KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              33.0    16.5    36.9
+  TO     22     XF_A_LV     115.00  1    -33.0   -16.5    36.9  30                       0.20    1.60    1 AREA1           1 ZONE1
+
+ BUS     24     XF_B_HV     230.00 CKT     MW     MVAR     MVA   % 0.3500PU  -71.39  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     24
+                                                                   80.496KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     13     REG_FACTS   230.00  1    -10.4    -7.0    12.6  18                       0.10    0.77    1 AREA1           1 ZONE1
+  TO     25     XF_B_LV     115.00  1     10.4     7.0    12.6   8 0.9000LO              0.10    1.04    1 AREA1           1 ZONE1
+
+ BUS     25     XF_B_LV     115.00 CKT     MW     MVAR     MVA   % 0.3691PU  -75.28  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     25
+                                                                   42.442KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     24     XF_B_HV     230.00  1    -10.3    -5.9    11.9   8 1.0000UN              0.10    1.04    1 AREA1           1 ZONE1
+  TO     26     XF_B_LOAD   115.00  1     10.3     5.9    11.9  22                       0.10    0.83    1 AREA1           1 ZONE1
+
+ BUS     26     XF_B_LOAD   115.00 CKT     MW     MVAR     MVA   % 0.3540PU  -78.65  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     26
+                                                                   40.708KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              10.2     5.1    11.4
+  TO     25     XF_B_LV     115.00  1    -10.2    -5.1    11.4  22                       0.10    0.83    1 AREA1           1 ZONE1
+
+ BUS     27     PQBRAK_A    230.00 CKT     MW     MVAR     MVA   % 0.4563PU -126.63  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     27
+                                                                   104.96KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              19.6    12.2    23.1
+  TO     15     SHUNT_B     230.00  1    -19.6   -12.2    23.1  32                       0.26    2.31    1 AREA1           1 ZONE1
+
+ BUS     28     PQBRAK_B    230.00 CKT     MW     MVAR     MVA   % 0.4595PU -126.10  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     28
+                                                                   105.69KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              17.3    11.1    20.5
+  TO     15     SHUNT_B     230.00  1    -17.3   -11.1    20.6  28                       0.20    1.80    1 AREA1           1 ZONE1
+
+ BUS     29     SHUNT_C     230.00 CKT     MW     MVAR     MVA   % 0.9279PU -134.79  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     29
+                                                                   213.41KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO SWITCHED SHUNT                        0.0   -68.9    68.9
+  TO     17     FACTS_A     230.00  1      0.0    68.9    68.9  41                       0.44    3.86    1 AREA1           1 ZONE1
+
+ BUS     30     FACTS_B     230.00 CKT     MW     MVAR     MVA   % 1.0070PU -136.52  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     30
+                                                                   231.62KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO STATCON SHUNT                 STA     0.0   -90.6    90.6 100                                                                        "STATCON B"
+  TO     18     REG_LIM     230.00  1      0.0    90.7    90.7  50                       0.65    5.68    1 AREA1           1 ZONE1
+
+ BUS     31     DC_RECT     230.00 CKT     MW     MVAR     MVA   % 0.5503PU  -29.19  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     31
+                                                                   126.56KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     11     LOAD_11     230.00  1      0.0    -0.0     0.0   0                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS     32     DC_INV      230.00 CKT     MW     MVAR     MVA   % 0.3556PU  -70.69  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     32
+                                                                   81.790KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     13     REG_FACTS   230.00  1     -8.3    -4.5     9.5  13                       0.06    0.39    1 AREA1           1 ZONE1
+  TO     33     DC_LOAD     230.00  1      8.3     4.5     9.5  17                       0.06    0.42    1 AREA1           1 ZONE1
+
+ BUS     33     DC_LOAD     230.00 CKT     MW     MVAR     MVA   % 0.3463PU  -72.83  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     33
+                                                                   79.654KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                               8.2     4.1     9.2
+  TO     32     DC_INV      230.00  1     -8.2    -4.1     9.2  17                       0.06    0.42    1 AREA1           1 ZONE1
+
+ BUS     34     SWD_A       230.00 CKT     MW     MVAR     MVA   % 0.9395PU -138.49  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     34
+                                                                   216.08KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     20     SWD_TIE     230.00  1    -12.5    -6.0    13.8  10                       0.02    0.15    1 AREA1           1 ZONE1
+  TO     35     SWD_LOAD    230.00  @1    12.5     6.0    13.8  10                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS     35     SWD_LOAD    230.00 CKT     MW     MVAR     MVA   % 0.9395PU -138.49  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     35
+                                                                   216.08KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              12.5     6.0    13.8
+  TO     34     SWD_A       230.00  @1   -12.5    -6.0    13.8  10                       0.00    0.00    1 AREA1           1 ZONE1
+
+ BUS     36     REMOTE_A    230.00 CKT     MW     MVAR     MVA   % 0.9582PU -137.73  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     36
+                                                                   220.39KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     20     SWD_TIE     230.00  1      7.0    17.2    18.6  11                       0.03    0.26    1 AREA1           1 ZONE1
+  TO     37     REMOTE_B    230.00  1     -7.0   -17.2    18.6  11                       0.03    0.26    1 AREA1           1 ZONE1
+
+ BUS     37     REMOTE_B    230.00 CKT     MW     MVAR     MVA   % 0.9714PU -137.51  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     37
+                                                                   223.43KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     36     REMOTE_A    230.00  1      7.0    17.5    18.9  11                       0.03    0.26    1 AREA1           1 ZONE1
+  TO     38     LOAD_END_A  230.00  1     22.6    10.5    24.9  17                       0.06    0.53    1 AREA1           1 ZONE1
+  TO     39     LOAD_END_B  230.00  1    -29.6   -28.0    40.8  28                       0.16    1.41    1 AREA1           1 ZONE1
+
+ BUS     38     LOAD_END_A  230.00 CKT     MW     MVAR     MVA   % 0.9608PU -138.56  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     38
+                                                                   220.99KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              22.5    10.0    24.6
+  TO     37     REMOTE_B    230.00  1    -22.5   -10.0    24.6  17                       0.06    0.53    1 AREA1           1 ZONE1
+
+ BUS     39     LOAD_END_B  230.00 CKT     MW     MVAR     MVA   % 0.9975PU -136.26  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     39
+                                                                   229.42KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO LOAD-PQ                              20.0     9.0    21.9
+  TO     37     REMOTE_B    230.00  1     29.8    29.4    41.9  28                       0.16    1.41    1 AREA1           1 ZONE1
+  TO     40     GEN_END     230.00  1    -49.8   -38.4    62.9  35                       0.24    1.99    1 AREA1           1 ZONE1
+
+ BUS     40     GEN_END     230.00 CKT     MW     MVAR     MVA   % 1.0200PU -134.99  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X     40
+  FROM GENERATION                         50.0    40.4R   64.3  64 234.60KV               MW     MVAR    1 AREA1           1 ZONE1
+  TO     39     LOAD_END_B  230.00  1     50.0    40.4    64.3  35                       0.24    1.99    1 AREA1           1 ZONE1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_S_40BUS_VARLIM0                                            %MVA FOR TRANSFORMERS
+                         40-BUS STRESS WITH IMMEDIATE VAR LIMITS                          % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     SLACK       230.00    1 1.0200    0.0    27.4      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 234.60          -49.0R     0.0    -0.0      2     GEN_GRP_A   230.00    1  1     12.0   -46.1                   13   350
+                                                                                3     GEN_GRP_B   230.00    1  1     15.5    -2.9                    4   350
+      2     GEN_GRP_A   230.00    1 1.0421   -0.4    70.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 239.67          180.0H     0.0    -0.0      1     SLACK       230.00    1  1    -11.8    47.2                   13   350
+                                                                                7     BACKBONE_7  230.00    1  1     81.8   132.8                   50   300
+      3     GEN_GRP_B   230.00    1 1.0207   -0.4    60.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 234.76           90.0H     0.0    -0.0      1     SLACK       230.00    1  1    -15.5     3.0                    4   350
+                                                                                7     BACKBONE_7  230.00    1  1     75.5    87.0                   38   300
+      4     GEN_REM     230.00    1 0.5698  -39.0    50.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 131.07          100.0H     0.0    -0.0     12     REG_GENQ_2  230.00    1  1     50.0   100.0                   78   250
+
+      5     GEN_LOCAL   230.00    1 0.9239   -3.7    40.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 212.50           50.0H     0.0    -0.0      8     BACKBONE_8  230.00    1  1     40.0    50.0                   28   250
+
+      6     GEN_LIM     230.00    1 0.9586 -135.4    25.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 220.47           25.0H     0.0    -0.0     18     REG_LIM     230.00    1  1     25.0    25.0                   17   220
+
+      7     BACKBONE_7  230.00    1 0.9742   -2.3     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 224.06            0.0      0.0    -0.0      2     GEN_GRP_A   230.00    1  1    -80.5  -121.6                   50   300
+                                                                                3     GEN_GRP_B   230.00    1  1    -74.7   -80.6                   38   300
+                                                                                8     BACKBONE_8  230.00    1  1    121.7   181.2                   75   300
+                                                                               21     XF_A_HV     230.00    1  1     33.5    21.0                   20   200
+      8     BACKBONE_8  230.00    1 0.8944   -4.9     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 205.72            0.0      0.0    -0.0      5     GEN_LOCAL   230.00    1  1    -39.7   -47.6                   28   250
+                                                                                7     BACKBONE_7  230.00    1  1   -119.2  -161.1                   75   300
+                                                                                9     BACKBONE_9  230.00    1  1    158.9   208.7                   98   300
+      9     BACKBONE_9  230.00    1 0.7944   -9.2     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 182.72            0.0      0.0    -0.0      8     BACKBONE_8  230.00    1  1   -154.6  -174.3                   98   300
+                                                                               10     REG_GENQ_1  230.00    1  1    154.6   174.3                  117   250
+     10     REG_GENQ_1  230.00    1 0.6570  -18.1     0.0     19.2     0.0 ---------------------------------------------------------------------------------
+                                  1 151.11            0.0      9.6    -0.0      9     BACKBONE_9  230.00    1  1   -148.6  -122.7                  117   250
+                                                                               11     LOAD_11     230.00    1  1    129.3   113.1                  105   250
+     11     LOAD_11     230.00    1 0.5503  -29.2     0.0     12.5     0.0 ---------------------------------------------------------------------------------
+                                  1 126.56            0.0      6.3    -0.0     10     REG_GENQ_1  230.00    1  1   -124.5   -72.1                  105   250
+                                                                               12     REG_GENQ_2  230.00    1  1    112.0    65.8                   94   250
+                                                                               31     DC_RECT     230.00    1  1     -0.0     0.0                    0   200
+     12     REG_GENQ_2  230.00    1 0.4780  -43.0     0.0     16.9     0.0 ---------------------------------------------------------------------------------
+                                  1 109.94            0.0      9.9    -0.0      4     GEN_REM     230.00    1  1    -47.7   -80.8                   78   250
+                                                                               11     LOAD_11     230.00    1  1   -108.1   -32.4                   94   250
+                                                                               13     REG_FACTS   230.00    1  1    138.8   103.2                  145   250
+     13     REG_FACTS   230.00    1 0.3647  -68.8     0.0      8.0     0.0 ---------------------------------------------------------------------------------
+                                  1 83.879            0.0      3.9    -0.0     12     REG_GENQ_2  230.00    1  1   -129.7   -24.6                  145   250
+                                                                               14     SHUNT_A     230.00    1  1    102.8     8.0                  128   220
+                                                                               24     XF_B_HV     230.00    1  1     10.5     7.7                   18   200
+                                                                               32     DC_INV      230.00    1  1      8.3     4.9                   13   200
+     14     SHUNT_A     230.00    1 0.3808  -99.7     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 87.578            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1    -96.4    47.9                  128   220
+                                                                               15     SHUNT_B     230.00    1  1     96.4   -47.9                  128   220
+     15     SHUNT_B     230.00    1 0.4861 -122.4     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 111.81            0.0      0.0    -0.0     14     SHUNT_A     230.00    1  1    -90.0   103.8                  128   220
+                                                                               16     LOAD_16     230.00    1  1     52.6  -131.3                  132   220
+                                                                               27     PQBRAK_A    230.00    1  1     19.9    14.6                   32   160
+                                                                               28     PQBRAK_B    230.00    1  1     17.5    12.9                   28   160
+     16     LOAD_16     230.00    1 0.6736 -130.7     0.0     13.8     0.0 ---------------------------------------------------------------------------------
+                                  1 154.94            0.0      5.9    -0.0     15     SHUNT_B     230.00    1  1    -45.9   190.6                  132   220
+                                                                               17     FACTS_A     230.00    1  1     32.0  -196.6                  134   220
+     17     FACTS_A     230.00    1 0.8759 -134.4     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 201.46            0.0      0.0    -0.0 STATCON SHUNT                      STA     0.0  -105.1  "STATCON A   "  100   120
+                                                                               16     LOAD_16     230.00    1  1    -25.0   257.7                  134   220
+                                                                               18     REG_LIM     230.00    1  1     24.6   -87.5                   47   220
+                                                                               29     SHUNT_C     230.00    1  1      0.4   -65.0                   41   180
+     18     REG_LIM     230.00    1 0.9440 -136.1     0.0     27.4     0.0 ---------------------------------------------------------------------------------
+                                  1 217.13            0.0     17.0    -0.0      6     GEN_LIM     230.00    1  1    -24.9   -24.3                   17   220
+                                                                               17     FACTS_A     230.00    1  1    -23.7    95.1                   47   220
+                                                                               19     SWD_FROM    230.00    1  1     20.5    -2.7                   10   220
+                                                                               30     FACTS_B     230.00    1  1      0.6   -85.0                   50   180
+     19     SWD_FROM    230.00    1 0.9444 -137.0     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 217.21            0.0      0.0    -0.0     18     REG_LIM     230.00    1  1    -20.5     3.0                   10   220
+                                                                               20     SWD_TIE     230.00    1  1     20.5    -3.0                   10   220
+     20     SWD_TIE     230.00    1 0.9450 -138.0     0.0     15.0     0.0 ---------------------------------------------------------------------------------
+                                  1 217.36            0.0      7.5    -0.0     19     SWD_FROM    230.00    1  1    -20.5     3.4                   10   220
+                                                                               34     SWD_A       230.00    1  1     12.5     6.1                   10   150
+                                                                               36     REMOTE_A    230.00    1  1     -7.0   -17.0                   11   180
+     21     XF_A_HV     230.00    1 0.9587   -3.4     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 220.50            0.0      0.0    -0.0      7     BACKBONE_7  230.00    1  1    -33.4   -20.0                   20   200
+                                                                               22     XF_A_LV     115.00    1  1     33.4    20.0  1.100HI          26   150
+     22     XF_A_LV     115.00    1 0.8454   -5.9     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 97.224            0.0      0.0    -0.0     21     XF_A_HV     230.00    1  1    -33.2   -18.1  1.000UN          25   150
+                                                                               23     XF_A_LOAD   115.00    1  1     33.2    18.1                   30   150
+     23     XF_A_LOAD   115.00    1 0.8249   -7.9     0.0     33.0     0.0 ---------------------------------------------------------------------------------
+                                  1 94.865            0.0     16.5    -0.0     22     XF_A_LV     115.00    1  1    -33.0   -16.5                   30   150
+
+     24     XF_B_HV     230.00    1 0.3500  -71.4     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 80.496            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1    -10.4    -7.0                   18   200
+                                                                               25     XF_B_LV     115.00    1  1     10.4     7.0  0.900LO           8   150
+     25     XF_B_LV     115.00    1 0.3691  -75.3     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 42.442            0.0      0.0    -0.0     24     XF_B_HV     230.00    1  1    -10.3    -5.9  1.000UN           8   150
+                                                                               26     XF_B_LOAD   115.00    1  1     10.3     5.9                   22   150
+     26     XF_B_LOAD   115.00    1 0.3540  -78.6     0.0     10.2     0.0 ---------------------------------------------------------------------------------
+                                  1 40.708            0.0      5.1    -0.0     25     XF_B_LV     115.00    1  1    -10.2    -5.1                   22   150
+
+     27     PQBRAK_A    230.00    1 0.4563 -126.6     0.0     19.6     0.0 ---------------------------------------------------------------------------------
+                                  1 104.96            0.0     12.2    -0.0     15     SHUNT_B     230.00    1  1    -19.6   -12.2                   32   160
+
+     28     PQBRAK_B    230.00    1 0.4595 -126.1     0.0     17.3     0.0 ---------------------------------------------------------------------------------
+                                  1 105.69            0.0     11.1    -0.0     15     SHUNT_B     230.00    1  1    -17.3   -11.1                   28   160
+
+     29     SHUNT_C     230.00    1 0.9279 -134.8     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 213.41            0.0      0.0   -68.9     17     FACTS_A     230.00    1  1      0.0    68.9                   41   180
+
+     30     FACTS_B     230.00    1 1.0070 -136.5     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 231.62            0.0      0.0    -0.0 STATCON SHUNT                      STA     0.0   -90.6  "STATCON B   "  100    90
+                                                                               18     REG_LIM     230.00    1  1      0.0    90.7                   50   180
+     31     DC_RECT     230.00    1 0.5503  -29.2     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 126.56            0.0      0.0    -0.0     11     LOAD_11     230.00    1  1      0.0    -0.0                    0   200
+
+     32     DC_INV      230.00    1 0.3556  -70.7     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 81.790            0.0      0.0    -0.0     13     REG_FACTS   230.00    1  1     -8.3    -4.5                   13   200
+                                                                               33     DC_LOAD     230.00    1  1      8.3     4.5                   17   160
+     33     DC_LOAD     230.00    1 0.3463  -72.8     0.0      8.2     0.0 ---------------------------------------------------------------------------------
+                                  1 79.654            0.0      4.1    -0.0     32     DC_INV      230.00    1  1     -8.2    -4.1                   17   160
+
+     34     SWD_A       230.00    1 0.9395 -138.5     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 216.08            0.0      0.0    -0.0     20     SWD_TIE     230.00    1  1    -12.5    -6.0                   10   150
+                                                                               35     SWD_LOAD    230.00    1  @1    12.5     6.0                   10   150
+     35     SWD_LOAD    230.00    1 0.9395 -138.5     0.0     12.5     0.0 ---------------------------------------------------------------------------------
+                                  1 216.08            0.0      6.0    -0.0     34     SWD_A       230.00    1  @1   -12.5    -6.0                   10   150
+
+     36     REMOTE_A    230.00    1 0.9582 -137.7     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 220.39            0.0      0.0    -0.0     20     SWD_TIE     230.00    1  1      7.0    17.2                   11   180
+                                                                               37     REMOTE_B    230.00    1  1     -7.0   -17.2                   11   180
+     37     REMOTE_B    230.00    1 0.9714 -137.5     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 223.43            0.0      0.0    -0.0     36     REMOTE_A    230.00    1  1      7.0    17.5                   11   180
+                                                                               38     LOAD_END_A  230.00    1  1     22.6    10.5                   17   150
+                                                                               39     LOAD_END_B  230.00    1  1    -29.6   -28.0                   28   150
+     38     LOAD_END_A  230.00    1 0.9608 -138.6     0.0     22.5     0.0 ---------------------------------------------------------------------------------
+                                  1 220.99            0.0     10.0    -0.0     37     REMOTE_B    230.00    1  1    -22.5   -10.0                   17   150
+
+     39     LOAD_END_B  230.00    1 0.9975 -136.3     0.0     20.0     0.0 ---------------------------------------------------------------------------------
+                                  1 229.42            0.0      9.0    -0.0     37     REMOTE_B    230.00    1  1     29.8    29.4                   28   150
+                                                                               40     GEN_END     230.00    1  1    -49.8   -38.4                   35   180
+     40     GEN_END     230.00    1 1.0200 -135.0    50.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 234.60           40.4R     0.0    -0.0     39     LOAD_END_B  230.00    1  1     50.0    40.4                   35   180
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+      4     GEN_REM     230.00    1 0.5698 131.07         5     GEN_LOCAL   230.00    1 0.9239 212.50
+      8     BACKBONE_8  230.00    1 0.8944 205.72         9     BACKBONE_9  230.00    1 0.7944 182.72
+     10     REG_GENQ_1  230.00    1 0.6570 151.11        11     LOAD_11     230.00    1 0.5503 126.56
+     12     REG_GENQ_2  230.00    1 0.4780 109.94        13     REG_FACTS   230.00    1 0.3647 83.879
+     14     SHUNT_A     230.00    1 0.3808 87.578        15     SHUNT_B     230.00    1 0.4861 111.81
+     16     LOAD_16     230.00    1 0.6736 154.94        17     FACTS_A     230.00    1 0.8759 201.46
+     18     REG_LIM     230.00    1 0.9440 217.13        19     SWD_FROM    230.00    1 0.9444 217.21
+     20     SWD_TIE     230.00    1 0.9450 217.36        22     XF_A_LV     115.00    1 0.8454 97.224
+     23     XF_A_LOAD   115.00    1 0.8249 94.865        24     XF_B_HV     230.00    1 0.3500 80.496
+     25     XF_B_LV     115.00    1 0.3691 42.442        26     XF_B_LOAD   115.00    1 0.3540 40.708
+     27     PQBRAK_A    230.00    1 0.4563 104.96        28     PQBRAK_B    230.00    1 0.4595 105.69
+     29     SHUNT_C     230.00    1 0.9279 213.41        31     DC_RECT     230.00    1 0.5503 126.56
+     32     DC_INV      230.00    1 0.3556 81.790        33     DC_LOAD     230.00    1 0.3463 79.654
+     34     SWD_A       230.00    1 0.9395 216.08        35     SWD_LOAD    230.00    1 0.9395 216.08
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+      9     BACKBONE_9  230.00     1     10     REG_GENQ_1  230.00*    1  1    293.3   250.0   117.3
+     10     REG_GENQ_1  230.00     1     11     LOAD_11     230.00*    1  1    261.5   250.0   104.6
+     12     REG_GENQ_2  230.00     1     13     REG_FACTS   230.00*    1  1    361.9   250.0   144.8
+     13     REG_FACTS   230.00*    1     14     SHUNT_A     230.00     1  1    282.7   220.0   128.5
+     14     SHUNT_A     230.00     1     15     SHUNT_B     230.00*    1  1    282.7   220.0   128.5
+     15     SHUNT_B     230.00*    1     16     LOAD_16     230.00     1  1    291.1   220.0   132.3
+     16     LOAD_16     230.00*    1     17     FACTS_A     230.00     1  1    295.6   220.0   134.4
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [SLACK       230.00] 1.02000 234.6         1.02000                      LOCAL  GENERATION      1     [SLACK       230.00]
+
+      5     [GEN_LOCAL   230.00] 0.92390 212.5         1.01000     -0.08610  -19.80 LOCAL  GENERATION      5     [GEN_LOCAL   230.00]
+
+     10     [REG_GENQ_1  230.00] 0.65701 151.1         1.02000     -0.36299  -83.49 REMOTE GENERATION      2     [GEN_GRP_A   230.00]
+                                                       1.02000     -0.36299  -83.49 REMOTE GENERATION      3     [GEN_GRP_B   230.00]
+
+     12     [REG_GENQ_2  230.00] 0.47801 109.9         1.01500     -0.53699 -123.51 REMOTE GENERATION      4     [GEN_REM     230.00]
+
+     13     [REG_FACTS   230.00] 0.36469  83.9         1.01500     -0.65031 -149.57 REMOTE SHUNT ELEM     17     [FACTS_A     230.00] FACTS DEVICE "STATCON A"
+
+     16     [LOAD_16     230.00] 0.67365 154.9     0.99500 1.02500 -0.32135  -73.91 REMOTE SWICH SHNT     14     [SHUNT_A     230.00]
+                                                   0.99500 1.02500 -0.32135  -73.91 REMOTE SWICH SHNT     15     [SHUNT_B     230.00]
+
+     18     [REG_LIM     230.00] 0.94403 217.1         1.01500     -0.07097  -16.32 REMOTE GENERATION      6     [GEN_LIM     230.00]
+
+     23     [XF_A_LOAD   115.00] 0.82491  94.9     0.98000 1.02000 -0.15509  -17.84 XFRMER CKT 1  BUS     21     [XF_A_HV     230.00] TO     22     [XF_A_LV     115.00]
+
+     25     [XF_B_LV     115.00] 0.36906  42.4     0.97500 1.01500 -0.60594  -69.68 XFRMER CKT 1  BUS     24     [XF_B_HV     230.00] TO     25     [XF_B_LV     115.00]
+
+     36     [REMOTE_A    230.00] 0.95822 220.4         1.01000     -0.05178  -11.91 REMOTE SHUNT ELEM     30     [FACTS_B     230.00] FACTS DEVICE "STATCON B"
+
+     37     [REMOTE_B    230.00] 0.97142 223.4         1.01000     -0.03858   -8.87 REMOTE SWICH SHNT     29     [SHUNT_C     230.00]
+
+     40     [GEN_END     230.00] 1.02000 234.6         1.02000                      LOCAL  GENERATION     40     [GEN_END     230.00]
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+ DC40              31     DC_RECT     230.00      32     DC_INV      230.00
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                     SHUNT
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                                 SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+     14     SHUNT_A     230.00   1       1                 0.0  0.38077  SWITCHED  1    0       0.0      30.0
+     15     SHUNT_B     230.00   1       1                 0.0  0.48611  SWITCHED  1    0       0.0      30.0
+     29     SHUNT_C     230.00   1       1                80.0  0.92787  SWITCHED  2    0     -20.0      80.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                            SYSTEM SUMMARY
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+     40     15     18      1      5      1      0     15      7      7      0      0      3      0      0     2     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     SLACK       230.00
+     40      0     37      2      1     40      0     0      0      0    1    0   0     1     1     1     0
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW       322.4      0.0      0.0    256.1      0.0      0.0      0.0      0.0      0.0     66.1     27.4
+ MVAR     436.4      0.0      0.0    134.0      0.0      0.0   -264.7      0.0      0.0    567.1    -49.0
+
+ TOTAL MISMATCH =    0.42 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.09 MVA     17     FACTS_A     230.00  0.000100  0.970   5.00 100.00   25
+   HIGH VOLTAGE = 1.04206 PU       2     GEN_GRP_A   230.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 0.34632 PU      33     DC_LOAD     230.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010  40 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                   WORST
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+     17     FACTS_A     230.00     -0.00     -0.09      0.09
+     30     FACTS_B     230.00     -0.00     -0.06      0.06
+     26     XF_B_LOAD   115.00      0.05      0.02      0.05
+     27     PQBRAK_A    230.00      0.03      0.02      0.04
+     28     PQBRAK_B    230.00      0.03      0.02      0.04
+     33     DC_LOAD     230.00      0.03      0.02      0.03
+     12     REG_GENQ_2  230.00      0.03      0.02      0.03
+     13     REG_FACTS   230.00      0.03      0.01      0.03
+     16     LOAD_16     230.00      0.02      0.01      0.02
+     11     LOAD_11     230.00      0.01      0.01      0.01
+     10     REG_GENQ_1  230.00      0.01      0.00      0.01
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                RATING SET
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                             UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                40
+      2      RATE2   RATING SET 2                                40
+      3      RATE3   RATING SET 3                                40
+      4      RATE4   RATING SET 4                                 1
+      5      RATE5   RATING SET 5                                 1
+      6      RATE6   RATING SET 6                                 1
+      7      RATE7   RATING SET 7                                 1
+      8      RATE8   RATING SET 8                                 1
+      9      RATE9   RATING SET 9                                 1
+     10      RATE10  RATING SET 10                                1
+     11      RATE11  RATING SET 11                                1
+     12      RATE12  RATING SET 12                                1
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                  BUS DATA
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     SLACK       230.00   3    0     0      0    1.02000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      2     GEN_GRP_A   230.00  -2    0     0      0    1.04206   -0.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+      3     GEN_GRP_B   230.00  -2    0     0      0    1.02069   -0.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+      4     GEN_REM     230.00  -2    0     0      0    0.56985  -39.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      5     GEN_LOCAL   230.00  -2    0     0      0    0.92390   -3.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+      6     GEN_LIM     230.00  -2    0     0      0    0.95857 -135.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+      7     BACKBONE_7  230.00   1    0     0      0    0.97416   -2.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+      8     BACKBONE_8  230.00   1    0     0      0    0.89443   -4.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+      9     BACKBONE_9  230.00   1    0     0      0    0.79443   -9.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+     10     REG_GENQ_1  230.00   1    1     0      0    0.65701  -18.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+     11     LOAD_11     230.00   1    1     0      0    0.55027  -29.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+     12     REG_GENQ_2  230.00   1    1     0      0    0.47801  -43.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+     13     REG_FACTS   230.00   1    1     0      0    0.36469  -68.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+     14     SHUNT_A     230.00   1    0     0      1    0.38077  -99.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+     15     SHUNT_B     230.00   1    0     0      1    0.48611 -122.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+     16     LOAD_16     230.00   1    1     0      0    0.67365 -130.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+     17     FACTS_A     230.00   1    0     0      0    0.87593 -134.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+     18     REG_LIM     230.00   1    1     0      0    0.94403 -136.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+     19     SWD_FROM    230.00   1    0     0      0    0.94441 -137.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+     20     SWD_TIE     230.00   1    1     0      0    0.94504 -138.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+     21     XF_A_HV     230.00   1    0     0      0    0.95868   -3.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+     22     XF_A_LV     115.00   1    0     0      0    0.84543   -5.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+     23     XF_A_LOAD   115.00   1    1     0      0    0.82491   -7.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+     24     XF_B_HV     230.00   1    0     0      0    0.34998  -71.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+     25     XF_B_LV     115.00   1    0     0      0    0.36906  -75.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+     26     XF_B_LOAD   115.00   1    1     0      0    0.35398  -78.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+     27     PQBRAK_A    230.00   1    1     0      0    0.45634 -126.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+     28     PQBRAK_B    230.00   1    1     0      0    0.45953 -126.1    1    1    1  1.10000 0.90000  1.10000 0.90000
+     29     SHUNT_C     230.00   1    0     0      1    0.92787 -134.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+     30     FACTS_B     230.00   1    0     0      0    1.00705 -136.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+     31     DC_RECT     230.00   1    0     0      0    0.55027  -29.2    1    1    1  1.10000 0.90000  1.10000 0.90000
+     32     DC_INV      230.00   1    0     0      0    0.35561  -70.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+     33     DC_LOAD     230.00   1    1     0      0    0.34632  -72.8    1    1    1  1.10000 0.90000  1.10000 0.90000
+     34     SWD_A       230.00   1    0     0      0    0.93948 -138.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+     35     SWD_LOAD    230.00   1    1     0      0    0.93948 -138.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+     36     REMOTE_A    230.00   1    0     0      0    0.95822 -137.7    1    1    1  1.10000 0.90000  1.10000 0.90000
+     37     REMOTE_B    230.00   1    0     0      0    0.97142 -137.5    1    1    1  1.10000 0.90000  1.10000 0.90000
+     38     LOAD_END_A  230.00   1    1     0      0    0.96082 -138.6    1    1    1  1.10000 0.90000  1.10000 0.90000
+     39     LOAD_END_B  230.00   1    1     0      0    0.99748 -136.3    1    1    1  1.10000 0.90000  1.10000 0.90000
+     40     GEN_END     230.00   2    0     0      0    1.02000 -135.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                 SWITCHED
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+     14     SHUNT_A     230.00  1  1  0 1.0250 0.9950     0.00  6:   5.00                                100.0     16     LOAD_16     230.00    0
+     15     SHUNT_B     230.00  1  1  0 1.0250 0.9950     0.00  6:   5.00                                100.0     16     LOAD_16     230.00    0
+     29     SHUNT_C     230.00  2  1  0 1.0100 1.0100    80.00  1: -20.00 1:  80.00                      100.0     37     REMOTE_B    230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                GENERATING
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     SLACK       230.00  3   1   27.4  -49.0  600.0 -600.0 1.0200 1.0200  100.0      1     SLACK       230.00    0
+      2     GEN_GRP_A   230.00 -2   1   70.0  180.0  180.0  -60.0 1.0200 0.6570   60.0     10     REG_GENQ_1  230.00    0
+      3     GEN_GRP_B   230.00 -2   1   60.0   90.0   90.0  -40.0 1.0200 0.6570   40.0     10     REG_GENQ_1  230.00    0
+      4     GEN_REM     230.00 -2   1   50.0  100.0  100.0  -40.0 1.0150 0.4780  100.0     12     REG_GENQ_2  230.00    0
+      5     GEN_LOCAL   230.00 -2   1   40.0   50.0   50.0  -30.0 1.0100 0.9239  100.0      5     GEN_LOCAL   230.00    0
+      6     GEN_LIM     230.00 -2   1   25.0   25.0   25.0  -15.0 1.0150 0.9440  100.0     18     REG_LIM     230.00    0
+     40     GEN_END     230.00  2   1   50.0   40.4   90.0  -40.0 1.0200 1.0200  100.0     40     GEN_END     230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                 GENERATOR
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                               UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     SLACK       230.00  3 1  1   27.4  -49.0  600.0 -600.0  700.0 -100.0    1 1.000             100.0 0.0000 1.0000
+      2     GEN_GRP_A   230.00 -2 1  1   70.0  180.0  180.0  -60.0  180.0    0.0    1 1.000             100.0 0.0000 1.0000
+      3     GEN_GRP_B   230.00 -2 1  1   60.0   90.0   90.0  -40.0  150.0    0.0    1 1.000             100.0 0.0000 1.0000
+      4     GEN_REM     230.00 -2 1  1   50.0  100.0  100.0  -40.0  130.0    0.0    1 1.000             100.0 0.0000 1.0000
+      5     GEN_LOCAL   230.00 -2 1  1   40.0   50.0   50.0  -30.0  120.0    0.0    1 1.000             100.0 0.0000 1.0000
+      6     GEN_LIM     230.00 -2 1  1   25.0   25.0   25.0  -15.0   80.0    0.0    1 1.000             100.0 0.0000 1.0000
+     40     GEN_END     230.00  2 1  1   50.0   40.4   90.0  -40.0  120.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                               BRANCH DATA
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3  RATE4  RATE5  RATE6  RATE7  RATE8  RATE9 RATE10 RATE11 RATE12 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     GEN_GRP_A   230.00  1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      1     SLACK       230.00*      3     GEN_GRP_B   230.00  1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_GRP_A   230.00*      7     BACKBONE_7  230.00  1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_GRP_B   230.00*      7     BACKBONE_7  230.00  1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     GEN_REM     230.00*     12     REG_GENQ_2  230.00  1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     GEN_LOCAL   230.00*      8     BACKBONE_8  230.00  1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      6     GEN_LIM     230.00*     18     REG_LIM     230.00  1   0.00600  0.05000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00*      8     BACKBONE_8  230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00*     21     XF_A_HV     230.00  1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      8     BACKBONE_8  230.00*      9     BACKBONE_9  230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      9     BACKBONE_9  230.00*     10     REG_GENQ_1  230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     10     REG_GENQ_1  230.00*     11     LOAD_11     230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     11     LOAD_11     230.00*     12     REG_GENQ_2  230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     11     LOAD_11     230.00*     31     DC_RECT     230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     12     REG_GENQ_2  230.00*     13     REG_FACTS   230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00*     14     SHUNT_A     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00*     24     XF_B_HV     230.00  1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00      32     DC_INV      230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     14     SHUNT_A     230.00*     15     SHUNT_B     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     16     LOAD_16     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     27     PQBRAK_A    230.00  1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     28     PQBRAK_B    230.00  1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     16     LOAD_16     230.00*     17     FACTS_A     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     17     FACTS_A     230.00*     18     REG_LIM     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     17     FACTS_A     230.00*     29     SHUNT_C     230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00*     19     SWD_FROM    230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00*     30     FACTS_B     230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     19     SWD_FROM    230.00*     20     SWD_TIE     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     20     SWD_TIE     230.00*     34     SWD_A       230.00  1   0.00800  0.07000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     20     SWD_TIE     230.00*     36     REMOTE_A    230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     22     XF_A_LV     115.00*     23     XF_A_LOAD   115.00  1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     25     XF_B_LV     115.00*     26     XF_B_LOAD   115.00  1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     32     DC_INV      230.00*     33     DC_LOAD     230.00  1   0.00800  0.06000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     34     SWD_A       230.00      35     SWD_LOAD    230.00* @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+     36     REMOTE_A    230.00*     37     REMOTE_B    230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     37     REMOTE_B    230.00*     38     LOAD_END_A  230.00  1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     37     REMOTE_B    230.00*     39     LOAD_END_B  230.00  1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     39     LOAD_END_B  230.00*     40     GEN_END     230.00  1   0.00600  0.05000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                               BRANCH DATA
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3  RATE4  RATE5  RATE6  RATE7  RATE8  RATE9 RATE10 RATE11 RATE12 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     SLACK       230.00*      2     GEN_GRP_A   230.00  1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      1     SLACK       230.00*      3     GEN_GRP_B   230.00  1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_GRP_A   230.00       1     SLACK       230.00* 1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      2     GEN_GRP_A   230.00*      7     BACKBONE_7  230.00  1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_GRP_B   230.00       1     SLACK       230.00* 1   0.00500  0.05000  0.00000   1  350.0  350.0  350.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      3     GEN_GRP_B   230.00*      7     BACKBONE_7  230.00  1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      4     GEN_REM     230.00*     12     REG_GENQ_2  230.00  1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      5     GEN_LOCAL   230.00*      8     BACKBONE_8  230.00  1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      6     GEN_LIM     230.00*     18     REG_LIM     230.00  1   0.00600  0.05000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00       2     GEN_GRP_A   230.00* 1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00       3     GEN_GRP_B   230.00* 1   0.00600  0.05000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00*      8     BACKBONE_8  230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      7     BACKBONE_7  230.00*     21     XF_A_HV     230.00  1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      8     BACKBONE_8  230.00       5     GEN_LOCAL   230.00* 1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      8     BACKBONE_8  230.00       7     BACKBONE_7  230.00* 1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      8     BACKBONE_8  230.00*      9     BACKBONE_9  230.00  1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      9     BACKBONE_9  230.00       8     BACKBONE_8  230.00* 1   0.00500  0.04000  0.00000   1  300.0  300.0  300.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+      9     BACKBONE_9  230.00*     10     REG_GENQ_1  230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     10     REG_GENQ_1  230.00       9     BACKBONE_9  230.00* 1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     10     REG_GENQ_1  230.00*     11     LOAD_11     230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     11     LOAD_11     230.00      10     REG_GENQ_1  230.00* 1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     11     LOAD_11     230.00*     12     REG_GENQ_2  230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     11     LOAD_11     230.00*     31     DC_RECT     230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     12     REG_GENQ_2  230.00       4     GEN_REM     230.00* 1   0.00600  0.05000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     12     REG_GENQ_2  230.00      11     LOAD_11     230.00* 1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     12     REG_GENQ_2  230.00*     13     REG_FACTS   230.00  1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00      12     REG_GENQ_2  230.00* 1   0.00700  0.06000  0.00000   1  250.0  250.0  250.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00*     14     SHUNT_A     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00*     24     XF_B_HV     230.00  1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     13     REG_FACTS   230.00      32     DC_INV      230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     14     SHUNT_A     230.00      13     REG_FACTS   230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     14     SHUNT_A     230.00*     15     SHUNT_B     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00      14     SHUNT_A     230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     16     LOAD_16     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     27     PQBRAK_A    230.00  1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     15     SHUNT_B     230.00*     28     PQBRAK_B    230.00  1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     16     LOAD_16     230.00      15     SHUNT_B     230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     16     LOAD_16     230.00*     17     FACTS_A     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     17     FACTS_A     230.00      16     LOAD_16     230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     17     FACTS_A     230.00*     18     REG_LIM     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     17     FACTS_A     230.00*     29     SHUNT_C     230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00       6     GEN_LIM     230.00* 1   0.00600  0.05000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00      17     FACTS_A     230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00*     19     SWD_FROM    230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     18     REG_LIM     230.00*     30     FACTS_B     230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     19     SWD_FROM    230.00      18     REG_LIM     230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     19     SWD_FROM    230.00*     20     SWD_TIE     230.00  1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     20     SWD_TIE     230.00      19     SWD_FROM    230.00* 1   0.00800  0.07000  0.00000   1  220.0  220.0  220.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     20     SWD_TIE     230.00*     34     SWD_A       230.00  1   0.00800  0.07000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     20     SWD_TIE     230.00*     36     REMOTE_A    230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     21     XF_A_HV     230.00       7     BACKBONE_7  230.00* 1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     22     XF_A_LV     115.00*     23     XF_A_LOAD   115.00  1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     23     XF_A_LOAD   115.00      22     XF_A_LV     115.00* 1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     24     XF_B_HV     230.00      13     REG_FACTS   230.00* 1   0.00800  0.06000  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     25     XF_B_LV     115.00*     26     XF_B_LOAD   115.00  1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     26     XF_B_LOAD   115.00      25     XF_B_LV     115.00* 1   0.01000  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    5.0    1 1.000
+     27     PQBRAK_A    230.00      15     SHUNT_B     230.00* 1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     28     PQBRAK_B    230.00      15     SHUNT_B     230.00* 1   0.01000  0.09000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     29     SHUNT_C     230.00      17     FACTS_A     230.00* 1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     30     FACTS_B     230.00      18     REG_LIM     230.00* 1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     31     DC_RECT     230.00      11     LOAD_11     230.00* 1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     32     DC_INV      230.00*     13     REG_FACTS   230.00  1   0.00800  0.05500  0.00000   1  200.0  200.0  200.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     32     DC_INV      230.00*     33     DC_LOAD     230.00  1   0.00800  0.06000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     33     DC_LOAD     230.00      32     DC_INV      230.00* 1   0.00800  0.06000  0.00000   1  160.0  160.0  160.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     34     SWD_A       230.00      20     SWD_TIE     230.00* 1   0.00800  0.07000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     34     SWD_A       230.00      35     SWD_LOAD    230.00* @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+     35     SWD_LOAD    230.00*     34     SWD_A       230.00  @1  0.00000  0.00010  0.00000 Z 1  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0  150.0    0.0    1 1.000
+     36     REMOTE_A    230.00      20     SWD_TIE     230.00* 1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     36     REMOTE_A    230.00*     37     REMOTE_B    230.00  1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     37     REMOTE_B    230.00      36     REMOTE_A    230.00* 1   0.00800  0.07000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     37     REMOTE_B    230.00*     38     LOAD_END_A  230.00  1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     37     REMOTE_B    230.00*     39     LOAD_END_B  230.00  1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     38     LOAD_END_A  230.00      37     REMOTE_B    230.00* 1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     39     LOAD_END_B  230.00      37     REMOTE_B    230.00* 1   0.00900  0.08000  0.00000   1  150.0  150.0  150.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     39     LOAD_END_B  230.00*     40     GEN_END     230.00  1   0.00600  0.05000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+     40     GEN_END     230.00      39     LOAD_END_B  230.00* 1   0.00600  0.05000  0.00000   1  180.0  180.0  180.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0   10.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                              TWO-TERMINAL
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                            DC LINE DATA
+ X-- NAME --X MDC   RDC    RCOMP   DELTI SETVAL VSCHED DCVMIN VCMODE DCAMPS  VCOMP METER CCC_ITMAX CCC_ACC
+ DC40         -1  10.000  10.000  0.1000   40.0  400.0    0.0  390.0    0.0    0.0  RECT   100    1.00000
+
+      BUS#-SCT X-- NAME --X BASKV  ALF/GAM    MIN     MAX     PAC     QAC     VDC NB  EBASE RC-OHMS XC-OHMS XCCC-OHMS  TR
+ R:     31     DC_RECT     230.00   90.00   12.50   17.50     0.0     0.0     0.0  4  230.0  0.000   5.000   0.000  1.00000
+ I:     32     DC_INV      230.00   90.00   17.00   17.00     0.0     0.0     0.0  4  230.0  0.000   5.000   0.000  1.00000
+
+                                    X-------- MEASURING BUS ---------X X----- WINDING 1 SIDE ------X X----- WINDING 2 SIDE ------X
+      TAP    TAPMIN  TAPMAX  TAPSTP   BUS#-SCT X-- NAME --X BASKV NODE   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV CKT  RATIO
+ R: 1.25000 0.92500 1.25000 0.01250      0                           0
+ I: 1.30500 0.96600 1.30500 0.01250      0                           0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                 LOAD DATA
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+     10     REG_GENQ_1  230.00 1   1 1  1.000   25.0   12.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     11     LOAD_11     230.00 1   1 1  1.000   20.0   10.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     12     REG_GENQ_2  230.00 1   1 1  1.000   32.5   19.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     13     REG_FACTS   230.00 1   1 1  1.000   22.5   11.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     16     LOAD_16     230.00 1   1 1  1.000   17.5    7.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     18     REG_LIM     230.00 1   1 1  1.000   27.5   17.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     20     SWD_TIE     230.00 1   1 1  1.000   15.0    7.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     23     XF_A_LOAD   115.00 1   1 1  1.000   35.0   17.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     26     XF_B_LOAD   115.00 1   1 1  1.000   30.0   15.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     27     PQBRAK_A    230.00 1   1 1  1.000   40.0   25.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     28     PQBRAK_B    230.00 1   1 1  1.000   35.0   22.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     33     DC_LOAD     230.00 1   1 1  1.000   25.0   12.5    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     35     SWD_LOAD    230.00 1   1 1  1.000   12.5    6.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     38     LOAD_END_A  230.00 1   1 1  1.000   22.5   10.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+     39     LOAD_END_B  230.00 1   1 1  1.000   20.0    9.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                             FACTS SENDING
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+ STATCON A        17     FACTS_A     230.00                                 1  1.0150  120.0  100.0     0.0     1     13     REG_FACTS   230.00    0
+ STATCON B        30     FACTS_B     230.00                                 1  1.0100   90.0  100.0     0.0     1     36     REMOTE_A    230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                            FACTS TERMINAL
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                             END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+ STATCON A        17     FACTS_A     230.00                                 1    0.0    0.0 1.1000 0.9000 1.0000   0.0 0.05000   0
+ STATCON B        30     FACTS_B     230.00                                 1    0.0    0.0 1.1000 0.9000 1.0000   0.0 0.05000   0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                                   FIXED
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                               AREA TOTALS
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1           322.4      0.0      0.0    256.1      0.0      0.0      0.0      0.0     66.1      0.0      0.0      0.0
+ AREA1          436.4      0.0      0.0    134.0   -264.6      0.0     -0.1      0.0    567.1      0.0      0.0
+
+ COLUMN         322.4      0.0      0.0    256.1      0.0      0.0      0.0      0.0     66.1      0.0      0.0      0.0
+ TOTALS         436.4      0.0      0.0    134.0   -264.6      0.0     -0.1      0.0    567.1      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_S_40BUS_VARLIM0                                               ZONE TOTALS
+ 40-BUS STRESS WITH IMMEDIATE VAR LIMITS                              IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1           322.4      0.0      0.0    256.1      0.0      0.0      0.0      0.0     66.1      0.0      0.0
+ ZONE1          436.4      0.0      0.0    134.0   -264.6      0.0     -0.1      0.0    567.1      0.0      0.0
+
+ COLUMN         322.4      0.0      0.0    256.1      0.0      0.0      0.0      0.0     66.1      0.0      0.0
+ TOTALS         436.4      0.0      0.0    134.0   -264.6      0.0     -0.1      0.0    567.1      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_s_40bus_varlim0.sav on THU, SEP 10 2026  11:23
+ Batch command complete.
+ : 

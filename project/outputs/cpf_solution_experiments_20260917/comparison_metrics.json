@@ -1,0 +1,82 @@
+[
+  {
+    "variant": "Baseline",
+    "step": 0.1,
+    "points": 129,
+    "max_sample_lambda": 1.245160631217986,
+    "final_lambda": 1.2450610053835112,
+    "final_V5": 0.6735371079349901,
+    "FULL_complete": false,
+    "stop": "vsc_capability_limit"
+  },
+  {
+    "variant": "A: coupled current",
+    "step": 0.1,
+    "points": 201,
+    "max_sample_lambda": 1.2459015559918254,
+    "final_lambda": 1.2125559744168375,
+    "final_V5": 0.7791997452280359,
+    "FULL_complete": false,
+    "stop": "step_limit"
+  },
+  {
+    "variant": "B: continuation + all-control direction",
+    "step": 0.1,
+    "points": 43,
+    "max_sample_lambda": 1.2437849196001964,
+    "final_lambda": 0.6030647048468631,
+    "final_V5": 0.23572217533819595,
+    "FULL_complete": false,
+    "stop": "vsc_capability_limit"
+  },
+  {
+    "variant": "A+B: combined + all-control direction",
+    "step": 0.1,
+    "points": 42,
+    "max_sample_lambda": 1.2434893578440083,
+    "final_lambda": 0.6030797541155264,
+    "final_V5": 0.2357156666725172,
+    "FULL_complete": false,
+    "stop": "vsc_capability_limit"
+  },
+  {
+    "variant": "Baseline",
+    "step": 0.05,
+    "points": 45,
+    "max_sample_lambda": 1.2452543009372488,
+    "final_lambda": 1.2452543009372488,
+    "final_V5": 0.6806983347744774,
+    "FULL_complete": false,
+    "stop": "gen_capability_limit"
+  },
+  {
+    "variant": "A: coupled current",
+    "step": 0.05,
+    "points": 201,
+    "max_sample_lambda": 1.2459014554362153,
+    "final_lambda": 1.220082858860957,
+    "final_V5": 0.7685234225436718,
+    "FULL_complete": false,
+    "stop": "step_limit"
+  },
+  {
+    "variant": "B: continuation + all-control direction",
+    "step": 0.05,
+    "points": 77,
+    "max_sample_lambda": 1.2441256814009576,
+    "final_lambda": 0.6030482420229518,
+    "final_V5": 0.235708592713018,
+    "FULL_complete": false,
+    "stop": "vsc_capability_limit"
+  },
+  {
+    "variant": "A+B: combined + all-control direction",
+    "step": 0.05,
+    "points": 79,
+    "max_sample_lambda": 1.2439024557524645,
+    "final_lambda": 0.6030586605112076,
+    "final_V5": 0.23570747301438308,
+    "FULL_complete": false,
+    "stop": "vsc_capability_limit"
+  }
+]

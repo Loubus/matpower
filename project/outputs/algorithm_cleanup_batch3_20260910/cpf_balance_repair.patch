@@ -1,0 +1,79 @@
+--- a/matpower/lib/runcpf_vsc_mtdc.m
++++ b/matpower/lib/runcpf_vsc_mtdc.m
+@@ -3424,7 +3424,7 @@
+         profile_cleanup = profile_time_scope('solve_pf_at_lambda'); %#ok<NASGU>
+         x = x0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+         success = normF < ctx.opt.tol;
+         iterations = 0;
+         max_it = max(ctx.opt.max_it, 30);
+@@ -3441,13 +3441,27 @@
+         end
+     end
+ 
++    function value = unified_residual_norm(F, model)
++        % Retain every scalar equation (including CPF parameterization), and
++        % also require the complex nodal power mismatch to meet the same tol.
++        % Separate P/Q components can each pass while hypot(P,Q) exceeds tol.
++        np = length(model.nonref);
++        nq = length(model.qeq);
++        ac_mismatch = complex(zeros(model.nb, 1));
++        ac_mismatch(model.nonref) = F(1:np);
++        ac_mismatch(model.qeq) = ac_mismatch(model.qeq) + ...
++            1j * F(np + (1:nq));
++        % A single norm preserves NaN propagation from any scalar equation.
++        value = norm([F; ac_mismatch], Inf);
++    end
++
+     function [x, F, eval, normF, ctx_lam] = unified_accept_pf_step( ...
+             ctx, lam, Sdelta, x0, dx, normF0)
+         alpha = 1;
+         while alpha >= 1/1024
+             xt = x0 + alpha * dx;
+             [Ft, evalt, ctx_t] = unified_eval_at_lambda(ctx, xt, lam, Sdelta);
+-            normFt = norm(Ft, Inf);
++            normFt = unified_residual_norm(Ft, ctx.model);
+             if isfinite(normFt) && normFt < normF0
+                 x = xt;
+                 F = Ft;
+@@ -3460,7 +3474,7 @@
+         end
+         x = x0 + dx;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+     end
+ 
+     function [x, lam, eval, normF, iterations, success] = ...
+@@ -3472,7 +3486,7 @@
+         iterations = 0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+         P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-        normF = norm([F; P], Inf);
++        normF = unified_residual_norm([F; P], ctx.model);
+         while normF >= ctx.opt.tol && iterations < ctx.opt.max_it
+             if isempty(eval) || ~isfinite(normF)
+                 break;
+@@ -3488,7 +3502,7 @@
+             lam = lam + dx(end);
+             [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+             P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-            normF = norm([F; P], Inf);
++            normF = unified_residual_norm([F; P], ctx.model);
+         end
+         success = normF < ctx.opt.tol;
+     end
+@@ -3520,9 +3534,9 @@
+         hlo = 0;
+         hhi = hstep;
+         [Flo, eval_lo] = unified_eval_at_lambda(ctx, xlo, lamlo, Sdelta);
+-        norm_lo = norm(Flo, Inf);
++        norm_lo = unified_residual_norm(Flo, ctx.model);
+         [Fhi, eval_hi] = unified_eval_at_lambda(ctx, xhi, lamhi, Sdelta);
+-        norm_hi = norm(Fhi, Inf);
++        norm_hi = unified_residual_norm(Fhi, ctx.model);
+ 
+         for ii = 1:max_loc_it
+             if abs(zhi(end)) <= tol || abs(zlo(end)) <= tol || ...

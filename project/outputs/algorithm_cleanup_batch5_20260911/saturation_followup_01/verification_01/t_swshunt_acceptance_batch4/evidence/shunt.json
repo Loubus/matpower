@@ -1,0 +1,337 @@
+[
+  {
+    "id": "grid_-20_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_-20_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_-20_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_-20_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_-10_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_-10_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_-10_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_-10_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_0_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_0_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_0_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_0_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_10_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_10_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_10_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_10_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_20_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_20_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_20_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_20_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_30_-1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_30_-1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "grid_30_1",
+    "passed": true,
+    "detail": "both adapters take one adjacent legal mixed-sign step or retain a bound"
+  },
+  {
+    "id": "grid_30_1.fixed_bs",
+    "passed": true,
+    "detail": "fixed BS remains separate from BINIT"
+  },
+  {
+    "id": "direction-1.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 2.38102134317e-09 pu"
+  },
+  {
+    "id": "direction-1.physical",
+    "passed": true,
+    "detail": "independent AC solve confirms capacitive increase raises voltage and inductive decrease lowers it"
+  },
+  {
+    "id": "direction-1.injection",
+    "passed": true,
+    "detail": "independent admittance difference confirms BINIT times squared local voltage"
+  },
+  {
+    "id": "direction1.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 1.72194152945e-10 pu"
+  },
+  {
+    "id": "direction1.physical",
+    "passed": true,
+    "detail": "independent AC solve confirms capacitive increase raises voltage and inductive decrease lowers it"
+  },
+  {
+    "id": "direction1.injection",
+    "passed": true,
+    "detail": "independent admittance difference confirms BINIT times squared local voltage"
+  },
+  {
+    "id": "disabled1",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled2",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled3",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled4",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled5",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled6",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "disabled7",
+    "passed": true,
+    "detail": "no automatic move"
+  },
+  {
+    "id": "band0.96999000",
+    "passed": true,
+    "detail": "inclusive deadband edges"
+  },
+  {
+    "id": "band1.03001000",
+    "passed": true,
+    "detail": "inclusive deadband edges"
+  },
+  {
+    "id": "band1.00000000",
+    "passed": true,
+    "detail": "inclusive deadband edges"
+  },
+  {
+    "id": "reversed_band",
+    "passed": true,
+    "detail": "band ordering preserved"
+  },
+  {
+    "id": "remote.mapping",
+    "passed": true,
+    "detail": "remote voltage uses external identity rather than measurement row order"
+  },
+  {
+    "id": "remote.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 1.89912854352e-09 pu"
+  },
+  {
+    "id": "remote.physical",
+    "passed": true,
+    "detail": "remote voltage rises after capacitive step"
+  },
+  {
+    "id": "remote.fallback",
+    "passed": true,
+    "detail": "missing remote bus falls back to local bus"
+  },
+  {
+    "id": "vote_100_100",
+    "passed": true,
+    "detail": "weighted competing errors; upward tie; only winning voters move"
+  },
+  {
+    "id": "permutation_100_100",
+    "passed": true,
+    "detail": "device permutation preserves decisions"
+  },
+  {
+    "id": "vote_25_100",
+    "passed": true,
+    "detail": "weighted competing errors; upward tie; only winning voters move"
+  },
+  {
+    "id": "permutation_25_100",
+    "passed": true,
+    "detail": "device permutation preserves decisions"
+  },
+  {
+    "id": "vote_200_50",
+    "passed": true,
+    "detail": "weighted competing errors; upward tie; only winning voters move"
+  },
+  {
+    "id": "permutation_200_50",
+    "passed": true,
+    "detail": "device permutation preserves decisions"
+  },
+  {
+    "id": "simultaneous",
+    "passed": true,
+    "detail": "same-bus contributions accumulate; both devices use one voltage sample"
+  },
+  {
+    "id": "group.settled.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 6.18442578814e-10 pu"
+  },
+  {
+    "id": "lock1",
+    "passed": true,
+    "detail": "explicitly locked rows neither move nor vote against an eligible peer"
+  },
+  {
+    "id": "lock2",
+    "passed": true,
+    "detail": "explicitly locked rows neither move nor vote against an eligible peer"
+  },
+  {
+    "id": "lock3",
+    "passed": true,
+    "detail": "explicitly locked rows neither move nor vote against an eligible peer"
+  },
+  {
+    "id": "explicit_release",
+    "passed": true,
+    "detail": "caller clearing the explicit lock permits the next step; no inferred release rule"
+  },
+  {
+    "id": "continuous.first",
+    "passed": true,
+    "detail": "quarter span times literal 40 percent; no weight normalization"
+  },
+  {
+    "id": "continuous.history",
+    "passed": true,
+    "detail": "AC sensitivity estimate and unified fixed increment intentionally differ"
+  },
+  {
+    "id": "continuous.bound-20",
+    "passed": true,
+    "detail": "continuous physical bound is retained"
+  },
+  {
+    "id": "continuous.bound30",
+    "passed": true,
+    "detail": "continuous physical bound is retained"
+  },
+  {
+    "id": "continuous.settled.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 4.11054358791e-14 pu"
+  },
+  {
+    "id": "screening.rejected",
+    "passed": true,
+    "detail": "AC rejects pathological electrical candidate and retains BINIT"
+  },
+  {
+    "id": "screening.provisional",
+    "passed": true,
+    "detail": "direct unified selector is provisional; electrical acceptance belongs to outer solver"
+  },
+  {
+    "id": "cycle.balance",
+    "passed": true,
+    "detail": "success=1, AC nodal residual 2.37780900177e-14 pu"
+  },
+  {
+    "id": "cycle.ac",
+    "passed": true,
+    "detail": "AC detects actual repeated BINIT state and retains best visited solution"
+  },
+  {
+    "id": "cycle.unified",
+    "passed": true,
+    "detail": "direct unified passes can reverse; outer solver owns history"
+  }
+]

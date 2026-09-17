@@ -1,0 +1,16 @@
+{
+  "nose_lam": true,
+  "nose_bus": true,
+  "nose_gen": true,
+  "nose_branch": true,
+  "nose_vsc": true,
+  "nose_busdc": true,
+  "nose_branchdc": true,
+  "full_lam": true,
+  "full_bus": true,
+  "full_gen": true,
+  "full_branch": true,
+  "full_vsc": true,
+  "full_busdc": true,
+  "full_branchdc": true
+}

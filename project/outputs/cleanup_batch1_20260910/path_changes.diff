@@ -1,0 +1,144 @@
+--- before/iniciar_proyecto.m
++++ iniciar_proyecto.m
+@@ -4,12 +4,37 @@
+ root = fileparts(mfilename('fullpath'));
+ addpath(fullfile(root,'matpower'));
+ matpower_project_startup;
+-addpath(fullfile(root,'auditoria_psse_matpower'));
+-addpath(fullfile(root,'auditoria_psse_matpower','tools'));
+-addpath(fullfile(root,'auditoria_psse_matpower','transpa_reduccion'));
+-addpath(fullfile(root,'auditoria_psse_matpower','transpa_reduccion','cpf_psse_runner'));
+-addpath(fullfile(root,'auditoria_psse_matpower','beerten_5bus'));
+-addpath(fullfile(root,'auditoria_psse_matpower','beerten_5bus','cpf_runner'));
+-addpath(fullfile(root,'auditoria_psse_matpower','results','transpa_reduccion_v1'));
++% Remove only the project's former default study paths, if this session has
++% already used them. MATLAB/MCP and unrelated user paths are left intact.
++legacy = {
++    fullfile(root,'auditoria_psse_matpower')
++    fullfile(root,'auditoria_psse_matpower','tools')
++    fullfile(root,'auditoria_psse_matpower','transpa_reduccion')
++    fullfile(root,'auditoria_psse_matpower','transpa_reduccion','cpf_psse_runner')
++    fullfile(root,'auditoria_psse_matpower','beerten_5bus')
++    fullfile(root,'auditoria_psse_matpower','beerten_5bus','cpf_runner')
++    fullfile(root,'auditoria_psse_matpower','results','transpa_reduccion_v1')
++    fullfile(root,'archive','psse_compatibility','auditoria_psse_matpower')
++    fullfile(root,'archive','psse_compatibility','auditoria_psse_matpower','tools')
++    fullfile(root,'archive','transpa_reduction_v1','studies')
++    fullfile(root,'archive','transpa_reduction_v1','studies','cpf_psse_runner')
++    fullfile(root,'archive','transpa_reduction_v1','results')
++    };
++% Filter the stored path text: rmpath canonicalizes Windows junctions and
++% may miss an old path entry after its directory has been moved.
++path_entries = strsplit(path,pathsep);
++keep = true(size(path_entries));
++for k = 1:numel(legacy)
++    keep = keep & ~strcmpi(path_entries,legacy{k});
++end
++if any(~keep)
++    path(strjoin(path_entries(keep),pathsep));
++end
++addpath(fullfile(root,'cases','beerten','variants'));
++for case_id = {'14','30','39','57'}
++    addpath(fullfile(root,'cases','ieee',case_id{1}));
++end
++addpath(fullfile(root,'studies','beerten'));
++addpath(fullfile(root,'studies','beerten','cpf_runner'));
+ fprintf('Proyecto listo. MATPOWER: %s\n',which('runpf_psse'));
+ end
+--- before/t_mpxt_psse.m
++++ matpower/lib/t/t_mpxt_psse.m
+@@ -1300,13 +1300,25 @@
+ 
+ function genq_dir = psse_genq_audit_dir()
+ genq_dir = '';
++case_file = psse_auditoria_case_file(fullfile( ...
++    'psse_validation_cases_genq', 'psse_genq_3bus_local_inband.raw'));
++if ~isempty(case_file)
++    genq_dir = fileparts(case_file);
++end
++
++function case_file = psse_auditoria_case_file(rel_path)
++case_file = '';
+ root = fileparts(which('t_mpxt_psse'));
+ for k = 1:8
+-    candidate = fullfile(root, 'auditoria_psse_matpower', ...
+-        'psse_validation_cases_genq');
+-    if exist(candidate, 'dir') == 7
+-        genq_dir = candidate;
+-        return;
++    candidates = {
++        fullfile(root, 'tests', 'fixtures', 'controls', 'legacy_regression', rel_path)
++        fullfile(root, 'auditoria_psse_matpower', rel_path)
++        };
++    for j = 1:numel(candidates)
++        if exist(candidates{j}, 'file') == 2
++            case_file = candidates{j};
++            return;
++        end
+     end
+     parent = fileparts(root);
+     if isempty(parent) || strcmp(parent, root)
+@@ -1315,31 +1327,15 @@
+     root = parent;
+ end
+ 
+-candidate = fullfile(pwd, 'auditoria_psse_matpower', ...
+-    'psse_validation_cases_genq');
+-if exist(candidate, 'dir') == 7
+-    genq_dir = candidate;
+-end
+-
+-function case_file = psse_auditoria_case_file(rel_path)
+-case_file = '';
+-root = fileparts(which('t_mpxt_psse'));
+-for k = 1:8
+-    candidate = fullfile(root, 'auditoria_psse_matpower', rel_path);
+-    if exist(candidate, 'file') == 2
+-        case_file = candidate;
++candidates = {
++    fullfile(pwd, 'tests', 'fixtures', 'controls', 'legacy_regression', rel_path)
++    fullfile(pwd, 'auditoria_psse_matpower', rel_path)
++    };
++for j = 1:numel(candidates)
++    if exist(candidates{j}, 'file') == 2
++        case_file = candidates{j};
+         return;
+     end
+-    parent = fileparts(root);
+-    if isempty(parent) || strcmp(parent, root)
+-        break;
+-    end
+-    root = parent;
+-end
+-
+-candidate = fullfile(pwd, 'auditoria_psse_matpower', rel_path);
+-if exist(candidate, 'file') == 2
+-    case_file = candidate;
+ end
+ 
+ function r = psse_runpf_quiet_singular(mpc, mpopt)
+--- before/beerten_cpf_run.m
++++ studies/beerten/cpf_runner/beerten_cpf_run.m
+@@ -118,10 +118,9 @@
+     fullfile(root, 'matpower', 'lib', 't')
+     fullfile(root, 'matpower', 'data')
+     fullfile(root, 'matpower', 'examples')
+-    fullfile(root, 'auditoria_psse_matpower')
+-    fullfile(root, 'auditoria_psse_matpower', 'beerten_5bus')
+-    fullfile(root, 'auditoria_psse_matpower', 'beerten_5bus', ...
+-        'cpf_runner')
++    fullfile(root, 'cases', 'beerten', 'variants')
++    fullfile(root, 'studies', 'beerten')
++    fullfile(root, 'studies', 'beerten', 'cpf_runner')
+     };
+ for k = 1:numel(paths)
+     if ~contains(path, paths{k})
+@@ -134,7 +133,7 @@
+ if ~isempty(opts.outdir)
+     outdir = opts.outdir;
+ else
+-    outdir = fullfile(root, 'auditoria_psse_matpower', 'results', ...
++    outdir = fullfile(root, 'outputs', 'beerten', ...
+         opts.outdir_name);
+ end
+ end

@@ -1,0 +1,6 @@
+{
+  "switched_shunt_and_shared_reporting_suffix_unchanged": true,
+  "psse_xfmr_control_only_extraction_since_accepted_baseline": true,
+  "psse_unified_control_update_only_extraction_since_accepted_baseline": true,
+  "cpf_only_residual_norm_change": true
+}

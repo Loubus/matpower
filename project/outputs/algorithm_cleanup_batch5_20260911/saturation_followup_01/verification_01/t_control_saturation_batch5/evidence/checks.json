@@ -1,0 +1,497 @@
+[
+  {
+    "id": "default",
+    "passed": true,
+    "detail": "new explicit default"
+  },
+  {
+    "id": "target",
+    "passed": false,
+    "detail": "unchanged numeric target reached under declared saturation policy"
+  },
+  {
+    "id": "scope",
+    "passed": true,
+    "detail": "target completion is not a nose certificate"
+  },
+  {
+    "id": "saturation_report",
+    "passed": true,
+    "detail": "accepted physical saturation retains full-model out-of-band report"
+  },
+  {
+    "id": "no_locks",
+    "passed": true,
+    "detail": "saturation never locks either controller"
+  },
+  {
+    "id": "observed",
+    "passed": true,
+    "detail": "accepted saturation recorded separately from failure"
+  },
+  {
+    "id": "endpoint.balance",
+    "passed": true,
+    "detail": "full AC 3.61e-10 DC 6.33e-15 converter 9.16e-15 loss 0 pu"
+  },
+  {
+    "id": "ratings_preserved",
+    "passed": true,
+    "detail": "original generator limits and converter loss/station ratings retained"
+  },
+  {
+    "id": "point1.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.62e-09 DC 2.39e-14 converter 2.34e-11 loss 0 pu"
+  },
+  {
+    "id": "point1.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point1.stored.balance",
+    "passed": true,
+    "detail": "full AC 1.41e-09 DC 1.23e-14 converter 3.36e-15 loss 0 pu"
+  },
+  {
+    "id": "point1.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point2.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.5e-09 DC 1.34e-13 converter 7.14e-11 loss 0 pu"
+  },
+  {
+    "id": "point2.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point2.stored.balance",
+    "passed": true,
+    "detail": "full AC 5.85e-10 DC 8.88e-16 converter 3.81e-15 loss 0 pu"
+  },
+  {
+    "id": "point2.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point3.fixed.balance",
+    "passed": true,
+    "detail": "full AC 7.54e-10 DC 2.94e-15 converter 4.82e-15 loss 0 pu"
+  },
+  {
+    "id": "point3.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point3.stored.balance",
+    "passed": true,
+    "detail": "full AC 7.55e-10 DC 2.51e-14 converter 5.53e-16 loss 0 pu"
+  },
+  {
+    "id": "point3.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point4.fixed.balance",
+    "passed": true,
+    "detail": "full AC 3.44e-11 DC 1.03e-14 converter 6.84e-16 loss 0 pu"
+  },
+  {
+    "id": "point4.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point4.stored.balance",
+    "passed": true,
+    "detail": "full AC 3.76e-11 DC 3.61e-15 converter 8.53e-16 loss 0 pu"
+  },
+  {
+    "id": "point4.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point5.fixed.balance",
+    "passed": true,
+    "detail": "full AC 3.42e-10 DC 4.22e-15 converter 5.37e-15 loss 0 pu"
+  },
+  {
+    "id": "point5.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point5.stored.balance",
+    "passed": true,
+    "detail": "full AC 3.41e-10 DC 1.2e-14 converter 2.16e-15 loss 0 pu"
+  },
+  {
+    "id": "point5.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point6.fixed.balance",
+    "passed": true,
+    "detail": "full AC 5.2e-10 DC 1.45e-14 converter 1.01e-14 loss 0 pu"
+  },
+  {
+    "id": "point6.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point6.stored.balance",
+    "passed": true,
+    "detail": "full AC 7.9e-09 DC 1.28e-12 converter 6.25e-11 loss 0 pu"
+  },
+  {
+    "id": "point6.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point7.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.13e-09 DC 1.27e-14 converter 4.21e-15 loss 0 pu"
+  },
+  {
+    "id": "point7.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point7.stored.balance",
+    "passed": true,
+    "detail": "full AC 1.13e-09 DC 7.11e-15 converter 2.66e-15 loss 0 pu"
+  },
+  {
+    "id": "point7.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point8.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.05e-10 DC 8.27e-15 converter 2.01e-14 loss 0 pu"
+  },
+  {
+    "id": "point8.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point8.stored.balance",
+    "passed": true,
+    "detail": "full AC 1.08e-10 DC 4.94e-15 converter 5.97e-15 loss 2.22e-18 pu"
+  },
+  {
+    "id": "point8.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point9.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.69e-10 DC 4.83e-15 converter 1.74e-13 loss 2.22e-18 pu"
+  },
+  {
+    "id": "point9.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point9.stored.balance",
+    "passed": true,
+    "detail": "full AC 1.91e-10 DC 1.44e-15 converter 5.63e-15 loss 0 pu"
+  },
+  {
+    "id": "point9.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point10.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.09e-09 DC 3.09e-14 converter 1.16e-12 loss 0 pu"
+  },
+  {
+    "id": "point10.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point10.stored.balance",
+    "passed": true,
+    "detail": "full AC 9.49e-10 DC 4.27e-15 converter 1.02e-14 loss 0 pu"
+  },
+  {
+    "id": "point10.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point11.fixed.balance",
+    "passed": true,
+    "detail": "full AC 1.61e-09 DC 1.55e-13 converter 6.48e-12 loss 0 pu"
+  },
+  {
+    "id": "point11.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point11.stored.balance",
+    "passed": true,
+    "detail": "full AC 3.77e-10 DC 1.2e-14 converter 3.18e-15 loss 0 pu"
+  },
+  {
+    "id": "point11.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point12.fixed.balance",
+    "passed": true,
+    "detail": "full AC 7.09e-09 DC 7.44e-13 converter 2.87e-11 loss 0 pu"
+  },
+  {
+    "id": "point12.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point12.stored.balance",
+    "passed": true,
+    "detail": "full AC 1.01e-09 DC 2.89e-15 converter 4.51e-15 loss 0 pu"
+  },
+  {
+    "id": "point12.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "point13.fixed.balance",
+    "passed": true,
+    "detail": "full AC 7.38e-09 DC 7.67e-13 converter 2.99e-11 loss 0 pu"
+  },
+  {
+    "id": "point13.match",
+    "passed": true,
+    "detail": "independent fixed-state full PF matches accepted CPF voltage"
+  },
+  {
+    "id": "point13.stored.balance",
+    "passed": true,
+    "detail": "full AC 3.61e-10 DC 6.33e-15 converter 9.16e-15 loss 0 pu"
+  },
+  {
+    "id": "point13.legal",
+    "passed": true,
+    "detail": "original discrete grids"
+  },
+  {
+    "id": "auto0.4107047.balance",
+    "passed": true,
+    "detail": "full AC 7.99e-09 DC 1.28e-12 converter 6.09e-11 loss 0 pu"
+  },
+  {
+    "id": "auto0.4107047.report",
+    "passed": true,
+    "detail": "full-model out-of-band voltage cannot be overwritten by auxiliary report"
+  },
+  {
+    "id": "auto0.45.balance",
+    "passed": true,
+    "detail": "full AC 8.22e-09 DC 1.35e-12 converter 5.8e-11 loss 2.22e-18 pu"
+  },
+  {
+    "id": "auto0.45.report",
+    "passed": true,
+    "detail": "full-model out-of-band voltage cannot be overwritten by auxiliary report"
+  },
+  {
+    "id": "auto0.8.balance",
+    "passed": true,
+    "detail": "full AC 6.44e-10 DC 1.22e-14 converter 5.97e-15 loss 0 pu"
+  },
+  {
+    "id": "auto0.8.report",
+    "passed": true,
+    "detail": "full-model out-of-band voltage cannot be overwritten by auxiliary report"
+  },
+  {
+    "id": "automatic_endpoint_match",
+    "passed": true,
+    "detail": "automatic PF from original controls agrees with CPF"
+  },
+  {
+    "id": "electrical_failure",
+    "passed": true,
+    "detail": "saturation cannot accept a failed base electrical solve"
+  },
+  {
+    "id": "stop_pf",
+    "passed": true,
+    "detail": "explicit stop rejects regulation while accurately retaining electrical convergence"
+  },
+  {
+    "id": "step0.05",
+    "passed": false,
+    "detail": "same target and state with smaller steps"
+  },
+  {
+    "id": "step0.025",
+    "passed": true,
+    "detail": "same target and state with smaller steps"
+  },
+  {
+    "id": "swshunt.bound-1",
+    "passed": true,
+    "detail": "outward request at a physical bound is settled"
+  },
+  {
+    "id": "swshunt.bound-1.reverse",
+    "passed": true,
+    "detail": "opposite request moves away from bound and requires re-correction"
+  },
+  {
+    "id": "swshunt.bound-1.changed",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound-1.cycle",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound-1.unsupported",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound-1.unresolved",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound-1.lock",
+    "passed": true,
+    "detail": "explicit lock is preserved and not reclassified as saturation"
+  },
+  {
+    "id": "swshunt.bound1",
+    "passed": true,
+    "detail": "outward request at a physical bound is settled"
+  },
+  {
+    "id": "swshunt.bound1.reverse",
+    "passed": true,
+    "detail": "opposite request moves away from bound and requires re-correction"
+  },
+  {
+    "id": "swshunt.bound1.changed",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound1.cycle",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound1.unsupported",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound1.unresolved",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "swshunt.bound1.lock",
+    "passed": true,
+    "detail": "explicit lock is preserved and not reclassified as saturation"
+  },
+  {
+    "id": "xfmr.bound-1",
+    "passed": true,
+    "detail": "outward request at a physical bound is settled"
+  },
+  {
+    "id": "xfmr.bound-1.reverse",
+    "passed": true,
+    "detail": "opposite request moves away from bound and requires re-correction"
+  },
+  {
+    "id": "xfmr.bound-1.changed",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound-1.cycle",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound-1.unsupported",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound-1.unresolved",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound-1.lock",
+    "passed": true,
+    "detail": "explicit lock is preserved and not reclassified as saturation"
+  },
+  {
+    "id": "xfmr.bound1",
+    "passed": true,
+    "detail": "outward request at a physical bound is settled"
+  },
+  {
+    "id": "xfmr.bound1.reverse",
+    "passed": true,
+    "detail": "opposite request moves away from bound and requires re-correction"
+  },
+  {
+    "id": "xfmr.bound1.changed",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound1.cycle",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound1.unsupported",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound1.unresolved",
+    "passed": true,
+    "detail": "saturation cannot excuse unresolved work"
+  },
+  {
+    "id": "xfmr.bound1.lock",
+    "passed": true,
+    "detail": "explicit lock is preserved and not reclassified as saturation"
+  }
+]

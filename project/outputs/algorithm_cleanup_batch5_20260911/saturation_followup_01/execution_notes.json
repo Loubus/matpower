@@ -1,0 +1,16 @@
+{
+  "matlab_execution": "MATLAB MCP, initialized by iniciar_proyecto; no CLI fallback or path reset",
+  "integration_errors": [],
+  "exploratory_command_errors": [
+    "The accidental MATLAB command b5s nose=0 raised an undefined-name error before the proper exploratory solve.",
+    "SciPy was unavailable in the project venv. A retained standard-library reader inspected the saved options without executing a numerical solve.",
+    "The artifact builder initially used Windows default decoding. Explicit UTF-8 corrected its UnicodeDecodeError.",
+    "One documentation patch failed to match its context and was reapplied with the correct context."
+  ],
+  "preserved_intermediate_results": [
+    "Initial focused endpoint assertions incorrectly required 1e-8 lambda accuracy; corrected assertions use the unchanged configured 1e-5 target tolerance.",
+    "Historical Beerten and full VSC stop-policy assertions initially inherited the new default; their scenarios now explicitly select stop and retain their assertions.",
+    "The initial NOSE probe predates final reporting and auxiliary-acceptance edits. Its reported control_cycle and legacy success flag are exploratory evidence only.",
+    "The bounded restart near the later exploratory endpoint failed its base solve and did not reproduce that cycle. It is not evidence of collapse."
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "checks": [
+    {
+      "name": "station_1_current_row_derivative",
+      "passed": true,
+      "error": 3.3909555718913964E-11
+    },
+    {
+      "name": "station_1_actual_internal_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "station_2_current_row_derivative",
+      "passed": true,
+      "error": 2.1601595512343863E-11
+    },
+    {
+      "name": "station_2_actual_internal_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "station_3_current_row_derivative",
+      "passed": true,
+      "error": 1.4831691430572391E-11
+    },
+    {
+      "name": "station_3_actual_internal_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "reject_runpf_vsc_mtdc_unified:current_limit",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "reject_runpf_vsc_mtdc_unified:current_limit",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "reject_runpf_vsc_mtdc_unified:current_limit",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "reject_runpf_vsc_mtdc_unified:current_limit_mode",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "current_active_set_survives_save_load",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "sequential_rejects_unsupported_active_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_one_limit_turn",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_100_correct_oriented_turn",
+      "passed": true,
+      "error": -0.021789021337440276
+    },
+    {
+      "name": "nose_100_localized_state_interval",
+      "passed": true,
+      "error": 3.5217118332653286E-8
+    },
+    {
+      "name": "nose_100_independent_event_benchmark",
+      "passed": true,
+      "error": 1.2076477595712731E-9
+    },
+    {
+      "name": "nose_100_rollback_exercised",
+      "passed": true,
+      "error": 20
+    },
+    {
+      "name": "nose_100_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_stops_at_first_turn",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_AC_DC_bridge_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "nose_100_converter_capability",
+      "passed": true,
+      "error": 1.528131595048136E-10
+    },
+    {
+      "name": "nose_050_one_limit_turn",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_050_correct_oriented_turn",
+      "passed": true,
+      "error": -0.02178898037712447
+    },
+    {
+      "name": "nose_050_localized_state_interval",
+      "passed": true,
+      "error": 3.5420463340152253E-8
+    },
+    {
+      "name": "nose_050_independent_event_benchmark",
+      "passed": true,
+      "error": 3.3085623130091335E-10
+    },
+    {
+      "name": "nose_050_rollback_exercised",
+      "passed": true,
+      "error": 19
+    },
+    {
+      "name": "nose_050_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_stops_at_first_turn",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_AC_DC_bridge_balance",
+      "passed": true,
+      "error": 8.1331620490179069E-7
+    },
+    {
+      "name": "nose_050_converter_capability",
+      "passed": true,
+      "error": 1.38513463238987E-10
+    },
+    {
+      "name": "full_100_one_limit_turn",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_100_correct_oriented_turn",
+      "passed": true,
+      "error": -0.021789021337440276
+    },
+    {
+      "name": "full_100_localized_state_interval",
+      "passed": true,
+      "error": 3.5217118332653286E-8
+    },
+    {
+      "name": "full_100_independent_event_benchmark",
+      "passed": true,
+      "error": 1.2076477595712731E-9
+    },
+    {
+      "name": "full_100_rollback_exercised",
+      "passed": true,
+      "error": 20
+    },
+    {
+      "name": "full_100_continues_after_turn",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_does_not_claim_full_completion",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_AC_DC_bridge_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "full_100_converter_capability",
+      "passed": true,
+      "error": 1.8586097381678417E-10
+    },
+    {
+      "name": "full_050_one_limit_turn",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_050_correct_oriented_turn",
+      "passed": true,
+      "error": -0.02178898037712447
+    },
+    {
+      "name": "full_050_localized_state_interval",
+      "passed": true,
+      "error": 3.5420463340152253E-8
+    },
+    {
+      "name": "full_050_independent_event_benchmark",
+      "passed": true,
+      "error": 3.3085623130091335E-10
+    },
+    {
+      "name": "full_050_rollback_exercised",
+      "passed": true,
+      "error": 19
+    },
+    {
+      "name": "full_050_continues_after_turn",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_does_not_claim_full_completion",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_AC_DC_bridge_balance",
+      "passed": true,
+      "error": 8.1331620490179069E-7
+    },
+    {
+      "name": "full_050_converter_capability",
+      "passed": true,
+      "error": 2.67164406021135E-10
+    },
+    {
+      "name": "NOSE_FULL_same_first_event",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "two_step_event_agreement",
+      "passed": true,
+      "error": 8.7679152827035978E-10
+    },
+    {
+      "name": "legacy_FULL_balance",
+      "passed": true,
+      "error": 9.9713796764930171E-7
+    },
+    {
+      "name": "legacy_FULL_converter_capability",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "legacy_FULL_requested_endpoint",
+      "passed": true,
+      "error": 0
+    }
+  ],
+  "passed": 53,
+  "failed": 0
+}

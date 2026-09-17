@@ -1,0 +1,592 @@
+PSSE CLI power-flow run configuration
+====================================
+RAW file: C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_facts_3bus_remote.raw
+PSSE executable: C:\Program Files (x86)\PTI\PSSE34\PSSBIN\pssecmd34.exe
+RAW output version: 34
+Solver: FNSL
+Solver option array code form: BAT_FNSL 1 1 1 1 2 0 99 0
+Solver option array values: 1 1 1 1 2 0 99 0
+
+Explicit solver option parameters:
+- Option 1, tap adjustment flag = 1: enable transformer tap stepping adjustment.
+- Option 2, area interchange adjustment flag = 1: enable area interchange adjustment using tie-line flows only.
+- Option 3, phase shift adjustment flag = 1: enable phase-shifter adjustment.
+- Option 4, DC tap adjustment flag = 1: enable DC tap adjustment.
+- Option 5, switched shunt adjustment flag = 2: enable switched-shunt continuous mode and disable discrete mode.
+- Option 6, flat start flag = 0: do not flat start; use voltages already present in the RAW/case.
+- Option 7, VAR limit flag = 99: apply generator reactive power limits on iteration 99, or sooner if mismatch gets small.
+- Option 8, non-divergent solution flag = 0: disable non-divergent Newton solution.
+
+Additional explicit solver parameters:
+- RAW GENERAL, THRSHZ=0.0001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(11).
+- RAW SOLVER line applied to BAT_FNSL option array: SOLVER, FNSL, SWSHNT=2, FLATST=0
+- RAW NEWTON, VCTOLV=0.00001: set with BAT_SOLUTION_PARAMETERS_4 REALAR(18).
+- RAW ADJUST, MXTPSS=20: set with BAT_SOLUTION_PARAMETERS_4 INTGAR(4).
+
+Generated PSSE response commands:
+  BAT_READ 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\auditoria_psse_matpower\psse_validation_suite\suite_u_facts_3bus_remote.raw"
+  BAT_SOLUTION_PARAMETERS_4 100 20 20 20 10 1.6 1.6 1 0.0001 1 0.1 1 1E-05 5 0.7 0.0001 0.005 1 0.05 0.99 0.99 0.1 1E-05 100
+  BAT_FNSL 1 1 1 1 2 0 99 0
+  BAT_LAMP 0 1
+  BAT_POUT 0 1
+  BAT_LOUT 0 1
+  BAT_VCHK 0 1 0.95 1.05
+  BAT_RATE_2 0 1 1 1 1 1 100.0
+  BAT_REGB 0 1
+  BAT_OUTS 0 1
+  BAT_SHNT 0 1 1
+  BAT_LIST 0 1 1 0
+  BAT_LIST 0 1 2 0
+  BAT_LIST 0 1 3 0
+  BAT_LIST 0 1 4 0
+  BAT_LIST 0 1 5 0
+  BAT_LIST 0 1 6 0
+  BAT_LIST 0 1 7 0
+  BAT_LIST 0 1 10 0
+  BAT_LIST 0 1 18 0
+  BAT_LIST 0 1 20 0
+  BAT_LIST 0 1 27 0
+  BAT_LIST 0 1 28 0
+  BAT_AREA_2 0 1 2
+  BAT_ZONE_2 0 1 2
+  BAT_WRITERAWVERSION '34' 0 "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\solved_raw\suite_u_facts_3bus_remote_solved.raw"
+  BAT_SAVE "C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_facts_3bus_remote.sav"
+  STOP
+
+PSSE console output
+===================
+
+
+ PSS(R)E Version 34
+ Copyright (c) 1976-2026
+ Siemens Industry, Inc.,
+ Power Technologies International                            (PTI)
+ This program is a confidential  unpublished  work  created  and  first
+ licensed in 1976.  It is a trade secret which is the property of  PTI.
+ All use,  disclosure,  and/or reproduction not specifically authorized
+ by  PTI  is prohibited.   This  program is protected  under  copyright
+ laws  of  non-U.S.  countries  and  by  application  of  international
+ treaties.  All  Rights  Reserved  Under  The  Copyright  Laws.
+
+
+           SIEMENS POWER TECHNOLOGIES INTERNATIONAL
+
+      50000 BUS POWER SYSTEM SIMULATOR--PSS(R)E-34.9.3
+
+             INITIATED ON THU, SEP 10 2026  11:23
+
+ ACTIVITY? 
+ Reading IC, SBASE, REV, XFRRAT, NXFRAT, BASFRQ...
+
+ Reading two line case heading...
+
+ Reading system-wide data...
+
+ Reading bus data...
+
+ Reading load data...
+
+ Reading fixed bus shunt data...
+
+ Reading generator data...
+
+ Reading non-transformer branch data...
+
+ Messages for circuit "1" from 1 [BUS1        230.00] to 2 [BUS2        115.00]:   (000474)
+  Warn: Non-transformer branch connects buses with different base voltages   (000490)
+
+ Reading system switching device data...
+
+ Reading transformer data...
+
+ Reading area interchange data...
+
+ Reading two-terminal dc line data...
+
+ Reading VSC dc line data...
+
+ Reading transformer impedance correction data...
+
+ Reading multi-terminal dc line data...
+
+ Reading multi-section line data...
+
+ Reading zone name data...
+
+ Reading inter-area transfer data...
+
+ Reading owner name data...
+
+ Reading FACTS device data...
+
+ Reading switched shunt data...
+
+ Reading GNE device data...
+
+ Reading induction machine data...
+
+ Reading substation data...
+ Batch command complete.
+ : 
+ No power flow solution parameters changed
+ Batch command complete.
+ : 
+ Ordering network...
+ Diagonals = 2   Off-diagonals = 1   Maximum size = 2
+
+  ITER       DELTAP      BUS         DELTAQ      BUS        DELTA/V/      BUS       DELTAANG      BUS
+   0         0.9000(      3     )    0.4500(      2     )
+                                                             0.02000(      3     )   0.19732(      3     )
+   1         0.0113(      3     )    0.3273(      2     )
+                                                             0.01684(      2     )   0.00235(      3     )
+   2         0.0004(      3     )    0.1869(      2     )
+                                                             0.00916(      2     )   0.00217(      3     )
+   3         0.0002(      3     )    0.1078(      2     )
+                                                             0.00514(      2     )   0.00120(      3     )
+   4         0.0001(      3     )    0.0630(      2     )
+                                                             0.00296(      2     )   0.00069(      3     )
+   5         0.0000(      3     )    0.0371(      2     )
+                                                             0.00173(      2     )   0.00040(      3     )
+   6         0.0000(      3     )    0.0219(      2     )
+                                                             0.00101(      2     )   0.00024(      3     )
+   7         0.0000(      3     )    0.0130(      2     )
+                                                             0.00060(      2     )   0.00014(      3     )
+   8         0.0000(      3     )    0.0077(      2     )
+                                                             0.00035(      2     )   0.00008(      3     )
+   9         0.0000(      3     )    0.0046(      2     )
+                                                             0.00021(      2     )   0.00005(      3     )
+  10         0.0000(      3     )    0.0027(      2     )
+                                                             0.00012(      2     )   0.00003(      3     )
+  11         0.0000(      3     )    0.0016(      2     )
+                                                             0.00007(      2     )   0.00002(      3     )
+  12         0.0000(      3     )    0.0010(      2     )
+
+
+ Reached tolerance in 12 iterations
+
+ Largest mismatch:      0.00 MW     -0.10 Mvar      0.10 MVA at bus 2 [BUS2        115.00]
+ System total absolute mismatch:                    0.19 MVA
+
+ SWING BUS SUMMARY:
+   BUS#-SCT X-- NAME --X BASKV      PGEN     PMAX    PMIN      QGEN     QMAX    QMIN
+      1     BUS1        230.00      93.4    200.0     0.0     -62.8    300.0  -300.0
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_U_FACTS_3BUS_REMOTE                                        %MVA FOR TRANSFORMERS
+                         STATCON REMOTE VOLTAGE CONTROL                                   % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                     TRANSFORMER            RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT   MW    MVAR   RATIO   ANGLE   AMPS   %  SET 1
+
+      1     BUS1        230.00    1 1.0000    0.0    93.4      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 230.00          -62.8R     0.0    -0.0      2     BUS2        115.00    1  1    93.4  -62.8                   282  45   628A
+
+      2     BUS2        115.00    1 1.0582   -5.4     0.0      0.0     0.0 -------------------------------------------------------------------------------------
+                                  1 121.69            0.0      0.0    -0.0 STATCON SHUNT                      STA    0.0 -133.1 "FACTS 1     "    632  42  1506A
+                                                                                1     BUS1        230.00    1  1   -92.1   75.5                   565  45  1255A
+                                                                                3     BUS3        115.00    1  1    92.1   57.5                   515  41  1255A
+      3     BUS3        115.00    1 0.9800  -10.9     0.0     90.0     0.0 -------------------------------------------------------------------------------------
+                                  1 112.70            0.0     45.0    -0.0      2     BUS2        115.00    1  1   -90.0  -44.9                   515  41  1255A
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                                RATING   %MVA FOR TRANSFORMERS
+ STATCON REMOTE VOLTAGE CONTROL                                           SET  1   % I  FOR NON-TRANSFORMER BRANCHES
+
+ BUS      1     BUS1        230.00 CKT     MW     MVAR     MVA   % 1.0000PU    0.00  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      1
+  FROM GENERATION                         93.4   -62.8R  112.5 113 230.00KV               MW     MVAR    1                 1
+  TO      2     BUS2        115.00  1     93.4   -62.8   112.5  45                       1.27   12.67    1                 1
+
+ BUS      2     BUS2        115.00 CKT     MW     MVAR     MVA   % 1.0582PU   -5.40  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      2
+                                                                   121.69KV               MW     MVAR    1                 1
+  TO STATCON SHUNT                 STA     0.0  -133.1   133.1  42                                                                        "FACTS 1"
+  TO      1     BUS1        230.00  1    -92.1    75.5   119.1  45                       1.27   12.67    1                 1
+  TO      3     BUS3        115.00  1     92.1    57.5   108.6  41                       2.11   12.64    1                 1
+
+ BUS      3     BUS3        115.00 CKT     MW     MVAR     MVA   % 0.9800PU  -10.88  X--- LOSSES ---X X---- AREA -----X X---- ZONE -----X      3
+                                                                   112.70KV               MW     MVAR    1                 1
+  TO LOAD-PQ                              90.0    45.0   100.6
+  TO      2     BUS2        115.00  1    -90.0   -44.9   100.6  41                       2.11   12.64    1                 1
+
+ Output completed
+ Batch command complete.
+ :                                         PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+                         SUITE_U_FACTS_3BUS_REMOTE                                        %MVA FOR TRANSFORMERS
+                         STATCON REMOTE VOLTAGE CONTROL                                   % I  FOR NON-TRANSFORMER BRANCHES
+
+ X--------- FROM BUS --------X AREA  VOLT            GEN    LOAD    SHUNT  X------------ TO BUS ------------X                        TRANSFORMER     RATING
+   BUS#-SCT X-- NAME --X BASKV ZONE  PU/KV  ANGLE  MW/MVAR MW/MVAR MW/MVAR   BUS#-SCT X-- NAME --X BASKV AREA CKT    MW     MVAR    RATIO   ANGLE   %  SET 1
+
+      1     BUS1        230.00    1 1.0000    0.0    93.4      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 230.00          -62.8R     0.0    -0.0      2     BUS2        115.00    1  1     93.4   -62.8                   45   250
+
+      2     BUS2        115.00    1 1.0582   -5.4     0.0      0.0     0.0 ---------------------------------------------------------------------------------
+                                  1 121.69            0.0      0.0    -0.0 STATCON SHUNT                      STA     0.0  -133.1  "FACTS 1     "   42   300
+                                                                                1     BUS1        230.00    1  1    -92.1    75.5                   45   250
+                                                                                3     BUS3        115.00    1  1     92.1    57.5                   41   250
+      3     BUS3        115.00    1 0.9800  -10.9     0.0     90.0     0.0 ---------------------------------------------------------------------------------
+                                  1 112.70            0.0     45.0    -0.0      2     BUS2        115.00    1  1    -90.0   -44.9                   41   250
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE
+ STATCON REMOTE VOLTAGE CONTROL
+
+ BUSES WITH VOLTAGE GREATER THAN 1.0500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+      2     BUS2        115.00    1 1.0582 121.69
+
+
+ BUSES WITH VOLTAGE LESS THAN 0.9500:
+
+   BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)      BUS#-SCT X-- NAME --X BASKV AREA  V(PU)  V(KV)
+
+                                            * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE
+ STATCON REMOTE VOLTAGE CONTROL
+
+ SUBSYSTEM LOADING CHECK (INCLUDED: LINES; BREAKERS AND SWITCHES; TRANSFORMERS) (EXCLUDED: NONE)
+ LOADINGS ABOVE 100.0 % OF RATING SET 1 (MVA FOR TRANSFORMERS, CURRENT FOR NON-TRANSFORMER BRANCHES):
+
+ X----------- FROM BUS ------------X X------------ TO BUS -------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA   BUS#-SCT X-- NAME --X BASKV  AREA CKT LOADING   RATE1 PERCENT
+
+                                   * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE
+ STATCON REMOTE VOLTAGE CONTROL
+
+                                 X--VOLTAGE--X     X--SCHEDULED--X  X--VIOLATION--X
+ X------ REGULATED  BUS -------X   P.U.    KV          VOLTAGE        P.U.     KV   X----------------------------- CONTROLLING  EQUIPMENT -----------------------------X
+      1     [BUS1        230.00] 1.00000 230.0         1.00000                      LOCAL  GENERATION      1     [BUS1        230.00]
+
+      3     [BUS3        115.00] 0.98000 112.7         0.98000                      REMOTE SHUNT ELEM      2     [BUS2        115.00] FACTS DEVICE "FACTS 1"
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE
+ STATCON REMOTE VOLTAGE CONTROL
+
+ OUT-OF-SERVICE BRANCHES:
+
+ X----------- FROM BUS -----------X  X------------ TO BUS ------------X
+   BUS#-SCT X-- NAME --X BASKV AREA    BUS#-SCT X-- NAME --X BASKV AREA  CKT
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE THREE-WINDING TRANSFORMERS:
+
+                                          X-------- WINDING 1 BUS ---------X X-------- WINDING 2 BUS ---------X X-------- WINDING 3 BUS ---------X
+ X---------- TRANSFORMER NAME ----------X   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA   BUS#-SCT X-- NAME --X BASKV AREA CKT
+
+                                  ** NONE **
+
+
+ ISOLATED BUSES:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE PLANTS:
+
+ X-------------- BUS --------------X  X-------------- BUS --------------X  X-------------- BUS --------------X
+   BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA    BUS#-SCT X-- NAME --X BASKV  AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE MACHINES AT IN-SERVICE PLANTS:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE INDUCTION MACHINES AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE LOADS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE FIXED SHUNTS AT IN-SERVICE BUSES:
+
+ X--------------- BUS ---------------X  X--------------- BUS ---------------X  X--------------- BUS ---------------X
+   BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA    BUS#-SCT X-- NAME --X BASKV ID AREA
+
+                                  ** NONE **
+
+
+ BLOCKED TWO-TERMINAL DC LINES:
+
+ X-2TERM DC-X  X-------- RECTIFIER --------X  X-------- INVERTER ---------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED MULTI-TERMINAL DC LINES:
+
+ X-MTERM DC-X  X-------- CONVERTER --------X  X-------- CONVERTER --------X  X-------- CONVERTER --------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE CONVERTERS AT IN-SERVICE VSC DC LINES:
+
+ X--VSC DC--X  X------ CONVERTER BUS ------X  X------ CONVERTER BUS ------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ BLOCKED FACTS CONTROL DEVICES:
+
+ X--DEVICE--X  X------- SENDING BUS -------X  X------ TERMINAL BUS -------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+
+ OUT-OF-SERVICE GNE DEVICES:
+
+ X--DEVICE--X  X-------- FROM BUS ---------X  X--------- TO BUS ----------X
+ X-- NAME --X    BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV
+
+                                  ** NONE **
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                                 SHUNT
+ STATCON REMOTE VOLTAGE CONTROL                                          SUMMARY
+
+                                                 N O M I N A L
+   BUS#-SCT X-- NAME --X BASKV CODE ID STAT       MW      MVAR  VOLTAGE  TYPE    MODE ADJM     BMIN      BMAX
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                        SYSTEM SUMMARY
+ STATCON REMOTE VOLTAGE CONTROL
+
+ ---------------------BUSES----------------------        -----GENERATION----- ----SHUNTS----- -IND MACHS- FACTS   GNE
+  TOTAL  PQ<>0.  PQ=0.  PE/E   PE/Q  SWING  OTHER  LOADS PLANTS MACHNS   WIND  FIXED SWITCHED GENS MOTORS  DEVS  DEVS
+      3      1      1      0      0      1      0      1      1      1      0      0      0      0      0     1     0
+ ------------------AC BRANCHES------------------- 3WIND MULTI-SECTION ---DC LINES--                    AREA X------- SWING BUSES -------X
+  TOTAL    RXB     RX    RXT   RX=0.    IN    OUT XFORM  LINES SECTNS 2TRM MTRM VSC AREAS ZONES OWNRS TRANS      1     BUS1        230.00
+      2      0      2      0      0      2      0     0      0      0    0    0   0     1     1     1     0
+      ----GENERATION---- INDUCTION                                       GNE
+ TOTAL   SYNCHR  INDUCTN   MOTORS   PQLOAD   I LOAD   Y LOAD   SHUNTS  DEVICES CHARGING   LOSSES    SWING
+ MW        93.4      0.0      0.0     90.0      0.0      0.0      0.0      0.0      0.0      3.4     93.4
+ MVAR     -62.8      0.0      0.0     45.0      0.0      0.0   -133.1      0.0      0.0     25.3    -62.8
+
+ TOTAL MISMATCH =    0.19 MVA X--------- AT BUS ----------X   THRSHZ  PQBRAK BLOWUP  SBASE MXTPSS
+  MAX. MISMATCH =    0.10 MVA      2     BUS2        115.00  0.000100  0.700   5.00 100.00   20
+   HIGH VOLTAGE = 1.05819 PU       2     BUS2        115.00   ADJTHR  ACCTAP TAPLIM SWVBND MXSWIM
+   LOW  VOLTAGE = 0.98000 PU       3     BUS3        115.00   0.0050  1.0000 0.0500  100.0   10
+
+ X------ SOLV AND MSLV ------X  X----------------- NEWTON ------------------X  X----- TYSL -----X
+  ACCP  ACCQ  ACCM   TOL  ITER  ACCN  TOLN  VCTOLQ  VCTOLV ITER  DVLIM NDVFCT  ACCTY    TOL  ITER
+ 1.600 1.600 1.000 0.00010 100  1.00 0.1000 0.1000 0.000010  20 0.9900 0.9900  1.000 0.000010  20
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                               WORST
+ STATCON REMOTE VOLTAGE CONTROL                                       MISMATCHES
+   BUS#-SCT X-- NAME --X BASKV       MW       MVAR       MVA
+      2     BUS2        115.00      0.00      0.10      0.10
+      3     BUS3        115.00      0.00     -0.10      0.10
+     PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                            RATING SET
+ STATCON REMOTE VOLTAGE CONTROL                                      UTILIZATION
+ RATING SET  -NAME-  X---------DESCRIPTION----------X  # NON-ZERO RATINGS
+      1      RATE1   RATING SET 1                                 2
+      2      RATE2   RATING SET 2                                 2
+      3      RATE3   RATING SET 3                                 2
+      4      RATE4   RATING SET 4                                 0
+      5      RATE5   RATING SET 5                                 0
+      6      RATE6   RATING SET 6                                 0
+      7      RATE7   RATING SET 7                                 0
+      8      RATE8   RATING SET 8                                 0
+      9      RATE9   RATING SET 9                                 0
+     10      RATE10  RATING SET 10                                0
+     11      RATE11  RATING SET 11                                0
+     12      RATE12  RATING SET 12                                0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                              BUS DATA
+ STATCON REMOTE VOLTAGE CONTROL
+                                           S H U N T S                                 X--- NORMAL --X  X- EMERGENCY -X
+   BUS#-SCT X-- NAME --X BASKV CODE LOADS FIXED SWITCHED  VOLT   ANGLE AREA ZONE OWNER   VMAX    VMIN     VMAX    VMIN
+      1     BUS1        230.00   3    0     0      0    1.00000    0.0    1    1    1  1.10000 0.90000  1.10000 0.90000
+      2     BUS2        115.00   1    0     0      0    1.05819   -5.4    1    1    1  1.10000 0.90000  1.10000 0.90000
+      3     BUS3        115.00   1    1     0      0    0.98000  -10.9    1    1    1  1.10000 0.90000  1.10000 0.90000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                             SWITCHED
+ STATCON REMOTE VOLTAGE CONTROL                                       SHUNT DATA
+                                   S ADJ                                                                       X-------- REGULATED BUS ---------X X--FACTS/--X
+   BUS#-SCT X-- NAME --X BASKV MOD T METH VHI    VLO     SHUNT  X-------X X-------X X-------X X-------X  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE X-VSC NAME-X
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                            GENERATING
+ STATCON REMOTE VOLTAGE CONTROL                                       PLANT DATA
+                                                                                       X-------- REGULATED BUS ---------X
+   BUS#-SCT X-- NAME --X BASKV COD MCNS PGEN   QGEN   QMAX   QMIN VSCHED  VACT.  PCT Q   BUS#-SCT X-- NAME --X BASKV NODE
+      1     BUS1        230.00  3   1   93.4  -62.8  300.0 -300.0 1.0000 1.0000  100.0      1     BUS1        230.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                             GENERATOR
+ STATCON REMOTE VOLTAGE CONTROL                                        UNIT DATA
+   BUS#-SCT X-- NAME --X BASKV CD ID ST  PGEN   QGEN   QMAX   QMIN   PMAX   PMIN  OWN FRACT  OWN FRACT  MBASE  Z S O R C E    X T R A N    GENTAP WMOD  WPF
+      1     BUS1        230.00  3 1  1   93.4  -62.8  300.0 -300.0  200.0    0.0    1 1.000             100.0 0.0000 1.0000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                           BRANCH DATA
+ STATCON REMOTE VOLTAGE CONTROL
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     BUS1        230.00*      2     BUS2        115.00  1   0.01000  0.10000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+      2     BUS2        115.00*      3     BUS3        115.00  1   0.02000  0.12000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                           BRANCH DATA
+ STATCON REMOTE VOLTAGE CONTROL
+ X-------- FROM BUS ---------X  X--------- TO BUS ----------X                                Z S
+   BUS#-SCT X-- NAME --X BASKV    BUS#-SCT X-- NAME --X BASKV CKT   R (PU)   X (PU)   B (PU) I T  RATE1  RATE2  RATE3 LENGTH OWN1 FRAC1 OWN2 FRAC2 OWN3 FRAC3 OWN4 FRAC4
+      1     BUS1        230.00*      2     BUS2        115.00  1   0.01000  0.10000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+      2     BUS2        115.00       1     BUS1        230.00* 1   0.01000  0.10000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+      2     BUS2        115.00*      3     BUS3        115.00  1   0.02000  0.12000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+      3     BUS3        115.00       2     BUS2        115.00* 1   0.02000  0.12000  0.00000   1  250.0  250.0  250.0    1.0    1 1.000
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE
+ STATCON REMOTE VOLTAGE CONTROL                                     DC LINE DATA
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                             LOAD DATA
+ STATCON REMOTE VOLTAGE CONTROL
+   BUS#-SCT X-- NAME --X BASKV ID CD ST   PSI     MVA-LOAD      CUR-LOAD      Y - LOAD  AREA ZONE OWNER SCALE INTRPT     DGEN-MVA  DGEN-FLAG
+      3     BUS3        115.00 1   1 1  1.000   90.0   45.0    0.0    0.0    0.0    0.0    1    1    1   YES     NO     0.0    0.0     OFF
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                         FACTS SENDING
+ STATCON REMOTE VOLTAGE CONTROL                                       END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X                                         X-------- REGULATED BUS ---------X X- MASTER -X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  V SET SHNTMX  PCT Q  BRDGMX OWNER   BUS#-SCT X-- NAME --X BASKV NODE X-- NAME --X
+ FACTS 1           2     BUS2        115.00                                 1  0.9800  300.0  100.0     0.0     1      3     BUS3        115.00    0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                        FACTS TERMINAL
+ STATCON REMOTE VOLTAGE CONTROL                                      END DATA
+ X- DEVICE -X X------- SENDING BUS -------X X------ TERMINAL BUS -------X
+ X-- NAME --X   BUS#-SCT X-- NAME --X BASKV   BUS#-SCT X-- NAME --X BASKV MODE  PDES   QDES  VTMAX  VTMIN  VSMAX ISMAX  LINE X VSREF   SET1     SET2
+ FACTS 1           2     BUS2        115.00                                 1    0.0    0.0 1.1000 0.9000 1.0000   0.0 0.05000   0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                               FIXED
+ STATCON REMOTE VOLTAGE CONTROL                                       SHUNT DATA
+   BUS#-SCT X-- NAME --X BASKV ID CODE STAT       S H U N T
+
+                                    * NONE *
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                           AREA TOTALS
+ STATCON REMOTE VOLTAGE CONTROL                                       IN MW/MVAR
+                 FROM ---ASSIGNED TO THE AREA---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES  DESIRED
+ X-- AREA --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS  NET INT
+
+    1            93.4      0.0      0.0     90.0      0.0      0.0      0.0      0.0      3.4      0.0      0.0      0.0
+                -62.8      0.0      0.0     45.0   -133.1      0.0     -0.0      0.0     25.3      0.0      0.0
+
+ COLUMN          93.4      0.0      0.0     90.0      0.0      0.0      0.0      0.0      3.4      0.0      0.0      0.0
+ TOTALS         -62.8      0.0      0.0     45.0   -133.1      0.0      0.0      0.0     25.3      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ :      PTI INTERACTIVE POWER SYSTEM SIMULATOR--PSS(R)E     THU, SEP 10 2026  11:23
+ SUITE_U_FACTS_3BUS_REMOTE                                           ZONE TOTALS
+ STATCON REMOTE VOLTAGE CONTROL                                       IN MW/MVAR
+                 FROM ---ASSIGNED TO THE ZONE---              TO                               -NET INTERCHANGE-
+                GENE- FROM IND   TO IND       TO   TO BUS  GNE BUS  TO LINE     FROM     TO     TO TIE  TO TIES
+ X-- ZONE --X  RATION GENERATN   MOTORS     LOAD    SHUNT  DEVICES    SHUNT CHARGING   LOSSES    LINES  + LOADS
+
+    1            93.4      0.0      0.0     90.0      0.0      0.0      0.0      0.0      3.4      0.0      0.0
+                -62.8      0.0      0.0     45.0   -133.1      0.0     -0.0      0.0     25.3      0.0      0.0
+
+ COLUMN          93.4      0.0      0.0     90.0      0.0      0.0      0.0      0.0      3.4      0.0      0.0
+ TOTALS         -62.8      0.0      0.0     45.0   -133.1      0.0      0.0      0.0     25.3      0.0      0.0
+
+ Output completed
+ Batch command complete.
+ : 
+ Output completed
+ Batch command complete.
+ : 
+ Case saved in file C:\Users\Santiago\Documents\PROYECTO FINAL DE CARRERA - MATPOWER\outputs\reanudacion_20260910\psse_suite\suite_u_facts_3bus_remote.sav on THU, SEP 10 2026  11:23
+ Batch command complete.
+ : 

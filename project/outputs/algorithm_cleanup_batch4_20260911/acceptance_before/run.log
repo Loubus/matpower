@@ -1,0 +1,18 @@
+Operands to the logical AND (&&) and OR (||) operators must be convertible to logical scalar values. Use the ANY or ALL functions to reduce operands to logical scalar
+values.
+
+Error in t_swshunt_acceptance_batch4 (line 18)
+        check(tag,a.current_b==expected && u.psse.swshunt.num(10)==expected, ...
+                  ^^^^^^^^^^^
+Error in run_batch4_suite (line 8)
+logtext = evalc('try; feval(name, 0, varargin{:}); catch err; failure = getReport(err, ''extended'', ''hyperlinks'', ''off''); disp(failure); end');
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in LiveEditorEvaluationHelperEmatlab_mcp_server (line 1)
+addpath(fullfile(pwd,'tests')); addpath(fullfile(pwd,'outputs','algorithm_cleanup_batch4_20260911')); b4=fullfile(pwd,'outputs','algorithm_cleanup_batch4_20260911'); run_batch4_suite('t_swshunt_acceptance_batch4',fullfile(b4,'acceptance_before'),fullfile(b4,'acceptance_before','evidence'));
+                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in matlab_mcp.mcpEval (line 48)
+    resp = jsondecode(matlab.internal.editor.evaluateSynchronousRequest(request));
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in connector.internal.fevalMatlab
+
+Error in connector.internal.fevalJSON

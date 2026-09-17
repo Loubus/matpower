@@ -1,0 +1,11 @@
+{
+  "name": "t_mpxt_psse",
+  "planned": 508,
+  "executed": 508,
+  "passed": 508,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 106.1019772,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

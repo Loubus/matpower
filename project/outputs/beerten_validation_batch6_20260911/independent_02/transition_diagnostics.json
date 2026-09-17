@@ -1,0 +1,232 @@
+{
+  "crossings": [
+    {
+      "device": "generator2",
+      "bracket": [
+        1.0430874931189513,
+        1.0794197517871693
+      ],
+      "margins": [
+        4.111853533098397,
+        -2.209466807011765
+      ],
+      "crossing_fixed_previous_controls": 1.0670756669423684,
+      "samples": [
+        {
+          "solver_success": true,
+          "residual": 1.617820544197457e-11,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0669756669423685,
+          "state": "before_state",
+          "V5": 0.791840158449459,
+          "V3": 1.0000000000000855,
+          "Qgen2": 75.20948913493088,
+          "converter2_Q": 141.1806607437981
+        },
+        {
+          "solver_success": true,
+          "residual": 1.875221698102243e-12,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0669756669423685,
+          "state": "after_state",
+          "V5": 0.7918480298659838,
+          "V3": 0.9999999999999997,
+          "Qgen2": 75.22711641858336,
+          "converter2_Q": 141.1695851437674
+        },
+        {
+          "solver_success": true,
+          "residual": 1.6531771507288794e-11,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0670756669423684,
+          "state": "before_state",
+          "V5": 0.7918017208743886,
+          "V3": 1.000000000000088,
+          "Qgen2": 75.22711641859561,
+          "converter2_Q": 141.20963647510058
+        },
+        {
+          "solver_success": true,
+          "residual": 1.1593925819397556e-12,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0670756669423684,
+          "state": "after_state",
+          "V5": 0.7918017208757862,
+          "V3": 0.9999999999999994,
+          "Qgen2": 75.22711641858318,
+          "converter2_Q": 141.2096364742447
+        },
+        {
+          "solver_success": true,
+          "residual": 1.5572823031106963e-11,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0671756669423684,
+          "state": "before_state",
+          "V5": 0.7917632739527817,
+          "V3": 1.00000000000009,
+          "Qgen2": 75.24474796289898,
+          "converter2_Q": 141.23861983453133
+        },
+        {
+          "solver_success": true,
+          "residual": 1.7644761550818636e-12,
+          "message": "The solution converged.",
+          "evaluations": 34,
+          "lambda_value": 1.0671756669423684,
+          "state": "after_state",
+          "V5": 0.7917553976057301,
+          "V3": 0.9999999999999997,
+          "Qgen2": 75.22711641858312,
+          "converter2_Q": 141.24970124514175
+        }
+      ]
+    },
+    {
+      "device": "converter2",
+      "bracket": [
+        1.0794197517871693,
+        1.104504838364513
+      ],
+      "margins": [
+        2.370132608103745,
+        -8.515203047626017
+      ],
+      "crossing_fixed_previous_controls": 1.0850895703457757,
+      "samples": [
+        {
+          "solver_success": true,
+          "residual": 2.9843860716027847e-12,
+          "message": "The solution converged.",
+          "evaluations": 33,
+          "lambda_value": 1.0849895703457757,
+          "state": "before_state",
+          "V5": 0.7832637916350255,
+          "V3": 1.0000000000000113,
+          "Qgen2": 75.22711641858241,
+          "converter2_Q": 148.61215002377162
+        },
+        {
+          "solver_success": true,
+          "residual": 1.513960512511403e-11,
+          "message": "The solution converged.",
+          "evaluations": 35,
+          "lambda_value": 1.0849895703457757,
+          "state": "after_state",
+          "V5": 0.7812759966402999,
+          "V3": 0.9981376898021774,
+          "Qgen2": 75.22711641858464,
+          "converter2_Q": 146.815090059369
+        },
+        {
+          "solver_success": true,
+          "residual": 2.906404006353114e-12,
+          "message": "The solution converged.",
+          "evaluations": 33,
+          "lambda_value": 1.0850895703457757,
+          "state": "before_state",
+          "V5": 0.7832147075718863,
+          "V3": 1.0000000000000122,
+          "Qgen2": 75.22711641858236,
+          "converter2_Q": 148.65481004055025
+        },
+        {
+          "solver_success": true,
+          "residual": 1.4612027143812157e-11,
+          "message": "The solution converged.",
+          "evaluations": 35,
+          "lambda_value": 1.0850895703457757,
+          "state": "after_state",
+          "V5": 0.7811786278845878,
+          "V3": 0.9980930067193837,
+          "Qgen2": 75.22711641858453,
+          "converter2_Q": 146.81509005936857
+        },
+        {
+          "solver_success": true,
+          "residual": 2.6138380349038926e-12,
+          "message": "The solution converged.",
+          "evaluations": 33,
+          "lambda_value": 1.0851895703457757,
+          "state": "before_state",
+          "V5": 0.7831656068640575,
+          "V3": 1.0000000000000133,
+          "Qgen2": 75.22711641858186,
+          "converter2_Q": 148.69748568504394
+        },
+        {
+          "solver_success": true,
+          "residual": 1.4131842362985481e-11,
+          "message": "The solution converged.",
+          "evaluations": 35,
+          "lambda_value": 1.0851895703457757,
+          "state": "after_state",
+          "V5": 0.7810811720703259,
+          "V3": 0.998048284453139,
+          "Qgen2": 75.22711641858473,
+          "converter2_Q": 146.81509005936903
+        }
+      ]
+    }
+  ],
+  "binding_circle_diagnostic": [
+    {
+      "lambda": 1.1385292469371615,
+      "success": true,
+      "residual": 9.419945823535849e-13,
+      "V5": 0.6671413878005266,
+      "V3": 0.9427691517074285,
+      "Q2": 139.99460986965263,
+      "sigma_min": 0.003297087038556852
+    },
+    {
+      "lambda": 1.13853,
+      "success": true,
+      "residual": 7.51388889319252e-13,
+      "V5": 0.6672494232582704,
+      "V3": 0.9428217669516153,
+      "Q2": 140.002574754091,
+      "sigma_min": 0.0029327475361401473
+    },
+    {
+      "lambda": 1.13854,
+      "success": false,
+      "residual": 5.6992514209647665e-06,
+      "V5": 0.6681187645496355,
+      "V3": 0.9432448375037639,
+      "Q2": 140.0666154030727,
+      "sigma_min": 4.467494635879639e-06
+    },
+    {
+      "lambda": 1.1386,
+      "success": false,
+      "residual": 5.1050902254701216e-05,
+      "V5": 0.6681178368304467,
+      "V3": 0.9432423785103682,
+      "Q2": 140.0657191164888,
+      "sigma_min": 1.0684936936718505e-05
+    },
+    {
+      "lambda": 1.139,
+      "success": false,
+      "residual": 0.0003395531846195039,
+      "V5": 0.6680094806652455,
+      "V3": 0.943185497685617,
+      "Q2": 140.05806092973202,
+      "sigma_min": 0.00041994661663736105
+    },
+    {
+      "lambda": 1.14,
+      "success": false,
+      "residual": 0.0008539915578525574,
+      "V5": 0.6682864950150287,
+      "V3": 0.9432754455329054,
+      "Q2": 140.07123604042113,
+      "sigma_min": 8.2980382444284e-05
+    }
+  ]
+}

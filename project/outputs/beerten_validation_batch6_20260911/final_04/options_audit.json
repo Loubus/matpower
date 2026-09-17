@@ -1,0 +1,364 @@
+{
+  "named_scenario": {
+    "name": "beerten_constant_pq_supported_capabilities",
+    "fixture": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\algorithm_cleanup_batch4_20260911\\beerten_probe.mat",
+    "P5_MW": "60 + 240*lambda",
+    "Q5_MVAr": "10 + 40*lambda",
+    "total_P_MW": "165 + 240*lambda",
+    "total_Q_MVAr": "40 + 40*lambda",
+    "gen_dispatch": "P2=40 MW; slack supplies remainder and losses",
+    "q_box_option_scope": "requested, but no RAW GENQ metadata in this unified fixture",
+    "stability_margin_validated": false
+  },
+  "input_checks": {
+    "base_exact": true,
+    "target_exact": true,
+    "options_exact": true
+  },
+  "original_options": {
+    "v": 27,
+    "model": "AC",
+    "pf": {
+      "alg": "NR",
+      "current_balance": 0,
+      "v_cartesian": 0,
+      "tol": 1E-8,
+      "nr": {
+        "max_it": 10,
+        "lin_solver": ""
+      },
+      "fd": {
+        "max_it": 30
+      },
+      "gs": {
+        "max_it": 1000
+      },
+      "zg": {
+        "max_it": 1000
+      },
+      "radial": {
+        "max_it": 20,
+        "vcorr": 0
+      },
+      "enforce_q_lims": 0
+    },
+    "cpf": {
+      "parameterization": 3,
+      "stop_at": "NOSE",
+      "enforce_p_lims": 0,
+      "enforce_q_lims": 0,
+      "enforce_v_lims": 0,
+      "enforce_flow_lims": 0,
+      "step": 0.1,
+      "step_min": 0.0001,
+      "step_max": 0.2,
+      "adapt_step": 0,
+      "adapt_step_damping": 0.7,
+      "adapt_step_tol": 0.001,
+      "target_lam_tol": 1E-5,
+      "nose_tol": 1E-5,
+      "p_lims_tol": 0.01,
+      "q_lims_tol": 0.01,
+      "v_lims_tol": 0.0001,
+      "flow_lims_tol": 0.01,
+      "plot": {
+        "level": 0,
+        "bus": []
+      },
+      "user_callback": ""
+    },
+    "vsc_mtdc": {
+      "method": "unified",
+      "ac_solver": "",
+      "max_it": [],
+      "tol": [],
+      "dc_max_it": 20,
+      "tol_p": 1E-6,
+      "dc_tol_p": 1E-8,
+      "tol_v": 1E-8,
+      "tol_q": 1E-6,
+      "cpf_max_it": 200,
+      "cpf_max_lam": 5,
+      "cpf_policies": [],
+      "dispatch_policy": [],
+      "hvdc_dispatch": [],
+      "psse_aware": 0,
+      "psse_control_limit": "saturate",
+      "psse_control_max_it": 20,
+      "capability_enforce": 0,
+      "capability_limit": "stop",
+      "capability_vsc_limit": [],
+      "capability_gen_limit": [],
+      "capability_max_it": 10,
+      "capability_pf_enforce": [],
+      "capability_pf_max_it": [],
+      "capability_vsc_smax": [],
+      "capability_vsc_vmax": 1.15,
+      "capability_vsc_mode": [],
+      "capability_gen_enforce": [],
+      "capability_gen_max_it": [],
+      "capability_gen_smax": [],
+      "capability_gen_type": 2
+    },
+    "opf": {
+      "ac": {
+        "solver": "DEFAULT"
+      },
+      "dc": {
+        "solver": "DEFAULT"
+      },
+      "current_balance": 0,
+      "v_cartesian": 0,
+      "violation": 5E-6,
+      "use_vg": 0,
+      "flow_lim": "S",
+      "ignore_angle_lim": 0,
+      "softlims": {
+        "default": 1
+      },
+      "start": 0,
+      "return_raw_der": 0
+    },
+    "verbose": 0,
+    "out": {
+      "all": 0,
+      "sys_sum": 1,
+      "area_sum": 0,
+      "bus": 1,
+      "branch": 1,
+      "gen": 0,
+      "lim": {
+        "all": -1,
+        "v": 1,
+        "line": 1,
+        "pg": 1,
+        "qg": 1
+      },
+      "force": 0,
+      "suppress_detail": -1
+    },
+    "mips": {
+      "step_control": 0,
+      "linsolver": "",
+      "feastol": 0,
+      "gradtol": 1E-6,
+      "comptol": 1E-6,
+      "costtol": 1E-6,
+      "max_it": 150,
+      "sc": {
+        "red_it": 20
+      }
+    },
+    "exp": {
+      "use_legacy_core": 0,
+      "sys_wide_zip_loads": {
+        "pw": [],
+        "qw": []
+      },
+      "psse_pqbrak": 0
+    },
+    "fmincon": {
+      "alg": 4,
+      "tol_x": 0.0001,
+      "tol_f": 0.0001,
+      "max_it": 0
+    },
+    "intlinprog": [],
+    "linprog": [],
+    "most": {
+      "build_model": 1,
+      "solve_model": 1,
+      "resolve_new_cost": 0,
+      "dc_model": 1,
+      "fixed_res": -1,
+      "q_coordination": 0,
+      "security_constraints": -1,
+      "storage": {
+        "terminal_target": -1,
+        "cyclic": 0
+      },
+      "uc": {
+        "run": -1,
+        "cyclic": 0
+      },
+      "alpha": 0,
+      "solver": "DEFAULT",
+      "skip_prices": 0,
+      "price_stage_warn_tol": 1E-7
+    },
+    "quadprog": []
+  },
+  "capability_options": {
+    "v": 27,
+    "model": "AC",
+    "pf": {
+      "alg": "NR",
+      "current_balance": 0,
+      "v_cartesian": 0,
+      "tol": 1E-8,
+      "nr": {
+        "max_it": 10,
+        "lin_solver": ""
+      },
+      "fd": {
+        "max_it": 30
+      },
+      "gs": {
+        "max_it": 1000
+      },
+      "zg": {
+        "max_it": 1000
+      },
+      "radial": {
+        "max_it": 20,
+        "vcorr": 0
+      },
+      "enforce_q_lims": 0
+    },
+    "cpf": {
+      "parameterization": 3,
+      "stop_at": "NOSE",
+      "enforce_p_lims": 0,
+      "enforce_q_lims": 1,
+      "enforce_v_lims": 0,
+      "enforce_flow_lims": 0,
+      "step": 0.1,
+      "step_min": 0.0001,
+      "step_max": 0.2,
+      "adapt_step": 0,
+      "adapt_step_damping": 0.7,
+      "adapt_step_tol": 0.001,
+      "target_lam_tol": 1E-5,
+      "nose_tol": 1E-5,
+      "p_lims_tol": 0.01,
+      "q_lims_tol": 0.01,
+      "v_lims_tol": 0.0001,
+      "flow_lims_tol": 0.01,
+      "plot": {
+        "level": 0,
+        "bus": []
+      },
+      "user_callback": ""
+    },
+    "vsc_mtdc": {
+      "method": "unified",
+      "ac_solver": "",
+      "max_it": [],
+      "tol": [],
+      "dc_max_it": 20,
+      "tol_p": 1E-6,
+      "dc_tol_p": 1E-8,
+      "tol_v": 1E-8,
+      "tol_q": 1E-6,
+      "cpf_max_it": 200,
+      "cpf_max_lam": 5,
+      "cpf_policies": [],
+      "dispatch_policy": [],
+      "hvdc_dispatch": [],
+      "psse_aware": 0,
+      "psse_control_limit": "saturate",
+      "psse_control_max_it": 20,
+      "capability_enforce": 1,
+      "capability_limit": "stop",
+      "capability_vsc_limit": [],
+      "capability_gen_limit": [],
+      "capability_max_it": 10,
+      "capability_pf_enforce": [],
+      "capability_pf_max_it": [],
+      "capability_vsc_smax": [],
+      "capability_vsc_vmax": 1.15,
+      "capability_vsc_mode": [],
+      "capability_gen_enforce": 1,
+      "capability_gen_max_it": [],
+      "capability_gen_smax": [],
+      "capability_gen_type": 2
+    },
+    "opf": {
+      "ac": {
+        "solver": "DEFAULT"
+      },
+      "dc": {
+        "solver": "DEFAULT"
+      },
+      "current_balance": 0,
+      "v_cartesian": 0,
+      "violation": 5E-6,
+      "use_vg": 0,
+      "flow_lim": "S",
+      "ignore_angle_lim": 0,
+      "softlims": {
+        "default": 1
+      },
+      "start": 0,
+      "return_raw_der": 0
+    },
+    "verbose": 0,
+    "out": {
+      "all": 0,
+      "sys_sum": 1,
+      "area_sum": 0,
+      "bus": 1,
+      "branch": 1,
+      "gen": 0,
+      "lim": {
+        "all": -1,
+        "v": 1,
+        "line": 1,
+        "pg": 1,
+        "qg": 1
+      },
+      "force": 0,
+      "suppress_detail": -1
+    },
+    "mips": {
+      "step_control": 0,
+      "linsolver": "",
+      "feastol": 0,
+      "gradtol": 1E-6,
+      "comptol": 1E-6,
+      "costtol": 1E-6,
+      "max_it": 150,
+      "sc": {
+        "red_it": 20
+      }
+    },
+    "exp": {
+      "use_legacy_core": 0,
+      "sys_wide_zip_loads": {
+        "pw": [],
+        "qw": []
+      },
+      "psse_pqbrak": 0
+    },
+    "fmincon": {
+      "alg": 4,
+      "tol_x": 0.0001,
+      "tol_f": 0.0001,
+      "max_it": 0
+    },
+    "intlinprog": [],
+    "linprog": [],
+    "most": {
+      "build_model": 1,
+      "solve_model": 1,
+      "resolve_new_cost": 0,
+      "dc_model": 1,
+      "fixed_res": -1,
+      "q_coordination": 0,
+      "security_constraints": -1,
+      "storage": {
+        "terminal_target": -1,
+        "cyclic": 0
+      },
+      "uc": {
+        "run": -1,
+        "cyclic": 0
+      },
+      "alpha": 0,
+      "solver": "DEFAULT",
+      "skip_prices": 0,
+      "price_stage_warn_tol": 1E-7
+    },
+    "quadprog": []
+  }
+}

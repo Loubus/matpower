@@ -112,6 +112,9 @@ else
     state.original_bus_name = [];
 end
 state.original_gen = mpc.gen;
+if isfield(mpc.psse, 'swshunt')
+    state.original_swshunt = mpc.psse.swshunt;
+end
 state.original_branch = mpc.branch;
 if isfield(mpc, 'dcline')
     state.original_dcline = mpc.dcline;

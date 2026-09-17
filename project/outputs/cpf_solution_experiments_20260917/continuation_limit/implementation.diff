@@ -1,0 +1,200 @@
+--- production/runcpf_vsc_mtdc.m
++++ experiment/b17_cpf.m
+@@ -1,5 +1,5 @@
+ function [results, success] = ...
+-    runcpf_vsc_mtdc(basecasedata, targetcasedata, mpopt, fname, solvedcase)
++    b17_cpf(basecasedata, targetcasedata, mpopt, fname, solvedcase)
+ % runcpf_vsc_mtdc - Runs an AC/DC VSC-MTDC continuation PF.
+ % ::
+ %
+@@ -121,6 +121,7 @@
+ gen_dispatch = [];
+ cpf_policy_state = struct('enabled', 0);
+ vsc_capability_recorded_idx = [];
++b17_carried = []; b17_carried_keys = strings(0,1);
+ gen_capability_recorded_idx = [];
+ psse_diagnostic = struct();
+ profile_timing = init_profile_timing(0);
+@@ -344,7 +345,7 @@
+                 'Base case PSS/E control re-correction did not converge.');
+             return;
+         end
+-        [ctx, ctxt, Sdelta, x, ~, ~, pf_it, base, V, ...
++        [ctx, ctxt, Sdelta, x, ~, lam, ~, pf_it, base, V, ...
+             cap_events, cap_ok] = settle_unified_vsc_capability_controls( ...
+             ctx, ctxt, Sdelta, x, eval, lam, pf_it, normF, base, ...
+             base_bus_ids, base_branch_count, base_gen_count, 0);
+@@ -450,6 +451,7 @@
+                 break;
+             end
+ 
++            b17_carried = []; b17_carried_keys = strings(0,1);
+             ctx_hat = ctx;
+             Sdelta_hat = Sdelta;
+             xhat = x + trial_step * z(1:end-1);
+@@ -826,10 +828,21 @@
+ 
+                 if active_set_changed || length(z) ~= length(xnew) + 1 || ...
+                         length(x) ~= length(xnew)
+-                    zseed = zeros(length(xnew) + 1, 1);
+-                    zseed(end) = direction;
+-                    znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, ...
+-                        zseed, xnew, lamnew, 1, direction);
++                    if ~isempty(b17_carried)
++                        b17_kn=b17_state_keys(ctx);
++                        zseed=zeros(length(xnew)+1,1); zseed(end)=b17_carried(end);
++                        [b17_matched,b17_where]=ismember(b17_kn,b17_carried_keys);
++                        zseed(find(b17_matched))=b17_carried(b17_where(b17_matched)); %#ok<FNDSB>
++                        zseed=zseed/norm(zseed);
++                        znew=unified_cpf_tangent(ctx,xnew,lamnew,Sdelta,...
++                            zseed,xnew,lamnew,3,1);
++                        if dot(znew,zseed)<0, znew=-znew; end
++                    else
++                        zseed = zeros(length(xnew) + 1, 1);
++                        zseed(end) = direction;
++                        znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, ...
++                            zseed, xnew, lamnew, 1, direction);
++                    end
+                 else
+                     znew = unified_cpf_tangent(ctx, xnew, lamnew, Sdelta, z, ...
+                         x, lam, trial_parameterization, direction);
+@@ -1076,7 +1089,7 @@
+                     ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
+                     bus_ids, nbranch, ngen, event_k);
+             case 'vsc'
+-                [ctx, ctxt, Sdelta, x, ~, ~, iterations, r, V, ...
++                [ctx, ctxt, Sdelta, x, ~, lam, ~, iterations, r, V, ...
+                     ev, success, changed_any] = ...
+                     settle_unified_vsc_capability_controls(ctx, ctxt, ...
+                     Sdelta, x, eval, lam, iterations, normF, r, bus_ids, ...
+@@ -1280,7 +1293,7 @@
+         success = 0;
+     end
+ 
+-    function [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
++    function [ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, r, V, ...
+             ev, success, changed_any] = ...
+             settle_unified_vsc_capability_controls(ctx, ctxt, Sdelta, x, ...
+             eval, lam, iterations, normF, r, bus_ids, nbranch, ngen, event_k)
+@@ -1299,6 +1312,8 @@
+         nvisited = 1;
+         for ctrl_it = 1:max_it
+             profile_count('vsc_capability_settle_iteration');
++            b17_oldctx = ctx;
++            b17_direction = b17_incoming_direction(ctx, Sdelta, x, lam, event_k);
+             [changed, mpcb_next, mpct_next, report] = ...
+                 unified_vsc_capability_update(r, lam);
+             if ~changed
+@@ -1328,15 +1343,16 @@
+             recorr_cleanup = profile_time_scope( ...
+                 'vsc_capability_fixed_lambda_recorrection'); %#ok<NASGU>
+             x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
+-            [x, eval, normF, it, ok] = ...
+-                solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
++            [x, lam, eval, normF, it, ok] = ...
++                b17_transition_corrector(b17_oldctx, ctx, Sdelta, x0, lam, ...
++                    b17_direction, event_k, 'vsc');
+             clear recorr_cleanup;
+             iterations = iterations + it;
+             event_cleanup = profile_time_scope( ...
+                 'vsc_capability_event_construction'); %#ok<NASGU>
+             msg = sprintf(['VSC capability active-set update at ' ...
+                 'lambda = %.8g; saturated converters %s; ' ...
+-                're-corrected unified VSC-MTDC point at fixed lambda.'], ...
++                're-corrected unified point on incoming CPF hyperplane (experimental).'], ...
+                 lam, mat2str(report.changed_idx(:)'));
+             record_event = any(~ismember(report.changed_idx(:), ...
+                 vsc_capability_recorded_idx(:)));
+@@ -1799,6 +1815,8 @@
+         visited{1} = gen_capability_active_set_signature(mpcb);
+         nvisited = 1;
+         for ctrl_it = 1:max_it
++            b17_oldctx = ctx;
++            b17_direction = b17_incoming_direction(ctx, Sdelta, x, lam, event_k);
+             [changed, mpcb_next, mpct_next, report] = ...
+                 unified_gen_capability_update(r, lam);
+             if ~changed
+@@ -1826,10 +1844,11 @@
+             refresh_incremental_policy_anchor(lam);
+             [ctx, ctxt, Sdelta] = build_unified_context_pair();
+             x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
+-            [x, eval, normF, it, ok] = ...
+-                solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta);
++            [x, lam, eval, normF, it, ok] = ...
++                b17_transition_corrector(b17_oldctx, ctx, Sdelta, x0, lam, ...
++                    b17_direction, event_k, 'gen');
+             iterations = iterations + it;
+-            if ~ok && localized
++            if ~ok && localized && event_k == 0
+                 [ctx, ctxt, Sdelta, x, eval, normF, it_retry, ok, ...
+                     lam, report] = retry_gen_capability_localized_solve( ...
+                     x0, r, lam, report);
+@@ -1837,7 +1856,7 @@
+             end
+             msg = sprintf(['Generator capability active-set update at ' ...
+                 'lambda = %.8g; saturated generators %s; ' ...
+-                're-corrected unified VSC-MTDC point at fixed lambda.'], ...
++                're-corrected unified point on incoming CPF hyperplane (experimental).'], ...
+                 lam, mat2str(report.changed_idx(:)'));
+             record_event = any(~ismember(report.changed_idx(:), ...
+                 gen_capability_recorded_idx(:)));
+@@ -1880,7 +1899,7 @@
+                     return;
+                 end
+             end
+-            [ctx, ctxt, Sdelta, x, eval, normF, iterations, r, V, ...
++            [ctx, ctxt, Sdelta, x, eval, lam, normF, iterations, r, V, ...
+                 handoff_events, handoff_ok] = settle_unified_vsc_capability_controls( ...
+                 ctx, ctxt, Sdelta, x, eval, lam, iterations, normF, r, ...
+                 bus_ids, nbranch, ngen, event_k);
+@@ -3571,6 +3590,50 @@
+         end
+     end
+ 
++
++    function b17_t = b17_incoming_direction(b17_ctx, b17_sd, b17_x, b17_lam, b17_k)
++        b17_t = zeros(length(b17_x)+1,1); b17_t(end)=1;
++        if b17_k == 0, return; end
++        b17_prior = unified_x_from_controlled_ac(b17_ctx, last.ac, last);
++        b17_seed = [b17_x-b17_prior; b17_lam-last_lam];
++        if norm(b17_seed) < 1e-10
++            if length(z)==length(b17_t), b17_seed=z; else, b17_seed=b17_t; end
++        end
++        b17_seed=b17_seed/norm(b17_seed);
++        b17_t=unified_cpf_tangent(b17_ctx,b17_x,b17_lam,b17_sd,...
++            b17_seed,b17_x,b17_lam,3,1);
++        if dot(b17_t,b17_seed)<0, b17_t=-b17_t; end
++    end
++
++    function b17_keys = b17_state_keys(b17_ctx)
++        m=b17_ctx.model;
++        b17_keys=["va:"+string(m.nonref(:)); "vm:"+string(m.vm_vars(:)); ...
++            "pac:"+string(m.pac_vars(:)); "dc:"+string(m.dc_var(:))];
++    end
++
++    function [xx,ll,ee,nn,ii,ok] = b17_transition_corrector(oc,nc,sd,xx0,ll0,tt,kk,stage)
++        if kk==0 || ~isempty(target_lam)
++            [xx,ee,nn,ii,ok]=solve_unified_pf_at_lambda(nc,xx0,ll0,sd);
++            ll=ll0; return;
++        end
++        ko=b17_state_keys(oc); kn=b17_state_keys(nc);
++        nt=zeros(length(xx0)+1,1); nt(end)=tt(end);
++        [matched,where]=ismember(kn,ko); nt(find(matched))=tt(where(matched)); %#ok<FNDSB>
++        nt=nt/norm(nt);
++        % The old corrected candidate anchors a transverse hyperplane. New
++        % Q-fixed branch is corrected with lambda free; no arbitrary retreat.
++        [xx,ll,ee,nn,ii,ok]=unified_cpf_corrector(nc,sd,xx0,ll0,xx0,ll0,nt,0,3);
++        rr=struct('stage',stage,'candidate_index',kk,'lambda_before',ll0, ...
++            'lambda_after',ll,'lambda_shift',ll-ll0,'incoming_lambda_tangent',nt(end), ...
++            'hyperplane_residual',nt'*([xx;ll]-[xx0;ll0]),'residual',nn, ...
++            'iterations',ii,'success',ok,'state_size_before',length(ko), ...
++            'state_size_after',length(kn),'state_correction_norm',norm(xx-xx0));
++        b17_journal('append',rr);
++        if ok
++            b17_carried=nt; b17_carried_keys=kn;
++        end
++    end
++
+     function [x, eval, normF, iterations, success] = ...
+             solve_unified_pf_at_lambda(ctx, x0, lam, Sdelta)
+         profile_cleanup = profile_time_scope('solve_pf_at_lambda'); %#ok<NASGU>

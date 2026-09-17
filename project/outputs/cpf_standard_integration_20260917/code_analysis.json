@@ -1,0 +1,725 @@
+[
+  {
+    "file": "matpower/lib/runcpf_vsc_mtdc.m",
+    "messages": [
+      {
+        "id": "AGROW",
+        "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+        "fix": 0,
+        "line": 904,
+        "column": [
+          25,
+          36
+        ]
+      },
+      {
+        "id": "AGROW",
+        "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+        "fix": 0,
+        "line": 919,
+        "column": [
+          21,
+          32
+        ]
+      },
+      {
+        "id": "DEFNU",
+        "message": "Function might be unused.",
+        "fix": 0,
+        "line": 1711,
+        "column": [
+          20,
+          33
+        ]
+      }
+    ]
+  },
+  {
+    "file": "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "messages": []
+  },
+  {
+    "file": "matpower/lib/runpf_vsc_mtdc.m",
+    "messages": []
+  },
+  {
+    "file": "matpower/lib/savecase.m",
+    "messages": [
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          6,
+          7
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          10,
+          12
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          15,
+          18
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          21,
+          25
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          28,
+          35
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          38,
+          39
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          42,
+          43
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          46,
+          47
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          50,
+          51
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          54,
+          61
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          64,
+          65
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          5,
+          6
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          9,
+          15
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          18,
+          21
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          24,
+          27
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          36,
+          40
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          43,
+          47
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 39,
+        "column": [
+          50,
+          56
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          2,
+          8
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          11,
+          12
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          15,
+          16
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          19,
+          22
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          25,
+          28
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          31,
+          32
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          35,
+          39
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          42,
+          51
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 40,
+        "column": [
+          54,
+          57
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 41,
+        "column": [
+          41,
+          43
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 41,
+        "column": [
+          46,
+          48
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 41,
+        "column": [
+          51,
+          56
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 41,
+        "column": [
+          59,
+          64
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          5,
+          10
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          13,
+          18
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          21,
+          28
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          31,
+          37
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          40,
+          46
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 42,
+        "column": [
+          49,
+          54
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          2,
+          6
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          9,
+          13
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          16,
+          19
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          22,
+          25
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          28,
+          31
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          34,
+          39
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          42,
+          47
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 43,
+        "column": [
+          50,
+          55
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 44,
+        "column": [
+          5,
+          7
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 44,
+        "column": [
+          10,
+          14
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 45,
+        "column": [
+          5,
+          10
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 45,
+        "column": [
+          21,
+          29
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 46,
+        "column": [
+          32,
+          38
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 46,
+        "column": [
+          41,
+          48
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 46,
+        "column": [
+          58,
+          61
+        ]
+      },
+      {
+        "id": "CCAT1",
+        "message": "{ A{I} } can usually be replaced by A(I) or A(I)', which can be much faster.",
+        "fix": 0,
+        "line": 51,
+        "column": [
+          28,
+          28
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 109,
+        "column": [
+          6,
+          12
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 109,
+        "column": [
+          15,
+          21
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 109,
+        "column": [
+          24,
+          30
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 122,
+        "column": [
+          6,
+          7
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 122,
+        "column": [
+          10,
+          11
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 122,
+        "column": [
+          14,
+          15
+        ]
+      },
+      {
+        "id": "ASGLU",
+        "message": "Value assigned to variable might be unused. Consider replacing the variable with ~ instead.",
+        "fix": 1,
+        "line": 122,
+        "column": [
+          22,
+          26
+        ]
+      },
+      {
+        "id": "STCI",
+        "message": "Use STRCMPI(str1,str2) instead of using UPPER/LOWER in a call to STRCMP.",
+        "fix": 1,
+        "line": 138,
+        "column": [
+          4,
+          9
+        ]
+      },
+      {
+        "id": "AGROW",
+        "message": "Variable appears to change size on every loop iteration. Consider preallocating for speed.",
+        "fix": 0,
+        "line": 301,
+        "column": [
+          17,
+          24
+        ]
+      },
+      {
+        "id": "ISMAT",
+        "message": "When checking if a variable is a matrix consider using ISMATRIX.",
+        "fix": 1,
+        "line": 707,
+        "column": [
+          4,
+          8
+        ]
+      }
+    ]
+  },
+  {
+    "file": "tests/t_cpf_coupled_controls.m",
+    "messages": [
+      {
+        "id": "NOCOMMA",
+        "message": "Extra comma is unnecessary.",
+        "fix": 1,
+        "line": 38,
+        "column": [
+          4,
+          4
+        ]
+      },
+      {
+        "id": "ISCL",
+        "message": "To improve performance, use 'isscalar' instead of length comparison.",
+        "fix": 1,
+        "line": 45,
+        "column": [
+          32,
+          43
+        ]
+      },
+      {
+        "id": "NOCOMMA",
+        "message": "Extra comma is unnecessary.",
+        "fix": 1,
+        "line": 79,
+        "column": [
+          23,
+          23
+        ]
+      }
+    ]
+  }
+]

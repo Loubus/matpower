@@ -1,0 +1,1005 @@
+{
+  "case": "case5_vsc_mtdc_beerten",
+  "success": true,
+  "iterations": 3,
+  "mismatch": 2.9705127246870688E-12,
+  "baseMVA": 100,
+  "bus": [
+    [
+      1,
+      3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1.06,
+      0,
+      230,
+      1,
+      1.1,
+      0.9
+    ],
+    [
+      2,
+      2,
+      20,
+      10,
+      0,
+      0,
+      1,
+      1,
+      -2.3841371347209765,
+      230,
+      1,
+      1.1,
+      0.9
+    ],
+    [
+      3,
+      1,
+      45,
+      15,
+      0,
+      0,
+      1,
+      1,
+      -3.897654227372005,
+      230,
+      1,
+      1.1,
+      0.9
+    ],
+    [
+      4,
+      1,
+      40,
+      5,
+      0,
+      0,
+      1,
+      0.99601761754142271,
+      -4.2634488727990236,
+      230,
+      1,
+      1.1,
+      0.9
+    ],
+    [
+      5,
+      1,
+      60,
+      10,
+      0,
+      0,
+      1,
+      0.990759334981765,
+      -4.1506584376963893,
+      230,
+      1,
+      1.1,
+      0.9
+    ]
+  ],
+  "gen": [
+    [
+      1,
+      133.67754822269427,
+      84.311816931045314,
+      500,
+      -500,
+      1.06,
+      100,
+      1,
+      500,
+      -500,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      2,
+      40,
+      -32.840585844714667,
+      300,
+      -300,
+      1,
+      100,
+      1,
+      300,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "vsc": [
+    [
+      2,
+      2,
+      1,
+      3,
+      2,
+      -60,
+      -40,
+      0.984,
+      58.59,
+      1.008,
+      0,
+      1.1033,
+      0.1999949,
+      0.1466667,
+      0,
+      0.0001,
+      0,
+      0,
+      150,
+      150,
+      150,
+      0,
+      0,
+      0.0009615,
+      0.0399,
+      0,
+      150,
+      150,
+      150,
+      -60.000000000001144,
+      -40.000000000034106,
+      58.626216942639481,
+      1.0080043529377725,
+      1,
+      0.99996000180007194,
+      0.98370660297209123,
+      1.3237850573558883,
+      0,
+      0.049997999999881415,
+      0,
+      6,
+      7,
+      8,
+      9,
+      -59.950001999995372,
+      -37.919999999850006
+    ],
+    [
+      3,
+      3,
+      1,
+      2,
+      1,
+      20.68,
+      7.17,
+      1,
+      -21.84,
+      1,
+      0,
+      1.1033,
+      0.1999949,
+      0.2222333,
+      0,
+      0.0001,
+      0,
+      0,
+      150,
+      150,
+      150,
+      0,
+      0,
+      0,
+      0.0392,
+      0,
+      150,
+      150,
+      150,
+      20.717616717592239,
+      7.1517664760344877,
+      -21.87542553424322,
+      1,
+      1,
+      1.0000071519810843,
+      1.0028436970514059,
+      1.1578088167211891,
+      0,
+      0,
+      1,
+      8,
+      9,
+      10,
+      11,
+      20.717616717558677,
+      7.34055086672976
+    ],
+    [
+      5,
+      5,
+      1,
+      3,
+      2,
+      35,
+      5,
+      0.993,
+      -36.21,
+      0.998,
+      0,
+      1.1033,
+      0.1999949,
+      0.2222333,
+      0,
+      0.0001,
+      0,
+      0,
+      150,
+      150,
+      150,
+      0,
+      0,
+      0.000785,
+      0.0399,
+      0,
+      150,
+      150,
+      150,
+      34.9999999997494,
+      5.0000000001889795,
+      -36.212964522370243,
+      0.99800777771242133,
+      0.990759334981765,
+      0.9907643822458172,
+      0.99315526805410981,
+      1.2029681294114789,
+      0,
+      0.0099963930481337115,
+      0,
+      10,
+      11,
+      12,
+      13,
+      35.009996392958762,
+      5.5093703462465111
+    ]
+  ],
+  "power_port": "PCC",
+  "regression": {
+    "checks": [
+      {
+        "name": "s1_unified_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_sequential_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_methods_agree",
+        "passed": true,
+        "error": 2.7666556867700365E-7
+      },
+      {
+        "name": "s1_c1_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_c1_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_c1_bridge_balance",
+        "passed": true,
+        "error": 3.3306690738754696E-15
+      },
+      {
+        "name": "s1_c1_P_order",
+        "passed": true,
+        "error": 1.1439738045737613E-12
+      },
+      {
+        "name": "s1_c1_Q_order",
+        "passed": true,
+        "error": 3.4106051316484809E-11
+      },
+      {
+        "name": "s1_c1_map_vs_network",
+        "passed": true,
+        "error": 1.893647505056147E-12
+      },
+      {
+        "name": "s1_c1_capability_vs_network",
+        "passed": true,
+        "error": 7.32469640496447E-13
+      },
+      {
+        "name": "s1_c1_station_balance",
+        "passed": true,
+        "error": 5.8903992794512305E-12
+      },
+      {
+        "name": "s1_c2_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_c2_internal_port",
+        "passed": true,
+        "error": 1.1286971357549191E-11
+      },
+      {
+        "name": "s1_c2_bridge_balance",
+        "passed": true,
+        "error": 3.6645797507617317E-11
+      },
+      {
+        "name": "s1_c2_map_vs_network",
+        "passed": true,
+        "error": 7.8981258229709223E-13
+      },
+      {
+        "name": "s1_c2_capability_vs_network",
+        "passed": true,
+        "error": 1.4116485758108865E-13
+      },
+      {
+        "name": "s1_c2_station_balance",
+        "passed": true,
+        "error": 3.3562486123628332E-11
+      },
+      {
+        "name": "s1_c3_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_c3_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s1_c3_bridge_balance",
+        "passed": true,
+        "error": 1.9984014443252818E-15
+      },
+      {
+        "name": "s1_c3_P_order",
+        "passed": true,
+        "error": 2.5060131747522973E-10
+      },
+      {
+        "name": "s1_c3_Q_order",
+        "passed": true,
+        "error": 1.8897949871643505E-10
+      },
+      {
+        "name": "s1_c3_map_vs_network",
+        "passed": true,
+        "error": 3.83576864722914E-12
+      },
+      {
+        "name": "s1_c3_capability_vs_network",
+        "passed": true,
+        "error": 7.4637518387987711E-13
+      },
+      {
+        "name": "s1_c3_station_balance",
+        "passed": true,
+        "error": 1.6122925217132433E-10
+      },
+      {
+        "name": "s1_analytic_jacobian",
+        "passed": true,
+        "error": 4.4999918324961641E-7
+      },
+      {
+        "name": "s2_unified_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_sequential_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_methods_agree",
+        "passed": true,
+        "error": 4.1935738996912164E-6
+      },
+      {
+        "name": "s2_c1_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_c1_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_c1_bridge_balance",
+        "passed": true,
+        "error": 8.8817841970012523E-16
+      },
+      {
+        "name": "s2_c1_P_order",
+        "passed": true,
+        "error": 7.1054273576010019E-15
+      },
+      {
+        "name": "s2_c1_Q_order",
+        "passed": true,
+        "error": 2.4158453015843406E-13
+      },
+      {
+        "name": "s2_c1_map_vs_network",
+        "passed": true,
+        "error": 9.0167608953737111E-15
+      },
+      {
+        "name": "s2_c1_capability_vs_network",
+        "passed": true,
+        "error": 5.3290705182007514E-15
+      },
+      {
+        "name": "s2_c1_station_balance",
+        "passed": true,
+        "error": 8.7602147758047977E-13
+      },
+      {
+        "name": "s2_c2_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_c2_internal_port",
+        "passed": true,
+        "error": 3.5527136788005009E-15
+      },
+      {
+        "name": "s2_c2_bridge_balance",
+        "passed": true,
+        "error": 3.397282455352979E-13
+      },
+      {
+        "name": "s2_c2_map_vs_network",
+        "passed": true,
+        "error": 2.4719998221169555E-15
+      },
+      {
+        "name": "s2_c2_capability_vs_network",
+        "passed": true,
+        "error": 6.6613381477509392E-16
+      },
+      {
+        "name": "s2_c2_station_balance",
+        "passed": true,
+        "error": 3.6554093085783279E-14
+      },
+      {
+        "name": "s2_c3_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_c3_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s2_c3_bridge_balance",
+        "passed": true,
+        "error": 6.6613381477509392E-16
+      },
+      {
+        "name": "s2_c3_P_order",
+        "passed": true,
+        "error": 2.8421709430404007E-14
+      },
+      {
+        "name": "s2_c3_Q_order",
+        "passed": true,
+        "error": 3.2152058793144533E-13
+      },
+      {
+        "name": "s2_c3_map_vs_network",
+        "passed": true,
+        "error": 1.6405321276344669E-15
+      },
+      {
+        "name": "s2_c3_capability_vs_network",
+        "passed": true,
+        "error": 1.1102230246251565E-16
+      },
+      {
+        "name": "s2_c3_station_balance",
+        "passed": true,
+        "error": 2.400857290751901E-14
+      },
+      {
+        "name": "s2_analytic_jacobian",
+        "passed": true,
+        "error": 3.9312926263158271E-10
+      },
+      {
+        "name": "s3_unified_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_sequential_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_methods_agree",
+        "passed": true,
+        "error": 4.223056148333626E-6
+      },
+      {
+        "name": "s3_c1_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_c1_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_c1_bridge_balance",
+        "passed": true,
+        "error": 1.5543122344752192E-15
+      },
+      {
+        "name": "s3_c1_P_order",
+        "passed": true,
+        "error": 3.1974423109204508E-13
+      },
+      {
+        "name": "s3_c1_Q_order",
+        "passed": true,
+        "error": 1.4921397450962104E-13
+      },
+      {
+        "name": "s3_c1_map_vs_network",
+        "passed": true,
+        "error": 1.8152422185194962E-11
+      },
+      {
+        "name": "s3_c1_capability_vs_network",
+        "passed": true,
+        "error": 9.14779363370144E-12
+      },
+      {
+        "name": "s3_c1_station_balance",
+        "passed": true,
+        "error": 1.7336311275428784E-9
+      },
+      {
+        "name": "s3_c2_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_c2_internal_port",
+        "passed": true,
+        "error": 2.5828228444879642E-12
+      },
+      {
+        "name": "s3_c2_bridge_balance",
+        "passed": true,
+        "error": 7.2941652717872785E-13
+      },
+      {
+        "name": "s3_c2_map_vs_network",
+        "passed": true,
+        "error": 2.9927505845463013E-14
+      },
+      {
+        "name": "s3_c2_capability_vs_network",
+        "passed": true,
+        "error": 9.8254737679326354E-15
+      },
+      {
+        "name": "s3_c2_station_balance",
+        "passed": true,
+        "error": 6.210865155509282E-13
+      },
+      {
+        "name": "s3_c3_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_c3_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s3_c3_bridge_balance",
+        "passed": true,
+        "error": 2.4424906541753444E-15
+      },
+      {
+        "name": "s3_c3_P_order",
+        "passed": true,
+        "error": 2.1316282072803006E-14
+      },
+      {
+        "name": "s3_c3_Q_order",
+        "passed": true,
+        "error": 1.900701818158268E-13
+      },
+      {
+        "name": "s3_c3_map_vs_network",
+        "passed": true,
+        "error": 3.5726537334268294E-15
+      },
+      {
+        "name": "s3_c3_capability_vs_network",
+        "passed": true,
+        "error": 6.6613381477509392E-16
+      },
+      {
+        "name": "s3_c3_station_balance",
+        "passed": true,
+        "error": 4.088396288182139E-14
+      },
+      {
+        "name": "s3_analytic_jacobian",
+        "passed": true,
+        "error": 4.2866862325804025E-10
+      },
+      {
+        "name": "s4_unified_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_sequential_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_methods_agree",
+        "passed": true,
+        "error": 3.4724902309157812E-7
+      },
+      {
+        "name": "s4_c1_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_c1_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_c1_bridge_balance",
+        "passed": true,
+        "error": 1.7763568394002505E-15
+      },
+      {
+        "name": "s4_c1_P_order",
+        "passed": true,
+        "error": 6.1319838096096646E-12
+      },
+      {
+        "name": "s4_c1_Q_order",
+        "passed": true,
+        "error": 2.007283228522283E-11
+      },
+      {
+        "name": "s4_c1_map_vs_network",
+        "passed": true,
+        "error": 9.5226868068994833E-14
+      },
+      {
+        "name": "s4_c1_capability_vs_network",
+        "passed": true,
+        "error": 1.2934098236883074E-14
+      },
+      {
+        "name": "s4_c1_station_balance",
+        "passed": true,
+        "error": 6.7856831265089568E-12
+      },
+      {
+        "name": "s4_c2_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_c2_internal_port",
+        "passed": true,
+        "error": 3.1882052553555695E-11
+      },
+      {
+        "name": "s4_c2_bridge_balance",
+        "passed": true,
+        "error": 1.9771517756339563E-11
+      },
+      {
+        "name": "s4_c2_map_vs_network",
+        "passed": true,
+        "error": 4.9842457202732657E-13
+      },
+      {
+        "name": "s4_c2_capability_vs_network",
+        "passed": true,
+        "error": 2.0697332736574481E-13
+      },
+      {
+        "name": "s4_c2_station_balance",
+        "passed": true,
+        "error": 2.6680879727791762E-12
+      },
+      {
+        "name": "s4_c3_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_c3_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s4_c3_bridge_balance",
+        "passed": true,
+        "error": 1.1102230246251565E-15
+      },
+      {
+        "name": "s4_c3_P_order",
+        "passed": true,
+        "error": 1.63140612130519E-11
+      },
+      {
+        "name": "s4_c3_map_vs_network",
+        "passed": true,
+        "error": 3.039686940951942E-12
+      },
+      {
+        "name": "s4_c3_capability_vs_network",
+        "passed": true,
+        "error": 1.2543854843727331E-12
+      },
+      {
+        "name": "s4_c3_station_balance",
+        "passed": true,
+        "error": 4.0571990211901721E-12
+      },
+      {
+        "name": "s4_analytic_jacobian",
+        "passed": true,
+        "error": 4.4999918324961641E-7
+      },
+      {
+        "name": "s5_unified_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_sequential_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_methods_agree",
+        "passed": true,
+        "error": 2.7552201142810873E-7
+      },
+      {
+        "name": "s5_c1_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_c1_internal_port",
+        "passed": true,
+        "error": 7.1054273576010019E-14
+      },
+      {
+        "name": "s5_c1_bridge_balance",
+        "passed": true,
+        "error": 8.8817841970012523E-16
+      },
+      {
+        "name": "s5_c1_Q_order",
+        "passed": true,
+        "error": 2.2467361304734368E-11
+      },
+      {
+        "name": "s5_c1_map_vs_network",
+        "passed": true,
+        "error": 7.7514739782193429E-13
+      },
+      {
+        "name": "s5_c1_capability_vs_network",
+        "passed": true,
+        "error": 3.6082248300317588E-13
+      },
+      {
+        "name": "s5_c1_station_balance",
+        "passed": true,
+        "error": 1.4139800441625994E-11
+      },
+      {
+        "name": "s5_c2_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_c2_internal_port",
+        "passed": true,
+        "error": 2.3320012587646488E-11
+      },
+      {
+        "name": "s5_c2_bridge_balance",
+        "passed": true,
+        "error": 2.2913448916028756E-11
+      },
+      {
+        "name": "s5_c2_map_vs_network",
+        "passed": true,
+        "error": 1.0995644579648797E-12
+      },
+      {
+        "name": "s5_c2_capability_vs_network",
+        "passed": true,
+        "error": 3.6975977835140839E-13
+      },
+      {
+        "name": "s5_c2_station_balance",
+        "passed": true,
+        "error": 1.9966250874858815E-12
+      },
+      {
+        "name": "s5_c3_pcc_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_c3_internal_port",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "s5_c3_bridge_balance",
+        "passed": true,
+        "error": 4.4408920985006262E-16
+      },
+      {
+        "name": "s5_c3_P_order",
+        "passed": true,
+        "error": 2.6635404992703116E-10
+      },
+      {
+        "name": "s5_c3_Q_order",
+        "passed": true,
+        "error": 8.2531315115375037E-11
+      },
+      {
+        "name": "s5_c3_map_vs_network",
+        "passed": true,
+        "error": 2.1062106311199007E-12
+      },
+      {
+        "name": "s5_c3_capability_vs_network",
+        "passed": true,
+        "error": 1.0700607067093415E-12
+      },
+      {
+        "name": "s5_c3_station_balance",
+        "passed": true,
+        "error": 1.7654144812695449E-10
+      },
+      {
+        "name": "s5_analytic_jacobian",
+        "passed": true,
+        "error": 4.4999918324961641E-7
+      },
+      {
+        "name": "zero_limit_0",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "zero_limit_1e-14",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "zero_limit_1e-08",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "zero_limit_0.0001",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "ideal_filter_current_offset",
+        "passed": true,
+        "error": 1.1102230246251565E-16
+      },
+      {
+        "name": "radial_origin_outside",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "ideal_voltage_infeasible",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "current_boundary_physics",
+        "passed": true,
+        "error": 4.4408920985006262E-16
+      },
+      {
+        "name": "voltage_boundary_physics",
+        "passed": true,
+        "error": 4.4408920985006262E-16
+      },
+      {
+        "name": "cpf_success",
+        "passed": true,
+        "error": 0
+      },
+      {
+        "name": "cpf_PCC_P_orders",
+        "passed": true,
+        "error": 7.5313764114071091E-9
+      },
+      {
+        "name": "cpf_PCC_Q_orders",
+        "passed": true,
+        "error": 3.276872106994233E-10
+      },
+      {
+        "name": "cpf_dc_reference_retained",
+        "passed": true,
+        "error": 0
+      }
+    ],
+    "passed": true
+  },
+  "reference_loss_coeff_own_pu": [
+    1.103,
+    0.14843759094817333,
+    0.080795351116712155,
+    0.12241125813904641
+  ],
+  "reference_dc_equivalent_300kv": [
+    0.034384999999999992,
+    0.034384999999999992,
+    0.048271249999999988
+  ],
+  "local_dc_resistance_ohm": [
+    23.697,
+    21.032999999999998,
+    32.409
+  ]
+}

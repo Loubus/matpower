@@ -1,0 +1,11 @@
+{
+  "name": "t_swshunt_beerten_batch4",
+  "planned": 281,
+  "executed": 281,
+  "passed": 281,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 2.1344485,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

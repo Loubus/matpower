@@ -1,0 +1,1129 @@
+--- a/matpower/lib/+mp/psse_swshunt_control.m
++++ b/matpower/lib/+mp/psse_swshunt_control.m
+@@ -177,7 +177,8 @@
+     reg = state.group.reg_bus_idx(gg);
+     members = state.group.members{gg};
+     v = vm(reg);
+-    [direction, target, active_members] = group_action(state, members, v);
++    [direction, target, active_members] = mp.psse_swshunt_group_action( ...
++        state, members, v, state.controllable);
+     if direction == 0
+         continue;
+     end
+@@ -187,7 +188,7 @@
+     for jj = 1:length(active_members)
+         k = active_members(jj);
+         if state.modsw(k) == 1
+-            b = discrete_next_b(state, k, direction);
++            b = mp.psse_swshunt_discrete_next(state, k, direction);
+         else
+             b = continuous_next_b(state, k, v, target, direction, sens);
+         end
+@@ -196,57 +197,6 @@
+             new_direction(k) = sign(b - state.current_b(k));
+         end
+     end
+-end
+-
+-function [direction, target, active_members] = group_action(state, members, v)
+-% Determine one voltage-control direction for all shunts in a group.
+-err = zeros(length(members), 1);
+-target_k = NaN(length(members), 1);
+-for jj = 1:length(members)
+-    k = members(jj);
+-    [lo, hi] = voltage_band(state, k);
+-    if isnan(lo) || isnan(hi)
+-        continue;
+-    end
+-    if state.modsw(k) == 1
+-        if v < lo - state.vtol
+-            target_k(jj) = lo;
+-            err(jj) = lo - v;
+-        elseif v > hi + state.vtol
+-            target_k(jj) = hi;
+-            err(jj) = hi - v;
+-        end
+-    elseif state.modsw(k) == 2
+-        target_k(jj) = (lo + hi) / 2;
+-        if abs(target_k(jj) - v) > state.vtol
+-            err(jj) = target_k(jj) - v;
+-        end
+-    end
+-end
+-
+-up = find(err > 0);
+-dn = find(err < 0);
+-up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
+-dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
+-if up_score == 0 && dn_score == 0
+-    direction = 0;
+-    target = NaN;
+-    active_members = [];
+-    return;
+-elseif up_score >= dn_score
+-    direction = 1;
+-    active = up;
+-else
+-    direction = -1;
+-    active = dn;
+-end
+-
+-active_members = members(active);
+-weights = state.rmpct(active_members);
+-if isempty(weights) || sum(weights) == 0
+-    target = mean(target_k(active));
+-else
+-    target = sum(target_k(active) .* weights) / sum(weights);
+ end
+ 
+ function [lo, hi] = voltage_band(state, k)
+@@ -261,26 +211,6 @@
+     hi = lo;
+     lo = tmp;
+ end
+-
+-function b = discrete_next_b(state, k, direction)
+-% Advance one admissible discrete block state for ADJM = 0.
+-states = state.states{k};
+-[~, cur] = min(abs(states - state.current_b(k)));
+-if direction > 0
+-    cand = find(states > states(cur) + 1e-9);
+-else
+-    cand = find(states < states(cur) - 1e-9);
+-end
+-if isempty(cand)
+-    b = state.current_b(k);
+-    return;
+-end
+-
+-step_idx = cand(1);
+-if direction < 0
+-    step_idx = cand(end);
+-end
+-b = states(step_idx);
+ 
+ function b = continuous_next_b(state, k, v, target, direction, sens)
+ % Compute the continuous BINIT move, bounded by the RAW block range.
+--- a/matpower/lib/+mp/psse_unified_control_update.m
++++ b/matpower/lib/+mp/psse_unified_control_update.m
+@@ -249,55 +249,19 @@
+ for gg = 1:length(state.group.reg_bus_idx)
+     reg = state.group.reg_bus_idx(gg);
+     members = state.group.members{gg};
+-    [direction, active_members] = swshunt_group_action(state, members, vm(reg));
++    [direction, ~, active_members] = mp.psse_swshunt_group_action( ...
++        state, members, vm(reg), state.controllable);
+     if direction == 0
+         continue;
+     end
+     for jj = 1:length(active_members)
+         k = active_members(jj);
+         if state.modsw(k) == 1
+-            new_b(k) = discrete_next_b(state, k, direction);
++            new_b(k) = mp.psse_swshunt_discrete_next(state, k, direction);
+         elseif state.modsw(k) == 2
+             new_b(k) = continuous_next_b(state, k, direction);
+         end
+     end
+-end
+-
+-function [direction, active_members] = swshunt_group_action(state, members, v)
+-err = zeros(length(members), 1);
+-for jj = 1:length(members)
+-    k = members(jj);
+-    [lo, hi] = swshunt_voltage_band(state, k);
+-    if isnan(lo) || isnan(hi)
+-        continue;
+-    end
+-    if state.modsw(k) == 1
+-        if v < lo - state.vtol
+-            err(jj) = lo - v;
+-        elseif v > hi + state.vtol
+-            err(jj) = hi - v;
+-        end
+-    elseif state.modsw(k) == 2
+-        target = (lo + hi) / 2;
+-        if abs(target - v) > state.vtol
+-            err(jj) = target - v;
+-        end
+-    end
+-end
+-
+-up = find(err > 0);
+-dn = find(err < 0);
+-up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
+-dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
+-if up_score == 0 && dn_score == 0
+-    direction = 0;
+-    active_members = [];
+-elseif up_score >= dn_score
+-    direction = 1;
+-    active_members = members(up);
+-else
+-    direction = -1;
+-    active_members = members(dn);
+ end
+ 
+ function [lo, hi] = swshunt_voltage_band(state, k)
+@@ -352,24 +316,6 @@
+     TorF = isempty(find(states < state.current_b(k) - 1e-9, 1));
+ end
+ 
+-function b = discrete_next_b(state, k, direction)
+-states = state.states{k};
+-if isempty(states)
+-    b = state.current_b(k);
+-    return;
+-end
+-[~, cur] = min(abs(states - state.current_b(k)));
+-if direction > 0
+-    cand = find(states > states(cur) + 1e-9, 1);
+-else
+-    cand = find(states < states(cur) - 1e-9, 1, 'last');
+-end
+-if isempty(cand)
+-    b = state.current_b(k);
+-else
+-    b = states(cand);
+-end
+-
+ function b = continuous_next_b(state, k, direction)
+ span = max(state.bmax(k) - state.bmin(k), 0);
+ if span == 0
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -74,3 +74,20 @@
+ policy differences and the [batch 3 report](../outputs/algorithm_cleanup_batch3_20260910/REPORT.md)
+ for measured outcomes. The output-local `run_batch3_suite.m` retains counts,
+ warnings in logs and exceptions; every rerun needs a fresh destination.
++
++Batch 4 adds switched-shunt acceptance and short shunt-event Beerten cases:
++
++```matlab
++t_swshunt_acceptance_batch4(0, fullfile(pwd,'outputs','shunt_new_run'));
++t_swshunt_beerten_batch4(0, fullfile(pwd,'outputs','shunt_beerten_new_run'));
++```
++
++The first compares AC and unified decisions, checks mixed-sign blocks and
++explicit lock eligibility, and independently solves physical candidates. It
++retains continuous sensitivity, candidate screening and cycling differences.
++The second uses the original Beerten control variant's shunt data, with
++shunt-only and combined ULTC/shunt cases to lambda 0.4 under bus-5 growth.
++Every accepted state is checked for physical balance and legal states, with
++independent fixed-state PF, automatic endpoint PF and half-step CPF comparisons.
++See the [shared shunt contract](../docs/SWSHUNT_DECISION_CONTRACT.md) and
++[batch 4 report](../outputs/algorithm_cleanup_batch4_20260911/REPORT.md).
+--- a/matpower/lib/+mp/psse_swshunt_group_action.m
++++ b/matpower/lib/+mp/psse_swshunt_group_action.m
+@@ -0,0 +1,74 @@
++function [direction, target, active_members] = psse_swshunt_group_action(state, members, v, eligible)
++%PSSE_SWSHUNT_GROUP_ACTION Pure weighted request for one regulated-bus group.
++% See docs/SWSHUNT_DECISION_CONTRACT.md for the shared acceptance boundary.
++% The caller supplies current eligibility, including locks applied after
++% construction of the group. No electrical acceptance or recovery occurs here.
++%
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   This file is part of MATPOWER, covered by the 3-clause BSD License.
++%   See LICENSE and https://matpower.org for details.
++
++members = members(eligible(members));
++err = zeros(length(members), 1);
++target_k = NaN(length(members), 1);
++for jj = 1:length(members)
++    k = members(jj);
++    [lo, hi] = voltage_band(state, k);
++    if isnan(lo) || isnan(hi)
++        continue;
++    end
++    if state.modsw(k) == 1
++        if v < lo - state.vtol
++            target_k(jj) = lo;
++            err(jj) = lo - v;
++        elseif v > hi + state.vtol
++            target_k(jj) = hi;
++            err(jj) = hi - v;
++        end
++    elseif state.modsw(k) == 2
++        target_k(jj) = (lo + hi) / 2;
++        if abs(target_k(jj) - v) > state.vtol
++            err(jj) = target_k(jj) - v;
++        end
++    end
++end
++
++up = find(err > 0);
++dn = find(err < 0);
++up_score = sum(abs(err(up)) .* state.rmpct(members(up)) / 100);
++dn_score = sum(abs(err(dn)) .* state.rmpct(members(dn)) / 100);
++if up_score == 0 && dn_score == 0
++    direction = 0;
++    target = NaN;
++    active_members = [];
++    return;
++elseif up_score >= dn_score
++    direction = 1;
++    active = up;
++else
++    direction = -1;
++    active = dn;
++end
++
++active_members = members(active);
++weights = state.rmpct(active_members);
++if isempty(weights) || sum(weights) == 0
++    target = mean(target_k(active));
++else
++    target = sum(target_k(active) .* weights) / sum(weights);
++end
++
++function [lo, hi] = voltage_band(state, k)
++% Return a normalized voltage band for one switched shunt.
++lo = state.vswlo(k);
++hi = state.vswhi(k);
++if isnan(lo) || isnan(hi)
++    return;
++end
++if hi < lo
++    tmp = hi;
++    hi = lo;
++    lo = tmp;
++end
++
+--- a/matpower/lib/+mp/psse_swshunt_discrete_next.m
++++ b/matpower/lib/+mp/psse_swshunt_discrete_next.m
+@@ -0,0 +1,27 @@
++function b = psse_swshunt_discrete_next(state, k, direction)
++%PSSE_SWSHUNT_DISCRETE_NEXT One adjacent admissible BINIT, or unchanged bound.
++% Sorted constructor grid and normalized current state are required.
++% See docs/SWSHUNT_DECISION_CONTRACT.md. This does not accept an electrical state.
++%
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   This file is part of MATPOWER, covered by the 3-clause BSD License.
++%   See LICENSE and https://matpower.org for details.
++
++states = state.states{k};
++if isempty(states)
++    b = state.current_b(k);
++    return;
++end
++[~, cur] = min(abs(states - state.current_b(k)));
++if direction > 0
++    cand = find(states > states(cur) + 1e-9, 1);
++else
++    cand = find(states < states(cur) - 1e-9, 1, 'last');
++end
++if isempty(cand)
++    b = state.current_b(k);
++else
++    b = states(cand);
++end
++
+--- a/tests/t_swshunt_acceptance_batch4.m
++++ b/tests/t_swshunt_acceptance_batch4.m
+@@ -0,0 +1,182 @@
++function [checks,evidence] = t_swshunt_acceptance_batch4(quiet,outdir)
++%T_SWSHUNT_ACCEPTANCE_BATCH4 Physical shunt decisions and adapter boundaries.
++if nargin<1, quiet=0; end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin<2, outdir=tempname(fullfile(root,'outputs')); end
++assert(~exist(outdir,'dir'),'Use a fresh output directory'); mkdir(outdir);
++opt=mpoption('verbose',0,'out.all',0);
++checks=struct('id',{},'passed',{},'detail',{});
++evidence=struct('options',opt,'matlab',version);
++
++%% Mixed inductive/capacitive blocks: adjacency is ordered by susceptance.
++for b=[-20 -10 0 10 20 30]
++    for direction=[-1 1]
++        f=fixture(); f.psse.swshunt.num(10)=b; f.bus(2,6)=3+b;
++        v=1-.1*direction; [a,u]=both(f,[1;v]);
++        expected=min(max(b+10*direction,-20),30);
++        tag=sprintf('grid_%g_%g',b,direction);
++        check(tag,a.current_b==expected && u.psse.swshunt.num(10)==expected, ...
++            'both adapters take one adjacent legal mixed-sign step or retain a bound');
++        check([tag '.fixed_bs'],u.bus(2,6)==3+expected,'fixed BS remains separate from BINIT');
++    end
++end
++for direction=[-1 1]
++    f=fixture(); p0=runpf(f,opt); v=ones(2,1); v(2)=1-.1*direction;
++    [a,u]=both(f,v); p=runpf(u,opt); balance(sprintf('direction%d',direction),p);
++    check(sprintf('direction%d.physical',direction),direction*(p.bus(2,8)-p0.bus(2,8))>0, ...
++        'independent AC solve confirms capacitive increase raises voltage and inductive decrease lowers it');
++    nodal=ext2int(p); volts=nodal.bus(:,8).*exp(1j*pi/180*nodal.bus(:,9));
++    ywith=makeYbus(nodal.baseMVA,nodal.bus,nodal.branch); nodal.bus(2,6)=3;
++    ywithout=makeYbus(nodal.baseMVA,nodal.bus,nodal.branch);
++    injection=-imag(volts.*conj((ywith-ywithout)*volts))*f.baseMVA;
++    check(sprintf('direction%d.injection',direction), ...
++        abs(injection(2)-a.current_b*p.bus(2,8)^2)<1e-10, ...
++        'independent admittance difference confirms BINIT times squared local voltage');
++    evidence.(sprintf('direction%d',direction+2))=struct('input',f,'base',p0,'candidate',u,'solved',p);
++end
++
++%% Disabled controls, inclusive tolerance, reversed and missing bands.
++for mode=1:7
++    f=fixture();
++    switch mode
++        case 1, f.psse.system.solver.SWSHNT=0;
++        case 2, f.psse.system.solver.SWSHNT=2;
++        case 3, f.psse.swshunt.num(2)=0;
++        case 4, f.psse.swshunt.num(3)=1;
++        case 5, f.psse.swshunt.num(4)=0;
++        case 6, f.psse.swshunt.num(2)=3;
++        case 7, f.psse.swshunt.num(5)=NaN;
++    end
++    [a,u]=both(f,[1;.8]);
++    check(sprintf('disabled%d',mode),a.current_b==0 && u.psse.swshunt.num(10)==0,'no automatic move');
++end
++for v=[.97-1e-5 1.03+1e-5 1]
++    [a,u]=both(fixture(),[1;v]);
++    check(sprintf('band%.8f',v),a.current_b==0 && u.psse.swshunt.num(10)==0,'inclusive deadband edges');
++end
++f=fixture(); f.psse.swshunt.num([5 6])=[.97 1.03]; [a,u]=both(f,[1;.9]);
++check('reversed_band',a.current_b==10 && u.psse.swshunt.num(10)==10,'band ordering preserved');
++
++%% Nonconsecutive IDs, remote regulation and reordered voltage measurements.
++f=fixture(); f.bus(:,1)=[101;205]; f.gen(:,1)=101; f.branch(:,1:2)=[101 205];
++f.bus(3,:)=f.bus(2,:); f.bus(3,[1 3 4 6])=[309 10 3 0];
++f.branch(2,:)=f.branch(1,:); f.branch(2,1:2)=[205 309];
++f.psse.swshunt.num([1 7])=[205 309];
++[a,u]=both(f,[1;1.1;.9]); measurements=f.bus([3 1 2],:); measurements(:,8)=[.9;1;1.1];
++rev=mp.psse_unified_control_update(f,measurements);
++check('remote.mapping',a.current_b==10 && u.psse.swshunt.num(10)==10 && isequal(u.bus,rev.bus), ...
++    'remote voltage uses external identity rather than measurement row order');
++p0=runpf(f,opt); p=runpf(u,opt); balance('remote',p);
++check('remote.physical',p.bus(3,8)>p0.bus(3,8),'remote voltage rises after capacitive step');
++f.psse.swshunt.num(7)=999; [a,u]=both(f,[1;.9;1.1]);
++check('remote.fallback',a.current_b==10 && u.psse.swshunt.num(10)==10,'missing remote bus falls back to local bus');
++
++%% Competing groups, literal RMPCT, synchronous decisions and row order.
++for weights={[100;100],[25;100],[200;50]}
++    f=group_fixture(); f.psse.swshunt.num(:,8)=weights{1};
++    [a,u]=both(f,[1;1]);
++    if weights{1}(1)>=weights{1}(2), expected=[10;0]; else, expected=[0;-10]; end
++    check(sprintf('vote_%g_%g',weights{1}),isequal(a.current_b,expected) && ...
++        isequal(u.psse.swshunt.num(:,10),expected),'weighted competing errors; upward tie; only winning voters move');
++    f.psse.swshunt.num=f.psse.swshunt.num([2 1],:); [~,rev]=both(f,[1;1]);
++    check(sprintf('permutation_%g_%g',weights{1}),isequal(rev.psse.swshunt.num([2 1],10),expected), ...
++        'device permutation preserves decisions');
++end
++f=group_fixture(); f.psse.swshunt.num(:,5:6)=repmat([1.03 .97],2,1);
++[a,u]=both(f,[1;.9]); check('simultaneous',all(a.current_b==10) && all(u.psse.swshunt.num(:,10)==10) && ...
++    u.bus(2,6)==23,'same-bus contributions accumulate; both devices use one voltage sample');
++p=runpf_psse(f,opt); balance('group.settled',p); evidence.group=p;
++
++%% Explicit unified locks must suppress both movement and participation.
++for mode=1:3
++    f=group_fixture();
++    if mode==1
++        mask=[true;true]; expected=[0;0];
++    elseif mode==2
++        mask=[true;false]; expected=[0;-10];
++    else
++        mask=[false;true]; expected=[10;0];
++    end
++    f.psse.control_lockout.swshunt=mask; b=f.bus; b(:,8)=1;
++    [u,r]=mp.psse_unified_control_update(f,b);
++    check(sprintf('lock%d',mode),isequal(u.psse.swshunt.num(:,10),expected), ...
++        'explicitly locked rows neither move nor vote against an eligible peer');
++    evidence.(sprintf('lock%d',mode))=struct('input',f,'output',u,'report',r);
++end
++f=fixture(); f.psse.control_lockout.swshunt=true; b=f.bus; b(:,8)=[1;.9];
++u=mp.psse_unified_control_update(f,b); u.psse.control_lockout.swshunt=false;
++released=mp.psse_unified_control_update(u,b);
++check('explicit_release',u.psse.swshunt.num(10)==0 && released.psse.swshunt.num(10)==10, ...
++    'caller clearing the explicit lock permits the next step; no inferred release rule');
++
++%% Continuous policy: first-step agreement, history-specific AC sensitivity.
++f=fixture(); f.psse.swshunt.num(2)=2; f.psse.swshunt.num(8)=40;
++[a,u]=both(f,[1;.9]);
++check('continuous.first',abs(a.current_b-5)<1e-10 && abs(u.psse.swshunt.num(10)-5)<1e-10, ...
++    'quarter span times literal 40 percent; no weight normalization');
++s=mp.psse_swshunt_states(f); s.last_vm(2)=.89; s.last_b(2)=-10;
++[a,u]=both(f,[1;.9],s);
++check('continuous.history',abs(a.current_b-30)<1e-9 && abs(u.psse.swshunt.num(10)-5)<1e-9, ...
++    'AC sensitivity estimate and unified fixed increment intentionally differ');
++evidence.continuous=struct('input',f,'ac_state',a,'unified',u);
++for b=[-20 30]
++    f.psse.swshunt.num(10)=b; f.bus(2,6)=3+b;
++    if b<0,v=1.2;else,v=.8;end
++    [a,u]=both(f,[1;v]); check(sprintf('continuous.bound%d',b),a.current_b==b && u.psse.swshunt.num(10)==b, ...
++        'continuous physical bound is retained');
++end
++f=fixture(); f.psse.swshunt.num(2)=2; p=runpf_psse(f,opt); balance('continuous.settled',p); evidence.continuous_pf=p;
++
++%% AC candidate screening and cycle memory remain adapter-specific.
++f=fixture(); f.psse.swshunt.num(11:14)=[1 1e6 0 0];
++[a,u]=both(f,[1;.8]);
++check('screening.rejected',a.current_b==0 && a.candidate_rejected==1, ...
++    'AC rejects pathological electrical candidate and retains BINIT');
++check('screening.provisional',u.psse.swshunt.num(10)==1e6, ...
++    'direct unified selector is provisional; electrical acceptance belongs to outer solver');
++evidence.screening=struct('input',f,'ac_state',a,'unified',u);
++f=fixture(); f.psse.swshunt.num([5 6])=[.95001 .95]; p=runpf_psse(f,opt);
++balance('cycle',p); evidence.cycle=p;
++check('cycle.ac',p.psse.swshunt.control.cycle_detected && p.psse.swshunt.control.cycle_resolved, ...
++    'AC detects actual repeated BINIT state and retains best visited solution');
++[~,u]=both(f,[1;.8]); [~,rev]=both(u,[1;1.2]);
++check('cycle.unified',rev.psse.swshunt.num(10)==0 && ~rev.psse.swshunt.control.cycle_detected, ...
++    'direct unified passes can reverse; outer solver owns history');
++
++save(fullfile(outdir,'shunt.mat'),'checks','evidence');
++fid=fopen(fullfile(outdir,'shunt.json'),'w'); fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true)); fclose(fid);
++t_begin(length(checks),quiet);
++for k=1:length(checks), t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]); end
++t_end;
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function balance(tag,result)
++        ai=ext2int(result); y=makeYbus(ai.baseMVA,ai.bus,ai.branch);
++        volts=ai.bus(:,8).*exp(1j*pi/180*ai.bus(:,9));
++        residual=norm(volts.*conj(y*volts)-makeSbus(ai.baseMVA,ai.bus,ai.gen),Inf);
++        check([tag '.balance'],result.success && residual<=1e-8,sprintf('success=%d, AC nodal residual %.12g pu',result.success,residual));
++    end
++    function [ctrl_state,unified_case]=both(input_case,measured_vm,ctrl_state)
++        if nargin<3,ctrl_state=[];end
++        dm=struct('source',input_case,'elements',struct('bus',struct('tab',struct('vm',measured_vm))));
++        task=struct('dmc',[],'data_model_build',@(mpc,varargin) mpc);
++        [~,ctrl_state]=mp.psse_swshunt_control(task,[],[],dm,opt,{},ctrl_state);
++        measured_bus=input_case.bus; measured_bus(:,8)=measured_vm;
++        unified_case=mp.psse_unified_control_update(input_case,measured_bus);
++    end
++end
++function f=fixture()
++f.version='2'; f.baseMVA=100;
++f.bus=[1 3 0 0 0 0 1 1 0 230 1 1.1 .9;2 1 40 15 0 3 1 1 0 230 1 1.1 .9];
++f.gen=[1 40 0 300 -300 1 100 1 200 0 zeros(1,11)];
++f.branch=[1 2 .02 .15 0 200 200 200 0 0 1 -360 360];
++base=case5_vsc_mtdc_beerten_ultc_swshunt(); f.psse=rmfield(base.psse,'xfmr');
++f.psse.system.adjust.MXTPSS=20;
++f.psse.swshunt.num([1:8 10:16])=[2 1 0 1 1.03 .97 2 100 0 2 -10 3 10 0 0];
++end
++function f=group_fixture()
++f=fixture(); f.psse.swshunt.num=repmat(f.psse.swshunt.num,2,1);
++f.psse.swshunt.txt=repmat(f.psse.swshunt.txt,2,1);
++f.psse.swshunt.num(:,5:6)=[1.06 1.04;.96 .94];
++end
+--- a/tests/t_swshunt_beerten_batch4.m
++++ b/tests/t_swshunt_beerten_batch4.m
+@@ -0,0 +1,145 @@
++function [checks,evidence] = t_swshunt_beerten_batch4(quiet,outdir)
++%T_SWSHUNT_BEERTEN_BATCH4 Short Beerten shunt-only and combined PF/CPF physical gate.
++% Existing project variant, not certification against the published benchmark.
++% Every accepted point is compared to an independent full-equation fixed-state
++% PF; endpoint automatic PF and half-step CPF are checked separately.
++if nargin<1, quiet=0; end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin<2, outdir=tempname(fullfile(root,'outputs')); end
++assert(~exist(outdir,'dir'),'Use a fresh output directory'); mkdir(outdir);
++opt=mpoption('verbose',0,'out.all',0);
++opt.vsc_mtdc.method='unified';
++f=loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
++c=idx_vsc;
++checks=struct('id',{},'passed',{},'detail',{});
++evidence=struct('base',f,'options',opt,'matlab',version);
++for scenario=1:2
++    f=loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
++    if scenario==1
++        label='shunt_only'; f.psse=rmfield(f.psse,'xfmr'); s=[];
++    else
++        label='combined'; s=mp.psse_xfmr_states(f);
++    end
++    sh=mp.psse_swshunt_states(f);
++    target=f; target.bus(5,[3 4])=5*f.bus(5,[3 4]); stop=.4;
++    cop=mpoption(opt,'cpf.stop_at',stop,'cpf.step',.1);
++    r=runcpf_psse(f,target,cop);
++    check([label '.endpoint'],r.success && abs(r.cpf.lam(end)-stop)<=cop.cpf.target_lam_tol, ...
++        sprintf('lambda %.12g reaches %.12g within configured target tolerance %.12g',r.cpf.lam(end),stop,cop.cpf.target_lam_tol));
++    physical([label '.cpf'],r);
++    check([label '.policy'],strcmp(r.cpf.active_set_failure_policy.psse_control.declared_policy,'stop') && ...
++        ~any(contains({r.cpf.events.name},'FREEZE')), 'controls active with original stop policy and no freeze event');
++    if scenario==2
++        check([label '.initial_tap'],any(abs(r.cpf.branch(s.branch_idx,9,1)-f.branch(s.branch_idx,9))>1e-10), ...
++            'combined controls normalize the original off-grid tap and electrically correct it');
++    end
++    check([label '.shunt_event'],any(abs(diff(squeeze(r.cpf.bus(5,6,:))))>1e-9) && ...
++        any(strcmp({r.cpf.events.name},'PSSE_CONTROL') & [r.cpf.events.k]>0), ...
++        'a post-base switched-shunt event is accepted after electrical correction');
++    fixed=cell(length(r.cpf.lam),1);
++    for k=1:length(r.cpf.lam)
++        tag=sprintf('%s.point%d',label,k);
++        lam=r.cpf.lam(k); point=f;
++        point.bus(:,[3 4])=f.bus(:,[3 4])+lam*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++        point.bus(:,6)=r.cpf.bus(:,6,k);
++        point.branch(:,1:13)=r.cpf.branch(:,1:13,k);
++        % runpf_vsc_mtdc solves this specified electrical state directly;
++        % automatic control settlement is exercised by runcpf_psse/runpf_psse.
++        p=runpf_vsc_mtdc(point,opt); fixed{k}=p;
++        physical([tag '.fixed_pf'],p);
++        trace_ac_balance(tag,r,k,point);
++        [~,rows]=ismember(r.cpf.bus(:,1,k),p.ac.bus(:,1));
++        vc=r.cpf.bus(:,8,k).*exp(1j*pi/180*r.cpf.bus(:,9,k));
++        vp=p.ac.bus(rows,8).*exp(1j*pi/180*p.ac.bus(rows,9));
++        check([tag '.pf_cpf_voltage'],max(abs(vc-vp))<=1e-6,'complex bus voltages agree at matched load and discrete state');
++        check([tag '.pf_cpf_converter'],max(abs(p.vsc(:,[c.PAC c.QAC c.PDC c.PLOSS])- ...
++            r.cpf.vsc(:,[c.PAC c.QAC c.PDC c.PLOSS],k)),[],'all')/f.baseMVA<=1e-6, ...
++            'converter injections and losses agree at matched state');
++        check([tag '.load'],max(abs(point.bus(:,[3 4])-r.cpf.bus(:,[3 4],k)),[],'all')<1e-8, ...
++            'accepted demand equals affine loading at reported lambda');
++        if scenario==2
++            taps=r.cpf.branch(s.branch_idx,9,k);
++            check([tag '.tap_grid'],all(arrayfun(@(j) min(abs(s.states_tap{j}-taps(j)))<1e-10,1:s.n)), ...
++                'accepted taps remain on original grid');
++        else
++            check([tag '.fixed_tap'],isequal(r.cpf.branch(:,9,k),f.branch(:,9)), ...
++                'shunt-only fixture retains fixed transformer ratios');
++        end
++        current_b=r.cpf.bus(sh.bus_idx,6,k)-sh.base_bs(sh.bus_idx);
++        check([tag '.shunt_grid'],all(arrayfun(@(j) min(abs(sh.states{j}-current_b(j)))<1e-10,1:sh.n)), ...
++            'every accepted shunt state is on unchanged finite RAW grid');
++        network=ext2int(point); volts=vc;
++        ywith=makeYbus(network.baseMVA,network.bus,network.branch);
++        network.bus(sh.bus_idx,6)=sh.base_bs(sh.bus_idx);
++        ywithout=makeYbus(network.baseMVA,network.bus,network.branch);
++        switched=-imag(volts.*conj((ywith-ywithout)*volts))*f.baseMVA;
++        check([tag '.shunt_injection'],max(abs(switched(sh.bus_idx)-current_b.*abs(volts(sh.bus_idx)).^2))<1e-8, ...
++            'independent admittance difference gives BINIT times local voltage squared');
++        check([tag '.generator_bounds'],all(r.cpf.gen(:,3,k)>=f.gen(:,5)-.01 & ...
++            r.cpf.gen(:,3,k)<=f.gen(:,4)+.01),'original generator Q bounds are respected');
++        dc_balance(tag,r.cpf.busdc(:,:,k),r.cpf.branchdc(:,:,k),r.cpf.vsc(:,:,k));
++    end
++    point=f; point.bus(:,[3 4])=f.bus(:,[3 4])+r.cpf.lam(end)*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++    p=runpf_psse(point,opt); physical([label '.automatic_pf'],p);
++    check([label '.automatic_agreement'],max(abs(p.ac.bus(:,8)-r.ac.bus(:,8)))<=1e-6 && ...
++        max(abs(p.branch(:,9)-r.branch(:,9)))<1e-10 && ...
++        max(abs(p.bus(:,6)-r.bus(:,6)))<1e-8,'independent automatic PF reaches the same endpoint control state and voltage');
++    check([label '.raw_sync'],max(abs(r.psse.swshunt.num(:,sh.binit_col)+sh.base_bs(sh.bus_idx)-r.bus(sh.bus_idx,6)))<1e-10, ...
++        'RAW BINIT plus original fixed susceptance equals exported BS');
++    half=runcpf_psse(f,target,mpoption(cop,'cpf.step',.05));
++    physical([label '.half_step'],half);
++    check([label '.step_sensitivity'],half.success && abs(half.cpf.lam(end)-r.cpf.lam(end))<1e-6 && ...
++        max(abs(half.ac.bus(:,8)-r.ac.bus(:,8)))<=1e-6 && ...
++        max(abs(half.branch(:,9)-r.branch(:,9)))<1e-10 && ...
++        max(abs(half.bus(:,6)-r.bus(:,6)))<1e-10,'halved continuation step retains matched endpoint and control state');
++    evidence.(label)=struct('base',f,'target',target,'options',cop,'cpf',r,'fixed_pf',{fixed},'automatic_pf',p,'half_step',half);
++end
++save(fullfile(outdir,'beerten.mat'),'checks','evidence');
++fid=fopen(fullfile(outdir,'beerten.json'),'w'); fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true)); fclose(fid);
++t_begin(length(checks),quiet);
++for k=1:length(checks), t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]); end
++t_end;
++
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function physical(tag,p)
++        check([tag '.success'],p.success && p.convergence.max_mismatch<=p.convergence.tol, ...
++            sprintf('success; nonlinear residual %.12g <= %.12g',p.convergence.max_mismatch,p.convergence.tol));
++        a=ext2int(p.ac); y=makeYbus(a.baseMVA,a.bus,a.branch);
++        v=a.bus(:,8).*exp(1j*pi/180*a.bus(:,9));
++        residual=norm(v.*conj(y*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        check([tag '.ac_balance'],residual<=1e-8,sprintf('complete station-network AC balance %.12g pu',residual));
++        dc_balance(tag,p.busdc,p.branchdc,p.vsc);
++    end
++    function dc_balance(tag,bd,br,vs)
++        residual=max(abs(sum(vs(:,[c.PAC c.PDC c.PLOSS]),2)))/f.baseMVA;
++        check([tag '.converter_balance'],residual<=1e-8,sprintf('converter power balance %.12g pu',residual));
++        current=hypot(vs(:,c.PAC),vs(:,c.QAC))./(f.baseMVA*vs(:,c.VAC_INTERNAL));
++        loss=vs(:,c.LOSS_A)+vs(:,c.LOSS_B).*current+vs(:,c.LOSS_C).*current.^2;
++        check([tag '.loss_equation'],max(abs(loss-vs(:,c.PLOSS)))/f.baseMVA<=1e-8 && all(loss>=0), ...
++            'unchanged converter loss equation and nonnegative losses');
++        [~,rows]=ismember(vs(:,c.BUSDC),bd(:,1));
++        injection=accumarray(rows,vs(:,c.PDC),[size(bd,1) 1])/f.baseMVA;
++        residual=norm(bd(:,3).*(makeGdc(bd,br)*bd(:,3))-injection,Inf);
++        check([tag '.dc_balance'],residual<=1e-8,sprintf('DC nodal balance %.12g pu',residual));
++    end
++    function trace_ac_balance(tag,r,k,point)
++        % Materialize the actual stored continuation state, including station
++        % angles, on this point's load/tap/shunt model. No PF solution or
++        % station-phasor approximation replaces the accepted CPF state.
++        ctx = runpf_vsc_mtdc_unified('__setup',point,opt);
++        [~,ev] = runpf_vsc_mtdc_unified('__mismatch',ctx,r.cpf.x(:,k),[]);
++        full = runpf_vsc_mtdc_unified('__results',ctx,ev,point);
++        [~,rows] = ismember(r.cpf.bus(:,1,k),full.ac.bus(:,1));
++        check([tag '.cpf_state_identity'], ...
++            max(abs(full.ac.bus(rows,[8 9])-r.cpf.bus(:,[8 9],k)),[],'all')<1e-10 && ...
++            max(abs(full.vsc(:,[c.PAC c.QAC c.PDC])-r.cpf.vsc(:,[c.PAC c.QAC c.PDC],k)),[],'all')<1e-8, ...
++            'stored state reproduces the accepted bus and converter trace');
++        a=ext2int(full.ac); y=makeYbus(a.baseMVA,a.bus,a.branch);
++        v=a.bus(:,8).*exp(1j*pi/180*a.bus(:,9));
++        residual=norm(v.*conj(y*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        check([tag '.cpf_ac_balance'],residual<=1e-8, ...
++            sprintf('actual CPF full station-network balance %.12g pu',residual));
++    end
++end
+--- a/docs/SWSHUNT_DECISION_CONTRACT.md
++++ b/docs/SWSHUNT_DECISION_CONTRACT.md
+@@ -0,0 +1,66 @@
++# Switched-shunt shared decision contract
++
++Batch 4 shares only group voltage requests and adjacent discrete BINIT selection.
++It does not make the AC and unified AC/DC control loops equivalent.
++
++## Inputs and outputs
++
++`mp.psse_swshunt_group_action(state, members, v, eligible)` takes the state from
++`psse_swshunt_states`, a column vector of indices in one regulated-bus group,
++one solved voltage sample and an explicit row eligibility mask. It returns a
++direction, weighted voltage target and the eligible members voting in that
++direction. Ineligible rows neither vote nor move, including rows locked after
++the group was constructed. No eligible request returns zero, NaN and empty.
++
++Each band is ordered without changing its endpoints. NaN bands abstain.
++MODSW=1 requests the nearest violated edge strictly outside VCTOLV; MODSW=2
++requests the midpoint strictly outside VCTOLV. Weighted positive and negative
++errors use literal RMPCT/100. An exact nonzero tie selects upward. Only voters
++on the winning side are returned. Their target is weighted by literal RMPCT.
++The state constructor retains ownership of default/invalid RMPCT handling.
++
++`mp.psse_swshunt_discrete_next(state, k, direction)`, with direction +1 or -1,
++chooses the nearest current
++grid entry, then the next strictly higher/lower entry separated by more than
++1e-9 MVAr. At a bound (or empty grid) it retains BINIT. The grid is the existing
++sorted admissible grid from RAW blocks, including separate inductive and
++capacitive cumulative steps through zero. It is not an enumeration of arbitrary
++block combinations. Inputs are constructor-normalized; initial off-grid
++normalization belongs to the constructor. This helper does not alter limits,
++the voltage tolerance, RAW data, bus BS, locks or convergence flags.
++The empty-grid guard retains unified defensive behavior; normal constructor
++output always includes zero, so this is outside the shared operational domain.
++
++## Adapter responsibilities and intentional differences
++
++| Behavior | AC | Unified AC/DC |
++|---|---|---|
++| Voltage source | Solved data-model bus order | Solved bus values mapped by external identity |
++| Simultaneous decisions | One voltage sample for all groups | One voltage sample for all groups |
++| Continuous step | Prior group dV/dB when available; quarter-span fallback | Quarter-span step every direct pass |
++| Candidate screening | Existing plain AC PF probe, Q-limit enforcement disabled for probe, voltage sanity range | Outer monolithic solver corrects provisional candidate |
++| Cycling | Persistent BINIT history and best visited score | Outer solver owns settlement/recovery; direct pass is memoryless |
++| Lock mask | No unified-mask API on AC shunt adapter | Explicit `psse.control_lockout.swshunt` suppresses voting and movement |
++| Reporting | Pre-move solved voltage and cycle history | Pre-move voltage with post-move saturation; provisional until corrected |
++
++Continuous sensitivities, clamps, screening, report timing, initial normalization,
++fixed-BS/BINIT synchronization, MXTPSS, release/freeze rules and rollback remain
++in their existing layers. Group metadata describes the constructed group, not
++the current eligible subset. A physical bound does not create a numerical lock.
++Caller removal of a unified lock permits a later request; this is no new
++automatic release policy. No shared recovery policy is inferred from these tests.
++
++## Acceptance boundary
++
++`tests/t_swshunt_acceptance_batch4.m` exercises the two adapters on mixed-sign
++blocks, both bounds, local/remote regulation, identity mapping, disabled modes,
++deadband edges, competing votes, row permutations, fixed BS accumulation,
++continuous history differences, candidate rejection and actual AC cycling.
++Independent electrical solves check direction and complex AC nodal balance.
++Explicit unified-lock failures must pass before extraction.
++
++Short Beerten gates additionally check corrected PF/CPF states, shunt events,
++combined ULTC/shunt controls, original grids/bounds, generator Q and AC/DC/VSC
++balance. This is acceptance of the project variant, not benchmark conversion or
++certification against the publication. Broader recovery, non-unit PQBRAK with
++mixed FACTS/TWODC/VSC equivalent loads, TRANSPA and hydro remain deferred.
+--- a/outputs/algorithm_cleanup_batch4_20260911/REPORT.md
++++ b/outputs/algorithm_cleanup_batch4_20260911/REPORT.md
+@@ -0,0 +1,231 @@
++# Algorithm cleanup batch 4 — switched-shunt acceptance and bounded consolidation
++
++**Complete: 1,282 checks passed, zero failed, zero skipped and no exceptions.**
++The new switched-shunt gate passes **67/67**, and the short shunt-only and
++combined ULTC/shunt Beerten gate passes **281/281**, before and after extraction.
++This batch repairs an explicit unified shunt-lock eligibility defect and shares
++only group voltage requests and adjacent discrete BINIT selection. Final counts
++and warning-line checks are recorded in `verification_summary.json`.
++
++## Baseline and scope
++
++Batch 3 and its September 11 revalidation are the starting baseline. Every
++entry in the revalidation source manifest matched on arrival
++(`batch3_baseline_verified.json`). Batch 3 was not reimplemented or rerun.
++The focused batch 1/2 gates and existing controls/VSC suites are used as
++regression protection for this change, not as a repetition of the batch 3 audit.
++
++Production changes are confined to two existing adapters and two new helpers:
++
++- `matpower/lib/+mp/psse_swshunt_control.m`
++- `matpower/lib/+mp/psse_unified_control_update.m`
++- `matpower/lib/+mp/psse_swshunt_group_action.m`
++- `matpower/lib/+mp/psse_swshunt_discrete_next.m`
++
++The [shared contract](../../docs/SWSHUNT_DECISION_CONTRACT.md) was written before
++extraction. Existing scientific repairs, electrical equations, solver options,
++ratings, generator/converter limits, shunt/tap grids and historical evidence
++remain preserved. No broader recovery change, benchmark conversion, TRANSPA or
++hydro-corridor work is included. No new lock or freeze rule was introduced.
++
++The workspace root has no Git repository; MATPOWER is nested in `matpower/`.
++`status_before.txt`, `preexisting.patch` and `before/` preserve entry context.
++`batch4.patch` is relative to those working files, not Git HEAD. The README's
++original prefix was recovered after its append and verified against its entry
++SHA-256 before patch capture. Historical batch 3 files remain byte-identical.
++
++## AC versus unified decisions
++
++Both adapters already used one voltage sample for all devices, normalized
++voltage bands, literal RMPCT weighted positive/negative errors, an upward tie
++rule, and one adjacent susceptance state for discrete shunts. These operations
++are now shared. Eligibility is explicit: a locked row cannot vote or move.
++Only voters on the winning side move. Fixed bus BS, RAW BINIT and physical
++bounds remain owned by the unchanged state constructor/updater.
++
++The following differences remain intentional and unmerged:
++
++| Behavior | AC | Unified AC/DC |
++|---|---|---|
++| Continuous move | Group dV/dB history, with quarter-span fallback | Quarter-span move on each direct pass |
++| Electrical screening | Existing auxiliary plain AC PF probe | Outer monolithic electrical correction |
++| Cycle handling | Persistent history and best visited BINIT | Outer solver; direct pass can reverse |
++| Diagnostics | Solved pre-move voltage plus cycle history | Pre-move voltage and provisional post-move saturation |
++| Explicit unified lock mask | Not an AC shunt API | Suppresses current eligibility |
++
++Continuous steps retain their original literal RMPCT scaling and clamps. The
++AC probe retains its existing Q-limit setting and voltage sanity range; it is
++screening, not proof of final acceptance with all controls. Numerical rollback,
++release/freeze policy, iteration limits and solved-state reporting remain in
++their current callers. A physical shunt bound is distinct from numerical
++rejection. Group report metadata still describes the constructed group, not
++the subset eligible in the current direct pass.
++
++## Isolated defect and incremental evidence
++
++`psse_swshunt_states` constructed groups before the unified lock mask was
++applied. The mask set `state.controllable` false, but the local selector still
++iterated the stale membership. Thus an explicitly locked device could vote
++and move, and could prevent an eligible opposing peer from acting.
++
++The initial valid acceptance run passed 64/67. It failed the all-locked group,
++the locked upward voter versus eligible downward peer, and explicit-release
++sequence. The repair filters current eligibility before voting, not merely
++before writing BINIT. All 67 then passed with local selectors still present.
++`lock_eligibility_repair.patch` isolates this repair. `preextraction/` preserves
++the repaired adapters. Only after both gates were green was the common operation
++extracted (`bounded_consolidation.patch`). No failing check was skipped.
++
++| Stage | Passed | Failed | Exception |
++|---|---:|---:|---|
++| First new harness attempt (`acceptance_before`) | 0 | 0 | Nested helper overwrote loop BINIT variable |
++| Corrected harness, original adapters (`acceptance_before_02`) | 64 | 3 | None |
++| Eligibility repair (`acceptance_repaired`) | 67 | 0 | None |
++| Strengthened admittance check, pre-extraction (`acceptance_preextraction`) | 67 | 0 | None |
++| Initial Beerten gate (`beerten_preextraction`) | 279 | 2 | None |
++| Corrected endpoint criterion (`beerten_preextraction_02`) | 281 | 0 | None |
++| Final shunt acceptance (`acceptance_final`) | 67 | 0 | None |
++| Final Beerten (`beerten_final`) | 281 | 0 | None |
++
++The Beerten failures were in a copied test criterion, not electrical balance:
++the new test initially required endpoint error below 1e-6, whereas the unchanged
++configured `cpf.target_lam_tol` is 1e-5. Actual endpoint error was about 5.03e-6.
++The new gate now checks the configured target tolerance. It preserves 1e-8 pu
++electrical checks, 1e-6 pu voltage/power comparison, 1e-10 discrete-state checks,
++1e-8 demand checks and 0.01 MVAr generator-Q allowance. No existing test or
++configured tolerance was changed. All failed runs are retained separately.
++
++## Physical acceptance coverage
++
++`tests/t_swshunt_acceptance_batch4.m` adds mixed inductive/capacitive steps
++through zero and both bounds; independent AC re-solves for voltage direction;
++an admittance-difference check of BINIT times local voltage squared; fixed-BS
++preservation; disabled modes/status/ADJM; tolerance edges and reversed/NaN
++bands; nonconsecutive bus IDs and reordered unified measurements; remote
++regulation and missing-remote fallback; conflicting weighted groups, exact
++ties, device permutation and simultaneous same-bus accumulation.
++
++It also covers explicit locks and caller-requested release, continuous first
++steps and AC history-dependent divergence, continuous bounds and a solved
++continuous case, an actual AC cycle and direct-pass reversal. An intentionally
++pathological 1e6 MVAr discrete block shows the existing AC probe rejecting a
++candidate while the direct unified selector returns it provisionally. That
++injected diagnostic is not an accepted operating state or a benchmark input.
++The full controls suite retains broader mode/interface and cycle regressions.
++
++## Short Beerten verification and retained failure
++
++Both cases start from `case5_vsc_mtdc_beerten_ultc_swshunt`, retaining its shunt
++grid 0/5/10/15 MVAr and band 0.95–1.03 pu. The shunt-only study fixture removes
++ULTC control metadata and keeps the transformer ratios fixed. The combined
++fixture retains the original ULTC metadata, limits and initial off-grid tap.
++The source case is unchanged. Both grow bus-5 demand toward five times base
++and stop at lambda 0.4 with CPF step 0.1, then repeat with step 0.05.
++
++Both have seven primary accepted states. A post-base control event near lambda
++0.39462 changes shunt BINIT from 0 to 15 MVAr after fixed-lambda correction.
++The combined case also normalizes the tap to 1.011111111111111 at the initial
++point. These cases exercise shunt events with ULTC enabled; they do not claim
++a new post-base tap event, which is already established by batch 3.
++
++Every primary point is compared with an independent full-equation fixed-state
++PF at matched demand, tap and BS. Actual stored CPF state vectors materialize
++the complete station network, and their bus/converter traces must agree with
++exports before independent AC nodal balance is checked. DC nodal balance,
++converter power balance and unchanged loss equations are checked separately.
++The gate checks affine loading, original generator Q bounds, legal shunt/tap
++states and BINIT/BS synchronization. Automatic endpoint PF and half-step CPF
++must independently succeed and agree at matched operating conditions.
++
++| Measured balance | Maximum |
++|---|---:|
++| AC, 20 endpoint/automatic/fixed/half-step evaluations | 7.92824299245e-9 pu |
++| Actual CPF AC, all 14 primary accepted states | 7.90178545564e-9 pu |
++| DC nodal, 34 evaluations | 1.27986510279e-12 pu |
++| Converter power, 34 evaluations | 7.13970593758e-11 pu |
++
++All are below 1e-8 pu. These are project-variant checks, not certification
++against the published Beerten benchmark or broader converter-limit coverage.
++
++`beerten_probe.mat` retains the exploratory continuation to lambda 0.8. It
++returns **success=0**, with last accepted lambda about 0.4106 and message
++`VSC-MTDC monolithic PSS/E control re-correction did not converge at lambda
++0.410705.` Its electrical convergence substructure still says converged; that
++does not make the overall control continuation successful. The failure predates
++extraction. This batch neither hides it nor changes recovery settings to pass.
++The successful lambda-0.4 gate is explicitly a short acceptance case, not a
++repair of that longer continuation. Broader control recovery remains deferred.
++
++## Final verification and preservation
++
++MATLAB R2025b was initialized using `iniciar_proyecto` through MATLAB MCP.
++Edited functions were explicitly cleared and rehashed before reruns. There was
++no MCP connectivity failure, CLI fallback, session restart or path reset.
++Per-suite `counts.json` files and complete `run.log` files distinguish assertion
++failures, exceptions and solver success flags.
++
++| Suite | Passed | Failed | Skipped |
++|---|---:|---:|---:|
++| New shunt acceptance | 67 | 0 | 0 |
++| New short Beerten PF/CPF | 281 | 0 | 0 |
++| Existing controls | 508 | 0 | 0 |
++| Batch 1 physical | 43 | 0 | 0 |
++| Batch 2 handoff | 53 | 0 | 0 |
++| Full VSC | 330 | 0 | 0 |
++
++The full VSC suite completed in 411.48 seconds. Selected final logs contain no
++MATLAB warning lines. MATLAB Code Analyzer reports zero findings in all four
++production files and both new tests. Two test-only formatting findings were
++removed after the numerical run; no test expression or assertion changed.
++`code_analysis_initial.json` preserves the initial findings.
++
++`prepost_equivalence.json` verifies exact equality of accepted lambda/state
++vectors, bus/branch/converter traces, events and half-step states for both
++Beerten cases, plus all saved acceptance observations and lock/screening/
++continuous decision evidence. `numerical_summary.json` records the measured
++endpoints, event messages and the failed longer probe. Half-step endpoint
++voltage differences are below 4.99e-8 pu; automatic endpoint PF differences
++are below 8.17e-10 pu.
++
++`preservation.json` checks 1,097 baseline files: 1,094 remain unchanged, with
++only the two intended adapters and `tests/README.md` modified among existing
++files. New helper/test/contract files are recorded in `source_manifest.json`.
++`structural_preservation.json` separately verifies the unchanged ULTC prefix,
++continuous calculations, candidate screening, shunt classification and unified
++report/lock suffix. Original test files and all historical batch 3 evidence are
++preserved; no old assertions were edited or removed.
++`patch_application_verified.json` verifies that applying the isolated patch
++to a fresh mirror of the saved starting files reproduces the final files,
++normalizing line endings only.
++The first scratch application failed on mixed LF/CRLF inputs. Its result is
++retained in `patch_application_initial.json`. A subsequent comparison exposed
++Windows' default cp1252 decoding of UTF-8 text
++(`patch_application_encoding_error.json`). The successful check reads UTF-8
++explicitly and normalizes patch and scratch inputs to LF, without changing
++the source files. These were artifact-checking issues, not numerical failures.
++
++## Reproduce
++
++Use MATLAB MCP, initialize from the project root, then run with fresh destinations:
++
++```matlab
++iniciar_proyecto;
++addpath(fullfile(pwd,'tests'));
++b4 = fullfile(pwd,'outputs','algorithm_cleanup_batch4_20260911');
++addpath(b4);
++run_batch4_suite('t_swshunt_acceptance_batch4',fullfile(b4,'acceptance_new'), ...
++    fullfile(b4,'acceptance_new','evidence'));
++run_batch4_suite('t_swshunt_beerten_batch4',fullfile(b4,'beerten_new'), ...
++    fullfile(b4,'beerten_new','evidence'));
++```
++
++The runner captures MP-Test failures even when MATLAB returns normally. Original
++MAT/JSON/log files are immutable evidence; choose new directories for reruns.
++The output-local Python scripts use the project `.venv/Scripts/python.exe`.
++`build_beerten_gate.py` and `consolidate.py` preserve initial development steps;
++they are not rerun commands for the final source. Use the final tests above.
++
++Remaining boundaries include continuous-policy equivalence, automatic release
++and freeze/recovery policy, non-unit PQBRAK with mixed FACTS/TWODC/VSC equivalent
++loads, benchmark conversion, TRANSPA and the hydro corridor. None is inferred
++from the shared group/discrete contract or marked complete by this batch.
+--- a/outputs/algorithm_cleanup_batch4_20260911/run_batch4_suite.m
++++ b/outputs/algorithm_cleanup_batch4_20260911/run_batch4_suite.m
+@@ -0,0 +1,17 @@
++function counts = run_batch4_suite(name, outdir, varargin)
++% Capture MP-Test counts and exceptions without mistaking saved output for pass.
++assert(~exist(outdir,'dir'), 'Use a fresh suite directory');
++mkdir(outdir);
++global t_num_of_tests t_counter t_ok_cnt t_not_ok_cnt t_skip_cnt
++t_num_of_tests = 0; t_counter = 1; t_ok_cnt = 0; t_not_ok_cnt = 0; t_skip_cnt = 0;
++started = tic; failure = '';
++logtext = evalc('try; feval(name, 0, varargin{:}); catch err; failure = getReport(err, ''extended'', ''hyperlinks'', ''off''); disp(failure); end');
++counts = struct('name',name,'planned',t_num_of_tests,'executed',t_ok_cnt+t_not_ok_cnt+t_skip_cnt, ...
++ 'passed',t_ok_cnt,'failed',t_not_ok_cnt,'skipped',t_skip_cnt, ...
++ 'exception',failure,'elapsed_seconds',toc(started),'matlab',version);
++fid=fopen(fullfile(outdir,'run.log'),'w'); fprintf(fid,'%s',logtext); fclose(fid);
++fid=fopen(fullfile(outdir,'counts.json'),'w'); fprintf(fid,'%s\n',jsonencode(counts,'PrettyPrint',true)); fclose(fid);
++save(fullfile(outdir,'counts.mat'),'counts');
++disp(counts);
++end
++
+--- a/outputs/algorithm_cleanup_batch4_20260911/verify_numerical_evidence.m
++++ b/outputs/algorithm_cleanup_batch4_20260911/verify_numerical_evidence.m
+@@ -0,0 +1,43 @@
++function verify_numerical_evidence(outdir)
++% Compare accepted pre/post extraction results without comparing run timings.
++before=load(fullfile(outdir,'beerten_preextraction_02','evidence','beerten.mat'));
++after=load(fullfile(outdir,'beerten_final','evidence','beerten.mat'));
++summary=struct(); equal=struct();
++for label={'shunt_only','combined'}
++    name=label{1}; a=before.evidence.(name); b=after.evidence.(name);
++    equal.(name)=struct('lambda',isequaln(a.cpf.cpf.lam,b.cpf.cpf.lam), ...
++        'stored_state',isequaln(a.cpf.cpf.x,b.cpf.cpf.x), ...
++        'bus',isequaln(a.cpf.cpf.bus,b.cpf.cpf.bus), ...
++        'branch',isequaln(a.cpf.cpf.branch,b.cpf.cpf.branch), ...
++        'vsc',isequaln(a.cpf.cpf.vsc,b.cpf.cpf.vsc), ...
++        'events',isequaln(a.cpf.cpf.events,b.cpf.cpf.events), ...
++        'half_state',isequaln(a.half_step.cpf.x,b.half_step.cpf.x));
++    assert(all(structfun(@(v) v,equal.(name))),'Extraction changed accepted Beerten results');
++    summary.(name)=struct('success',b.cpf.success,'lambda',b.cpf.cpf.lam(end), ...
++        'points',length(b.cpf.cpf.lam),'target_tolerance',b.options.cpf.target_lam_tol, ...
++        'shunt_trace',squeeze(b.cpf.cpf.bus(5,6,:)), ...
++        'tap_trace',squeeze(b.cpf.cpf.branch(9,9,:)), ...
++        'events',{b.cpf.cpf.events},'automatic_pf_success',b.automatic_pf.success, ...
++        'half_success',b.half_step.success,'half_lambda',b.half_step.cpf.lam(end), ...
++        'half_voltage_difference',max(abs(b.half_step.ac.bus(:,8)-b.cpf.ac.bus(:,8))), ...
++        'automatic_voltage_difference',max(abs(b.automatic_pf.ac.bus(:,8)-b.cpf.ac.bus(:,8))));
++end
++ab=load(fullfile(outdir,'acceptance_preextraction','evidence','shunt.mat'));
++aa=load(fullfile(outdir,'acceptance_final','evidence','shunt.mat'));
++equal.acceptance_checks=isequaln(ab.checks,aa.checks);
++assert(equal.acceptance_checks,'Extraction changed acceptance observations');
++for name={'lock1','lock2','lock3','screening','continuous'}
++    equal.(name{1})=isequaln(ab.evidence.(name{1}),aa.evidence.(name{1}));
++    assert(equal.(name{1}),'Extraction changed saved shunt decision');
++end
++probe=load(fullfile(outdir,'beerten_probe.mat'));
++summary.long_probe=struct('success',probe.b4r.success,'last_lambda',probe.b4r.cpf.lam(end), ...
++    'done_msg',probe.b4r.cpf.done_msg,'electrical_convergence',probe.b4r.convergence, ...
++    'events',{probe.b4r.cpf.events});
++writejson('numerical_summary.json',summary);
++writejson('prepost_equivalence.json',equal);
++    function writejson(filename,value)
++        fid=fopen(fullfile(outdir,filename),'w'); cleanup=onCleanup(@() fclose(fid));
++        fprintf(fid,'%s\n',jsonencode(value,'PrettyPrint',true));
++    end
++end
+--- a/outputs/algorithm_cleanup_batch4_20260911/verify_code_analysis.m
++++ b/outputs/algorithm_cleanup_batch4_20260911/verify_code_analysis.m
+@@ -0,0 +1,15 @@
++function findings = verify_code_analysis(root,outdir)
++% Persist MATLAB Code Analyzer diagnostics for the final changed MATLAB files.
++files={'matpower/lib/+mp/psse_swshunt_control.m', ...
++    'matpower/lib/+mp/psse_unified_control_update.m', ...
++    'matpower/lib/+mp/psse_swshunt_group_action.m', ...
++    'matpower/lib/+mp/psse_swshunt_discrete_next.m', ...
++    'tests/t_swshunt_acceptance_batch4.m','tests/t_swshunt_beerten_batch4.m'};
++findings=struct('file',{},'issues',{});
++for k=1:length(files)
++    findings(k)=struct('file',files{k},'issues',checkcode(fullfile(root,files{k}),'-id'));
++end
++fid=fopen(fullfile(outdir,'code_analysis.json'),'w'); cleanup=onCleanup(@() fclose(fid));
++fprintf(fid,'%s\n',jsonencode(findings,'PrettyPrint',true));
++disp(findings);
++end
+--- a/outputs/algorithm_cleanup_batch4_20260911/verify_patch.py
++++ b/outputs/algorithm_cleanup_batch4_20260911/verify_patch.py
+@@ -0,0 +1,20 @@
++from pathlib import Path
++import json, subprocess
++out=Path(__file__).resolve().parent
++root=out.parents[1]
++sequence=1
++scratch=out/f'patch_verified_{sequence:02d}'
++while scratch.exists():
++    sequence+=1
++    scratch=out/f'patch_verified_{sequence:02d}'
++scratch.mkdir()
++manifest=json.loads((out/'source_manifest.json').read_text(encoding='utf-8'))
++for name,data in manifest.items():
++    if data['before_sha256']:
++        source=out/'before'/('tests_README.md' if name=='tests/README.md' else Path(name).name)
++        dest=scratch/name;dest.parent.mkdir(parents=True,exist_ok=True)
++        dest.write_bytes(source.read_text(encoding='utf-8').encode('utf-8'))
++result=subprocess.run(['git','apply','--whitespace=nowarn',str(out/'batch4.patch')],cwd=scratch,capture_output=True,text=True)
++checks={name:(scratch/name).exists() and (scratch/name).read_text(encoding='utf-8')==(root/name).read_text(encoding='utf-8') for name in manifest}
++(out/'patch_application_verified.json').write_text(json.dumps({'scratch':str(scratch),'exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'files_match_normalized':checks},indent=2))
++assert result.returncode==0 and all(checks.values()),(result.stderr,checks)
+--- a/outputs/algorithm_cleanup_batch4_20260911/capture_final.py
++++ b/outputs/algorithm_cleanup_batch4_20260911/capture_final.py
+@@ -0,0 +1,61 @@
++from pathlib import Path
++import hashlib, json, difflib
++root=Path(__file__).resolve().parents[2]
++out=Path(__file__).resolve().parent
++def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
++def write(name,obj):(out/name).write_text(json.dumps(obj,indent=2))
++baseline=json.loads((out/'baseline_hashes.json').read_text(encoding='utf-8'))
++changed=[p for p,h in baseline.items() if not (root/p).exists() or sha(root/p)!=h]
++allowed=['matpower/lib/+mp/psse_swshunt_control.m','matpower/lib/+mp/psse_unified_control_update.m','tests/README.md']
++write('preservation.json',{'changed_existing_files':changed,'unexpected_changes':[p for p in changed if p not in allowed],
++    'preserved_file_count':len(baseline)-len(changed),'baseline_files':len(baseline)})
++assert all(p in allowed for p in changed),changed
++files=allowed+['matpower/lib/+mp/psse_swshunt_group_action.m','matpower/lib/+mp/psse_swshunt_discrete_next.m',
++    'tests/t_swshunt_acceptance_batch4.m','tests/t_swshunt_beerten_batch4.m','docs/SWSHUNT_DECISION_CONTRACT.md']
++files += ['outputs/algorithm_cleanup_batch4_20260911/'+name for name in
++    ['REPORT.md','run_batch4_suite.m','verify_numerical_evidence.m','verify_code_analysis.m','verify_patch.py','capture_final.py'] if (out/name).exists()]
++manifest={}
++patch=[]; repair=[]; extraction=[]
++def diff(before,after,p):return list(difflib.unified_diff(before.splitlines(True),after.splitlines(True),fromfile='a/'+p,tofile='b/'+p))
++for p in files:
++    final=root/p
++    if p.startswith('matpower/') and final.name in ['psse_swshunt_control.m','psse_unified_control_update.m']:
++        before=out/'before'/final.name; pre=out/'preextraction'/final.name
++        text=before.read_text(encoding='utf-8')
++        repair+=diff(text,pre.read_text(encoding='utf-8'),p)
++        extraction+=diff(pre.read_text(encoding='utf-8'),final.read_text(encoding='utf-8'),p)
++    elif p=='tests/README.md':
++        before=out/'before/tests_README.md'; text=before.read_text(encoding='utf-8')
++    else:
++        before=None; text=''
++        if p.startswith('matpower/'):extraction+=diff('',final.read_text(encoding='utf-8'),p)
++    manifest[p]={'before_sha256':sha(before) if before else None,'after_sha256':sha(final),
++        'before_lines':len(text.splitlines()),'after_lines':len(final.read_text(encoding='utf-8').splitlines())}
++    patch+=diff(text,final.read_text(encoding='utf-8'),p)
++write('source_manifest.json',manifest)
++(out/'batch4.patch').write_bytes(''.join(patch).encode('utf-8'))
++(out/'lock_eligibility_repair.patch').write_bytes(''.join(repair).encode('utf-8'))
++(out/'bounded_consolidation.patch').write_bytes(''.join(extraction).encode('utf-8'))
++# Verify all saved production code outside the exact removed selectors and
++# changed call sites is byte-equivalent after normalizing line endings.
++ac0=(out/'preextraction/psse_swshunt_control.m').read_text(encoding='utf-8')
++ac1=(root/'matpower/lib/+mp/psse_swshunt_control.m').read_text(encoding='utf-8')
++un0=(out/'preextraction/psse_unified_control_update.m').read_text(encoding='utf-8')
++un1=(root/'matpower/lib/+mp/psse_unified_control_update.m').read_text(encoding='utf-8')
++def section(s,start,end=None):return s[s.index(start):s.index(end,s.index(start)) if end else None]
++structural={
++ 'ac_continuous_sensitivity_screening_cycle_signature_unchanged':section(ac0,'function b = continuous_next_b')==section(ac1,'function b = continuous_next_b'),
++ 'ac_classification_unchanged':section(ac0,'function state = classify_state','function [new_b, new_direction]')==section(ac1,'function state = classify_state','function [new_b, new_direction]'),
++ 'unified_tap_and_existing_repairs_unchanged':un0[:un0.index('function [mpc, state] = direct_swshunt_control')]==un1[:un1.index('function [mpc, state] = direct_swshunt_control')],
++ 'unified_continuous_reports_lock_application_unchanged':section(un0,'function b = continuous_next_b')==section(un1,'function b = continuous_next_b'),
++ 'unified_shunt_classification_unchanged':section(un0,'function state = classify_swshunt_state','function new_b = next_swshunt_b_state')==section(un1,'function state = classify_swshunt_state','function new_b = next_swshunt_b_state'),
++ 'unified_shunt_blocked_reporting_unchanged':section(un0,'function state = mark_swshunt_blocked_controls','function b = discrete_next_b')==section(un1,'function state = mark_swshunt_blocked_controls','function b = continuous_next_b')}
++write('structural_preservation.json',structural); assert all(structural.values())
++summary=[]
++for dirname in ['acceptance_final','beerten_final','controls_final','vsc_final','handoff_final','physical_final']:
++    p=out/dirname/'counts.json'
++    if p.exists():
++        counts=json.loads(p.read_text(encoding='utf-8')); counts['directory']=dirname
++        counts['warning_lines']=[s for s in (p.parent/'run.log').read_text(encoding='utf-8').splitlines() if s.startswith('Warning:')]
++        summary.append(counts)
++write('verification_summary.json',summary)

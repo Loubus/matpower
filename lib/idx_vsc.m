@@ -14,9 +14,12 @@ function c = idx_vsc
 %
 %   Sign convention for each VSC converter:
 %
-%     Pac > 0 is active power injection into the AC network.
+%     Pac/Qac > 0 is power injection at the station PCC into the AC grid.
 %     Pdc > 0 is active power injection into the DC network.
-%     Ploss >= 0 and Pac + Pdc + Ploss = 0.
+%     Ploss >= 0 and Pconv + Pdc + Ploss = 0.
+%     Pac additionally excludes transformer, filter and reactor losses.
+%     Optional MPC.VSC_LOSS metadata overrides LOSS_C by internal Pconv
+%     direction. See vsc_loss_coefficients; matrix column indices are unchanged.
 %
 %   The index, name and meaning of each column of the vsc matrix is given
 %   below. The model is exclusive to VSC-MTDC power flow and CPF. Capability
@@ -32,8 +35,8 @@ function c = idx_vsc
 %    3  VSC_STATUS       initial VSC status, 1 - in service, 0 - out of service
 %    4  AC_MODE          AC control mode code
 %    5  DC_MODE          DC control mode code
-%    6  PAC_SET          active power set point or initial value (MW)
-%    7  QAC_SET          reactive power set point (MVAr)
+%    6  PAC_SET          PCC active power set point or initial value (MW)
+%    7  QAC_SET          PCC reactive power set point (MVAr)
 %    8  VAC_SET          PCC voltage set point for V modes, initial value otherwise (p.u.)
 %    9  PDC_SET          DC power set point (MW)
 %   10  VDC_SET          DC voltage set point (p.u.)
@@ -57,10 +60,10 @@ function c = idx_vsc
 %   28  REACTOR_RATE_B   phase reactor short term MVA rating
 %   29  REACTOR_RATE_C   phase reactor emergency MVA rating
 %
-%   columns 30-44 are added to matrix after power flow solution
+%   columns 30-46 are added to matrix after power flow solution
 %   they are typically not present in the input matrix
-%   30  PAC              active power injection into AC network (MW)
-%   31  QAC              reactive power injection into AC network (MVAr)
+%   30  PAC              PCC active power injection into AC grid (MW)
+%   31  QAC              PCC reactive power injection into AC grid (MVAr)
 %   32  PDC              active power injection into DC network (MW)
 %   33  VDC              DC voltage magnitude (p.u.)
 %   34  VAC_PCC          AC voltage magnitude at PCC bus (p.u.)
@@ -74,6 +77,9 @@ function c = idx_vsc
 %   42  INTERNAL_BUS     generated internal VSC AC bus number
 %   43  TR_BRANCH        generated transformer branch row
 %   44  REACTOR_BRANCH   generated phase reactor branch row
+%
+%   45  PCONV            internal converter active injection (MW)
+%   46  QCONV            internal converter reactive injection (MVAr)
 %
 %   AC control mode codes:
 %    1  VSC_AC_Q         fixed Qac, Pac follows the DC-side balance
@@ -103,8 +109,8 @@ c = struct( ...
     'VSC_STATUS',       3, ... %% initial VSC status, 1 - in service, 0 - out of service
     'AC_MODE',          4, ... %% AC control mode code
     'DC_MODE',          5, ... %% DC control mode code
-    'PAC_SET',          6, ... %% active power set point or initial value (MW)
-    'QAC_SET',          7, ... %% reactive power set point (MVAr)
+    'PAC_SET',          6, ... %% PCC active power set point or initial value (MW)
+    'QAC_SET',          7, ... %% PCC reactive power set point (MVAr)
     'VAC_SET',          8, ... %% PCC voltage set point for V modes, initial value otherwise (p.u.)
     'PDC_SET',          9, ... %% DC power set point (MW)
     'VDC_SET',         10, ... %% DC voltage set point (p.u.)
@@ -127,8 +133,8 @@ c = struct( ...
     'REACTOR_RATE_A',  27, ... %% phase reactor long term MVA rating
     'REACTOR_RATE_B',  28, ... %% phase reactor short term MVA rating
     'REACTOR_RATE_C',  29, ... %% phase reactor emergency MVA rating
-    'PAC',             30, ... %% active power injection into AC network (MW)
-    'QAC',             31, ... %% reactive power injection into AC network (MVAr)
+    'PAC',             30, ... %% PCC active power injection into AC grid (MW)
+    'QAC',             31, ... %% PCC reactive power injection into AC grid (MVAr)
     'PDC',             32, ... %% active power injection into DC network (MW)
     'VDC',             33, ... %% DC voltage magnitude (p.u.)
     'VAC_PCC',         34, ... %% AC voltage magnitude at PCC bus (p.u.)
@@ -142,6 +148,8 @@ c = struct( ...
     'INTERNAL_BUS',    42, ... %% generated internal VSC AC bus number
     'TR_BRANCH',       43, ... %% generated transformer branch row
     'REACTOR_BRANCH',  44, ... %% generated phase reactor branch row
+    'PCONV',           45, ... %% internal converter active injection (MW)
+    'QCONV',           46, ... %% internal converter reactive injection (MVAr)
     'VSC_AC_Q',         1, ... %% fixed Qac, Pac follows the DC-side balance
     'VSC_AC_V',         2, ... %% fixed PCC Vac, Pac follows the DC-side balance
     'VSC_AC_PQ',        3, ... %% fixed Pac and Qac

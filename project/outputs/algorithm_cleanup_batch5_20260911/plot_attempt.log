@@ -1,0 +1,1 @@
+Project .venv\Scripts\python.exe: ModuleNotFoundError: No module named matplotlib. Final plotting uses MATLAB MCP.

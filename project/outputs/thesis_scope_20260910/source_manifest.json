@@ -1,0 +1,266 @@
+{
+  "review_date": "2026-09-10",
+  "status": "Downloaded and statically inventoried only; not converted, installed, or solved.",
+  "files": [
+    {
+      "path": "upstream/PowerModelsACDC/LICENSE.md",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/LICENSE.md",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 1524,
+      "sha256": "fce9a8bfab4ad642d6d620a6d249f81920d1fe68cc4e7afb279d85e5c8e8c867"
+    },
+    {
+      "path": "upstream/PowerModelsACDC/README.md",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/README.md",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 6557,
+      "sha256": "085407f3fd1c4f7c82dee72122a36c08ea242658b26ba218f23b3a2c9123fded"
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case5_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case5_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 4291,
+      "sha256": "495495088cd7e64abb8dd60b6b89011578b628afc60c9ef1fdbe8af6d137266b"
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case24_3zones_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case24_3zones_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 23940,
+      "sha256": "397245a4f39aa8b754277a4616a8dcda8eb894ce2453ad2e7730b739932a40af"
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case39_acdc.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsACDC.jl/b6d7cdb07ff6ae864f41c1187ed289aa289a78d3/test/data/case39_acdc.m",
+      "revision": "b6d7cdb07ff6ae864f41c1187ed289aa289a78d3",
+      "archive_member": null,
+      "bytes": 14346,
+      "sha256": "349720e80e4968327cfd4948e6348ef017698cc39d336270d965a9197f8810f9"
+    },
+    {
+      "path": "upstream/Nordic/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/LICENSE",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "upstream/Nordic/README.md",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/README.md",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 7044,
+      "sha256": "144c5c50127b6fc7ea5df36ee9b424fd8b1b0e69a20d24d32b57d66daeaf4e8d"
+    },
+    {
+      "path": "upstream/Nordic/lf_A.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/lf_A.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 13609,
+      "sha256": "4593067bda44e9cd67e24f30281e8cc43716cb17ee6053470677c88febb5bcde"
+    },
+    {
+      "path": "upstream/Nordic/lf_B.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/lf_B.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 14096,
+      "sha256": "ef12d35833ec768d499c105c78454af3e1c0b90a6957ae1b91b2350319932960"
+    },
+    {
+      "path": "upstream/CIGRE_implementation/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsTopologicalActions.jl/83db29405c522311c10fc681935291861c80ff17/LICENSE",
+      "revision": "83db29405c522311c10fc681935291861c80ff17",
+      "archive_member": null,
+      "bytes": 1497,
+      "sha256": "e59a97166004fe7b19d24fed8bb0fc318002ccbb2914cc1746c57f63997f2cdd"
+    },
+    {
+      "path": "upstream/CIGRE_implementation/test/data_sources/cigre_b4_dc_grid.m",
+      "source_url": "https://raw.githubusercontent.com/Electa-Git/PowerModelsTopologicalActions.jl/83db29405c522311c10fc681935291861c80ff17/test/data_sources/cigre_b4_dc_grid.m",
+      "revision": "83db29405c522311c10fc681935291861c80ff17",
+      "archive_member": null,
+      "bytes": 7406,
+      "sha256": "0b055f41bda66cd1fea2fcd27fb0c8c9ab6bc0dd2532933171de1c7b28532f5e"
+    },
+    {
+      "path": "upstream/MatACDC1_0.zip",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0 official archive",
+      "archive_member": null,
+      "bytes": 642557,
+      "sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_HVDCptp.m",
+      "bytes": 1679,
+      "sha256": "b1a84505bbda6eb65fc7fc76b6590083e9dc6ecc044d64a3107cf75f714735ee"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCdroop.m",
+      "bytes": 2182,
+      "sha256": "be0b3a6b9360d208e0f302614c98ca3113e14bc2e22d15b9c622b3467666f4db"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case5_stagg_MTDCslack.m",
+      "bytes": 2043,
+      "sha256": "36a56896fb7d03802591dbaa338b0f4a1cfdb58f2e3e13c960a385c220c68ffd"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowDC/case24_ieee_rts1996_MTDC.m",
+      "bytes": 3055,
+      "sha256": "776b216fc2ca696c03116e582fe2453a0ce10b96049e6d72bddda90ae8c0d290"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones.m",
+      "bytes": 17166,
+      "sha256": "4443d103189ebaa2194299c888df75c19429c426992d5dc2a37e185fe149d109"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case5_stagg.m",
+      "bytes": 1906,
+      "sha256": "a5ddb00c1116d8991e23006271d3ff362cdb5673a97fab8e466d47450d14a7ff"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case24_ieee_rts1996_3zones_inf.m",
+      "bytes": 17453,
+      "sha256": "5ababdeb81eaa45a18a28ab49aeabea99f165257ef2e1d71f8a2160d6c46b9fa"
+    },
+    {
+      "path": "upstream/MatACDC_cases/case3_inf.m",
+      "source_url": "https://www.esat.kuleuven.be/electa/teaching/matacdc/MatACDC1_0",
+      "revision": "MatACDC1.0",
+      "archive_member": "MatACDC1.0/Cases/PowerflowAC/case3_inf.m",
+      "bytes": 897,
+      "sha256": "adc19976e85cb07770dd7ee3d880596e93b3e60b6b3a3271ecc2392f30a681a6"
+    },
+    {
+      "path": "upstream/Nordic/dyn_A.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/dyn_A.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 14813,
+      "sha256": "01c6a82c293feec024c1d04b6c91daae2d8b2fa22dc1e5ca84a51c4bd5426820"
+    },
+    {
+      "path": "upstream/Nordic/dyn_B.dat",
+      "source_url": "https://raw.githubusercontent.com/SPS-L/stepss-IEEE-Nordic-Test-system/f5152ddba55075c612e438e8473ef7a3b3c5dc3f/dyn_B.dat",
+      "revision": "f5152ddba55075c612e438e8473ef7a3b3c5dc3f",
+      "archive_member": null,
+      "bytes": 13673,
+      "sha256": "9b0d47b26813fcb045f603b2fac8cf47cd7e9f43a3835a4a8fb437b1221c6e1a"
+    }
+  ],
+  "literal_matrix_row_counts": [
+    {
+      "path": "upstream/CIGRE_implementation/test/data_sources/cigre_b4_dc_grid.m",
+      "bus_literal_rows": 11,
+      "gen_literal_rows": 8,
+      "branch_literal_rows": 8,
+      "busdc_literal_rows": 15,
+      "convdc_literal_rows": 11,
+      "branchdc_literal_rows": 17
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_3zones.m",
+      "bus_literal_rows": 50,
+      "gen_literal_rows": 65,
+      "branch_literal_rows": 77
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_3zones_inf.m",
+      "bus_literal_rows": 49,
+      "gen_literal_rows": 64,
+      "branch_literal_rows": 76
+    },
+    {
+      "path": "upstream/MatACDC_cases/case24_ieee_rts1996_MTDC.m",
+      "busdc_literal_rows": 7,
+      "convdc_literal_rows": 7,
+      "branchdc_literal_rows": 7
+    },
+    {
+      "path": "upstream/MatACDC_cases/case3_inf.m",
+      "bus_literal_rows": 3
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg.m",
+      "bus_literal_rows": 5,
+      "gen_literal_rows": 2,
+      "branch_literal_rows": 7
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_HVDCptp.m",
+      "busdc_literal_rows": 2,
+      "convdc_literal_rows": 2,
+      "branchdc_literal_rows": 1
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_MTDCdroop.m",
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    },
+    {
+      "path": "upstream/MatACDC_cases/case5_stagg_MTDCslack.m",
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case24_3zones_acdc.m",
+      "bus_literal_rows": 50,
+      "gen_literal_rows": 65,
+      "branch_literal_rows": 77,
+      "busdc_literal_rows": 7,
+      "convdc_literal_rows": 7,
+      "branchdc_literal_rows": 7
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case39_acdc.m",
+      "bus_literal_rows": 39,
+      "gen_literal_rows": 10,
+      "branch_literal_rows": 46,
+      "busdc_literal_rows": 10,
+      "convdc_literal_rows": 10,
+      "branchdc_literal_rows": 12
+    },
+    {
+      "path": "upstream/PowerModelsACDC/test/data/case5_acdc.m",
+      "bus_literal_rows": 5,
+      "gen_literal_rows": 2,
+      "branch_literal_rows": 7,
+      "busdc_literal_rows": 3,
+      "convdc_literal_rows": 3,
+      "branchdc_literal_rows": 3
+    }
+  ]
+}

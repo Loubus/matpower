@@ -1,0 +1,11 @@
+{
+  "name": "t_vsc_mtdc",
+  "planned": 330,
+  "executed": 330,
+  "passed": 330,
+  "failed": 0,
+  "skipped": 0,
+  "exception": "",
+  "elapsed_seconds": 415.6787115,
+  "matlab": "25.2.0.2998904 (R2025b)"
+}

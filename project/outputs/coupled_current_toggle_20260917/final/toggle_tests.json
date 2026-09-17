@@ -1,0 +1,134 @@
+{
+  "checks": [
+    {
+      "name": "registered_default_enabled",
+      "passed": true
+    },
+    {
+      "name": "run_1_reports_resolved_toggle",
+      "passed": true
+    },
+    {
+      "name": "run_1_retains_turn_detection",
+      "passed": true
+    },
+    {
+      "name": "run_2_reports_resolved_toggle",
+      "passed": true
+    },
+    {
+      "name": "run_2_retains_turn_detection",
+      "passed": true
+    },
+    {
+      "name": "run_3_reports_resolved_toggle",
+      "passed": true
+    },
+    {
+      "name": "run_3_retains_turn_detection",
+      "passed": true
+    },
+    {
+      "name": "missing_option_matches_explicit_on",
+      "passed": true
+    },
+    {
+      "name": "on_activates_current_equation",
+      "passed": true
+    },
+    {
+      "name": "off_never_activates_current_equation",
+      "passed": true
+    },
+    {
+      "name": "off_exercises_projection",
+      "passed": true
+    },
+    {
+      "name": "invalid_toggle_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_toggle_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_toggle_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_toggle_rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid_toggle_rejected",
+      "passed": true
+    },
+    {
+      "name": "off_rejects_saved_active_constraint",
+      "passed": true
+    },
+    {
+      "name": "off_rejects_saved_active_constraint",
+      "passed": true
+    }
+  ],
+  "passed": 18,
+  "failed": 0,
+  "runs": [
+    {
+      "setting": true,
+      "lambda": 1.2456689423022373,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689423022373,
+        "last_accepted_index": 29,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      }
+    },
+    {
+      "setting": true,
+      "lambda": 1.2456689423022373,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689423022373,
+        "last_accepted_index": 29,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      }
+    },
+    {
+      "setting": false,
+      "lambda": 1.2455494988330067,
+      "termination": {
+        "cause": "turn_localization_failed",
+        "success": false,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 1.2455494988330067,
+        "last_accepted_index": 35,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      }
+    }
+  ]
+}

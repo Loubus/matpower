@@ -1,0 +1,61 @@
+--- a/outputs/algorithm_cleanup_batch3_20260910/REPORT.md
++++ b/outputs/algorithm_cleanup_batch3_20260910/REPORT.md
+@@ -277,3 +277,58 @@
+ retain options, inputs and complete results; JSON files list individual checks.
+ Use the project `.venv\Scripts\python.exe` with `capture_patch.py` to regenerate
+ the isolated patch and source manifest after deliberate edits.
++
++## Current-workspace revalidation — 2026-09-11
++
++The repeated implementation request found the complete batch 3 implementation,
++contract, acceptance tests and incremental evidence already present. All twelve
++entries in the original source manifest matched the files on disk at entry.
++Review confirmed the extraction boundary and the two isolated prerequisite
++repairs described above. No additional production or scientific test changes
++were needed or made during this revalidation.
++
++Fresh evidence is isolated in `revalidation_20260911_01/`. MATLAB R2025b was
++initialized through MCP with `iniciar_proyecto`; the four production functions
++were explicitly reloaded before testing. There was no CLI fallback, path reset,
++rating change, tolerance change, limit disablement or additional lock/freeze.
++The fresh ULTC, Beerten and preceding physical gates passed 52/52, 358/358,
++43/43 and 53/53. The full-suite results are retained in the revalidation
++directory's `verification_summary.json` and each suite's `counts.json` and log.
++
++All twelve required suites completed: **2,873 passed, zero failed, 97 skipped,
++and no exceptions or warning lines**. Every suite reproduced its recorded
++pass/fail/skip counts. The skips remain the 88 user-callback checks and nine
++MP-Core-inapplicable angle-wrap checks. The full VSC suite passed 330/330 in
++422.45 seconds. Nested MATPOWER Git status was identical before and after
++revalidation; no scientific source changes resulted from the runs.
++
++Fresh Beerten maxima are 9.99526182819e-9 pu for AC balance across all 21 primary
++accepted CPF states, 9.76589554672e-9 pu across the other 27 AC balance checks,
++8.23671277850e-10 pu for converter balance and 9.29922805426e-13 pu for DC nodal
++balance. All remain below the original 1e-8 pu gate. Legal taps, original Q
++bounds, matched-state PF/CPF agreement, the post-base tap event and half-step
++endpoint checks all passed.
++
++The independent preservation audit confirms the recorded batch 2 source hashes,
++with only the already documented CPF residual-norm change relative to batch 2.
++It also verifies that both adapters differ from their accepted pre-extraction
++forms only by replacing the tap selectors, and that the switched-shunt/reporting
++suffix is unchanged. Applying the original `batch3.patch` to a fresh mirror of
++the saved inputs reproduced every recorded final file, including the report
++before this addendum, after normalizing line endings.
++
++Original patches, manifests and numerical evidence remain untouched. The prior
++report is preserved as `revalidation_20260911_01/REPORT_before.md`; the original
++manifest still describes that original capture. New source hashes and an updated
++isolated patch are captured inside the revalidation directory, relative to the
++same saved pre-batch inputs. The addendum does not expand switched-shunt,
++recovery-policy, benchmark, TRANSPA or hydro-corridor readiness claims.
++
++The refreshed `revalidation_20260911_01/batch3.patch` includes the original
++implementation/test/documentation changes, this report addendum and its audit
++script. It was applied to another fresh scratch mirror and every resulting file
++was compared with the current workspace, normalizing line endings only.
++`final_patch_verified.json` and `source_manifest.json` record that check and the
++current hashes. `report_update.patch` also isolates this addendum from the
++preserved original report. The audit uses the project `.venv`; its `--finalize`
++mode requires an unused final patch-verification directory.

@@ -1,0 +1,110 @@
+{
+  "schema": "beerten5_cpf_runner/v1",
+  "created_at": "2026-09-10 18:06:55",
+  "root": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER",
+  "outdir": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\outputs\\beerten\\cleanup_batch1_smoke_20260910",
+  "run_id": "cleanup_batch1_smoke",
+  "case_function": "case5_vsc_mtdc_beerten_paper_controls_cap_explicit",
+  "target_function": "case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit",
+  "mode": "psse",
+  "vsc_hvdc_enabled": true,
+  "options": {
+    "mode": "psse",
+    "case_function": "case5_vsc_mtdc_beerten_paper_controls_cap_explicit",
+    "target_function": "case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit",
+    "outdir": "",
+    "outdir_name": "cleanup_batch1_smoke_20260910",
+    "run_id": "cleanup_batch1_smoke",
+    "plots": false,
+    "save_mat": true,
+    "save_version": "-v7.3",
+    "vsc_hvdc": {
+      "enabled": true,
+      "force_in_service": false,
+      "disable_hvdc_policy": true,
+      "disable_vsc_capability_policy": true
+    },
+    "controls": {
+      "ACTAPS": 1,
+      "SWSHNT": 1
+    },
+    "devices": {
+      "switched_shunt": true,
+      "ultc_transformer": true
+    },
+    "cpf": {
+      "stop_at": 0.05,
+      "step": 0.025,
+      "step_max": 0.025,
+      "step_min": 1E-7,
+      "adapt_step": 1,
+      "enforce_q_lims": 0,
+      "plot_level": 0
+    },
+    "vsc_mtdc": {
+      "method": "unified",
+      "cpf_max_lam": 20,
+      "cpf_max_it": 6000,
+      "capability_enforce": 1,
+      "capability_gen_enforce": 1,
+      "capability_max_it": 10,
+      "capability_limit": "freeze",
+      "psse_control_limit": "freeze"
+    },
+    "policy": {
+      "disable_hvdc_redispatch_for_full_trace": true,
+      "disable_vsc_derating_for_full_trace": true
+    },
+    "plot_prefix": "pv"
+  },
+  "summary": {
+    "run_id": "cleanup_batch1_smoke",
+    "mode": "psse",
+    "entrypoint": "runcpf_psse",
+    "case_function": "case5_vsc_mtdc_beerten_paper_controls_cap_explicit",
+    "target_function": "case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit",
+    "success": true,
+    "max_lambda": 0.049999922972707271,
+    "points": 4,
+    "events": 0,
+    "cpf_stop_at": 0.05,
+    "cpf_initial_step": 0.025,
+    "cpf_max_step": 0.025,
+    "vsc_hvdc_enabled": true,
+    "base_apply_info": {
+      "had_vsc_hvdc": true,
+      "vsc_hvdc_enabled": true,
+      "vsc_rows": 3,
+      "busdc_rows": 3,
+      "branchdc_rows": 3,
+      "had_switched_shunt": true,
+      "had_ultc_transformer": true,
+      "switched_shunt_enabled": true,
+      "ultc_transformer_enabled": true
+    },
+    "target_apply_info": {
+      "had_vsc_hvdc": true,
+      "vsc_hvdc_enabled": true,
+      "vsc_rows": 3,
+      "busdc_rows": 3,
+      "branchdc_rows": 3,
+      "had_switched_shunt": true,
+      "had_ultc_transformer": true,
+      "switched_shunt_enabled": true,
+      "ultc_transformer_enabled": true
+    },
+    "ACTAPS": 1,
+    "SWSHNT": 1,
+    "switched_shunt_device": true,
+    "ultc_transformer_device": true,
+    "final_min_v_bus": 5,
+    "final_min_v": 0.98882352940409646,
+    "final_min_active_v_bus": 5,
+    "final_min_active_v": 0.98882352940409646,
+    "active_buses": 6,
+    "cpf_elapsed_seconds": 0.8768187,
+    "plot_elapsed_seconds": 0.0001441,
+    "total_elapsed_seconds": 0.9296765,
+    "done_msg": "Reached desired lambda 0.05 in 3 continuation steps."
+  }
+}

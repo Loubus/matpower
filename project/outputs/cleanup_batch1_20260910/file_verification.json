@@ -1,0 +1,214 @@
+{
+  "upstream_files_hash_verified": 22,
+  "local_case_snapshots": 21,
+  "migration_copies_hash_verified": 39,
+  "copy_checks": [
+    {
+      "path": "outputs/cleanup_batch1_20260910/before/iniciar_proyecto.m",
+      "sha256": "07b11f2ea8c29c726679e99cf597cfeb6cc918173acd4176ab0810d23ac2fbd8",
+      "matches": true
+    },
+    {
+      "path": "outputs/cleanup_batch1_20260910/before/t_mpxt_psse.m",
+      "sha256": "237a27c94f2aa91a57b5a10dfd25b789f7f1e379bd3fb26cc2058249989f3754",
+      "matches": true
+    },
+    {
+      "path": "outputs/cleanup_batch1_20260910/before/beerten_cpf_run.m",
+      "sha256": "3e5c998560b1b12492dc37db0a9c57c606bf0dc1c1622f3804fc8c4bdca88825",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_local_inband.raw",
+      "sha256": "0f9b93ec0a3587d58aff078587805c1ad58e5cb52b954f138f8eca9d1a327fb0",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmax.raw",
+      "sha256": "3e65d89b8c3bd047319d763eee4edddc18ca58ae7f10fd09140e00b3a67797de",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmin.raw",
+      "sha256": "f8252377cd032fbfdea7ae7108c7b22d29136d29d8326b678429d0c4d17a5ade",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_qmin_qmax_zero.raw",
+      "sha256": "a7cdd06d4e37985199575f397d05773ba4e67f1be45c868033c084cf442ab4d2",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_3bus_slack_q_limit.raw",
+      "sha256": "714f9687c8ea53aee42be61ea946d28ea17f4555baf82b540ab283a818d0d75c",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_4bus_remote_single.raw",
+      "sha256": "129d55b3578c1d2442611c3b4e693f5226c958b0346291f8a10993b764dde6ad",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group.raw",
+      "sha256": "8794ff59907d56de0caf1b6200f97c817699d7cd7c265053b2f428848700446e",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group_all_limited.raw",
+      "sha256": "2d9dcd76857e2a81cbaab65a2c09a49e7ccbbae35958e38e13428ce2230c54bb",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_genq/psse_genq_5bus_remote_group_one_limited.raw",
+      "sha256": "676cd5b21573e0fed06171a9da6bd3b88b9fe7a33d06c3867fc572e8dbcb8649",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_cases_integrated/psse_integrated_controls_40bus.raw",
+      "sha256": "b58af43c22d027277069b7f893861cdf6ef8f4a866031cd6946524aa6ca5a800",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_u_ultc_3w_tab.raw",
+      "sha256": "a66bfac33add4dd4370fbe5dc5bdb097a4c0755dd577519f1b147aa290466f18",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_u_ultc_3w_tab_cw2.raw",
+      "sha256": "f23fb43dc7d5c7b34520bed987b31d0be1824874208ebc47dec707270f9c04e1",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_m_integrated_30bus_nominal.raw",
+      "sha256": "a854ce6ade0053b03ddca867ac95593d6523f1a4d46efd6398c0f7ebe248c5fb",
+      "matches": true
+    },
+    {
+      "path": "tests/fixtures/controls/legacy_regression/psse_validation_suite/suite_m_integrated_14bus_nominal.raw",
+      "sha256": "4b822af99cbde6422f24ea605fa6dc794a22dc3f16331e759393c361917ea9a9",
+      "matches": true
+    },
+    {
+      "path": "cases/full_network/raw/V26p_Trs_2532.raw",
+      "sha256": "9711a9049066a2f0db0d0c21548cadd483a667c94d3a9315c8d2f7da16d99541",
+      "matches": true
+    },
+    {
+      "path": "cases/ieee/14/case14.m",
+      "sha256": "9b8626e4ff5f26df428c1caf4bb5ca5b468c2f9233ad2661e17053b0f09c0929",
+      "matches": true
+    },
+    {
+      "path": "cases/ieee/30/case_ieee30.m",
+      "sha256": "02cd8d83a9be68d94b6297fce181a7d712d027c937042261983c32d11b8f93e6",
+      "matches": true
+    },
+    {
+      "path": "cases/ieee/39/case39.m",
+      "sha256": "e3e44af0f0112fdd3ebd2c88210b2238698f8215d30ad0c9e628eee9e1fa0c6b",
+      "matches": true
+    },
+    {
+      "path": "cases/ieee/57/case57.m",
+      "sha256": "7d0fc9fc4470391cf303b56ca72fda92d526aeac9533ea964c88d5c9ce664e8a",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_explicit.m",
+      "sha256": "4b7c52d0bfc3049327b085f8802edd6aaceb545596c473c60f9a187c7f9f62e3",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_target_explicit.m",
+      "sha256": "592dd9879fca1cef112d1d1cd5e424e94ccdc23eb43a46de36be08dd03564999",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls_target.m",
+      "sha256": "67bc2615a5b2068ea321acbc19cf6ce3eacad022320862c9e5edd9c5be656072",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_all_controls.m",
+      "sha256": "4162b199178bbc52b3a833590160764390f1e866489417e05cb8b8c3cbc89c16",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_explicit.m",
+      "sha256": "e1e746177859123360d65706f80242eea263214067d59a9333f36a2e54bb1f05",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_target_explicit.m",
+      "sha256": "9abde833c1fed3baea424b07f605062ccb5c8d666707a3ce3f215e88b7158fe4",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop_target.m",
+      "sha256": "b3de55e21c994276ca49ffd80584c1c997c82d68480ae372221a970d3eb558cc",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_droop.m",
+      "sha256": "6ca7dc06b6890a40154fd016e3fb4814bb7241f09e85210763064ff0235a89b8",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_target.m",
+      "sha256": "22c4d42a4d4d571dcd3cd1c664539cb5cbf8cc5e2a98d8106f2aecda9989a2de",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt_target.m",
+      "sha256": "25dd0d93200656138d947e74d01dd64da46e4868277d016ae6696dcce5b87f90",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch_ultc_swshunt.m",
+      "sha256": "28016fc9d8c672c9576e56cb8e42a0b11b574ae9f7fbfc5b913af6b40a353f77",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_gen_redispatch.m",
+      "sha256": "e8f5f74f1b0e999919c89b6c12c3274a6f28942c250dcca9ce81a23f1adb6f1d",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_explicit.m",
+      "sha256": "81e42aaa187438d0351ccaa1bbf63e7ef94300820cfa370bfe1aafebaf5c247f",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_paper_controls_cap_target_explicit.m",
+      "sha256": "f796c7da82c135eec123429f1eb2fecc94b0bed8a8d557ec0d7ce457f69f8e5e",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten_ultc_swshunt.m",
+      "sha256": "dc30ac369300747b44d17b0445f47989eb0d8e2082b6b76e93e222c2fccb91d1",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/variants/case5_vsc_mtdc_beerten.m",
+      "sha256": "f4395b040338f33a1ebc58da1e6782b6daef19f458e27bcc5eb958d2b43f371b",
+      "matches": true
+    },
+    {
+      "path": "cases/beerten/upstream/MatACDC1_0.zip",
+      "sha256": "1cb50ce28cde3c2c0d9fba6063ee4c5b795b296315655ed0d98683f96257e01c",
+      "matches": true
+    }
+  ],
+  "checkpoint_files": 2035,
+  "checkpoint_unchanged": 2030,
+  "checkpoint_changed": [
+    "auditoria_psse_matpower/beerten_5bus/cpf_runner/beerten_cpf_run.m",
+    "auditoria_psse_matpower/beerten_5bus/cpf_runner/README.md",
+    "iniciar_proyecto.m",
+    "matpower/lib/t/t_mpxt_psse.m",
+    "outputs/thesis_scope_20260910/STUDY_DESIGN.md"
+  ],
+  "checkpoint_missing": [],
+  "unexpected_checkpoint_changes": [],
+  "note": "Checkpoint covers selected source files and inputs, not a full hash inventory of large historical results."
+}

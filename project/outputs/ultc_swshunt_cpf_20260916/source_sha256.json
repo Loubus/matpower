@@ -1,0 +1,11 @@
+{
+  "studies/beerten/beerten_constant_pq_nonslack_dispatch.m": "8ed27c4547a3fbb5c3f017aee73e1c7f25802482c645b1295f70d703e65ff45b",
+  "studies/beerten/beerten_constant_pq_capability_batch6.m": "814fdc23d85466337c05390f621d9052092b21525165d232c6975bc2c6203288",
+  "matpower/lib/runcpf_vsc_mtdc.m": "d94f063ea57d4a68ac0d46020a8d9743e4997bdecd9c04b41c89b2766fd39c71",
+  "matpower/lib/vsc_station_map.m": "d5fad4273338902d2c6bc286dc3787924a98091aa2932ac9388b4a4523566d35",
+  "matpower/lib/vsc_station_capability.m": "63be3d2e36925015bc30ef1280ed31eb26fccbda317bbabd74c95c842db15ad1",
+  "matpower/lib/vsc_loss_coefficients.m": "08fb6ec13c53919c280ad4c9e8eb4ad370dcf98fa834da98273703e5702bc1df",
+  "matpower/lib/gen_capability_curve.m": "5cca8e55e351860ddb386717cd3d490ea9966ad28b14be2b618e35755240f947",
+  "matpower/lib/+mp/psse_xfmr_states.m": "09ad471f6bdda1d00d1fc733989b563e8d51cb741e4cf58ca6d8029c544280d1",
+  "matpower/lib/+mp/psse_xfmr_tap_decision.m": "9290e761d81e43e84464f2e43019b4fee65706d28b9f987f4c3466c1cf5338f8"
+}

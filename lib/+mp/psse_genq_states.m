@@ -136,6 +136,13 @@ state.at_min = state.active & state.current_q <= state.qmin + state.qtol;
 state.at_max = state.active & state.current_q >= state.qmax - state.qtol;
 state.limited = state.active & ~state.swing & state.varlim_enabled & ...
     state.qmax <= state.qmin + state.qtol;
+% Recreating an auxiliary case must retain an accepted binding mode. The
+% controller, not the serializer, owns subsequent release decisions.
+if isfield(gq, 'limited') && length(gq.limited) == n
+    state.limited = state.limited | (logical(gq.limited(:)) & ...
+        state.active & ~state.swing & state.varlim_enabled & ...
+        (state.at_min | state.at_max));
+end
 state.controllable_local = state.active & state.local & ~state.swing;
 state.controllable_remote = state.active & state.remote & ~state.swing;
 state.unmapped = state.status ~= 0 & state.gen_idx <= 0;

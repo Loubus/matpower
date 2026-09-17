@@ -1,0 +1,15 @@
+7f04707f 2026-06-25 14:51:44 -0300 fix: isolate invalid psse transformer tap moves
+57a9e601 2026-06-25 13:38:29 -0300 fix: reject invalid psse transformer rebuilds
+45b425d9 2026-06-25 10:26:04 -0300 fix: use coupled TWODC voltage with fallback
+b43724a5 2026-06-25 02:07:15 -0300 fix: align PSS/E transformer tap deadband
+31b4e8f0 2026-06-24 22:08:28 -0300 test: extend PSS/E control regression coverage
+708d13a8 2026-06-24 22:08:15 -0300 psse: fail unsettled transformer tap control
+1ed577a5 2026-06-24 22:07:42 -0300 psse: add CPF generator control framework
+c951c63d 2026-06-24 22:07:09 -0300 psse: collapse THRSHZ branches during solves
+6065c3be 2026-06-22 15:47:15 -0300 cpf: isolate VSC capability relief policy selection
+2d674137 2026-06-22 15:46:41 -0300 cpf: centralize simple VSC-MTDC CPF events
+ca2ecea6 2026-06-22 15:45:31 -0300 cpf: harden VSC-MTDC profiling guards
+6adc350a 2026-06-22 14:25:09 -0300 Implement VSC-MTDC CPF active-set controls
+9cd1f294 2026-06-06 21:01:38 -0300 Document VSC-MTDC workflows
+903d4cc8 2026-06-06 21:00:43 -0300 Register VSC-MTDC options and case persistence
+a834e563 2026-06-06 21:00:12 -0300 Route VSC-MTDC through PSS/E-aware wrappers

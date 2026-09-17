@@ -1,0 +1,52 @@
+1..49
+ok 1 - export.success: success and configured nonlinear residual
+ok 2 - export.ac_balance: independent AC mismatch 5.19064659254e-11 pu
+ok 3 - export.converter_balance: converter mismatch 4.60709248529e-13 pu
+ok 4 - export.row_count: all original and active proxy rows retained
+ok 5 - export.original_identity: original order and offline row retained
+ok 6 - export.roundtrip: external/internal round trip preserves generator results including proxies
+ok 7 - export.proxy_power: proxy injections equal solved converter AC injections
+ok 8 - voltage_initialization.success: success and configured nonlinear residual
+ok 9 - voltage_initialization.ac_balance: independent AC mismatch 8.46431205918e-09 pu
+ok 10 - voltage_initialization.converter_balance: converter mismatch 1.16891851754e-11 pu
+ok 11 - voltage.schedule: PV/REF solved voltages use unchanged generator schedules
+ok 12 - voltage.input: input initialization was not overwritten
+ok 13 - shunt.grid_solved: every legal fixed candidate solved on the full model
+ok 14 - shunt.first_reachable: accepted automatic state is the first legal state reaching the deadband from zero
+ok 15 - shunt.solved_measurement: flat input is in-band, but solved low voltage causes adjustment
+ok 16 - branch.collapsed: fixture actually merged 11 and 37
+ok 17 - branch.totals: expanded totals equal solved aggregate once
+ok 18 - branch.local_shunt: switched increment restored at original device bus 37
+ok 19 - branch.fixed_shunt: fixed contribution preserved
+ok 20 - branch.load_delta: unattributed aggregate load delta placed once at representative
+ok 21 - branch.modes: binding PQ mode and original generator identities survive
+ok 22 - branch.voltage: merged buses inherit solved voltage
+ok 23 - branch.free_mode: free voltage controller restored at its original bus
+ok 24 - swdev.collapsed: fixture actually merged 11 and 37
+ok 25 - swdev.totals: expanded totals equal solved aggregate once
+ok 26 - swdev.local_shunt: switched increment restored at original device bus 37
+ok 27 - swdev.fixed_shunt: fixed contribution preserved
+ok 28 - swdev.load_delta: unattributed aggregate load delta placed once at representative
+ok 29 - swdev.modes: binding PQ mode and original generator identities survive
+ok 30 - swdev.voltage: merged buses inherit solved voltage
+ok 31 - swdev.free_mode: free voltage controller restored at its original bus
+ok 32 - crossing.cpf.success: success and configured nonlinear residual
+ok 33 - crossing.cpf.ac_balance: independent AC mismatch 2.69790162433e-10 pu
+ok 34 - crossing.cpf.converter_balance: converter mismatch 4.70734562441e-16 pu
+ok 35 - crossing.pf.success: success and configured nonlinear residual
+ok 36 - crossing.pf.ac_balance: independent AC mismatch 1.09941488149e-09 pu
+ok 37 - crossing.pf.converter_balance: converter mismatch 6.47902176354e-12 pu
+ok 38 - crossing.cpf.binding: original -20 MVAr upper bound agrees with PQ equation and report
+not ok 39 - crossing.cpf.demand: accepted model retains target demands
+ok 40 - crossing.pf.binding: original -20 MVAr upper bound agrees with PQ equation and report
+ok 41 - crossing.pf.demand: accepted model retains target demands
+ok 42 - crossing.event: binding change is recorded after the initial CPF point
+ok 43 - crossing.pf_cpf: independent endpoint PF matches CPF
+ok 44 - crossing.half_step.success: success and configured nonlinear residual
+ok 45 - crossing.half_step.ac_balance: independent AC mismatch 2.48417397764e-10 pu
+ok 46 - crossing.half_step.converter_balance: converter mismatch 2.61346499997e-15 pu
+ok 47 - crossing.step_sensitivity: halved CPF step preserves endpoint state and bound
+not ok 48 - crossing.auxiliary_load: repeated auxiliary solve does not replay base load cache
+ok 49 - crossing.auxiliary_mode: repeated auxiliary solve retains accepted binding mode
+Ran 49 of 49 tests: 47 passed, 2 failed
+Elapsed time 0.00 seconds.

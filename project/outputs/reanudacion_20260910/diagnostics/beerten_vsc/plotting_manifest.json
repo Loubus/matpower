@@ -1,0 +1,93 @@
+{
+  "created_by": "psse_diag_plot_run",
+  "run_id": "beerten_vsc",
+  "selected_modules": [
+    "pv",
+    "gen_pq",
+    "events",
+    "redispatch"
+  ],
+  "bus_groups": [
+    "boundary_ports",
+    "buses_500kv",
+    "worst_voltage_drop",
+    "lowest_final_voltage"
+  ],
+  "branch_groups": "top_loading",
+  "plot_options": {
+    "page_size": 50,
+    "gen_per_page": 6,
+    "event_families": [],
+    "use_compact_trace": true
+  },
+  "generator_plot_source": "cpf.gen",
+  "generated_files": [
+    {
+      "module": "pv",
+      "file": "plots\\pv_worst_voltage_drop.png"
+    },
+    {
+      "module": "pv",
+      "file": "plots\\pv_lowest_final_voltage.png"
+    },
+    {
+      "module": "gen_pq",
+      "file": "plots\\gen_pq_capability_page_01.png"
+    },
+    {
+      "module": "gen_pq",
+      "file": "plots\\gen_pq_lambda_page_01.png"
+    },
+    {
+      "module": "events",
+      "file": "plots\\event_timeline.png"
+    }
+  ],
+  "plot_counts": {
+    "pv": 2,
+    "gen_pq": 2,
+    "events": 1
+  },
+  "skipped_modules": [
+    {
+      "module": "pv",
+      "reason": "PV bus group has no buses: boundary_ports"
+    },
+    {
+      "module": "pv",
+      "reason": "PV bus group has no buses: buses_500kv"
+    },
+    {
+      "module": "redispatch",
+      "reason": "redispatch_technology_trace is empty"
+    }
+  ],
+  "warnings": [
+    "PV bus group has no buses: boundary_ports",
+    "PV bus group has no buses: buses_500kv"
+  ],
+  "assumptions": [
+    "PV curves use normalized bus_trace; bus_trace falls back to results.cpf.V when cpf.bus snapshots are absent.",
+    "TRANSPA curve_sets.csv and cpf_bus_meta.csv are reused when present, otherwise groups are derived generically.",
+    "Branch loading plots require normalized branch_trace with RATE_A-based loading_pct.",
+    "VSC plots require normalized vsc_trace, busdc_trace, or branchdc_trace."
+  ],
+  "output_tables": [
+    "branch_trace.csv",
+    "branchdc_trace.csv",
+    "bus_trace.csv",
+    "busdc_trace.csv",
+    "capability_audit.csv",
+    "cpf_points.csv",
+    "event_timeline.csv",
+    "gen_trace.csv",
+    "index_map_branch.csv",
+    "index_map_branchdc.csv",
+    "index_map_bus.csv",
+    "index_map_busdc.csv",
+    "index_map_gen.csv",
+    "index_map_vsc.csv",
+    "vsc_trace.csv",
+    "warnings.csv"
+  ]
+}

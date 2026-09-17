@@ -1,0 +1,11 @@
+iniciar_proyecto.m:13:addpath(fullfile(root,'auditoria_psse_matpower','results','transpa_reduccion_v1'));
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:17:out_dir = fullfile(root, 'auditoria_psse_matpower', 'results', 'transpa_reduccion_v1');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:77:save(fullfile(out_dir, 'transpa_reduction_v1.mat'), 'results');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:79:psse_sidecar_file = fullfile(out_dir, 'case_transpa_reduced_v1_psse.mat');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:1013:fprintf(fid, '- El caso exportado carga `case_transpa_reduced_v1_psse.mat` como sidecar. Por decision de modelado se preservan y activan taps de transformadores (`ACTAPS=1`) y bancos de capacitores/reactores conmutables (`SWSHNT=1`) dentro de la red retenida.\n');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:1014:fprintf(fid, '- Tambien se guarda el equivalente Norton/Thevenin multipuerto completo en `transpa_reduction_v1.mat` (`results.equivalent.Yeq`, `Inorton`, `Eth_multi`).\n\n');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:1049:fprintf(fid, '- `case_transpa_reduced_v1_psse.mat`\n');
+auditoria_psse_matpower/transpa_reduccion\build_transpa_reduced_case.m:1050:fprintf(fid, '- `transpa_reduction_v1.mat`\n');
+auditoria_psse_matpower/transpa_reduccion\export_cpf_genq_raw_arrays.m:9:    'transpa_reduccion_v1'));
+auditoria_psse_matpower/transpa_reduccion\run_cpf_genq_ultc_swshunt_diagnostic.m:13:    'transpa_reduccion_v1'));
+auditoria_psse_matpower/transpa_reduccion\cpf_psse_runner\transpa_cpf_run.m:153:        'transpa_reduccion_v1')

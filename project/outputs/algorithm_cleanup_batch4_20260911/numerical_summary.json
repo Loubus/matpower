@@ -1,0 +1,115 @@
+{
+  "shunt_only": {
+    "success": true,
+    "lambda": 0.39999497950051915,
+    "points": 7,
+    "target_tolerance": 1E-5,
+    "shunt_trace": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      15,
+      15
+    ],
+    "tap_trace": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "events": {
+      "k": 5,
+      "name": "PSSE_CONTROL",
+      "idx": 1,
+      "msg": "PSS/E active-set update at lambda = 0.39462285; re-corrected unified VSC-MTDC point at fixed lambda (buses 1, generators 0, branches 0)."
+    },
+    "automatic_pf_success": true,
+    "half_success": true,
+    "half_lambda": 0.39999528251622846,
+    "half_voltage_difference": 4.98056723641227E-8,
+    "automatic_voltage_difference": 8.1603546142616779E-10
+  },
+  "combined": {
+    "success": true,
+    "lambda": 0.39999496839777271,
+    "points": 7,
+    "target_tolerance": 1E-5,
+    "shunt_trace": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      15,
+      15
+    ],
+    "tap_trace": [
+      1.0111111111111111,
+      1.0111111111111111,
+      1.0111111111111111,
+      1.0111111111111111,
+      1.0111111111111111,
+      1.0111111111111111,
+      1.0111111111111111
+    ],
+    "events": [
+      {
+        "k": 0,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+      },
+      {
+        "k": 5,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0.39461712; re-corrected unified VSC-MTDC point at fixed lambda (buses 1, generators 0, branches 0)."
+      }
+    ],
+    "automatic_pf_success": true,
+    "half_success": true,
+    "half_lambda": 0.39999527183609573,
+    "half_voltage_difference": 4.9875695351531135E-8,
+    "automatic_voltage_difference": 8.1576168042829522E-10
+  },
+  "long_probe": {
+    "success": 0,
+    "last_lambda": 0.41055752358163217,
+    "done_msg": "VSC-MTDC monolithic PSS/E control re-correction did not converge at lambda 0.410705.",
+    "electrical_convergence": {
+      "converged": 1,
+      "method": "unified",
+      "jacobian": "analytic",
+      "psse_aware": 1,
+      "tol": 1E-8,
+      "max_mismatch": 4.5209933332889427E-12,
+      "state_vector_size": 26,
+      "formulation": "monolithic"
+    },
+    "events": [
+      {
+        "k": 0,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0; re-corrected unified VSC-MTDC point at fixed lambda (buses 0, generators 0, branches 1)."
+      },
+      {
+        "k": 5,
+        "name": "PSSE_CONTROL",
+        "idx": 1,
+        "msg": "PSS/E active-set update at lambda = 0.39461712; re-corrected unified VSC-MTDC point at fixed lambda (buses 1, generators 0, branches 0)."
+      },
+      {
+        "k": 10,
+        "name": "PSSE_CONTROL_FAIL",
+        "idx": 1,
+        "msg": "VSC-MTDC monolithic PSS/E control re-correction did not converge at lambda 0.410705."
+      }
+    ]
+  }
+}

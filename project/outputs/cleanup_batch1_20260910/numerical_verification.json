@@ -1,0 +1,30 @@
+{
+  "regression_before": {
+    "total": 508,
+    "passed": 508,
+    "failed": 0,
+    "skipped": 0
+  },
+  "regression_after": {
+    "total": 508,
+    "passed": 508,
+    "failed": 0,
+    "skipped": 0
+  },
+  "case_structures_identical": true,
+  "ac_pf_success": true,
+  "ac_pf_arrays_identical": true,
+  "vsc_pf_success": true,
+  "vsc_pf_arrays_identical": true,
+  "beerten_cpf_smoke_success": true,
+  "beerten_cpf_smoke_max_lambda": 0.049999922972707271,
+  "beerten_cpf_smoke_points": 4,
+  "legacy_case_load_success": true,
+  "legacy_paths_removed_by_normal_startup": true,
+  "analyzer_message_counts": [
+    0,
+    0,
+    0,
+    0
+  ]
+}

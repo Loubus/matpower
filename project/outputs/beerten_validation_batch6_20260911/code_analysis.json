@@ -1,0 +1,22 @@
+{
+  "file1": {
+    "path": "matpower/lib/runpf_vsc_mtdc_unified.m",
+    "issues": []
+  },
+  "file2": {
+    "path": "matpower/lib/runcpf_vsc_mtdc.m",
+    "issues": []
+  },
+  "file3": {
+    "path": "tests/t_beerten_reporting_batch6.m",
+    "issues": []
+  },
+  "file4": {
+    "path": "tests/t_beerten_capability_batch6.m",
+    "issues": []
+  },
+  "file5": {
+    "path": "studies/beerten/beerten_constant_pq_capability_batch6.m",
+    "issues": []
+  }
+}

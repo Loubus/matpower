@@ -1,0 +1,105 @@
+[
+  {
+    "pre_migration": false,
+    "success": 0,
+    "cause": "base_failure",
+    "done_msg": "Base case generator capability re-correction did not converge.",
+    "lambda": null,
+    "policy": {
+      "psse_control": {
+        "id": "psse_control",
+        "feature": "PSS/E discrete controls",
+        "enabled": false,
+        "declared_policy": "not-enabled",
+        "observed_policy": "not-enabled",
+        "source": "vsc_mtdc.psse_control_limit",
+        "event_count": 0,
+        "last_event": ""
+      },
+      "vsc_capability": {
+        "id": "vsc_capability",
+        "feature": "VSC capability",
+        "enabled": true,
+        "declared_policy": "stop",
+        "observed_policy": "not-triggered",
+        "source": "vsc_mtdc.capability_vsc_limit",
+        "event_count": 0,
+        "last_event": ""
+      },
+      "gen_capability": {
+        "id": "gen_capability",
+        "feature": "generator capability",
+        "enabled": true,
+        "declared_policy": "freeze",
+        "observed_policy": "not-triggered",
+        "source": "vsc_mtdc.capability_gen_limit",
+        "event_count": 0,
+        "last_event": ""
+      },
+      "hvdc_derating": {
+        "id": "hvdc_derating",
+        "feature": "HVDC dynamic derating",
+        "enabled": true,
+        "declared_policy": "warn-and-disable",
+        "observed_policy": "not-triggered",
+        "source": "cpf_policies.hvdc.vsc_derating",
+        "event_count": 0,
+        "last_event": ""
+      }
+    },
+    "events": []
+  },
+  {
+    "pre_migration": true,
+    "success": 1,
+    "cause": "gen_capability_limit",
+    "done_msg": "Reached VSC-MTDC monolithic generator capability loading limit in 52 continuation steps, lambda = 0.893806.",
+    "lambda": 0.89380580161575873,
+    "policy": {
+      "psse_control": {
+        "id": "psse_control",
+        "feature": "PSS/E discrete controls",
+        "enabled": false,
+        "declared_policy": "not-enabled",
+        "observed_policy": "not-enabled",
+        "source": "vsc_mtdc.psse_control_limit",
+        "event_count": 0,
+        "last_event": ""
+      },
+      "vsc_capability": {
+        "id": "vsc_capability",
+        "feature": "VSC capability",
+        "enabled": true,
+        "declared_policy": "stop",
+        "observed_policy": "not-triggered",
+        "source": "vsc_mtdc.capability_vsc_limit",
+        "event_count": 0,
+        "last_event": ""
+      },
+      "gen_capability": {
+        "id": "gen_capability",
+        "feature": "generator capability",
+        "enabled": true,
+        "declared_policy": "freeze",
+        "observed_policy": "freeze",
+        "source": "vsc_mtdc.capability_gen_limit",
+        "event_count": 2,
+        "last_event": "GEN_CAPABILITY_LIMIT"
+      },
+      "hvdc_derating": {
+        "id": "hvdc_derating",
+        "feature": "HVDC dynamic derating",
+        "enabled": true,
+        "declared_policy": "warn-and-disable",
+        "observed_policy": "not-triggered",
+        "source": "cpf_policies.hvdc.vsc_derating",
+        "event_count": 0,
+        "last_event": ""
+      }
+    },
+    "events": [
+      "GEN_CAPABILITY_FREEZE",
+      "GEN_CAPABILITY_LIMIT"
+    ]
+  }
+]

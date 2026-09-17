@@ -32,7 +32,8 @@ function [results, success] = runpf_vsc_mtdc(casedata, mpopt, fname, solvedcase)
 %
 %       Pac > 0 is active power injection into the AC network.
 %       Pdc > 0 is active power injection into the DC network.
-%       Ploss >= 0 and Pac + Pdc + Ploss = 0.
+%       Ploss >= 0 and Pconv + Pdc + Ploss = 0.
+%       Pac/Qac and their setpoints are measured at the PCC.
 %
 %   The DC slack mode fixes Vdc and computes Pdc from the DC balance. Fixed
 %   Pdc and optional droop modes are VSC-only controls.
@@ -100,6 +101,11 @@ mpc = loadcase(casedata);
 validate_vsc_mtdc_case(mpc);
 
 method = vsc_mtdc_method(mpopt);
+if ~strcmp(method,'unified') && isfield(mpc,'vsc_current_limit') && ...
+        any(mpc.vsc_current_limit(:)>0)
+    error('runpf_vsc_mtdc:current_limit_method', ...
+        'An active vsc_current_limit requires the unified method.');
+end
 opt = vsc_mtdc_options(mpopt);
 if vsc_pf_capability_enabled(opt)
     [results, success] = runpf_vsc_capability_loop(mpc, mpopt, opt, ...
@@ -141,7 +147,7 @@ for k = 1:opt.max_it
     fixed_pac = vsc(:, c.AC_MODE) == c.VSC_AC_PQ | vsc(:, c.AC_MODE) == c.VSC_AC_PV;
     dc_state.pdc_override = NaN(nv, 1);
     kk = find(fixed_pac & vsc(:, c.VSC_STATUS) > 0 & vsc(:, c.DC_MODE) ~= c.VSC_DC_VDC);
-    dc_state.pdc_override(kk) = -vsc(kk, c.PAC_SET) - dc_state.ploss(kk);
+    dc_state.pdc_override(kk) = -dc_state.pac(kk) - dc_state.ploss(kk);
 
     dc = solve_vsc_dc_pf(mpc, dc_state, dcopt);
     last_dc = dc;
@@ -178,6 +184,15 @@ results.busdc = last_dc.busdc;
 results.branchdc = last_dc.branchdc;
 results.vsc = build_vsc_results(vsc, state);
 results.vsc_state = state;
+results.vsc_state.pac = state.ps;
+results.vsc_state.qac = state.qs;
+results.vsc_power_port = 'PCC';
+if ~isempty(last_ac)
+    [~, rows] = ismember(mpc.bus(:, 1), last_ac.bus(:, 1));
+    results.bus = last_ac.bus(rows, :);
+    results.gen = last_ac.gen(1:size(mpc.gen, 1), :);
+    results.branch = last_ac.branch(1:size(mpc.branch, 1), :);
+end
 results.convergence = struct( ...
     'converged',       success, ...
     'tol_p',           opt.tol_p, ...
@@ -450,6 +465,10 @@ vsc = mpc.vsc;
 nv = size(vsc, 1);
 
 state = struct( ...
+    'ps',             zeros(nv, 1), ...
+    'qs',             zeros(nv, 1), ...
+    'pconv',          zeros(nv, 1), ...
+    'qconv',          zeros(nv, 1), ...
     'pac',            zeros(nv, 1), ...
     'qac',            zeros(nv, 1), ...
     'pdc',            zeros(nv, 1), ...
@@ -486,7 +505,7 @@ state.pac(active) = -state.pdc(active);
 fixed_pac = vsc(:, c.AC_MODE) == c.VSC_AC_PQ | vsc(:, c.AC_MODE) == c.VSC_AC_PV;
 state.pac(fixed_pac & vsc(:, c.VSC_STATUS) > 0) = vsc(fixed_pac & vsc(:, c.VSC_STATUS) > 0, c.PAC_SET);
 [state.ploss, state.iac] = calc_vsc_losses(mpc.baseMVA, state.pac, ...
-    state.qac, state.vac_internal, vsc);
+    state.qac, state.vac_internal, vsc, mpc);
 state.ploss(vsc(:, c.VSC_STATUS) <= 0) = 0;
 kk = active(~fixed_pac(active));
 state.pac(kk) = -state.pdc(kk) - state.ploss(kk);
@@ -494,7 +513,7 @@ state.pac(kk) = -state.pdc(kk) - state.ploss(kk);
 
 function state = read_vsc_ac_state(mpc, state, ac, map)
 [~, ~, ~, ~, BUS_I, ~, ~, ~, ~, ~, ~, VM] = idx_bus;
-[~, ~, QG] = idx_gen;
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, PT, QT] = idx_brch;
 c = idx_vsc;
 vsc = mpc.vsc;
 active = find(vsc(:, c.VSC_STATUS) > 0);
@@ -506,14 +525,12 @@ for k = active'
     state.vac_pcc(k) = ac.bus(pcc, VM);
     state.vac_filter(k) = ac.bus(filter, VM);
     state.vac_internal(k) = ac.bus(internal, VM);
-    if map.uses_gen(k)
-        state.qac(k) = ac.gen(map.gen(k), QG);
-    else
-        state.qac(k) = vsc(k, c.QAC_SET);
-    end
+    % Internal terminal power is the reactor receiving-end injection.
+    state.pac(k) = ac.branch(map.reactor_branch(k), PT);
+    state.qac(k) = ac.branch(map.reactor_branch(k), QT);
 end
 [state.ploss, state.iac] = calc_vsc_losses(mpc.baseMVA, state.pac, ...
-    state.qac, state.vac_internal, vsc);
+    state.qac, state.vac_internal, vsc, mpc);
 state.ploss(vsc(:, c.VSC_STATUS) <= 0) = 0;
 
 
@@ -536,13 +553,15 @@ dc = struct('success', 0, 'iterations', 0, 'max_mismatch', Inf, ...
 function vsc_out = build_vsc_results(vsc, state)
 c = idx_vsc;
 nv = size(vsc, 1);
-if size(vsc, 2) < c.REACTOR_BRANCH
-    vsc_out = [vsc zeros(nv, c.REACTOR_BRANCH - size(vsc, 2))];
+if size(vsc, 2) < c.QCONV
+    vsc_out = [vsc zeros(nv, c.QCONV - size(vsc, 2))];
 else
     vsc_out = vsc;
 end
-vsc_out(:, c.PAC) = state.pac;
-vsc_out(:, c.QAC) = state.qac;
+vsc_out(:, c.PAC) = state.ps;
+vsc_out(:, c.PCONV) = state.pconv;
+vsc_out(:, c.QAC) = state.qs;
+vsc_out(:, c.QCONV) = state.qconv;
 vsc_out(:, c.PDC) = state.pdc;
 vsc_out(:, c.VDC) = state.vdc;
 vsc_out(:, c.VAC_PCC) = state.vac_pcc;

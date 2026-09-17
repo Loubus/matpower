@@ -1,0 +1,6 @@
+shunt: exported/internal gen rows=2/3; restored-proxy balance=5.19065e-11 pu
+shunt: collapse active=1; BS5 before/after expand=9/0; bus2 before/after=2/2; QG2=-25.8845
+shunt original/repaired-proxy BINIT=9/6
+genq: exported/internal gen rows=2/3; restored-proxy balance=5.19065e-11 pu
+genq: collapse active=1; BS5 before/after expand=0/0; bus2 before/after=1/2; QG2=-20
+genq original/repaired-proxy limited=1/0 QG=-20/-30.3048

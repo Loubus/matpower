@@ -1,0 +1,9 @@
+run_id,branch_row,from_bus_ext,to_bus_ext,status
+beerten_vsc,1,1,2,1
+beerten_vsc,2,1,3,1
+beerten_vsc,3,2,3,1
+beerten_vsc,4,2,4,1
+beerten_vsc,5,2,5,1
+beerten_vsc,6,3,4,1
+beerten_vsc,7,4,5,1
+beerten_vsc,8,4,7,1

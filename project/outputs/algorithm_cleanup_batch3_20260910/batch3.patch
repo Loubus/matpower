@@ -1,0 +1,1088 @@
+--- a/matpower/lib/+mp/psse_xfmr_control.m
++++ b/matpower/lib/+mp/psse_xfmr_control.m
+@@ -141,7 +141,8 @@
+     state.best_violation_sum = state.last_violation_sum;
+ end
+ 
+-[new_raw, new_tap] = next_tap_state(state, vm);
++[new_raw, new_tap] = mp.psse_xfmr_tap_decision(state, vm, ...
++    active_control_idx(state));
+ changed = state.needs_initial_update || any(abs(new_tap - state.current_tap) > 1e-9);
+ state.needs_initial_update = 0;
+ 
+@@ -286,41 +287,6 @@
+ state.last_score = state.last_violations * 1e6 + ...
+     state.last_violation_sum + 1e-3 * tap_preference;
+ 
+-function [new_raw, new_tap] = next_tap_state(state, vm)
+-% Select the next discrete tap state for each violating controller.
+-new_raw = state.current_raw;
+-new_tap = state.current_tap;
+-idx = find(active_control_idx(state));
+-for kk = 1:length(idx)
+-    k = idx(kk);
+-    v = vm(state.reg_bus_idx(k));
+-    lo = min(state.vmi(k), state.vma(k));
+-    hi = max(state.vmi(k), state.vma(k));
+-    if v < lo - state.vtol
+-        voltage_dir = 1;       %% raise controlled voltage
+-    elseif v > hi + state.vtol
+-        voltage_dir = -1;      %% lower controlled voltage
+-    else
+-        continue;
+-    end
+-
+-    tap_dir = voltage_dir * state.side_sign(k);
+-    states = state.states_tap{k};
+-    raw_states = state.states_raw{k};
+-    if isempty(states)
+-        continue;
+-    end
+-    if tap_dir > 0
+-        cand = find(states > state.current_tap(k) + 1e-9, 1);
+-    else
+-        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
+-    end
+-    if ~isempty(cand)
+-        new_tap(k) = states(cand);
+-        new_raw(k) = raw_states(cand);
+-    end
+-end
+-
+ function sig = state_signature(tap)
+ % Build a compact key for cycle detection.
+ sig = sprintf('%.9g,', round(tap(:)' * 1e9) / 1e9);
+--- a/matpower/lib/+mp/psse_unified_control_update.m
++++ b/matpower/lib/+mp/psse_unified_control_update.m
+@@ -89,10 +89,16 @@
+ 
+ function [mpc, state] = direct_xfmr_control(mpc, vm)
+ state = mp.psse_xfmr_states(mpc);
++% Preserve explicit study locks and rejected-rebuild locks loaded from RAW
++% control metadata. The unified solver mask adds locks; it cannot release them.
++inherited_locked = state.locked_out;
+ state = apply_control_lockout(state, mpc, 'xfmr');
++state.locked_out = state.locked_out | inherited_locked;
++state.controllable(state.locked_out) = false;
+ state.iterations = state.iterations + 1;
+ state = classify_xfmr_state(state, vm);
+-[new_raw, new_tap] = next_xfmr_tap_state(state, vm);
++[new_raw, new_tap] = mp.psse_xfmr_tap_decision(state, vm, ...
++    state.controllable & state.reg_bus_idx > 0);
+ moved = abs(new_tap - state.current_tap) > 1e-9;
+ if any(moved)
+     state.current_raw(moved) = new_raw(moved);
+@@ -185,40 +191,6 @@
+ end
+ state.blocked_violations = nnz(state.blocked_low | state.blocked_high);
+ 
+-function [new_raw, new_tap] = next_xfmr_tap_state(state, vm)
+-new_raw = state.current_raw;
+-new_tap = state.current_tap;
+-idx = find(state.controllable & state.reg_bus_idx > 0);
+-for kk = 1:length(idx)
+-    k = idx(kk);
+-    v = vm(state.reg_bus_idx(k));
+-    lo = min(state.vmi(k), state.vma(k));
+-    hi = max(state.vmi(k), state.vma(k));
+-    if v < lo - state.vtol
+-        voltage_dir = 1;
+-    elseif v > hi + state.vtol
+-        voltage_dir = -1;
+-    else
+-        continue;
+-    end
+-
+-    states = state.states_tap{k};
+-    raw_states = state.states_raw{k};
+-    if isempty(states)
+-        continue;
+-    end
+-    tap_dir = voltage_dir * state.side_sign(k);
+-    if tap_dir > 0
+-        cand = find(states > state.current_tap(k) + 1e-9, 1);
+-    else
+-        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
+-    end
+-    if ~isempty(cand)
+-        new_tap(k) = states(cand);
+-        new_raw(k) = raw_states(cand);
+-    end
+-end
+-
+ function [mpc, state] = direct_swshunt_control(mpc, vm)
+ state = mp.psse_swshunt_states(mpc);
+ state = apply_control_lockout(state, mpc, 'swshunt');
+--- /dev/null
++++ b/matpower/lib/+mp/psse_xfmr_tap_decision.m
+@@ -0,0 +1,54 @@
++function [new_raw, new_tap] = psse_xfmr_tap_decision(state, vm, eligible)
++% psse_xfmr_tap_decision - Select one adjacent ULTC tap from solved voltages.
++% ::
++%
++%   [NEW_RAW, NEW_TAP] = MP.PSSE_XFMR_TAP_DECISION(STATE, VM, ELIGIBLE)
++%
++% Pure simultaneous pass: each eligible controller uses the same voltage
++% sample and original tap vector. STATE owns sorted paired RAW/tap grids,
++% mapped bus indices, supported-device eligibility and terminal direction.
++% ELIGIBLE is the caller's explicit policy mask (including its lock policy).
++% No electrical solve, history, acceptance, rollback or lock changes occur.
++% See the project docs/ULTC_DECISION_CONTRACT.md for caller differences.
++%
++% See also mp.psse_xfmr_states, mp.psse_xfmr_control,
++% mp.psse_unified_control_update, mp.psse_xfmr_update.
++
++%   MATPOWER
++%   Copyright (c) 2026, Power Systems Engineering Research Center (PSERC)
++%   This file is part of MATPOWER.
++%   Covered by the 3-clause BSD License (see LICENSE file for details).
++%   See https://matpower.org for more info.
++
++new_raw = state.current_raw;
++new_tap = state.current_tap;
++idx = find(eligible & state.controllable & state.reg_bus_idx > 0);
++for kk = 1:length(idx)
++    k = idx(kk);
++    v = vm(state.reg_bus_idx(k));
++    lo = min(state.vmi(k), state.vma(k));
++    hi = max(state.vmi(k), state.vma(k));
++    if v < lo - state.vtol
++        voltage_dir = 1;
++    elseif v > hi + state.vtol
++        voltage_dir = -1;
++    else
++        continue;
++    end
++
++    tap_dir = voltage_dir * state.side_sign(k);
++    states = state.states_tap{k};
++    raw_states = state.states_raw{k};
++    if isempty(states)
++        continue;
++    end
++    if tap_dir > 0
++        cand = find(states > state.current_tap(k) + 1e-9, 1);
++    else
++        cand = find(states < state.current_tap(k) - 1e-9, 1, 'last');
++    end
++    if ~isempty(cand)
++        new_tap(k) = states(cand);
++        new_raw(k) = raw_states(cand);
++    end
++end
+--- a/matpower/lib/runcpf_vsc_mtdc.m
++++ b/matpower/lib/runcpf_vsc_mtdc.m
+@@ -3424,7 +3424,7 @@
+         profile_cleanup = profile_time_scope('solve_pf_at_lambda'); %#ok<NASGU>
+         x = x0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+         success = normF < ctx.opt.tol;
+         iterations = 0;
+         max_it = max(ctx.opt.max_it, 30);
+@@ -3441,13 +3441,27 @@
+         end
+     end
+ 
++    function value = unified_residual_norm(F, model)
++        % Retain every scalar equation (including CPF parameterization), and
++        % also require the complex nodal power mismatch to meet the same tol.
++        % Separate P/Q components can each pass while hypot(P,Q) exceeds tol.
++        np = length(model.nonref);
++        nq = length(model.qeq);
++        ac_mismatch = complex(zeros(model.nb, 1));
++        ac_mismatch(model.nonref) = F(1:np);
++        ac_mismatch(model.qeq) = ac_mismatch(model.qeq) + ...
++            1j * F(np + (1:nq));
++        % A single norm preserves NaN propagation from any scalar equation.
++        value = norm([F; ac_mismatch], Inf);
++    end
++
+     function [x, F, eval, normF, ctx_lam] = unified_accept_pf_step( ...
+             ctx, lam, Sdelta, x0, dx, normF0)
+         alpha = 1;
+         while alpha >= 1/1024
+             xt = x0 + alpha * dx;
+             [Ft, evalt, ctx_t] = unified_eval_at_lambda(ctx, xt, lam, Sdelta);
+-            normFt = norm(Ft, Inf);
++            normFt = unified_residual_norm(Ft, ctx.model);
+             if isfinite(normFt) && normFt < normF0
+                 x = xt;
+                 F = Ft;
+@@ -3460,7 +3474,7 @@
+         end
+         x = x0 + dx;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+-        normF = norm(F, Inf);
++        normF = unified_residual_norm(F, ctx.model);
+     end
+ 
+     function [x, lam, eval, normF, iterations, success] = ...
+@@ -3472,7 +3486,7 @@
+         iterations = 0;
+         [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+         P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-        normF = norm([F; P], Inf);
++        normF = unified_residual_norm([F; P], ctx.model);
+         while normF >= ctx.opt.tol && iterations < ctx.opt.max_it
+             if isempty(eval) || ~isfinite(normF)
+                 break;
+@@ -3488,7 +3502,7 @@
+             lam = lam + dx(end);
+             [F, eval, ctx_lam] = unified_eval_at_lambda(ctx, x, lam, Sdelta);
+             P = unified_cpf_p(parm, h, z, x, lam, xprev, lamprev);
+-            normF = norm([F; P], Inf);
++            normF = unified_residual_norm([F; P], ctx.model);
+         end
+         success = normF < ctx.opt.tol;
+     end
+@@ -3520,9 +3534,9 @@
+         hlo = 0;
+         hhi = hstep;
+         [Flo, eval_lo] = unified_eval_at_lambda(ctx, xlo, lamlo, Sdelta);
+-        norm_lo = norm(Flo, Inf);
++        norm_lo = unified_residual_norm(Flo, ctx.model);
+         [Fhi, eval_hi] = unified_eval_at_lambda(ctx, xhi, lamhi, Sdelta);
+-        norm_hi = norm(Fhi, Inf);
++        norm_hi = unified_residual_norm(Fhi, ctx.model);
+ 
+         for ii = 1:max_loc_it
+             if abs(zhi(end)) <= tol || abs(zlo(end)) <= tol || ...
+--- /dev/null
++++ b/tests/t_ultc_acceptance_batch3.m
+@@ -0,0 +1,200 @@
++function [checks, evidence] = t_ultc_acceptance_batch3(quiet, outdir)
++%T_ULTC_ACCEPTANCE_BATCH3 Physical, adapter and declared tap-policy coverage.
++% Reuses case2_psse_ultc_ntp10_fixture and the existing RAW TAB fixtures.
++% Prescribed voltage passes test decisions; independent PF tests physics.
++if nargin < 1, quiet = 0; end
++root = fileparts(fileparts(mfilename('fullpath')));
++if nargin < 2, outdir = tempname(fullfile(root,'outputs')); end
++assert(~exist(outdir,'dir'), 'Use a fresh output directory'); mkdir(outdir);
++opt = mpoption('verbose',0,'out.all',0);
++checks = struct('id',{},'passed',{},'detail',{});
++evidence = struct('options',opt,'matlab',version);
++
++%% Terminal and remote direction, including reversed electrical orientation.
++for mode = 1:6
++    f = fixture();
++    if mode <= 2
++        f.psse.xfmr.two.num(40) = (-1)^mode*2;
++        direction = -1;
++    elseif mode <= 4
++        f.branch(1,1:2) = [2 1]; f.psse.xfmr.two.num(1:2) = [2 1];
++        f.psse.xfmr.two.num(40) = (-1)^mode*2;
++        direction = (-1)^mode;
++    else
++        f.bus(3,:) = f.bus(2,:); f.bus(2,3:4) = 0; f.bus(3,1) = 3;
++        f.branch(2,:) = f.branch(1,:); f.branch(2,1:2) = [2 3];
++        f.branch(2,9) = 0;
++        f.psse.xfmr.two.num(40) = (-1)^mode*3;
++        direction = -(-1)^mode;
++        if mode == 5
++            f.branch(1,1:2) = [2 1]; f.psse.xfmr.two.num(1:2) = [2 1];
++        end
++    end
++    s = mp.psse_xfmr_states(f); v = ones(size(f.bus,1),1); v(s.reg_bus_idx) = 0.90;
++    [a,u] = both(f,v);
++    label = sprintf('terminal%d',mode);
++    check([label '.step'], all(abs(a.current_tap-(1+0.05*direction)) < 1e-10) && ...
++        max(abs(u.branch(s.branch_idx,9)-a.current_tap)) < 1e-10, 'both paths take the declared adjacent step');
++    % Negative own-terminal CONT declares reverse action. Test its interface
++    % explicitly without claiming it raises voltage on this radial topology.
++    if mode ~= 3
++        p0 = runpf(f,opt); p1 = runpf(u,opt);
++        check([label '.physical_direction'], p0.success && p1.success && ...
++            p1.bus(s.reg_bus_idx,8)>p0.bus(s.reg_bus_idx,8), 'electrical re-solve raises the regulated voltage');
++        balance(label,p1);
++    end
++    evidence.(label) = struct('input',f,'ac_state',a,'unified',u);
++end
++
++%% Nonconsecutive identifiers and reordered unified measurements.
++f = fixture(); f.bus(:,1) = [91;17]; f.gen(:,1) = 91;
++f.branch(:,1:2) = [91 17]; f.psse.xfmr.two.num([1 2 40]) = [91 17 -17];
++b = f.bus([2 1],:); b(:,8) = [0.90;1.10];
++[u,~] = mp.psse_unified_control_update(f,b);
++check('mapping.remote_identity', abs(u.branch(1,9)-0.95)<1e-10, 'measurement joins by bus identity, not row');
++p = runpf_psse(f,opt); balance('mapping',p);
++check('mapping.export', isequal(p.bus(:,1),f.bus(:,1)) && abs(p.branch(1,9)-0.95)<1e-10, 'AC internal mapping returns original identifiers');
++evidence.mapping = p;
++
++%% CW=2 kV conversion plus TAB impedance correction on both paths.
++f = fixture(); f.psse.xfmr.two.num([5 24 41 42 51]) = [2 230 253 207 115];
++f.psse.xfmr.two.num(46) = 1; f.psse.xfmr.two.tab_applied = true;
++f.psse.xfmr.two.nominal_rx = f.branch(:,3:4);
++f.psse.impcor = struct('num',[1 .9 .9 0;1 1.1 1.1 0]);
++[a,u] = both(f,[1;.90]);
++check('cw2.raw', abs(a.current_raw-218.5)<1e-10 && ...
++    abs(u.psse.xfmr.two.num(24)-218.5)<1e-10, 'CW=2 writes kV WINDV for the selected per-unit tap');
++check('cw2.tab', max(abs(u.branch(1,[3 4 9])-[.0095 .095 .95]))<1e-10, 'TAB scales nominal impedance using per-unit winding ratio');
++p = runpf_psse(f,opt); balance('cw2',p); evidence.cw2 = p;
++for cw = 1:2
++    names = {'suite_u_ultc_3w_tab.raw','suite_u_ultc_3w_tab_cw2.raw'};
++    raw = fullfile(root,'tests','fixtures','controls','legacy_regression','psse_validation_suite',names{cw});
++    f = psse2mpc(raw,0,34); s = mp.psse_xfmr_states(f);
++    v = ones(size(f.bus,1),1); v(s.reg_bus_idx(s.controllable)) = .8;
++    [a,u] = both(f,v);
++    check(sprintf('three_winding%d.interface',cw), ...
++        max(abs(a.current_tap-u.branch(s.branch_idx,9)))<1e-10, 'three-winding CW/TAB candidates agree between paths');
++    p = runpf_psse(f,opt); balance(sprintf('three_winding%d',cw),p);
++    evidence.(sprintf('three_winding%d',cw)) = p;
++end
++
++%% Eligibility and deadband: no automatic move for each disabled condition.
++for mode = 1:7
++    f = fixture();
++    switch mode
++        case 1, f.psse.system.solver.ACTAPS = 0;
++        case 2, f.psse.xfmr.two.num(39) = 0;
++        case 3, f.psse.xfmr.two.num(39) = -1;
++        case 4, f.psse.xfmr.two.num(12) = 0;
++        case 5, f.branch(1,11) = 0;
++        case 6, f.psse.xfmr.two.num(40) = 0;
++        case 7, f.psse.xfmr.two.num(45) = 1;
++    end
++    [a,u] = both(f,[1;.9]);
++    check(sprintf('disabled%d',mode), a.current_tap==1 && u.branch(1,9)==1, 'disabled device stays fixed in both paths');
++end
++for v = [.97-1e-5,1.03+1e-5,1]
++    [a,u] = both(fixture(),[1;v]);
++    check(sprintf('deadband_%.8f',v), a.current_tap==1 && u.branch(1,9)==1, 'deadband and tolerance edges are inclusive');
++end
++
++%% Both physical tap bounds remain distinct from lockout and failure.
++for bound = [.9 1.1]
++    f = fixture(); f.branch(1,9) = bound; f.psse.xfmr.two.num(24) = bound;
++    if bound<1, v=.8; else, v=1.2; end
++    [a,u,report] = both(f,[1;v]);
++    check(sprintf('bound%.1f',bound), a.current_tap==bound && u.branch(1,9)==bound && ...
++        a.blocked_violations==1 && report.xfmr_blocked_violations==1 && ...
++        ~any(a.locked_out) && ~any(u.psse.xfmr.control_locked_out) && ~a.control_failed, ...
++        'saturation is a physical bound, not a numerical or implicit lock');
++end
++
++%% Persisted study/numerical locks and explicit unified lockout are not lost.
++for mode = 1:3
++    f = fixture();
++    switch mode
++        case 1
++            f.psse.xfmr.control_study_locked_rows = 1;
++            f.psse.xfmr.control_study_lock_label = 'explicit acceptance fixture';
++        case 2
++            f.psse.xfmr.control_locked_out = true;
++            f.psse.xfmr.control.rebuild_rejected = 1;
++            f.psse.xfmr.control.rebuild_rejected_rows = 1;
++        case 3
++            f.psse.control_lockout.xfmr = true;
++    end
++    [a,u] = both(f,[1;.9]);
++    check(sprintf('lock%d.unified',mode), u.branch(1,9)==1 && u.psse.xfmr.control_locked_out, 'declared lock survives unified handoff and prevents movement');
++    if mode<=2
++        check(sprintf('lock%d.ac',mode), a.current_tap==1 && a.locked_out && ...
++            a.locked_violations==1 && a.blocked_violations==0, 'AC reports locked voltage separately from physical saturation');
++    end
++    if mode==1
++        check('lock.study_provenance',u.psse.xfmr.control.study_locked==1 && ...
++            strcmp(u.psse.xfmr.control.study_lock_label,'explicit acceptance fixture') && ...
++            u.psse.xfmr.control.rebuild_rejected==0,'declared study lock retains its label and is not reported as numerical rejection');
++    elseif mode==2
++        check('lock.numerical_provenance',u.psse.xfmr.control.rebuild_rejected==1 && ...
++            isequal(u.psse.xfmr.control.rebuild_rejected_rows,1) && ...
++            u.psse.xfmr.control.study_locked==0,'numerical lock retains rejected rows and is not reported as a study lock');
++    end
++    evidence.(sprintf('lock%d',mode)) = struct('input',f,'ac_state',a,'unified',u);
++end
++
++%% Interacting parallel transformers: synchronous steps and permutation.
++f = fixture(); f.branch = [f.branch;f.branch];
++f.psse.xfmr.two.num = repmat(f.psse.xfmr.two.num,2,1);
++f.psse.xfmr.two.txt = repmat(f.psse.xfmr.two.txt,2,1);
++f.psse.xfmr.two.branch_idx = [1;2];
++[a,u] = both(f,[1;.9]);
++check('interaction.simultaneous', all(abs(a.current_tap-.95)<1e-10) && ...
++    all(abs(u.branch(:,9)-.95)<1e-10), 'all eligible devices step from the same solved voltage');
++f.psse.xfmr.two.branch_idx = [2;1]; [~,rev] = both(f,[1;.9]);
++check('interaction.order', isequal(rev.branch,u.branch), 'permuting device metadata does not introduce sequential voltage updates');
++p = runpf_psse(f,opt); balance('interaction',p); evidence.interaction = p;
++
++%% Actual cycling uses AC history; unified direct pass remains memoryless.
++f = fixture(); f.psse.xfmr.two.num([43 44]) = [1.001 .999];
++p = runpf_psse(f,opt); evidence.cycle = p;
++check('cycle.detected', p.psse.xfmr.control.cycle_detected && ...
++    p.psse.xfmr.control.cycle_resolved && ~any(p.psse.xfmr.control_locked_out), 'AC resolves a repeated grid state without inventing a lock');
++balance('cycle',p);
++[~,u] = both(f,[1;.9]); [~,u2] = both(u,[1;1.1]);
++check('cycle.unified_pass', abs(u2.branch(1,9)-1)<1e-10 && ...
++    ~u2.psse.xfmr.control.cycle_detected, 'direct unified pass can reverse; solver layer owns cycling');
++
++%% Existing numerical replay guard: pathological rejected candidate is restored.
++f = fixture(); s = mp.psse_xfmr_states(f); target = s;
++target.current_tap = 1e6; target.current_raw = 1e6;
++a = mp.psse_xfmr_guard_candidate(f,s,target,opt); evidence.guard = a;
++check('numerical.rejection', a.current_tap==1 && a.locked_out && ...
++    a.rebuild_rejected==1 && isequal(a.rebuild_rejected_rows,1) && ...
++    ~a.at_min && ~a.at_max && a.blocked_violations==0, 'failed electrical replay restores state and records numerical cause, not saturation');
++
++save(fullfile(outdir,'ultc.mat'),'checks','evidence');
++fid=fopen(fullfile(outdir,'ultc.json'),'w'); fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true)); fclose(fid);
++t_begin(length(checks),quiet);
++for k=1:length(checks), t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]); end
++t_end;
++
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function balance(label,p)
++        ai=ext2int(p); y=makeYbus(ai.baseMVA,ai.bus,ai.branch);
++        solved_voltage=ai.bus(:,8).*exp(1j*pi/180*ai.bus(:,9));
++        residual=norm(solved_voltage.*conj(y*solved_voltage)-makeSbus(ai.baseMVA,ai.bus,ai.gen),Inf);
++        check([label '.balance'], p.success && residual<=1e-8, sprintf('success and AC residual %.12g pu',residual));
++    end
++    function [s,u,r] = both(f,v)
++        dm=struct('source',f,'elements',struct('bus',struct('tab',struct('vm',v))));
++        task=struct('dmc',[],'data_model_build',@(mpc,varargin) mpc);
++        [~,s]=mp.psse_xfmr_control(task,[],[],dm,opt,{},[]);
++        b=f.bus; b(:,8)=v; [u,r]=mp.psse_unified_control_update(f,b);
++    end
++end
++
++function f = fixture()
++f=case2_psse_ultc_ntp10_fixture(100,50);
++f.psse.xfmr.two.num([43 44 45])=[1.03 .97 5];
++end
+--- /dev/null
++++ b/tests/t_ultc_beerten_batch3.m
+@@ -0,0 +1,128 @@
++function [checks,evidence] = t_ultc_beerten_batch3(quiet,outdir)
++%T_ULTC_BEERTEN_BATCH3 Short Beerten controls-active PF/CPF physical gate.
++% Existing project variant, not certification against the published benchmark.
++% Every accepted point is compared to an independent full-equation fixed-state
++% PF; endpoint automatic PF and half-step CPF are checked separately.
++if nargin<1, quiet=0; end
++root=fileparts(fileparts(mfilename('fullpath')));
++if nargin<2, outdir=tempname(fullfile(root,'outputs')); end
++assert(~exist(outdir,'dir'),'Use a fresh output directory'); mkdir(outdir);
++opt=mpoption('verbose',0,'out.all',0);
++opt.vsc_mtdc.method='unified';
++f=loadcase('case5_vsc_mtdc_beerten_ultc_swshunt');
++s=mp.psse_xfmr_states(f); c=idx_vsc;
++checks=struct('id',{},'passed',{},'detail',{});
++evidence=struct('base',f,'options',opt,'matlab',version);
++for scenario=1:2
++    target=f;
++    if scenario==1
++        label='uniform'; target.bus(:,[3 4])=2*f.bus(:,[3 4]); stop=.6;
++    else
++        label='load_side'; target.bus(7,[3 4])=5*f.bus(7,[3 4]); stop=.8;
++    end
++    cop=mpoption(opt,'cpf.stop_at',stop,'cpf.step',.1);
++    r=runcpf_psse(f,target,cop);
++    check([label '.endpoint'],r.success && abs(r.cpf.lam(end)-stop)<1e-6,'requested loading reached');
++    physical([label '.cpf'],r);
++    check([label '.policy'],strcmp(r.cpf.active_set_failure_policy.psse_control.declared_policy,'stop') && ...
++        ~any(contains({r.cpf.events.name},'FREEZE')) && ...
++        ~any(r.psse.xfmr.control_locked_out),'controls active with stop policy and no lock/freeze event');
++    check([label '.initial_move'],any(abs(r.cpf.branch(s.branch_idx,9,1)-f.branch(s.branch_idx,9))>1e-10), ...
++        'initial off-grid tap is normalized and electrically corrected');
++    if scenario==2
++        taps=squeeze(r.cpf.branch(s.branch_idx,9,:));
++        check([label '.later_move'],any(abs(diff(taps))>1e-10) && ...
++            any(strcmp({r.cpf.events.name},'PSSE_CONTROL') & [r.cpf.events.k]>0), ...
++            'load-side growth triggers an accepted post-base tap event');
++    end
++    fixed=cell(length(r.cpf.lam),1);
++    for k=1:length(r.cpf.lam)
++        tag=sprintf('%s.point%d',label,k);
++        lam=r.cpf.lam(k); point=f;
++        point.bus(:,[3 4])=f.bus(:,[3 4])+lam*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++        point.bus(:,6)=r.cpf.bus(:,6,k);
++        point.branch(:,1:13)=r.cpf.branch(:,1:13,k);
++        % runpf_vsc_mtdc solves this specified electrical state directly;
++        % automatic control settlement is exercised by runcpf_psse/runpf_psse.
++        p=runpf_vsc_mtdc(point,opt); fixed{k}=p;
++        physical([tag '.fixed_pf'],p);
++        trace_ac_balance(tag,r,k,point);
++        [~,rows]=ismember(r.cpf.bus(:,1,k),p.ac.bus(:,1));
++        vc=r.cpf.bus(:,8,k).*exp(1j*pi/180*r.cpf.bus(:,9,k));
++        vp=p.ac.bus(rows,8).*exp(1j*pi/180*p.ac.bus(rows,9));
++        check([tag '.pf_cpf_voltage'],max(abs(vc-vp))<=1e-6,'complex bus voltages agree at matched load and discrete state');
++        check([tag '.pf_cpf_converter'],max(abs(p.vsc(:,[c.PAC c.QAC c.PDC c.PLOSS])- ...
++            r.cpf.vsc(:,[c.PAC c.QAC c.PDC c.PLOSS],k)),[],'all')/f.baseMVA<=1e-6, ...
++            'converter injections and losses agree at matched state');
++        check([tag '.load'],max(abs(point.bus(:,[3 4])-r.cpf.bus(:,[3 4],k)),[],'all')<1e-8, ...
++            'accepted demand equals affine loading at reported lambda');
++        taps=r.cpf.branch(s.branch_idx,9,k);
++        check([tag '.grid'],all(arrayfun(@(j) min(abs(s.states_tap{j}-taps(j)))<1e-10,1:s.n)), ...
++            'all accepted taps belong to the unchanged finite grid');
++        check([tag '.generator_bounds'],all(r.cpf.gen(:,3,k)>=f.gen(:,5)-.01 & ...
++            r.cpf.gen(:,3,k)<=f.gen(:,4)+.01),'original generator Q bounds are respected');
++        dc_balance(tag,r.cpf.busdc(:,:,k),r.cpf.branchdc(:,:,k),r.cpf.vsc(:,:,k));
++    end
++    point=f; point.bus(:,[3 4])=f.bus(:,[3 4])+r.cpf.lam(end)*(target.bus(:,[3 4])-f.bus(:,[3 4]));
++    p=runpf_psse(point,opt); physical([label '.automatic_pf'],p);
++    check([label '.automatic_agreement'],max(abs(p.ac.bus(:,8)-r.ac.bus(:,8)))<=1e-6 && ...
++        max(abs(p.branch(:,9)-r.branch(:,9)))<1e-10 && ...
++        max(abs(p.bus(:,6)-r.bus(:,6)))<1e-8,'independent automatic PF reaches the same endpoint control state and voltage');
++    check([label '.raw_sync'],max(abs(r.psse.xfmr.two.num(:,24)-r.branch(s.branch_idx,9)))<1e-10, ...
++        'CW=1 WINDV agrees with exported branch tap');
++    half=runcpf_psse(f,target,mpoption(cop,'cpf.step',.05));
++    physical([label '.half_step'],half);
++    check([label '.step_sensitivity'],half.success && abs(half.cpf.lam(end)-r.cpf.lam(end))<1e-6 && ...
++        max(abs(half.ac.bus(:,8)-r.ac.bus(:,8)))<=1e-6 && ...
++        max(abs(half.branch(:,9)-r.branch(:,9)))<1e-10,'halved continuation step retains matched endpoint and control state');
++    evidence.(label)=struct('target',target,'options',cop,'cpf',r,'fixed_pf',{fixed},'automatic_pf',p,'half_step',half);
++end
++save(fullfile(outdir,'beerten.mat'),'checks','evidence');
++fid=fopen(fullfile(outdir,'beerten.json'),'w'); fprintf(fid,'%s\n',jsonencode(checks,'PrettyPrint',true)); fclose(fid);
++t_begin(length(checks),quiet);
++for k=1:length(checks), t_ok(checks(k).passed,[checks(k).id ': ' checks(k).detail]); end
++t_end;
++
++    function check(id,passed,detail)
++        checks(end+1)=struct('id',id,'passed',logical(passed),'detail',detail);
++    end
++    function physical(tag,p)
++        check([tag '.success'],p.success && p.convergence.max_mismatch<=p.convergence.tol, ...
++            sprintf('success; nonlinear residual %.12g <= %.12g',p.convergence.max_mismatch,p.convergence.tol));
++        a=ext2int(p.ac); y=makeYbus(a.baseMVA,a.bus,a.branch);
++        v=a.bus(:,8).*exp(1j*pi/180*a.bus(:,9));
++        residual=norm(v.*conj(y*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        check([tag '.ac_balance'],residual<=1e-8,sprintf('complete station-network AC balance %.12g pu',residual));
++        dc_balance(tag,p.busdc,p.branchdc,p.vsc);
++    end
++    function dc_balance(tag,bd,br,vs)
++        residual=max(abs(sum(vs(:,[c.PAC c.PDC c.PLOSS]),2)))/f.baseMVA;
++        check([tag '.converter_balance'],residual<=1e-8,sprintf('converter power balance %.12g pu',residual));
++        current=hypot(vs(:,c.PAC),vs(:,c.QAC))./(f.baseMVA*vs(:,c.VAC_INTERNAL));
++        loss=vs(:,c.LOSS_A)+vs(:,c.LOSS_B).*current+vs(:,c.LOSS_C).*current.^2;
++        check([tag '.loss_equation'],max(abs(loss-vs(:,c.PLOSS)))/f.baseMVA<=1e-8 && all(loss>=0), ...
++            'unchanged converter loss equation and nonnegative losses');
++        [~,rows]=ismember(vs(:,c.BUSDC),bd(:,1));
++        injection=accumarray(rows,vs(:,c.PDC),[size(bd,1) 1])/f.baseMVA;
++        residual=norm(bd(:,3).*(makeGdc(bd,br)*bd(:,3))-injection,Inf);
++        check([tag '.dc_balance'],residual<=1e-8,sprintf('DC nodal balance %.12g pu',residual));
++    end
++    function trace_ac_balance(tag,r,k,point)
++        % Materialize the actual stored continuation state, including station
++        % angles, on this point's load/tap/shunt model. No PF solution or
++        % station-phasor approximation replaces the accepted CPF state.
++        ctx = runpf_vsc_mtdc_unified('__setup',point,opt);
++        [~,ev] = runpf_vsc_mtdc_unified('__mismatch',ctx,r.cpf.x(:,k),[]);
++        full = runpf_vsc_mtdc_unified('__results',ctx,ev,point);
++        [~,rows] = ismember(r.cpf.bus(:,1,k),full.ac.bus(:,1));
++        check([tag '.cpf_state_identity'], ...
++            max(abs(full.ac.bus(rows,[8 9])-r.cpf.bus(:,[8 9],k)),[],'all')<1e-10 && ...
++            max(abs(full.vsc(:,[c.PAC c.QAC c.PDC])-r.cpf.vsc(:,[c.PAC c.QAC c.PDC],k)),[],'all')<1e-8, ...
++            'stored state reproduces the accepted bus and converter trace');
++        a=ext2int(full.ac); y=makeYbus(a.baseMVA,a.bus,a.branch);
++        v=a.bus(:,8).*exp(1j*pi/180*a.bus(:,9));
++        residual=norm(v.*conj(y*v)-makeSbus(a.baseMVA,a.bus,a.gen),Inf);
++        check([tag '.cpf_ac_balance'],residual<=1e-8, ...
++            sprintf('actual CPF full station-network balance %.12g pu',residual));
++    end
++end
+--- /dev/null
++++ b/docs/ULTC_DECISION_CONTRACT.md
+@@ -0,0 +1,86 @@
++# ULTC decision contract — batch 3
++
++The shared operation is a pure, single voltage-sampling pass. It chooses an
++adjacent legal tap and its corresponding RAW winding value. It does not solve
++electrical equations, accept a candidate, change limits, correct CPF, roll back
++a failed solve, create/release locks, or resolve cycles.
++
++## Inputs and output
++
++`mp.psse_xfmr_tap_decision(state, vm, eligible)` takes the state built by
++`psse_xfmr_states`, voltages indexed by that state's bus rows, and an explicit
++logical eligibility mask supplied by the calling policy. It returns full-size
++RAW and per-unit tap vectors. Nonselected devices retain their input values.
++
++- State construction owns ACTAPS, transformer/winding and branch status,
++  COD=1, nonzero CONT, valid regulated bus, NTP>=2, supported CW=1/2,
++  compensation exclusion and supported TAB correction. It owns bus/branch
++  mapping, direction conventions, grid conversion, sorting and initial snapping.
++- The decision intersects the caller's mask with `controllable` and a positive
++  regulated-bus index. It reads all devices from the same solved voltage vector
++  and original tap vector, in state-row order. No sequential electrical update
++  or priority between transformers occurs inside the pass.
++- Voltage below `min(VMI,VMA)-vtol` requests raising voltage; voltage above
++  `max(VMI,VMA)+vtol` requests lowering it. Both boundaries are inclusive.
++  Multiply that request by the adapter's `side_sign`. This preserves signed
++  CONT semantics, including reverse-action own-terminal declarations; it does
++  not infer topology or silently replace declared directions with sensitivities.
++- Choose the first sorted tap strictly above `current+1e-9`, or the last tap
++  strictly below `current-1e-9`. Empty grids and outward requests at either bound
++  retain state. RAW values use the same selected index; no interpolation occurs.
++- `psse_xfmr_update` synchronizes branch TAP, WINDV and TAB-adjusted R/X. It
++  remains outside the decision. No ratings or tolerances change in this batch.
++
++## Explicitly preserved caller differences
++
++| Concern | AC PF / AC CPF controller | Unified AC/DC direct pass |
++|---|---|---|
++| Eligibility | Consumes transformer/study lock flags, not the unified `control_lockout` mask; excludes locked rows without clearing `controllable` and measures locked voltages separately | Clears `controllable` for locked rows before classification; locks combine inherited transformer flags and explicit solver mask |
++| State lifetime | Retains iterations, visit history, best score and original base tap | Reconstructs state on each pass; outer solver owns settlement history |
++| Initial normalization | `needs_initial_update` can request an electrical rebuild even without a subsequent move | Serializes initialized state on every pass; actual array changes drive report |
++| Saturation report timing | Classifies the current, electrically solved tap before proposing a move | Reports final candidate bound using the pre-move voltage; this is provisional until solver re-solves |
++| Cycling | Scores violations, their sum and distance from base tap; retains best visited state; may probe one step toward base | Direct pass has no cycle detector; outer unified PF/CPF retains existing detection/auxiliary recovery |
++| Iteration limit | MXTPSS and unresolved-violation failure are checked here | Outer solver owns iteration/failure handling |
++| Numerical rejection | Existing CPF replay guard owns candidate splitting, rollback and rejection diagnostics | Outer unified solver owns correction/rejection and recovery |
++| Physical limit recovery | Saturation itself does not create a lock in the decision | Existing explicitly configured selective-freeze scenario can lock blocked devices in CPF; not enabled by this extraction |
++
++These differences are unresolved scientific-policy choices, not a reason to
++silently promote either caller to the other's behavior. The common mask is
++explicit so callers retain their policy. Source inspection and acceptance tests
++cover both paths; the helper is not an alternative controller implementation.
++
++## Isolated prerequisite repair
++
++The pre-extraction test found that unified `apply_control_lockout` erased locks
++already loaded by `psse_xfmr_states`. Consequently a study-locked or numerically
++rejected transformer moved on the next direct pass. The ULTC adapter now unions
++these inherited flags with the unified mask before classifying/selecting. Study
++labels and rebuild-rejection diagnostics retain their original provenance.
++No automatic lock, release rule or switched-shunt behavior is added.
++
++The stronger Beerten gate also exposed a separate CPF numerical-completion gap:
++real P/Q residual components could pass individually while their complex nodal
++magnitude exceeded the same 1e-8 pu acceptance threshold. Before the final tap
++extraction, the CPF solver's residual norm was extended to include that complex
++magnitude along with every existing scalar/parameterization equation. The
++configured tolerance, equations, active-set and recovery policies are unchanged.
++The shared tap helper has no responsibility for this additional solver check.
++
++## Acceptance coverage
++
++`t_ultc_acceptance_batch3` reuses the existing two-bus fixture and preserved
++three-winding TAB RAW fixtures. It exercises both decision entry points before
++extraction: terminal orientations and signed CONT; remote direction and solved
++voltage response; nonconsecutive IDs and reordered measurements; CW=2 kV/TAB
++conversion; three-winding CW/TAB; disabled conditions; deadband edges; both
++bounds; declared and numerical locks; simultaneous interacting devices and
++metadata permutation; an actual AC cycle and direct-pass reversal; numerical
++replay rollback. Electrical checks use independent nodal balance at 1e-8 pu;
++interface checks retain 1e-10 precision.
++
++`t_mpxt_psse` retains its original detailed interface and recovery tests,
++including three-winding fallback mapping, off-grid initial snapping, iteration
++failure, CPF warmstart cycle reset and split replay. `t_psse` supplies the full
++RAW import suite. The two preceding physical gates, full VSC/electrical/control
++regressions and short Beerten PF/CPF evidence remain required. Batch 3's report
++records results, skips and limits of that evidence.
+--- a/docs/CONTROL_ACCEPTANCE.md
++++ b/docs/CONTROL_ACCEPTANCE.md
+@@ -1,4 +1,4 @@
+-# Control acceptance contract — algorithm cleanup batches 1 and 2
++# Control acceptance contract — algorithm cleanup batches 1–3
+ 
+ Scope: small AC/DC control regressions before any ULTC or shunt policy refactor.
+ TRANSPA, reduction, hydro corridors, new benchmark adaptations and published
+@@ -132,3 +132,22 @@
+ lockout or freeze policy. A green gate removes the reproduced handoff blockers;
+ ULTC consolidation still requires the device-specific coverage and declared
+ policy listed above. TRANSPA and hydro-corridor work remain deferred.
++
++## Batch 3 bounded ULTC extraction
++
++The [ULTC decision contract](ULTC_DECISION_CONTRACT.md) declares the shared
++single-pass tap operation and records differences that remain in AC and unified
++solver layers. `t_ultc_acceptance_batch3` establishes terminal/CW/TAB, eligibility,
++mapping, bounds, interaction, cycle and lockout coverage before extraction.
++Its failing lock-handoff cases require an isolated adapter repair; they are not
++waived as policy differences. `t_ultc_beerten_batch3` adds short controls-active
++continuations, a post-base tap event, accepted-point electrical/interface checks,
++matched-state PF comparisons and half-step endpoint verification. Both preceding
++physical gates and full electrical/interface/control suites remain required.
++See the [batch 3 report](../outputs/algorithm_cleanup_batch3_20260910/REPORT.md)
++for actual gate results and remaining limits of the evidence.
++
++Switched-shunt selection, broader recovery policy, new benchmark conversion,
++TRANSPA and the hydro corridor remain outside this extraction. Passing ULTC
++coverage does not establish missing switched-shunt physical regimes or resolve
++the caller-specific cycle/report/lock policies listed in the shared contract.
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -53,3 +53,24 @@
+ MP-Test may return normally after failed checks. Inspect its passed/failed/skip
+ counts and any exception, not only the function exit status. Batch 2 uses the
+ output-local `run_batch2_suite.m` runner to retain this distinction.
++
++Batch 3 adds ULTC decision/interface/physical coverage and short Beerten
++controls-active verification:
++
++```matlab
++t_ultc_acceptance_batch3(0, fullfile(pwd,'outputs','ultc_new_run'));
++t_ultc_beerten_batch3(0, fullfile(pwd,'outputs','ultc_beerten_new_run'));
++```
++
++The first exercises both AC and unified control entry points, including declared
++lock handoff, simultaneous tap moves, actual cycling and numerical replay. The
++second retains the existing Beerten variant's limits and bands: uniform growth
++to lambda 0.6 and growth of load bus 7 to lambda 0.8, with an accepted tap event.
++It checks every accepted point against an independent full-model fixed-state
++PF, materializes each stored CPF state to check full AC balance, checks DC/converter
++balance, and compares automatic endpoint PF and half-step CPF. It does not
++certify agreement with the published Beerten reference. See the
++[tap-decision contract](../docs/ULTC_DECISION_CONTRACT.md) for preserved caller
++policy differences and the [batch 3 report](../outputs/algorithm_cleanup_batch3_20260910/REPORT.md)
++for measured outcomes. The output-local `run_batch3_suite.m` retains counts,
++warnings in logs and exceptions; every rerun needs a fresh destination.
+--- /dev/null
++++ b/outputs/algorithm_cleanup_batch3_20260910/run_batch3_suite.m
+@@ -0,0 +1,16 @@
++function counts = run_batch3_suite(name, outdir, varargin)
++% Capture MP-Test counts and exceptions without mistaking saved output for pass.
++assert(~exist(outdir,'dir'), 'Use a fresh suite directory');
++mkdir(outdir);
++global t_num_of_tests t_counter t_ok_cnt t_not_ok_cnt t_skip_cnt
++t_num_of_tests = 0; t_counter = 1; t_ok_cnt = 0; t_not_ok_cnt = 0; t_skip_cnt = 0;
++started = tic; failure = '';
++logtext = evalc('try; feval(name, 0, varargin{:}); catch err; failure = getReport(err, ''extended'', ''hyperlinks'', ''off''); disp(failure); end');
++counts = struct('name',name,'planned',t_num_of_tests,'executed',t_ok_cnt+t_not_ok_cnt+t_skip_cnt, ...
++ 'passed',t_ok_cnt,'failed',t_not_ok_cnt,'skipped',t_skip_cnt, ...
++ 'exception',failure,'elapsed_seconds',toc(started),'matlab',version);
++fid=fopen(fullfile(outdir,'run.log'),'w'); fprintf(fid,'%s',logtext); fclose(fid);
++fid=fopen(fullfile(outdir,'counts.json'),'w'); fprintf(fid,'%s\n',jsonencode(counts,'PrettyPrint',true)); fclose(fid);
++save(fullfile(outdir,'counts.mat'),'counts');
++disp(counts);
++end
+--- /dev/null
++++ b/outputs/algorithm_cleanup_batch3_20260910/capture_patch.py
+@@ -0,0 +1,52 @@
++"""Capture only batch 3 changes relative to its saved working-tree inputs."""
++from pathlib import Path
++import difflib
++import hashlib
++import json
++
++ROOT = Path(__file__).resolve().parents[2]
++OUT = Path(__file__).resolve().parent
++FILES = {
++    "matpower/lib/+mp/psse_xfmr_control.m": "before/psse_xfmr_control.m",
++    "matpower/lib/+mp/psse_unified_control_update.m": "before/psse_unified_control_update.m",
++    "matpower/lib/+mp/psse_xfmr_tap_decision.m": None,
++    "matpower/lib/runcpf_vsc_mtdc.m": "before/runcpf_vsc_mtdc.m",
++    "tests/t_ultc_acceptance_batch3.m": None,
++    "tests/t_ultc_beerten_batch3.m": None,
++    "docs/ULTC_DECISION_CONTRACT.md": None,
++    "docs/CONTROL_ACCEPTANCE.md": "before/CONTROL_ACCEPTANCE.md",
++    "tests/README.md": "before/README.md",
++    "outputs/algorithm_cleanup_batch3_20260910/run_batch3_suite.m": None,
++    "outputs/algorithm_cleanup_batch3_20260910/capture_patch.py": None,
++    "outputs/algorithm_cleanup_batch3_20260910/REPORT.md": None,
++}
++
++
++def diff(name, before, after):
++    return "".join(difflib.unified_diff(
++        before.splitlines(True), after.splitlines(True),
++        fromfile="a/" + name if before else "/dev/null", tofile="b/" + name))
++
++
++patch = []
++manifest = {}
++for name, old in FILES.items():
++    current = ROOT / name
++    before = (OUT / old).read_text(encoding="utf-8-sig") if old else ""
++    after = current.read_text(encoding="utf-8-sig")
++    manifest[name] = {
++        "before_sha256": hashlib.sha256((OUT / old).read_bytes()).hexdigest() if old else None,
++        "after_sha256": hashlib.sha256(current.read_bytes()).hexdigest(),
++        "before_lines": len(before.splitlines()), "after_lines": len(after.splitlines()),
++    }
++    patch.append(diff(name, before, after))
++(OUT / "batch3.patch").write_text("".join(patch), encoding="utf-8", newline="\n")
++(OUT / "source_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
++name = "matpower/lib/+mp/psse_unified_control_update.m"
++before = (OUT / FILES[name]).read_text(encoding="utf-8-sig")
++repaired = (OUT / "lock_repaired_unified.m").read_text(encoding="utf-8-sig")
++(OUT / "lockout_repair.patch").write_text(diff(name, before, repaired), encoding="utf-8", newline="\n")
++name = "matpower/lib/runcpf_vsc_mtdc.m"
++(OUT / "cpf_balance_repair.patch").write_text(
++    diff(name, (OUT / FILES[name]).read_text(encoding="utf-8-sig"),
++         (ROOT / name).read_text(encoding="utf-8-sig")), encoding="utf-8", newline="\n")
+--- /dev/null
++++ b/outputs/algorithm_cleanup_batch3_20260910/REPORT.md
+@@ -0,0 +1,279 @@
++# Algorithm cleanup batch 3 — shared ULTC tap decisions
++
++**Complete: 2,873 checks passed, zero failed, and 97 existing core-CPF checks
++were skipped in the selected final runs.** This batch extracts
++the adjacent-tap decision shared by AC and unified AC/DC controls, after isolated
++lock-handoff and CPF numerical-completion repairs. Solver-specific electrical re-solving, CPF
++correction, cycling and rollback remain in their existing layers.
++
++## Scope and preservation
++
++The production changes are confined to `psse_xfmr_control.m`,
++`psse_unified_control_update.m` and the new `psse_xfmr_tap_decision.m` in
++`matpower/lib/+mp/`, plus the residual norm in `matpower/lib/runcpf_vsc_mtdc.m`.
++No electrical equations, limits, ratings, configured tolerances,
++benchmark inputs or recovery settings changed. CPF now additionally checks
++complex nodal mismatch before accepting convergence. Switched-shunt consolidation,
++broader recovery-policy changes, benchmark conversion, TRANSPA and the hydro
++corridor remain deferred.
++
++`before/`, `status_before.txt` and `preexisting.patch` preserve the starting
++working-tree context. The repository is nested in `matpower/`; the workspace
++root is not itself a Git repository. `batch3.patch` isolates this batch relative
++to those saved working files, rather than relative to Git HEAD. The separate
++`lockout_repair.patch` isolates the lock-handoff repair;
++`cpf_balance_repair.patch` isolates the CPF convergence repair.
++
++`batch2_preservation.json` verifies the batch 2 source hashes before the additional
++CPF repair. The final preservation audit records the intentional CPF file change
++and retains the other source hashes, excluding the two documentation files
++intentionally extended here. All batch 2 export, expansion,
++solved-voltage, active-set and load-cache repair code remains untouched. Original
++regression tests and historical evidence were not edited. `structural_preservation.json`
++also verifies that the switched-shunt implementation and shared reporting suffix
++are unchanged, and that the two adapters differ from the accepted pre-extraction
++versions only by replacing their local tap selectors with the shared call.
++
++## Shared behavior and removed duplication
++
++The [decision contract](../../docs/ULTC_DECISION_CONTRACT.md) was written before
++extraction. Both paths previously implemented their own adjacent-grid search:
++read regulated voltage, order the voltage band, apply the existing tolerance,
++multiply the voltage request by the adapter's terminal direction, and choose
++the next paired tap/WINDV value. Both used one voltage sample for all devices;
++neither sequentially re-solved between transformers in that pass.
++
++Those two local selector implementations are removed. One pure helper now
++performs the operation for both callers. It takes an explicit eligibility mask,
++retains untouched rows, honors both finite bounds, and does not create locks or
++accept electrical candidates. The shared state constructor and updater continue
++to own RAW conversion, bus/branch identities, CW/TAB, initial normalization,
++branch TAP, WINDV and impedance synchronization.
++
++The adapters retain their own reporting and state-machine behavior. In
++particular:
++
++- AC keeps persistent iteration/cycle history, the best visited state, and its
++  existing probe toward the base tap. Unified direct control reconstructs state
++  per pass; its outer solver retains settlement/cycle handling.
++- AC classifies the solved pre-move tap. Unified marks candidate saturation using
++  the pre-move voltage, before its solver re-solves. These reports are not treated
++  as interchangeable evidence of a corrected electrical solution.
++- AC preserves `controllable` for locked rows and reports locked voltage
++  violations separately. Unified suppresses those rows before classification.
++  AC consumes transformer/study flags; the extra unified solver lock mask remains
++  specific to that path.
++- MXTPSS handling, numerical replay, correction, release/freeze options and
++  rollback remain with their existing callers. The extraction does not select a
++  common scientific recovery policy where the paths differ.
++
++## Prerequisite defect and incremental evidence
++
++The new pre-extraction ULTC gate initially passed 48 of 50 checks. Its two failures
++showed that unified control erased locks already loaded from transformer
++metadata: a study-locked device and a numerically rejected device both moved.
++`apply_control_lockout` reset `locked_out` before considering the unified mask.
++
++The repair is confined to the transformer adapter: retain the inherited flags,
++union them with the explicit unified mask, and suppress locked rows before
++classification/selection. Study labels and rejected-rebuild diagnostics remain
++distinct. This preserves an existing declared lock; it adds no implicit lock,
++freeze or release rule and does not alter switched-shunt handling.
++
++| Stage | Passed | Failed | Skipped |
++|---|---:|---:|---:|
++| Unchanged batch 1 physical gate | 43 | 0 | 0 |
++| Unchanged batch 2 handoff gate | 53 | 0 | 0 |
++| New ULTC gate before repair | 48 | 2 | 0 |
++| First repair rerun, cached MATLAB function | 48 | 2 | 0 |
++| Repair after explicit function reload | 50 | 0 | 0 |
++| Full controls before extraction | 508 | 0 | 0 |
++| ULTC gate immediately after extraction | 50 | 0 | 0 |
++
++The first repair rerun used MATLAB's cached function. An explicit
++`clear mp.psse_unified_control_update; rehash` loaded the edited file; the saved
++rerun passed. No MCP connection failure, MATLAB restart, CLI fallback, path reset
++or numerical-setting workaround was involved. Both failed runs are preserved.
++The final ULTC gate additionally asserts study-versus-numerical provenance.
++
++The acceptance gate reuses the existing two-bus fixture and preserved
++three-winding CW/TAB RAW fixtures. It exercises both entry points for signed
++terminal conventions, remote control, nonconsecutive identifiers and reordered
++measurements, CW=2 kV/TAB conversion, three-winding mapping, seven disabled
++conditions, deadband edges, both bounds, explicit locks, simultaneous interacting
++transformers, row permutation, an actual AC cycle and direct-pass reversal.
++Independent AC re-solves check physical direction and nodal balance. A declared
++reverse-action negative own-terminal CONT is checked as an interface convention,
++without claiming it raises voltage on the radial fixture.
++
++Existing full tests retain initial off-grid snapping, missing winding-bus
++fallback, max-iteration failure, CPF cycle resets, split numerical replay and
++explicit selective-freeze sensitivity scenarios. Saturation itself creates no
++lock in the shared decision. The pathological `1e6` tap used by the existing
++replay pattern is an injected rejected candidate, not an accepted legal state or
++a benchmark operating point.
++
++### Additional physical gate: CPF stopping norm
++
++The first Beerten gate passed 333/337. Reverting only the tap adapters to their
++pre-extraction versions reproduced exactly the same four failures. Three checks
++identified actual accepted CPF states whose complex AC mismatch exceeded 1e-8
++pu even though every scalar equation passed. The load-side endpoint had complex
++residual 1.08563439498e-8 versus reported scalar residual 9.4406e-9; its half-step
++endpoint had complex residual 1.13087967263e-8.
++
++The fourth check used an approximate reconstruction of station angles from
++recorded magnitudes/injections. Materializing the actual stored CPF state showed
++9.99526182819e-9, within the gate, versus reconstructed 1.00814868003e-8.
++`norm_investigation/point5.mat` preserves that distinction. The test now uses
++stored CPF state vectors and also checks their identity against the exported
++bus/converter trace. The assertion and its 1e-8 tolerance did not change.
++
++With that measurement correction, the pre-repair solver passed 355/358 checks
++(`beerten_exact_before/`): the three actual balance failures remained. The
++isolated solver repair adds the complex nodal mismatch magnitude to the existing
++maximum over scalar equations, including CPF parameterization. Both fixed-lambda
++correction and continuation correction use that norm; line-search merit uses it
++consistently. It preserves all equations and the configured tolerance and can
++require an additional Newton iteration. It does not change recovery or freeze
++policy, or silently tighten an option in the test.
++
++This repair covers monolithic CPF and its fixed-lambda correction solves.
++Standalone PF retains its existing stopping criterion; its results are
++independently checked against the complex-balance acceptance threshold here.
++
++With both adapters still in pre-extraction form, the repaired Beerten gate passed
++358/358 (`beerten_preextraction_green/`) and the strengthened ULTC gate passed
++52/52. Only then was the tap extraction restored and both gates rerun, again
++passing 358/358 and 52/52. The full VSC suite and both preceding physical gates
++were rerun because the CPF completion check changed. No assertion was weakened,
++no tolerance relaxed, and no rating, limit or implicit lock was changed to pass.
++
++## Short Beerten verification
++
++The existing project variant `case5_vsc_mtdc_beerten_ultc_swshunt` retains its
++original ULTC/shunt bands, grid, generator bounds, converter loss parameters and
++ratings. Two short continuations use the unified solver:
++
++- Uniform load target at twice base demand, stopping at lambda 0.6.
++- Bus-7 load target at five times its base demand, stopping at lambda 0.8.
++  This exercises a tap move after the initial point, with fixed-lambda
++  electrical correction, rather than testing only initial normalization.
++
++`t_ultc_beerten_batch3` checks requested endpoint, actual residual against the
++configured tolerance, full AC station-network balance, DC nodal balance,
++converter balance and its unchanged loss equation. Every primary accepted point
++is checked for affine loading, legal taps and original generator Q bounds, and
++compared to an independent full-equation PF at matched loading and discrete
++states. That fixed-state diagnostic calls `runpf_vsc_mtdc`; the main CPF and
++separate automatic endpoint PF keep controls active through `runcpf_psse` and
++`runpf_psse`. Both scenarios are repeated with half the CPF step.
++
++To check CPF AC balance directly, the gate materializes the actual stored
++continuation state, including station angles, at its accepted load and discrete
++state. It checks that this reproduces the exported bus/converter trace, then
++independently recomputes full-network nodal balance. It does not borrow the
++independent PF's solved voltages.
++Balances use the existing 1e-8 pu gate; matched-state complex voltage and
++converter-power agreement use 1e-6 pu, discrete states use 1e-10, demand uses
++1e-8 MW/MVAr and generator Q uses the existing 0.01 MVAr tolerance.
++
++These are short project-variant checks, not validation against the published
++Beerten benchmark. The earlier probe directories retain the load-growth
++investigation; the final test evidence is authoritative.
++
++## Verification results
++
++Selected runs are listed in `verification_summary.json`; every run has its own
++counts and full log. No selected run has an exception or MATLAB warning line.
++
++| Suite | Passed | Failed | Skipped |
++|---|---:|---:|---:|
++| ULTC acceptance (`ultc_verified`) | 52 | 0 | 0 |
++| Short Beerten PF/CPF (`beerten_verified`) | 358 | 0 | 0 |
++| Batch 1 physical gate (`gate1_verified`) | 43 | 0 | 0 |
++| Batch 2 handoff gate (`gate2_verified`) | 53 | 0 | 0 |
++| Full VSC/electrical/capability (`full_vsc_norm_final`) | 330 | 0 | 0 |
++| Full controls (`full_controls`) | 508 | 0 | 0 |
++| RAW/interface (`full_interface`) | 296 | 0 | 0 |
++| AC PF (`full_pf_ac`) | 726 | 0 | 0 |
++| DC PF (`full_pf_dc`) | 14 | 0 | 0 |
++| Core CPF (`full_cpf`) | 333 | 0 | 97 |
++| Jacobian (`full_jacobian`) | 64 | 0 | 0 |
++| Hessian (`full_hessian`) | 96 | 0 | 0 |
++
++The 97 skips are unchanged: 88 user-callback checks and nine legacy angle-wrap
++failure checks inapplicable to MP-Core. No new gate uses expected-failure skips.
++The full VSC rerun after the CPF repair took 402.32 seconds. The unaffected AC,
++RAW/interface and core suites were not needlessly repeated after the isolated
++monolithic CPF change.
++
++A final review replaced `max` of two norms with the norm of their concatenated
++vectors. These are identical for finite inputs; concatenation also preserves
++the original NaN propagation instead of allowing MATLAB's `max` to omit NaN.
++Beerten and both focused gates were rerun after this expression refinement.
++`finite_norm_equivalence.json` verifies identical accepted state vectors,
++loading, bus and converter traces on both Beerten cases.
++
++MATLAB Code Analyzer reports zero findings in all four changed production files
++and both new tests (`code_analysis_verified.json`). A nested test-helper variable
++was renamed to eliminate its loop-variable scope warning, then the ULTC gate
++was rerun. `numerical_summary.json` also records exact pre/post-extraction
++equality for all saved terminal and lock decision states.
++
++| Final physical result | Maximum observed mismatch |
++|---|---:|
++| AC balances of CPF endpoints, automatic/fixed PFs and half-step endpoints | 9.76590e-9 pu |
++| AC balance across all 21 primary accepted CPF states | 9.99527e-9 pu |
++| Converter power balance across 48 evaluations | 8.23672e-10 pu |
++| DC nodal balance across 48 evaluations | 9.29923e-13 pu |
++
++All are below the unchanged 1e-8 pu gate. Both converter loss equations and
++original generator Q bounds pass. The uniform case has nine accepted points;
++the load-side case has twelve. Initial tap normalization gives
++1.011111111111111. The load-side event at lambda approximately 0.76914586 moves
++to 0.988888888888889, with a fixed-lambda re-correction and no freeze/lock event.
++Automatic endpoint PF voltage errors are 2.75e-10 and 1.15e-12 pu; half-step
++endpoint differences are 2.75e-10 and 3.85e-11 pu. `beerten_balance_summary.json`
++and `numerical_summary.json` contain the measured values and event messages.
++
++`source_manifest.json` records the final before/after hashes. The isolated patch
++was applied to a fresh scratch mirror of the saved inputs and compared to all
++final files, with line endings normalized (`patch_application_verified.json`).
++
++## Unresolved policy differences and switched-shunt readiness
++
++The shared adjacent-tap operation has a declared boundary. It does not resolve
++AC versus unified cycle recovery, provisional versus solved report timing,
++locked-voltage accounting, initial-normalization handling or numerical/physical
++limit recovery. Those differences remain explicit in the contract and runnable
++tests; no policy was silently promoted from one solver to the other.
++
++Switched-shunt work can proceed as a separate acceptance-coverage review, using
++the preserved batch 1/2 gates and the new ULTC gates as regression protection.
++ULTC consolidation alone does not establish acceptance for mixed-sign shunt
++blocks, continuous-mode screening, interacting shunt devices, release policy,
++non-unit PQBRAK handoff or mixed FACTS/TWODC/VSC equivalent-load regimes. Those
++remain prerequisites to any broader shunt/recovery consolidation. TRANSPA,
++benchmark conversion and the hydro corridor remain deferred.
++
++## Reproduce
++
++Initialize with `iniciar_proyecto` from the root through MATLAB MCP, following
++`.codex/MATLAB_MCP.md`. Add `tests/` and this evidence directory to the path.
++For example:
++
++```matlab
++b3 = fullfile(pwd,'outputs','algorithm_cleanup_batch3_20260910');
++addpath(fullfile(pwd,'tests')); addpath(b3);
++run_batch3_suite('t_ultc_acceptance_batch3',fullfile(b3,'ultc_new'), ...
++    fullfile(b3,'ultc_new','evidence'));
++run_batch3_suite('t_ultc_beerten_batch3',fullfile(b3,'beerten_new'), ...
++    fullfile(b3,'beerten_new','evidence'));
++```
++
++Every destination must be fresh. The runner records MP-Test passes, failures,
++skips, exceptions, elapsed time and full logs separately. The test MAT files
++retain options, inputs and complete results; JSON files list individual checks.
++Use the project `.venv\Scripts\python.exe` with `capture_patch.py` to regenerate
++the isolated patch and source manifest after deliberate edits.
