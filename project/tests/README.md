@@ -149,3 +149,16 @@ The test explicitly retains the slack's generic-curve conflict; it does not
 certify all-equipment feasibility. Independent Python PF and archived MatACDC
 validation are separate from this internal gate. See the
 [batch-6 report](../outputs/beerten_validation_batch6_20260911/REPORT.md).
+
+## Solved capability contacts and local converter release (2026-09-18)
+
+Run `t_cpf_event_release(new_output_directory)` for the Beerten step-size,
+NOSE/FULL termination, physical-balance and capability checks (146 checks).
+Run `t_cpf_local_release(new_output_directory)` for isolated inward release,
+localized contact and outward rejection (23 checks). Use new output directories
+to preserve historical evidence. Both are MATLAB function tests, invoked through
+MATLAB MCP after `iniciar_proyecto`, rather than MATLAB `runtests`.
+
+Current study work ends at NOSE. The tests retain FULL diagnostics to ensure
+the unresolved lower-branch stop is reported honestly; they do not certify FULL
+completion. See [the scope decision](../docs/CPF_STUDY_SCOPE_20260918.md).

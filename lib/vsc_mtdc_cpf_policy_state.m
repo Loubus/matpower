@@ -171,12 +171,23 @@ if isfield(b, 'gen') && size(b.gen, 1) == size(mpc.gen, 1)
     mpc.gen(pg_override, PG) = b.gen(pg_override, PG);
 end
 if isfield(b, 'vsc') && size(b.vsc, 1) == size(mpc.vsc, 1)
+    % Modes are structural active-set state, including a return to the
+    % original mode. A difference-from-base mask loses that return.
+    mpc.vsc(:,c.AC_MODE)=b.vsc(:,c.AC_MODE);
     cols = [c.AC_MODE c.PAC_SET c.QAC_SET c.VAC_SET c.PDC_SET ...
         c.VDC_SET c.KDROOP];
     override = abs(b.vsc(:, cols) - st.structural_base.vsc(:, cols)) > tol;
     for kk = 1:length(cols)
         rows = override(:, kk);
         mpc.vsc(rows, cols(kk)) = b.vsc(rows, cols(kk));
+    end
+end
+for field={'vsc_current_limit','vsc_current_restore_mode'}
+    name=field{1};
+    if isfield(b,name)
+        mpc.(name)=b.(name);
+    elseif isfield(mpc,name)
+        mpc=rmfield(mpc,name);
     end
 end
 if isfield(b, 'psse')

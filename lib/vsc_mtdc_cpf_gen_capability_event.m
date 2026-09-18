@@ -60,10 +60,11 @@ for ii = 1:n
     if ~isempty(row)
         V_final(ii) = bus(row, VM);
     end
-    [sat_final, margin_final(ii), final_error{ii}] = ...
+    [~, margin_final(ii), final_error{ii}] = ...
         gen_capability_margin(gen, g, report.Smax(ii), ...
         report.gen_type_code(ii), PG, QG);
-    inside_final(ii) = ~sat_final;
+    % The generic curve can flag saturation exactly on an admissible corner.
+    inside_final(ii) = isempty(final_error{ii}) && margin_final(ii)>=-1e-8;
 end
 ev.P_final = P_final;
 ev.Q_final = Q_final;

@@ -32,11 +32,41 @@ Here Pc and Qc are internal converter powers in MW/MVAr; Uc is the internal conv
 
 The Newton Jacobian includes the analytic derivative of this current equation with respect to all relevant network states. It is used consistently by the corrector and tangent calculation. Other capability policies (including radial projection and internal-voltage saturation) retain their existing projection behavior. A second binding ceiling on an already current-limited converter is not silently ignored: the active-set settlement rejects it under the existing failure/recovery policy. This is not an implementation of simultaneous independent current and internal-voltage equalities.
 
-`mpc.vsc_current_limit` is solver active-set state: one finite, nonnegative number per converter, in system-base current p.u.; zero means inactive. An active entry requires an online converter in Q/PQ mode. `savecase` preserves it. Sequential PF rejects active entries rather than silently restoring the stored Q order. The current constraint stays latched along the continuation path; this change introduces no automatic return-to-voltage-control policy.
+`mpc.vsc_current_limit` is solver active-set state: one finite, nonnegative number per converter, in system-base current p.u.; zero means inactive. An active entry requires an online converter in Q/PQ mode. `savecase` preserves it. Sequential PF rejects active entries rather than silently restoring the stored Q order. Since 2026-09-18, unified CPF can restore the original voltage control under the acceptance rule below.
+
+## Return to voltage control — corrected 2026-09-18
+
+`vsc_mtdc.current_limit_release=1` enables **local, continuous release**, not a search for any feasible voltage-controlled equilibrium. `vsc_current_restore_mode` records the original V/PV mode on current-limit activation, is validated, and survives save/load. Old saved current-limited cases without this provenance remain constrained; no original mode is guessed.
+
+A release is considered only when the current-limited branch itself reaches the voltage target:
+
+\[
+I_c=I_{\max},\qquad V_{\rm PCC}=V_{\rm set}.
+\]
+
+The voltage-error event is bracketed between consecutive points on the same active set and located with pseudo-arclength correction. The old and new modes must share the localized equilibrium: a zero-length augmented correction must change the scaled physical state by at most `max(1e-7,10*PF_tolerance)`. The voltage contact tolerance is `max(1e-9,PF_tolerance)` p.u. Configured physical controls must be settled at the contact, without a simultaneous finite change to their settings, and enabled generator/converter capability checks must pass.
+
+The outgoing tangent is oriented by its dot product with the transported incoming tangent. **Its lambda component is never forced to have a chosen sign.** Two small forward corrections (arclength 1e-4 and 5e-5) must stay near their predictors and enter the feasible current interior. These probes do not advance the accepted trace. A clearly outward direction keeps the current constraint. Failed, ambiguous or nonlocal transitions are rolled back and retried with a smaller step; exhausted refinement returns `current_release_unresolved`, `success=0`, and `requested_endpoint_reached=false`, preserving the last accepted point.
+
+Multiple converter contacts are examined in arclength order. The first admissible local release is accepted at its contact, rather than at the original overshooting candidate. Ordinary loading-turn checks remain enabled across this transition. A release event cannot itself falsely complete a pending FULL lambda-zero step.
+
+`VSC_CURRENT_RELEASE` now has `kind='localized_branch_intersection'` and records the contact error, scaled state gap/tolerance, current ratio at contact, both forward-probe ratios, tangent orientation and lambda components. A finite voltage jump to a distant feasible equilibrium is rejected. The earlier `fixed_lambda_control_transition` behavior was an incorrect branch-tracing policy and is superseded.
+
+The old `current_release_margin` option remains readable for compatibility but is **ignored** by this local method. At the intersection the current is at its limit; requiring 0.1% headroom at that very point would prevent a continuous switch. Inward feasibility is tested by the forward probes instead. `results.cpf.current_release_policy` identifies `localized_branch_intersection`; the legacy option is explicitly reported as `current_release_margin_legacy_ignored`.
+
+Incremental policy interpolation carries current constraints and mode provenance, allows returning to the original AC mode, and prevents old predictor contexts from inheriting later constraints. Release does not restart a previously saturated active-power dispatch schedule. Physical current-limit enforcement and generator capability curves are unchanged.
+
+## Solved generator capability contact (2026-09-18)
+
+Generator localization uses signed physical headrooms (P minimum, P maximum, upper Q and lower Q) from the unchanged generic curve, instead of zero-inside projection distance. For a crossed boundary it brackets between the previous accepted lambda and the corrected candidate, solves the incoming equation set at trial lambdas, and locates zero headroom to 1e-8 MW/MVAr. The earliest solved contact along the step is selected. The new active set is corrected at that same lambda and the contact appears in the accepted trace. P-only contact retains PV control; Q contact releases voltage control.
+
+`GEN_CAPABILITY` preserves the overshooting candidate separately from the solved contact. Its `solved_boundary` event has signed `margin_previous`, `margin_candidate` and `margin_event`; the older `margin_final` remains projection distance. Base-point or discrete active-set updates without a bracket are explicitly `active_set_update_not_localized` with `lambda_event=NaN`. A failed bracket solve/localization requests the existing retry handling and is not reported as a solved contact. Event bracketing is local; it is not a guarantee of global event ordering through arbitrary discrete jumps.
+
+This change does not implement Q-first increasing-P boundary following. That separate policy still needs its own equation/derivative treatment. The studied G2 reaches Pmax first; its P remains clamped and its Q can regulate voltage until the Q boundary.
 
 ## Augmented transition correction and tangent orientation
 
-For generator and converter capability transitions, ordinary NOSE/FULL continuation corrects the new equation set on a transverse plane through the incoming corrected candidate:
+For projected capability transitions without a solved generator contact, ordinary NOSE/FULL continuation corrects the new equation set on a transverse plane through the incoming corrected candidate:
 
 \[
 F_{\rm new}(x,\lambda)=0,\qquad
@@ -90,7 +120,11 @@ Recovery does not relax convergence, feasibility or event-localization criteria.
 
 ## Verified study and regressions
 
-For the Beerten constant-P/Q non-slack dispatch study with ULTC, switched shunt and G2's 150 MW capability, initial steps 0.1 and 0.05 locate the first turn at approximately lambda=1.245668943, V5=0.680547 p.u. This agrees with the separately solved G2 Q-limit event. FULL records that event and continues; its later converter-capability termination near lambda=0.603 does not complete the requested FULL endpoint.
+The 2026-09-17 baseline for the Beerten constant-P/Q non-slack dispatch study with ULTC, switched shunt and G2's 150 MW capability located the first turn at approximately lambda=1.245668943, V5=0.680547 p.u. This agrees with the separately solved G2 Q-limit event. Its latched-current FULL path stopped later near lambda=0.603 without completing the requested endpoint. These historical results remain unchanged.
+
+The corrected 2026-09-18 verification is in `outputs/cpf_branch_preserving_release_20260918/`. G2's P contact remains at lambda=11/24 with P=150 MW; steps 0.1 and 0.05 preserve the first loading maximum near 1.245668944. The current-limited lower branch does not reach VSC2's voltage target, so no restoration occurs. With release enabled or disabled, FULL follows the same lower branch and stops at the existing converter-capability restriction near lambda=0.603, without claiming endpoint completion. The earlier `outputs/cpf_event_release_20260918/` remains historical evidence of the rejected finite-jump policy, not proof of complete branch tracing.
+
+`tests/t_cpf_local_release.m` verifies continuous restoration at an initial contact and at a bracketed interior contact, and rejection of an outward direction. `tests/t_cpf_event_release.m` verifies exact generator contact, NOSE/FULL behavior at two step sizes, identical constrained traces with the local policy on/off, and physical balances, capabilities, load interpolation and control acceptance.
 
 Verification artifacts, source snapshots, diffs and exact flags are saved in `outputs/cpf_standard_integration_20260917/`. `tests/t_cpf_coupled_controls.m` verifies current-row derivatives for three station configurations, metadata validation/round-trip, rollback, event localization and independent AC/DC/bridge/capability checks on saved verification runs. The existing PCC/station, directional-loss and VSC regression suites are also run.
 

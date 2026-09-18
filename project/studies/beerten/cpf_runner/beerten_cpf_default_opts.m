@@ -28,7 +28,7 @@ opts.devices.switched_shunt = true;
 opts.devices.ultc_transformer = true;
 
 opts.cpf = struct();
-opts.cpf.stop_at = 'FULL';
+opts.cpf.stop_at = 'NOSE';       % first loading maximum; FULL is explicit diagnostic
 opts.cpf.step = 0.025;
 opts.cpf.step_max = 0.025;
 opts.cpf.step_min = 1e-7;

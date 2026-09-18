@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "termination": {
+    "cause": "limit_induced_turn",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "NOSE",
+    "requested_endpoint_reached": true,
+    "last_accepted_lambda": 1.2456689453699459,
+    "last_accepted_index": 55,
+    "nose_detected": true,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false,
+    "smooth_nose_detected": false,
+    "limit_induced_turn_detected": true
+  },
+  "first_maximum_lambda": 1.2456689453699459,
+  "total_demand_MW": 463.960546888787,
+  "warning": "",
+  "warning_id": "",
+  "matches_verified_trace": true,
+  "runner_default": "NOSE",
+  "no_argument_preset": "NOSE",
+  "explicit_full_preset": "FULL",
+  "existing_gate_counts": [
+    146,
+    23,
+    330
+  ],
+  "existing_gates_repeated": false
+}

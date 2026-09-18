@@ -1,0 +1,18 @@
+[
+  {
+    "path": "matpower/lib/runcpf_vsc_mtdc.m",
+    "sha256": "3111a9f0eb482bf72acf7e433a996b859d20cca35e7f90c7899a20d2315bedd8"
+  },
+  {
+    "path": "matpower/lib/mpoption.m",
+    "sha256": "09a09d9899e60cadfa06d1b43c6d68649b4f309b373d1cba55c9dbc6b4a90ff8"
+  },
+  {
+    "path": "tests/t_cpf_event_release.m",
+    "sha256": "34b50a19654eebf8f0b4c0a564fa3ca92289f6e1e9b721bb0f4dd0674b3541d9"
+  },
+  {
+    "path": "docs/CPF_LIMIT_CONTINUATION.md",
+    "sha256": "47939cf65a77ca91787e3775ddf55b101821b223825ec0a10df85f28546a644d"
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "source": "C:\\Users\\Santiago\\Documents\\PROYECTO FINAL DE CARRERA - MATPOWER\\matpower\\lib\\runcpf_vsc_mtdc.m",
+  "source_sha256": "49a6713d5110b8b34d0e51f5d5bff8d01faab10fe992347c21eca1c32cd5db69",
+  "copy": "runcpf_endpoint_probe.m",
+  "changes": "Rename entry point; add read-only diagnostic snapshots only. No numerical equations, options, controls or policies changed."
+}

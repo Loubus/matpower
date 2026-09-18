@@ -1,0 +1,80 @@
+{
+  "checks": [
+    {
+      "name": "inward_endpoint",
+      "passed": false,
+      "error": 0
+    },
+    {
+      "name": "inward_releases_once",
+      "passed": false,
+      "error": 0
+    },
+    {
+      "name": "ends_in_voltage_control",
+      "passed": false,
+      "error": 0
+    },
+    {
+      "name": "outward_endpoint",
+      "passed": false,
+      "error": 0
+    },
+    {
+      "name": "outward_does_not_release",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "outward_remains_current_limited",
+      "passed": true,
+      "error": 0
+    }
+  ],
+  "passed": 2,
+  "total": 6,
+  "runs": [
+    {
+      "direction": "inward",
+      "termination": {
+        "cause": "base_failure",
+        "success": false,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": 0.05,
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": [],
+        "last_accepted_index": 0,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "events": [],
+      "warning": "",
+      "warning_id": ""
+    },
+    {
+      "direction": "outward",
+      "termination": {
+        "cause": "base_failure",
+        "success": false,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": 0.05,
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": [],
+        "last_accepted_index": 0,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "events": [],
+      "warning": "",
+      "warning_id": ""
+    }
+  ],
+  "fixture_contact_lambda": 1.1821066733256249,
+  "fixture_note": "Synthetic reversal of demand at a solved contact, with physical controls fixed. No change to production study."
+}

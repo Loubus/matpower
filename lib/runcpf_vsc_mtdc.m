@@ -172,6 +172,14 @@ if ~opt.coupled_current_limits && ...
         ['Coupled current limits are disabled, but the input contains an active ' ...
          'vsc_current_limit. Use the original unsaturated case to compare formulations.']);
 end
+if ~isscalar(opt.current_limit_release) || ~ismember(opt.current_limit_release,[0 1])
+    error('runcpf_vsc_mtdc:current_limit_release','current_limit_release must be 0 or 1.');
+end
+if ~isnumeric(opt.current_release_margin) || ~isreal(opt.current_release_margin) || ...
+        ~isscalar(opt.current_release_margin) || ~isfinite(opt.current_release_margin) || ...
+        opt.current_release_margin<=0 || opt.current_release_margin>=1
+    error('runcpf_vsc_mtdc:current_release_margin','current_release_margin must be between 0 and 1.');
+end
 cpf_policy_state = init_incremental_cpf_policy_state(mpcb, mpct, opt);
 validate_capability_limit_options();
 profile_enabled = isfield(opt, 'profile') && option_is_enabled(opt.profile);
@@ -868,6 +876,31 @@ end
                 end
                 events = vsc_mtdc_cpf_append_event(events, hvdc_der_events);
 
+                [ctx,ctxt,Sdelta,xnew,lamnew,r,V,release_events,released,release_diagnostic] = ...
+                    try_unified_current_release(ctx,ctxt,Sdelta,xnew,evalnew, ...
+                    normFnew,r,lamnew,cont_steps+1,x,lam,z,active_set_changed);
+                if ~isempty(release_diagnostic)
+                    [ctx,ctxt,Sdelta]=restore_active_set_stage_snapshot(turn_stage);
+                    restore_control_state(turn_misc);events=turn_events;
+                    if trial_step/2>=step_min
+                        curr_step=trial_step/2;continue;
+                    end
+                    done_msg='Current-limit release could not be localized continuously; last accepted point retained.';
+                    failure=struct('stage','current_release','lambda',lam, ...
+                        'diagnostic',struct('cause','current_release_unresolved','detail',release_diagnostic));
+                    success=0;
+                    events=vsc_mtdc_cpf_append_event(events,vsc_mtdc_cpf_event( ...
+                        'VSC_CURRENT_RELEASE_UNRESOLVED',cont_steps,1,done_msg));
+                    break;
+                end
+                if released
+                    accepted_step=release_events(end).arclength_step;
+                    target_lambda_step=target_lambda_step && ...
+                        abs(lamnew-full_trace_target_lam)<=mpopt.cpf.target_lam_tol;
+                end
+                events=vsc_mtdc_cpf_append_event(events,release_events);
+                active_set_changed=active_set_changed || released;
+
                 if active_set_changed || length(z) ~= length(xnew) + 1 || ...
                         length(x) ~= length(xnew)
                     if ~isempty(transition_carried)
@@ -1134,6 +1167,9 @@ end
         results.cpf.formulation = 'monolithic';
         results.cpf.jacobian = 'analytic';
         results.cpf.coupled_current_limits = logical(opt.coupled_current_limits);
+        results.cpf.current_limit_release = logical(opt.current_limit_release);
+        results.cpf.current_release_policy = 'localized_branch_intersection';
+        results.cpf.current_release_margin_legacy_ignored = opt.current_release_margin;
         results.cpf.turn_detection = struct('history',{turn_history}, ...
             'arclength_resolution',turn_resolution,'state_tolerance',nose_tol);
         results.cpf.checkpoint_replay = struct('max_attempts',opt.nose_replay_max, ...
@@ -1656,7 +1692,7 @@ end
             end
             if isfield(current,'vsc_current_limit') && current.vsc_current_limit(k)>0
                 % Already enforced in every residual/Jacobian/tangent and PF handoff.
-                % The current constraint remains latched for this continuation path.
+                % A separate transactional probe checks return to voltage control.
                 continue;
             end
             P0 = r.vsc(k, c.PAC);
@@ -1717,6 +1753,14 @@ end
                 end
                 bnext.vsc_current_limit(k)=info.Smax/current.baseMVA;
                 tnext.vsc_current_limit(k)=info.Smax/current.baseMVA;
+                if ~isfield(bnext,'vsc_current_restore_mode')
+                    bnext.vsc_current_restore_mode=zeros(size(current.vsc,1),1);
+                    tnext.vsc_current_restore_mode=bnext.vsc_current_restore_mode;
+                end
+                if ismember(from_mode,[c.VSC_AC_V c.VSC_AC_PV])
+                    bnext.vsc_current_restore_mode(k)=from_mode;
+                    tnext.vsc_current_restore_mode(k)=from_mode;
+                end
             end
             if all(abs(old_vals - new_vals) <= tol) && ~coupled_current
                 continue;
@@ -1764,6 +1808,188 @@ end
             report.Smax_source{end+1, 1} = params.Smax_source;
             report.Vmax_source{end+1, 1} = params.Vmax_source;
             report.mode_source{end+1, 1} = params.mode_source;
+        end
+    end
+
+    function [ctx,ctxt,sd,x,lam,r,V,ev,changed,diagnostic] = ...
+            try_unified_current_release(ctx,ctxt,sd,x,~,~,r,lam,event_k, ...
+            xprev,lprev,zprev,other_changed)
+        % Release only at the local intersection I=Imax and Vpcc=Vset.
+        % A feasible, distant voltage-controlled PF solution is insufficient.
+        ev=struct('k',{},'name',{},'idx',{},'msg',{});changed=false;diagnostic='';
+        V=original_ac_voltage_for_result(r,base_bus_ids);
+        if ~opt.current_limit_release || ~unified_vsc_capability_enabled() || ...
+                ~isfield(mpcb,'vsc_current_limit') || ...
+                ~isfield(mpcb,'vsc_current_restore_mode') || ...
+                ~isfield(last,'vsc_current_limit')
+            return;
+        end
+        eligible=find(mpcb.vsc_current_limit(:)>0 & last.vsc_current_limit(:)>0 & ...
+            ismember(mpcb.vsc_current_restore_mode(:),[c.VSC_AC_V c.VSC_AC_PV]));
+        vtol=max(1e-9,ctx.opt.tol);state_tol=max(1e-7,10*ctx.opt.tol);
+        contacts={};
+        for k=eligible'
+            g0=last.vsc(k,c.VAC_PCC)-last.vsc(k,c.VAC_SET);
+            g1=r.vsc(k,c.VAC_PCC)-r.vsc(k,c.VAC_SET);
+            if g0*g1>0 && min(abs([g0 g1]))>vtol
+                profile_count('current_release_no_local_contact');continue;
+            end
+            if other_changed || ~isequal(size(xprev),size(x))
+                diagnostic='Voltage-target contact coincides with another active-set change';return;
+            end
+            [contact,ok]=locate_current_release_contact(ctx,sd,xprev,lprev,zprev,x,lam,k,g0,g1,vtol);
+            if ~ok
+                diagnostic='Voltage-target contact localization failed on current-limited branch';return;
+            end
+            contacts{end+1}=contact; %#ok<AGROW>
+        end
+        if isempty(contacts),return;end
+        [~,order]=sort(cellfun(@(v)v.h,contacts));
+        for candidate=order
+        best=contacts{candidate};
+        k=best.k;stage=active_set_stage_snapshot(ctx,ctxt,sd);
+        misc=control_state_snapshot();oldcarry=transition_carried;oldkeys=transition_carried_keys;
+        oldctx=ctx;oldx=x;oldlam=lam;oldr=r;oldV=V;
+        incoming=unified_cpf_tangent(ctx,best.x,best.lambda,sd,zprev,best.x,best.lambda,3,1);
+        if dot(incoming,zprev)<0,incoming=-incoming;end
+        imax=mpcb.vsc_current_limit(k);mode=mpcb.vsc_current_restore_mode(k);
+        mpcb.vsc_current_limit(k)=0;mpct.vsc_current_limit(k)=0;
+        mpcb.vsc(k,c.AC_MODE)=mode;mpct.vsc(k,c.AC_MODE)=mode;
+        refresh_incremental_policy_anchor(best.lambda);
+        [ctx,ctxt,sd]=build_unified_context_pair();
+        anchor=unified_x_from_controlled_ac(ctx,best.result.ac,best.result);
+        seed=transport_tangent(oldctx,ctx,incoming);
+        % Zero-length augmented correction: both modes must share this point.
+        [xr,lr,er,nr,it,ok]=unified_cpf_corrector(ctx,sd,anchor,best.lambda, ...
+            anchor,best.lambda,seed,0,3);
+        gap=norm(([xr;lr]-[anchor;best.lambda])./max(1,abs([anchor;best.lambda])),Inf);
+        ok=ok && gap<=state_tol;
+        reason='New mode does not meet the incoming branch continuously';
+        trial_events=struct('k',{},'name',{},'idx',{},'msg',{});
+        if ok
+            rr=build_unified_cpf_result(ctx,xr,er,lr,it,nr);
+            [rr,~]=stamp_original_ac_solution(rr,base_bus_ids,base_branch_count,base_gen_count);
+            hardware_before=psse_active_set_signature(mpcb);
+            [ctx,ctxt,sd,xr,er,nr,~,rr,~,trial_events,settled]= ...
+                settle_unified_psse_controls(ctx,ctxt,sd,xr,er,lr,it,nr,rr, ...
+                base_bus_ids,base_branch_count,base_gen_count,event_k);
+            gap=norm(([xr;lr]-[anchor;best.lambda])./max(1,abs([anchor;best.lambda])),Inf);
+            ok=settled && strcmp(hardware_before,psse_active_set_signature(mpcb)) && ...
+                gap<=state_tol && release_capability_feasible(rr,lr);
+            reason='Release requires an unresolved physical-control or capability change';
+        end
+        outward=false;probe_h=1e-4;probe_ratio=NaN;half_ratio=NaN;orientation=NaN;
+        if ok
+            zr=unified_cpf_tangent(ctx,xr,lr,sd,seed,xr,lr,3,1);
+            orientation=dot(zr,seed);
+            % Orient by the physical tangent, never by the sign of d(lambda).
+            if orientation<0,zr=-zr;orientation=-orientation;end
+            ok=isfinite(orientation) && orientation>1e-6;
+            reason='Outgoing tangent is not transverse to the incoming direction';
+            if ok
+                [probe_ratio,pok]=release_forward_probe(ctx,sd,xr,lr,zr,probe_h,k,imax);
+                [half_ratio,hok]=release_forward_probe(ctx,sd,xr,lr,zr,probe_h/2,k,imax);
+                itol=max(1e-9,ctx.opt.tol);
+                inward=pok && hok && probe_ratio<1-itol && half_ratio<1-itol;
+                outward=pok && hok && probe_ratio>1+itol && half_ratio>1+itol;
+                ok=inward;
+                reason='Forward release probes are inconclusive or leave capability feasibility';
+            end
+        end
+        if ~ok
+            [ctx,ctxt,sd]=restore_active_set_stage_snapshot(stage);restore_control_state(misc);
+            transition_carried=oldcarry;transition_carried_keys=oldkeys;
+            x=oldx;lam=oldlam;r=oldr;V=oldV;
+            profile_count('current_release_rejected');
+            if ~outward,diagnostic=reason;return;end
+            continue;
+        end
+        x=xr;lam=lr;r=rr;V=original_ac_voltage_for_result(r,base_bus_ids);
+        changed=true;profile_count('current_release_accepted');
+        transition_carried=zr;transition_carried_keys=transition_state_keys(ctx);
+        ratio=hypot(r.vsc(k,c.PCONV),r.vsc(k,c.QCONV))/(r.vsc(k,c.VAC_INTERNAL)*mpcb.baseMVA*imax);
+        release=vsc_mtdc_cpf_event('VSC_CURRENT_RELEASE',event_k,k, ...
+            sprintf('VSC %d voltage control restored at a localized branch intersection, lambda %.12g.',k,lam));
+        release.kind='localized_branch_intersection';release.lambda_event=lam;
+        release.from_mode=best.result.vsc(k,c.AC_MODE);release.to_mode=mode;
+        release.voltage_before=best.result.vsc(k,c.VAC_PCC);release.voltage_after=r.vsc(k,c.VAC_PCC);
+        release.current_ratio_final=ratio;release.contact_voltage_error=best.error;
+        release.state_gap=gap;release.state_tolerance=state_tol;
+        release.orientation_dot=orientation;release.tangent_before=incoming(end);release.tangent_after=zr(end);
+        release.probe_step=probe_h;release.probe_current_ratio=probe_ratio;release.half_probe_current_ratio=half_ratio;
+        release.contact_iterations=best.iterations;
+        release.arclength_step=best.h;
+        ev=vsc_mtdc_cpf_append_event(ev,trial_events);
+        ev=vsc_mtdc_cpf_append_event(ev,release);
+        return;
+        end
+    end
+
+    function [loc,ok]=locate_current_release_contact(ctx,sd,x0,l0,z0,x1,l1,k,g0,g1,tol)
+        loc=[];ok=false;
+        h1=z0'*[x1-x0;l1-l0];
+        if ~isfinite(h1) || h1<=0,return;end
+        lo=0;hi=h1;fl=g0;fh=g1;
+        for j=1:60
+            if abs(fl)<=tol,h=lo;elseif abs(fh)<=tol,h=hi;
+            else,h=lo+(hi-lo)*max(.05,min(.95,fl/(fl-fh)));end
+            a=h/h1;guess=x0+a*(x1-x0);lg=l0+a*(l1-l0);
+            [xe,le,ee,ne,ni,pfok]=unified_cpf_corrector(ctx,sd,guess,lg,x0,l0,z0,h,3);
+            scale=max(1,abs([x0;l0]));
+            distance=norm(([xe;le]-[guess;lg])./scale,Inf);
+            span=norm([x1-x0;l1-l0]./scale,Inf);
+            if ~pfok || distance>max(1e-7,2*span),return;end
+            re=build_unified_cpf_result(ctx,xe,ee,le,ni,ne);
+            [re,~]=stamp_original_ac_solution(re,base_bus_ids,base_branch_count,base_gen_count);
+            fm=re.vsc(k,c.VAC_PCC)-re.vsc(k,c.VAC_SET);
+            if abs(fm)<=tol
+                loc=struct('x',xe,'lambda',le,'h',h,'k',k,'result',re,'error',fm,'iterations',j);
+                ok=true;return;
+            end
+            if fl*fm<=0,hi=h;fh=fm;else,lo=h;fl=fm;end
+        end
+    end
+
+    function [ratio,ok]=release_forward_probe(ctx,sd,x,lam,z,h,k,imax)
+        [xp,lp,ep,np,it,ok]=solve_unified_arc_point(ctx,sd,x,lam,z,h,3);
+        ratio=NaN;
+        if ~ok,return;end
+        scale=max(1,abs([x;lam]));
+        if norm(([xp;lp]-[x;lam]-h*z)./scale,Inf)>max(1e-7,.1*h)
+            ok=false;return;
+        end
+        rp=build_unified_cpf_result(ctx,xp,ep,lp,it,np);
+        [rp,~]=stamp_original_ac_solution(rp,base_bus_ids,base_branch_count,base_gen_count);
+        ratio=hypot(rp.vsc(k,c.PCONV),rp.vsc(k,c.QCONV))/(rp.vsc(k,c.VAC_INTERNAL)*mpcb.baseMVA*imax);
+        % Report an outward current direction separately from other violations.
+        if ratio<1,ok=release_capability_feasible(rp,lp);end
+    end
+
+    function ok = release_capability_feasible(r,lam)
+        current=vsc_cpf_current_mpc(mpcb,mpct,lam);ok=true;
+        active=find(current.vsc(:,c.VSC_STATUS)>0);
+        for kk=1:numel(active)
+            k=active(kk);[p,policy]=cached_vsc_capability_params(current,k,kk);
+            [~,pp,qq]=vsc_capability_curve(r.vsc(k,c.PAC),r.vsc(k,c.QAC), ...
+                p.Smax,vsc_capability_voltage(r.vsc,k),r.vsc(k,:), ...
+                policy.projection_mode,p.Vmax,current.baseMVA);
+            if max(abs([pp-r.vsc(k,c.PAC),qq-r.vsc(k,c.QAC)]))>1e-5
+                ok=false;return;
+            end
+        end
+        if ~unified_gen_capability_enabled(),return;end
+        for g=1:size(current.gen,1)
+            if current.gen(g,GEN_STATUS)<=0 || isload(current.gen(g,:)) || is_slack_gen(current,g)
+                continue;
+            end
+            S=gen_capability_metadata_or_option_value(current,opt, ...
+                {'Snom','Smax','smax'},{'capability_gen_smax'},g,g, ...
+                gen_capability_default_smax(current,g),'runcpf_vsc_mtdc');
+            typ=gen_capability_metadata_or_option_value(current,opt, ...
+                {'type','gen_type'},{'capability_gen_type'},g,g,2,'runcpf_vsc_mtdc');
+            if min(gen_capability_headroom(r.gen(g,PG),r.gen(g,QG),S,typ)) < -1e-5
+                ok=false;return;
+            end
         end
     end
 
@@ -2048,6 +2274,7 @@ end
         for ctrl_it = 1:max_it
             transition_oldctx = ctx;
             transition_direction = transition_incoming_direction(ctx, Sdelta, x, lam, event_k);
+            incoming_policy_state=cpf_policy_state;
             [changed, mpcb_next, mpct_next, report] = ...
                 unified_gen_capability_update(r, lam);
             if ~changed
@@ -2064,10 +2291,32 @@ end
             nvisited = nvisited + 1;
             visited{nvisited} = sig;
 
-            [localized, loc_info] = ...
-                locate_unified_gen_capability_event(r, report);
-            if localized
-                report = apply_gen_capability_location_info(report, loc_info);
+            localized=false;
+            if ctrl_it==1 && event_k>0
+                original_report=report;
+                proposed_policy_state=cpf_policy_state;
+                cpf_policy_state=incoming_policy_state;
+                [localized,loc_info]=locate_unified_gen_capability_event(ctx,Sdelta,x,r,lam,report);
+                if loc_info.required && ~localized
+                    V=original_ac_voltage_for_result(r,bus_ids);success=0;return;
+                end
+                if localized
+                    lam=loc_info.lambda_event;r=loc_info.result;
+                    [r,~]=stamp_original_ac_solution(r,bus_ids,nbranch,ngen);
+                    [~,mpcb_next,mpct_next,report]=unified_gen_capability_update(r,lam,loc_info);
+                    jj=find(original_report.changed_idx==loc_info.gen_idx,1);
+                    row=find(report.changed_idx==loc_info.gen_idx,1);
+                    for field={'P','Q','lambda_candidate','margin_candidate','margin_previous','lambda_previous'}
+                        name=field{1};report.(name)(row)=original_report.(name)(jj);
+                    end
+                    report=apply_gen_capability_location_info(report,loc_info);
+                else
+                    cpf_policy_state=proposed_policy_state;
+                end
+            end
+            if ~localized
+                report.lambda_event(:)=NaN;
+                report.event_location_method(:)={'active_set_update_not_localized'};
             end
 
             mpcb = mpcb_next;
@@ -2075,21 +2324,22 @@ end
             refresh_incremental_policy_anchor(lam);
             [ctx, ctxt, Sdelta] = build_unified_context_pair();
             x0 = unified_x_from_controlled_ac(ctx, r.ac, r);
-            [x, lam, eval, normF, it, ok] = ...
-                transition_corrector(transition_oldctx, ctx, Sdelta, x0, lam, ...
-                    transition_direction, event_k);
-            iterations = iterations + it;
-            if ~ok && localized && event_k == 0
-                [ctx, ctxt, Sdelta, x, eval, normF, it_retry, ok, ...
-                    lam, report] = retry_gen_capability_localized_solve( ...
-                    x0, r, lam, report);
-                iterations = iterations + it_retry;
+            if localized
+                % The two modes meet at this same physical boundary point.
+                [x,eval,normF,it,ok]=solve_unified_pf_at_lambda(ctx,x0,lam,Sdelta);
+                transition_carried=transport_tangent(transition_oldctx,ctx,transition_direction);
+                transition_carried_keys=transition_state_keys(ctx);
+            else
+                [x, lam, eval, normF, it, ok] = ...
+                    transition_corrector(transition_oldctx, ctx, Sdelta, x0, lam, ...
+                        transition_direction, event_k);
             end
+            iterations = iterations + it;
             msg = sprintf(['Generator capability active-set update at ' ...
                 'lambda = %.8g; saturated generators %s; ' ...
-                're-corrected unified point on incoming CPF hyperplane.'], ...
+                're-corrected unified point after boundary handling.'], ...
                 lam, mat2str(report.changed_idx(:)'));
-            record_event = any(~ismember(report.changed_idx(:), ...
+            record_event = localized || any(~ismember(report.changed_idx(:), ...
                 gen_capability_recorded_idx(:)));
             if record_event
                 ev = vsc_mtdc_cpf_append_event(ev, gen_capability_event_record( ...
@@ -2360,7 +2610,8 @@ end
     end
 
     function [changed, bnext, tnext, report] = ...
-            unified_gen_capability_update(r, lam)
+            unified_gen_capability_update(r, lam, contact)
+        if nargin<3, contact=[]; end
         changed = 0;
         current = vsc_cpf_current_mpc(mpcb, mpct, lam);
         bnext = mpcb;
@@ -2405,18 +2656,29 @@ end
                 error('runcpf_vsc_mtdc: generator row %d capability evaluation failed: %s', ...
                     g, me.message);
             end
-            if ~sat
+            forced = ~isempty(contact) && g==contact.gen_idx;
+            if forced
+                [~,limits]=gen_capability_headroom(P0,Q0,Smax,type);
+                labels={'p_min','p_max','q_upper','q_lower'};
+                info.active_limit=labels{contact.boundary};
+                if contact.boundary<=2
+                    Psat=limits(contact.boundary);Qsat=Q0;
+                else
+                    Psat=P0;Qsat=limits(contact.boundary);
+                end
+            end
+            if ~sat && ~forced
                 continue;
             end
 
             old_vals = current.gen(g, [PG QG QMAX QMIN]);
             new_vals = old_vals;
             new_vals(1) = Psat;
-            q_changed = abs(Qsat - Q0) > tol;
+            q_changed = abs(Qsat - Q0) > tol || (forced && contact.boundary>=3);
             if q_changed
                 new_vals(2:4) = Qsat;
             end
-            if all(abs(old_vals - new_vals) <= tol) && ...
+            if ~forced && all(abs(old_vals - new_vals) <= tol) && ...
                     (~q_changed || gen_bus_is_pq(current, g))
                 continue;
             end
@@ -2462,101 +2724,74 @@ end
         end
     end
 
-    function [localized, loc] = locate_unified_gen_capability_event(r, report)
-        localized = 0;
+    function [localized, loc] = locate_unified_gen_capability_event(ctx, sd, xx, r, lam, report)
+        % Locate an actual solved equilibrium on the incoming active set.
+        % Probe every crossed boundary and select the first along this step.
+        localized = false;
         loc = empty_gen_capability_location();
-        if isempty(report.changed_idx)
+        loc.required = false;
+        if ~exist('last','var') || isempty(last) || lam == last_lam
             return;
         end
-
-        margin_tol = gen_capability_location_margin_tol(report.Smax);
-        candidate_tol = 1e-8;
-        row = find(report.margin_previous >= -margin_tol & ...
-            report.margin_candidate < -candidate_tol & ...
-            isfinite(report.lambda_previous) & ...
-            isfinite(report.lambda_candidate) & ...
-            report.lambda_previous ~= report.lambda_candidate, 1);
-        if isempty(row)
+        lowx = unified_x_from_controlled_ac(ctx,last.ac,last);
+        [lowx,loweval,lownorm,lowit,lowok] = ...
+            solve_unified_pf_at_lambda(ctx,lowx,last_lam,sd);
+        if ~lowok
+            loc.required=true;loc.error='Incoming generator boundary bracket solve failed';
             return;
         end
-
-        g = report.changed_idx(row);
-        if size(r.gen, 1) < g
-            return;
-        end
-
-        low_lam = report.lambda_previous(row);
-        high_lam = report.lambda_candidate(row);
-        high_margin = report.margin_candidate(row);
-        if ~(exist('last', 'var') && isstruct(last) && ...
-                isfield(last, 'gen') && size(last.gen, 1) >= g)
-            return;
-        end
-        low_P = last.gen(g, PG);
-        low_Q = last.gen(g, QG);
-        high_P = report.P(row);
-        high_Q = report.Q(row);
-        target_margin = 0.75 * high_margin;
-        lam_tol = max(1e-6, max(step_min, ...
-            1e-7 * max(abs([low_lam high_lam 1]))));
-        max_loc_it = 12;
-        best_err = '';
-        loc_count = 0;
-
-        for kk = 1:max_loc_it
-            if abs(high_lam - low_lam) <= lam_tol
-                break;
-            end
-            loc_count = kk;
-            mid_lam = 0.5 * (low_lam + high_lam);
-            alpha = (mid_lam - low_lam) / (high_lam - low_lam);
-            Pmid = low_P + alpha * (high_P - low_P);
-            Qmid = low_Q + alpha * (high_Q - low_Q);
-            [~, margin_mid, err_mid] = gen_capability_margin_from_result( ...
-                struct('gen', set_gen_probe_row(r.gen, g, Pmid, Qmid)), ...
-                g, report.Smax(row), report.gen_type_code(row));
-            if ~isempty(err_mid)
-                best_err = err_mid;
-                break;
-            end
-            if margin_mid < target_margin
-                high_lam = mid_lam;
-                high_P = Pmid;
-                high_Q = Qmid;
-                high_margin = margin_mid;
-            else
-                low_lam = mid_lam;
-                low_P = Pmid;
-                low_Q = Qmid;
+        lowr = build_unified_cpf_result(ctx,lowx,loweval,last_lam,lowit,lownorm);
+        [lowr,~]=stamp_original_ac_solution(lowr,base_bus_ids,base_branch_count,base_gen_count);
+        best_fraction = Inf;
+        for jj=1:numel(report.changed_idx)
+            g=report.changed_idx(jj); S=report.Smax(jj); typ=report.gen_type_code(jj);
+            ml=gen_capability_headroom(lowr.gen(g,PG),lowr.gen(g,QG),S,typ);
+            mh=gen_capability_headroom(r.gen(g,PG),r.gen(g,QG),S,typ);
+            for boundary=find(ml>=-1e-7 & mh < -1e-8)'
+                loc.required=true;
+                lo=0;hi=1;fl=ml(boundary);fh=mh(boundary);
+                rootok=false; xe=xx; le=lam; re=r; ee=[]; ne=Inf; fm=NaN;
+                for it=1:60
+                    if abs(fl)<=1e-8
+                        fraction=lo;
+                    else
+                        fraction=lo+(hi-lo)*max(.05,min(.95,fl/(fl-fh)));
+                    end
+                    le=last_lam+fraction*(lam-last_lam);
+                    guess=lowx+fraction*(xx-lowx);
+                    [xe,ee,ne,ni,pfok]=solve_unified_pf_at_lambda(ctx,guess,le,sd);
+                    if ~pfok, break; end
+                    re=build_unified_cpf_result(ctx,xe,ee,le,ni,ne);
+                    [re,~]=stamp_original_ac_solution(re,base_bus_ids,base_branch_count,base_gen_count);
+                    mm=gen_capability_headroom(re.gen(g,PG),re.gen(g,QG),S,typ);
+                    fm=mm(boundary);
+                    if abs(fm)<=1e-8
+                        rootok=true;break;
+                    end
+                    if fm<0,hi=fraction;fh=fm;else,lo=fraction;fl=fm;end
+                end
+                if ~rootok
+                    if mpopt.verbose>1
+                        fprintf('Generator boundary localization failed: g=%d boundary=%d PF=%d residual=%.3g margin=%.3g bracket=[%.12g %.12g]\n',g,boundary,pfok,ne,fm,last_lam+lo*(lam-last_lam),last_lam+hi*(lam-last_lam));
+                    end
+                    loc.error='Generator boundary PF localization failed';
+                    localized=false;return;
+                end
+                if fraction<best_fraction
+                    best_fraction=fraction; localized=true;
+                    loc.gen_idx=g;loc.boundary=boundary;loc.lambda_event=le;
+                    loc.margin_event=fm;loc.method='solved_boundary';
+                    loc.margin_previous=ml(boundary);loc.margin_candidate=mh(boundary);
+                    loc.iterations=it;loc.x=xe;loc.eval=ee;loc.normF=ne;loc.result=re;
+                end
             end
         end
-
-        if high_margin < 0 && isfinite(high_lam) && ...
-                abs(high_lam - report.lambda_candidate(row)) < ...
-                abs(report.lambda_candidate(row) - report.lambda_previous(row))
-            localized = 1;
-            loc.gen_idx = g;
-            loc.lambda_event = high_lam;
-            loc.margin_event = high_margin;
-            loc.method = 'bisection_margin';
-            loc.iterations = loc_count;
-            loc.error = best_err;
-        end
-    end
-
-    function gen = set_gen_probe_row(gen, g, P, Q)
-        gen(g, PG) = P;
-        gen(g, QG) = Q;
     end
 
     function loc = empty_gen_capability_location()
         loc = struct('gen_idx', [], 'lambda_event', [], ...
             'margin_event', [], 'method', '', 'iterations', 0, ...
             'error', '');
-    end
-
-    function tol = gen_capability_location_margin_tol(Smax)
-        tol = max(1e-8, 1e-2 * max(abs(Smax(:))));
     end
 
     function report = apply_gen_capability_location_info(report, loc)
@@ -2568,83 +2803,11 @@ end
             row = rows(ii);
             report.lambda_event(row, 1) = loc.lambda_event;
             report.margin_event(row, 1) = loc.margin_event;
+            report.margin_previous(row, 1) = loc.margin_previous;
+            report.margin_candidate(row, 1) = loc.margin_candidate;
             report.event_location_method{row, 1} = loc.method;
             report.bisection_iterations(row, 1) = loc.iterations;
             report.location_error{row, 1} = loc.error;
-        end
-    end
-
-    function [ctx, ctxt, Sdelta, x, eval, normF, iterations, ok, ...
-            lam, report] = retry_gen_capability_localized_solve(x0, r, ...
-            lam, report)
-        iterations = 0;
-        ok = 0;
-        ctx = [];
-        ctxt = [];
-        Sdelta = [];
-        x = x0;
-        eval = [];
-        normF = Inf;
-        if isempty(report.lambda_candidate) || ...
-                ~isfinite(report.lambda_candidate(1)) || ...
-                report.lambda_candidate(1) == lam
-            return;
-        end
-        low_lam = lam;
-        high_lam = report.lambda_candidate(1);
-        max_retry = 6;
-        for kk = 1:max_retry
-            lam_try = 0.5 * (low_lam + high_lam);
-            refresh_incremental_policy_anchor(lam_try);
-            [ctx_try, ctxt_try, Sdelta_try] = build_unified_context_pair();
-            x0_try = unified_x_from_controlled_ac(ctx_try, r.ac, r);
-            [x_try, eval_try, normF_try, it, ok_try] = ...
-                solve_unified_pf_at_lambda(ctx_try, x0_try, lam_try, ...
-                Sdelta_try);
-            iterations = iterations + it;
-            if ok_try
-                ctx = ctx_try;
-                ctxt = ctxt_try;
-                Sdelta = Sdelta_try;
-                x = x_try;
-                eval = eval_try;
-                normF = normF_try;
-                lam = lam_try;
-                ok = 1;
-                report.lambda_event(:) = lam_try;
-                report.margin_event(:) = NaN;
-                report.event_location_method(:) = ...
-                    repmat({'bisection_margin_retry'}, ...
-                    size(report.event_location_method));
-                report.location_error(:) = repmat({''}, ...
-                    size(report.location_error));
-                return;
-            end
-            low_lam = lam_try;
-        end
-        refresh_incremental_policy_anchor(high_lam);
-        [ctx_try, ctxt_try, Sdelta_try] = build_unified_context_pair();
-        x0_try = unified_x_from_controlled_ac(ctx_try, r.ac, r);
-        [x_try, eval_try, normF_try, it, ok_try] = ...
-            solve_unified_pf_at_lambda(ctx_try, x0_try, high_lam, ...
-            Sdelta_try);
-        iterations = iterations + it;
-        if ok_try
-            ctx = ctx_try;
-            ctxt = ctxt_try;
-            Sdelta = Sdelta_try;
-            x = x_try;
-            eval = eval_try;
-            normF = normF_try;
-            lam = high_lam;
-            ok = 1;
-            report.lambda_event(:) = high_lam;
-            report.margin_event(:) = report.margin_candidate(:);
-            report.event_location_method(:) = ...
-                repmat({'bisection_margin_fallback'}, ...
-                size(report.event_location_method));
-            report.location_error(:) = repmat({''}, ...
-                size(report.location_error));
         end
     end
 
@@ -4630,6 +4793,8 @@ end
             'psse_control_limit', 'saturate', 'psse_control_max_it', 20, ...
             'capability_enforce', 0, 'capability_max_it', 10, ...
             'coupled_current_limits', 1, ...
+            'current_limit_release', 1, ...
+            'current_release_margin', 1e-3, ...
             'nose_replay_max', 3, ...
             'capability_limit', 'stop', 'capability_vsc_limit', [], ...
             'capability_gen_limit', [], ...

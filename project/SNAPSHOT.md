@@ -1,4 +1,4 @@
-# Project workspace snapshot — 2026-09-17
+# Project workspace snapshot — 2026-09-18
 
 This folder versions the thesis-level work that was originally outside the MATPOWER Git repository: `tests/`, `studies/`, `docs/`, `cases/`, `outputs/`, startup scripts, project instructions and the MATLAB MCP guide. `SNAPSHOT_MANIFEST.json` records the original relative paths, byte sizes and SHA-256 hashes. The copied files preserve their original contents; source and case changes inside MATPOWER are committed in the normal repository locations.
 
@@ -12,6 +12,8 @@ The original companion `matpower-extras` checkout uses upstream commit `bc21752`
 
 ## Current validation
 
-See [the checkpoint replay report](outputs/cpf_checkpoint_replay_20260917/REPORT.md) for the latest NOSE recovery results: 35/35 targeted checks, 330/330 VSC regression checks, and independent physical audits for six runs. Earlier reports retain their original dates and failure evidence. Their presence is not a claim that every historical run passed.
+The current study endpoint is NOSE, per [the scope decision](docs/CPF_STUDY_SCOPE_20260918.md). The [fresh closure check](outputs/cpf_nose_closure_20260918/verification.json) reaches the first loading maximum at 463.96055 MW and exactly matches the verified trace. The [capability/release verification](outputs/cpf_branch_preserving_release_20260918/REPORT.md) records 146/146 study checks, 23/23 local release checks and 330/330 existing VSC checks. FULL lower-branch recovery is deferred; its unresolved radial saturation transition remains documented rather than certified as collapse.
+
+The earlier [checkpoint replay report](outputs/cpf_checkpoint_replay_20260917/REPORT.md) and other historical results retain their original dates and failure evidence. Their presence is not a claim that every historical run passed. The general Beerten runner now defaults to NOSE; explicitly selected FULL presets and historical option files retain their meanings.
 
 All included files, including MATLAB results and binary archives, are stored directly in Git. GitHub rejected new LFS objects for this public fork, so this snapshot does not depend on Git LFS. The full snapshot is approximately 1.3 GB before Git compression, with each individual file below 100 MiB. Documentation symlinks elsewhere in the repository retain their original Git entries; Windows materialization changes are deliberately left out of this scientific snapshot.

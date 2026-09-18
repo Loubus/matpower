@@ -662,6 +662,16 @@ if isfield(mpc,'vsc_current_limit')
     end
 end
 % Station PCC power is the negative transformer sending-end flow.
+if isfield(mpc,'vsc_current_restore_mode')
+    modes=mpc.vsc_current_restore_mode;
+    if ~isnumeric(modes) || ~isreal(modes) || ~isvector(modes) || ...
+            numel(modes)~=size(mpc.vsc,1) || ...
+            any(~ismember(modes,[0 idx.c.VSC_AC_V idx.c.VSC_AC_PV]))
+        error('runpf_vsc_mtdc_unified:current_restore_mode', ...
+            'vsc_current_restore_mode must contain one value (0, V or PV) per VSC.');
+    end
+    mpc.vsc_current_restore_mode=modes(:);
+end
 model.Yport = sparse(size(mpc.vsc, 1), size(ac.bus, 1));
 model.Cport = model.Yport;
 for k = model.active'

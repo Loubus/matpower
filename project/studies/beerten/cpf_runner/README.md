@@ -3,6 +3,16 @@
 This folder contains the configurable runner for repeatable Beerten 5-bus
 VSC-HVDC CPF studies.
 
+The default endpoint is `NOSE` (first loading maximum), per the study decision
+of 2026-09-18. `beerten_cpf_preset()` also selects the NOSE preset. Explicit
+`paper_controls_cap_full` requests retain FULL for diagnostics; existing saved
+options and results are unchanged. A NOSE endpoint can be a limit-induced turn,
+not necessarily a smooth saddle-node. Report operating restrictions separately.
+
+The runner's named cases and control policies differ from
+`beerten_constant_pq_nonslack_dispatch`; their numerical margins are not
+interchangeable. See [the study scope](../../../docs/CPF_STUDY_SCOPE_20260918.md).
+
 Preferred entry point:
 
 ```matlab

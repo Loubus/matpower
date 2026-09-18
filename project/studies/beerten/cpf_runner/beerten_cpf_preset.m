@@ -2,12 +2,13 @@ function opts = beerten_cpf_preset(name)
 %BEERTEN_CPF_PRESET Named configurations for repeatable Beerten CPF runs.
 
 if nargin < 1 || isempty(name)
-    name = 'paper_controls_cap_full';
+    name = 'paper_controls_cap_nose';
 end
 
 opts = beerten_cpf_default_opts();
 switch lower(char(name))
     case 'paper_controls_cap_full'
+        opts.cpf.stop_at = 'FULL';
     case 'paper_controls_cap_nose'
         opts.cpf.stop_at = 'NOSE';
         opts.cpf.step = 0.05;

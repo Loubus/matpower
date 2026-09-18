@@ -22,9 +22,11 @@ target.gen(slack,MBASE) = 1000;
 % User-requested 150 MW maximum (2026-09-16). The generic thermal curve has
 % Pmax=0.8*Snom, so its capability base is 187.5 MVA, not 150 MVA.
 % This scales the entire thermal P/Q curve (Q=112.5 MVAr at Pmax).
-% Explicit capability metadata leaves the electrical MBASE/box data intact.
+% User clarification (2026-09-17): machine MBASE must match this scale too.
+% Derive capability metadata from MBASE; original PMAX/Q boxes stay intact.
+base.gen(participant,MBASE) = 150/0.8;
+target.gen(participant,MBASE) = base.gen(participant,MBASE);
 base.gen_capability.Snom = base.gen(:,MBASE);
-base.gen_capability.Snom(participant) = 150/0.8;
 target.gen_capability = base.gen_capability;
 delta_demand = sum(target.bus(:,PD)) - sum(base.bus(:,PD));
 target.gen(participant,PG) = base.gen(participant,PG) + delta_demand;
@@ -36,14 +38,15 @@ study.slack_mbase_MVA = 1000;
 study.slack_bus = base.gen(slack,GEN_BUS);
 study.dispatch_bus = base.gen(participant,GEN_BUS);
 study.dispatch_pmax_MW = 150;
-study.dispatch_capability_base_MVA = 150/0.8;
+study.dispatch_mbase_MVA = base.gen(participant,MBASE);
+study.dispatch_capability_base_MVA = base.gen_capability.Snom(participant);
 study.dispatch_q_at_pmax_MVAr = 0.6*study.dispatch_capability_base_MVA;
 study.gen_dispatch = ['Requested P2=40+240*lambda MW until capability saturation. ' ...
     'The implemented active set clamps P2 at 150 MW and the AC slack ' ...
     'then supplies the remaining demand and losses.'];
-study.limit_scope = ['Generic thermal capability explicitly scaled to 187.5 MVA ' ...
+study.limit_scope = ['Generic thermal capability derived from G2 MBASE=187.5 MVA ' ...
     '(150 MW maximum, 112.5 MVAr upper corner). Original matrix PMAX/Q boxes ' ...
-    'and electrical MBASE retained; capability metadata takes precedence. ' ...
+    'retained; capability Snom matches MBASE. ' ...
     'Generic slack capability exemption is unchanged.'];
 study.stability_margin_validated = false;
 end

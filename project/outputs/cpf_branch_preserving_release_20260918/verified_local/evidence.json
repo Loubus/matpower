@@ -1,0 +1,231 @@
+{
+  "checks": [
+    {
+      "name": "inward_at_base_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "inward_releases_once",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "same_boundary_equilibrium",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "voltage_continuity",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "current_contact",
+      "passed": true,
+      "error": 1.0000000000000087
+    },
+    {
+      "name": "both_forward_probes_inward",
+      "passed": true,
+      "error": 0.99999037270830271
+    },
+    {
+      "name": "tangent_orientation_preserved",
+      "passed": true,
+      "error": 0.99895892274620079
+    },
+    {
+      "name": "localized_event",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "ends_in_voltage_control",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "inward_bracketed_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "inward_releases_once",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "same_boundary_equilibrium",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "voltage_continuity",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "current_contact",
+      "passed": true,
+      "error": 1.0000000000000029
+    },
+    {
+      "name": "both_forward_probes_inward",
+      "passed": true,
+      "error": 0.9999903760841039
+    },
+    {
+      "name": "tangent_orientation_preserved",
+      "passed": true,
+      "error": 0.99895838976535056
+    },
+    {
+      "name": "localized_event",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "release_localized_inside_step",
+      "passed": true,
+      "error": 0.017095579723134153
+    },
+    {
+      "name": "voltage_target_contact",
+      "passed": true,
+      "error": 4.4995047687734768E-9
+    },
+    {
+      "name": "ends_in_voltage_control",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "outward_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "outward_does_not_release",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "outward_remains_current_limited",
+      "passed": true,
+      "error": 0
+    }
+  ],
+  "passed": 23,
+  "total": 23,
+  "runs": [
+    {
+      "direction": "inward_at_base",
+      "termination": {
+        "cause": "requested_lambda",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": 0.05,
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 0.050000016980118488,
+        "last_accepted_index": 5,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "events": {
+        "k": 1,
+        "name": "VSC_CURRENT_RELEASE",
+        "idx": 3,
+        "msg": "VSC 3 voltage control restored at a localized branch intersection, lambda 0.",
+        "kind": "localized_branch_intersection",
+        "lambda_event": 0,
+        "from_mode": 3,
+        "to_mode": 4,
+        "voltage_before": 1.01932693178555,
+        "voltage_after": 1.01932693178555,
+        "current_ratio_final": 1.0000000000000087,
+        "contact_voltage_error": 6.6613381477509392E-16,
+        "state_gap": 0,
+        "state_tolerance": 1E-7,
+        "orientation_dot": 0.99895892274620079,
+        "tangent_before": 0.99648088171768223,
+        "tangent_after": 0.99632060609737061,
+        "probe_step": 0.0001,
+        "probe_current_ratio": 0.99999037270830271,
+        "half_probe_current_ratio": 0.99999518633950346,
+        "contact_iterations": 1,
+        "arclength_step": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    {
+      "direction": "inward_bracketed",
+      "termination": {
+        "cause": "requested_lambda",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": 0.05,
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 0.050000027883800764,
+        "last_accepted_index": 4,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "events": {
+        "k": 1,
+        "name": "VSC_CURRENT_RELEASE",
+        "idx": 3,
+        "msg": "VSC 3 voltage control restored at a localized branch intersection, lambda 0.0170955797231.",
+        "kind": "localized_branch_intersection",
+        "lambda_event": 0.017095579723134153,
+        "from_mode": 3,
+        "to_mode": 4,
+        "voltage_before": 1.0194269362850541,
+        "voltage_after": 1.0194269362850541,
+        "current_ratio_final": 1.0000000000000029,
+        "contact_voltage_error": 4.4995047687734768E-9,
+        "state_gap": 0,
+        "state_tolerance": 1E-7,
+        "orientation_dot": 0.99895838976535056,
+        "tangent_before": 0.99647793736256607,
+        "tangent_after": 0.99632581353310334,
+        "probe_step": 0.0001,
+        "probe_current_ratio": 0.9999903760841039,
+        "half_probe_current_ratio": 0.99999518802741982,
+        "contact_iterations": 1,
+        "arclength_step": 0.017155978691977575
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    {
+      "direction": "outward",
+      "termination": {
+        "cause": "requested_lambda",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": 0.05,
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 0.050000008737749659,
+        "last_accepted_index": 4,
+        "nose_detected": false,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": false
+      },
+      "events": [],
+      "warning": "",
+      "warning_id": ""
+    }
+  ],
+  "fixture_voltage_target": 1.0193269317855493,
+  "fixture_note": "Synthetic reversal of demand at a solved contact, with physical controls fixed. No change to production study."
+}

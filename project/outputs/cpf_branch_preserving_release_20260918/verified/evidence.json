@@ -1,0 +1,962 @@
+{
+  "checks": [
+    {
+      "name": "headroom_projection_type1_q-158.3",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "headroom_projection_type1_q-157.3",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type1_q0",
+      "passed": true,
+      "error": 50
+    },
+    {
+      "name": "headroom_projection_type1_q137.1",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type1_q138.1",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "headroom_projection_type2_q-76.96",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "headroom_projection_type2_q-75.96",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type2_q0",
+      "passed": true,
+      "error": 50
+    },
+    {
+      "name": "headroom_projection_type2_q146.1",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type2_q147.1",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "headroom_projection_type3_q-47.88",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "headroom_projection_type3_q-46.88",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type3_q0",
+      "passed": true,
+      "error": 46.875
+    },
+    {
+      "name": "headroom_projection_type3_q46.88",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "headroom_projection_type3_q47.88",
+      "passed": true,
+      "error": -1
+    },
+    {
+      "name": "nose_100_release0_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_100_release0_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4170610714718919
+    },
+    {
+      "name": "nose_100_release0_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689438828374
+    },
+    {
+      "name": "nose_100_release0_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release0_physical_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "nose_100_release0_all_capability",
+      "passed": true,
+      "error": 2.4399654482388353E-10
+    },
+    {
+      "name": "nose_100_release0_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "nose_100_release0_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_100_release1_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4170610714718919
+    },
+    {
+      "name": "nose_100_release1_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689438828374
+    },
+    {
+      "name": "nose_100_release1_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_physical_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "nose_100_release1_all_capability",
+      "passed": true,
+      "error": 2.4399654482388353E-10
+    },
+    {
+      "name": "nose_100_release1_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "nose_100_release1_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_local_gate_preserves_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_local_gate_preserves_gen",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_100_release1_local_gate_preserves_lambda",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_100_release0_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4170610714718919
+    },
+    {
+      "name": "full_100_release0_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689438828374
+    },
+    {
+      "name": "full_100_release0_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_FULL_honest_capability_stop",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release0_physical_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "full_100_release0_all_capability",
+      "passed": true,
+      "error": 2.4399654482388353E-10
+    },
+    {
+      "name": "full_100_release0_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "full_100_release0_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_100_release1_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4170610714718919
+    },
+    {
+      "name": "full_100_release1_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689438828374
+    },
+    {
+      "name": "full_100_release1_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_FULL_honest_capability_stop",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_physical_balance",
+      "passed": true,
+      "error": 8.1386739653929714E-7
+    },
+    {
+      "name": "full_100_release1_all_capability",
+      "passed": true,
+      "error": 2.4399654482388353E-10
+    },
+    {
+      "name": "full_100_release1_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "full_100_release1_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_local_gate_preserves_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_local_gate_preserves_gen",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_100_release1_local_gate_preserves_lambda",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_050_release0_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4135595132308367
+    },
+    {
+      "name": "nose_050_release0_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689453699459
+    },
+    {
+      "name": "nose_050_release0_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release0_physical_balance",
+      "passed": true,
+      "error": 9.4577448545185374E-7
+    },
+    {
+      "name": "nose_050_release0_all_capability",
+      "passed": true,
+      "error": 8.8170276022574711E-11
+    },
+    {
+      "name": "nose_050_release0_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "nose_050_release0_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "nose_050_release1_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4135595132308367
+    },
+    {
+      "name": "nose_050_release1_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689453699459
+    },
+    {
+      "name": "nose_050_release1_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_requested_endpoint",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_physical_balance",
+      "passed": true,
+      "error": 9.4577448545185374E-7
+    },
+    {
+      "name": "nose_050_release1_all_capability",
+      "passed": true,
+      "error": 8.8170276022574711E-11
+    },
+    {
+      "name": "nose_050_release1_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "nose_050_release1_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_local_gate_preserves_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_local_gate_preserves_gen",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "nose_050_release1_local_gate_preserves_lambda",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_050_release0_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4135595132308367
+    },
+    {
+      "name": "full_050_release0_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689453699459
+    },
+    {
+      "name": "full_050_release0_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_FULL_honest_capability_stop",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release0_physical_balance",
+      "passed": true,
+      "error": 9.4577448545185374E-7
+    },
+    {
+      "name": "full_050_release0_all_capability",
+      "passed": true,
+      "error": 2.6095882660325396E-10
+    },
+    {
+      "name": "full_050_release0_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "full_050_release0_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_P_contact_reported",
+      "passed": true,
+      "error": 1
+    },
+    {
+      "name": "full_050_release1_P_exact_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_P_contact_on_accepted_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_P_positive_previous_headroom",
+      "passed": true,
+      "error": 2.4135595132308367
+    },
+    {
+      "name": "full_050_release1_P_limit_retains_PV",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_ascending_P_schedule",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_first_turn_benchmark",
+      "passed": true,
+      "error": 1.2456689453699459
+    },
+    {
+      "name": "full_050_release1_no_unlocalized_gen_contact",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_no_branch_switch",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_FULL_honest_capability_stop",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_physical_balance",
+      "passed": true,
+      "error": 9.4577448545185374E-7
+    },
+    {
+      "name": "full_050_release1_all_capability",
+      "passed": true,
+      "error": 2.6095882660325396E-10
+    },
+    {
+      "name": "full_050_release1_load_interpolation",
+      "passed": true,
+      "error": 2.8421709430404007E-14
+    },
+    {
+      "name": "full_050_release1_physical_controls",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_local_gate_preserves_trace",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_local_gate_preserves_gen",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "full_050_release1_local_gate_preserves_lambda",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "restore_mode_roundtrip",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "incremental_activation_carries_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "incremental_release_restores_original_mode",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "incremental_prior_context_does_not_inherit_current",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "invalid_restore_metadata_rejected",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "invalid_restore_metadata_rejected",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "invalid_restore_metadata_rejected",
+      "passed": true,
+      "error": 0
+    }
+  ],
+  "passed": 146,
+  "total": 146,
+  "runs": {
+    "nose_100_release0": {
+      "success": true,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689438828374,
+        "last_accepted_index": 36,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689438828374,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 8.1386739653929714E-7,
+        "capability_violation": 2.4399654482388353E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "nose_100_release1": {
+      "success": true,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689438828374,
+        "last_accepted_index": 36,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689438828374,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 8.1386739653929714E-7,
+        "capability_violation": 2.4399654482388353E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "full_100_release0": {
+      "success": 1,
+      "termination": {
+        "cause": "vsc_capability_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 0.60307381267698168,
+        "last_accepted_index": 55,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689438828374,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 8.1386739653929714E-7,
+        "capability_violation": 2.4399654482388353E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "full_100_release1": {
+      "success": 1,
+      "termination": {
+        "cause": "vsc_capability_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 0.60307381267698168,
+        "last_accepted_index": 55,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689438828374,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 8.1386739653929714E-7,
+        "capability_violation": 2.4399654482388353E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "nose_050_release0": {
+      "success": true,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689453699459,
+        "last_accepted_index": 55,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689453699459,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 9.4577448545185374E-7,
+        "capability_violation": 8.8170276022574711E-11,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "nose_050_release1": {
+      "success": true,
+      "termination": {
+        "cause": "limit_induced_turn",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "NOSE",
+        "requested_endpoint_reached": true,
+        "last_accepted_lambda": 1.2456689453699459,
+        "last_accepted_index": 55,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689453699459,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 9.4577448545185374E-7,
+        "capability_violation": 8.8170276022574711E-11,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "full_050_release0": {
+      "success": 1,
+      "termination": {
+        "cause": "vsc_capability_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 0.60304863061728153,
+        "last_accepted_index": 90,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689453699459,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 9.4577448545185374E-7,
+        "capability_violation": 2.6095882660325396E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    },
+    "full_050_release1": {
+      "success": 1,
+      "termination": {
+        "cause": "vsc_capability_limit",
+        "success": true,
+        "success_scope": "configured_stop_policy",
+        "requested_stop": "FULL",
+        "requested_endpoint_reached": false,
+        "last_accepted_lambda": 0.60304863061728153,
+        "last_accepted_index": 90,
+        "nose_detected": true,
+        "max_lam_scope": "accepted_trace_maximum",
+        "stability_margin_validated": false,
+        "smooth_nose_detected": false,
+        "limit_induced_turn_detected": true
+      },
+      "peak_lambda": 1.2456689453699459,
+      "release_count": 0,
+      "audit": {
+        "balance_MVA": 9.4577448545185374E-7,
+        "capability_violation": 2.6095882660325396E-10,
+        "load_error": 2.8421709430404007E-14,
+        "controls_accepted": true,
+        "bad_control_points": 0
+      },
+      "warning": "",
+      "warning_id": ""
+    }
+  }
+}

@@ -584,6 +584,10 @@ if isfield(mpc, 'vsc_current_limit')
     fprintf(fd, '\n%%%% Active converter current constraints (system p.u.; zero inactive)\n');
     print_case_value(fd, sprintf('%svsc_current_limit', prefix), mpc.vsc_current_limit);
 end
+if isfield(mpc, 'vsc_current_restore_mode')
+    fprintf(fd, '\n%%%% Original AC voltage mode for current-limit release (zero unknown)\n');
+    print_case_value(fd, sprintf('%svsc_current_restore_mode', prefix), mpc.vsc_current_restore_mode);
+end
 
 if isfield(mpc, 'vsc_capability') && ...
         is_vsc_capability_case_data(mpc.vsc_capability)

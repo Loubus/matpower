@@ -1,0 +1,25 @@
+{
+  "source": "verified/full_050_release1.mat",
+  "accepted_points": 90,
+  "peak_lambda": 1.2456689453699459,
+  "peak_demand_MW": 463.960546888787,
+  "last_lambda": 0.60304863061728153,
+  "last_demand_MW": 309.73167134814753,
+  "last_V5_pu": 0.23570357701165587,
+  "release_count": 0,
+  "policy_on_off_physical_traces_identical": true,
+  "termination": {
+    "cause": "vsc_capability_limit",
+    "success": true,
+    "success_scope": "configured_stop_policy",
+    "requested_stop": "FULL",
+    "requested_endpoint_reached": false,
+    "last_accepted_lambda": 0.60304863061728153,
+    "last_accepted_index": 90,
+    "nose_detected": true,
+    "max_lam_scope": "accepted_trace_maximum",
+    "stability_margin_validated": false,
+    "smooth_nose_detected": false,
+    "limit_induced_turn_detected": true
+  }
+}

@@ -1,0 +1,1068 @@
+--- before/matpower/lib/runcpf_vsc_mtdc.m
++++ after/matpower/lib/runcpf_vsc_mtdc.m
+@@ -876,9 +876,28 @@
+                 end
+                 events = vsc_mtdc_cpf_append_event(events, hvdc_der_events);
+ 
+-                [ctx,ctxt,Sdelta,xnew,~,~,r,V,release_events,released] = ...
++                [ctx,ctxt,Sdelta,xnew,lamnew,r,V,release_events,released,release_diagnostic] = ...
+                     try_unified_current_release(ctx,ctxt,Sdelta,xnew,evalnew, ...
+-                    normFnew,r,lamnew,cont_steps+1);
++                    normFnew,r,lamnew,cont_steps+1,x,lam,z,active_set_changed);
++                if ~isempty(release_diagnostic)
++                    [ctx,ctxt,Sdelta]=restore_active_set_stage_snapshot(turn_stage);
++                    restore_control_state(turn_misc);events=turn_events;
++                    if trial_step/2>=step_min
++                        curr_step=trial_step/2;continue;
++                    end
++                    done_msg='Current-limit release could not be localized continuously; last accepted point retained.';
++                    failure=struct('stage','current_release','lambda',lam, ...
++                        'diagnostic',struct('cause','current_release_unresolved','detail',release_diagnostic));
++                    success=0;
++                    events=vsc_mtdc_cpf_append_event(events,vsc_mtdc_cpf_event( ...
++                        'VSC_CURRENT_RELEASE_UNRESOLVED',cont_steps,1,done_msg));
++                    break;
++                end
++                if released
++                    accepted_step=release_events(end).arclength_step;
++                    target_lambda_step=target_lambda_step && ...
++                        abs(lamnew-full_trace_target_lam)<=mpopt.cpf.target_lam_tol;
++                end
+                 events=vsc_mtdc_cpf_append_event(events,release_events);
+                 active_set_changed=active_set_changed || released;
+ 
+@@ -907,7 +926,7 @@
+                 limit_turn = false;
+                 turn_seed = transport_tangent(turn_stage.ctx, ctx, z);
+                 turn_dot = dot(turn_seed, znew);
+-                turn_alarm = ~released && isempty(target_lam) && z(end) > 0 && ...
++                turn_alarm = isempty(target_lam) && z(end) > 0 && ...
+                     ((active_set_changed && znew(end) <= 0) || turn_dot < 0);
+                 if turn_alarm
+                     % Anchor before an accepted capability update, not at
+@@ -1147,9 +1166,10 @@
+         results.cpf.ac_solver = 'unified';
+         results.cpf.formulation = 'monolithic';
+         results.cpf.jacobian = 'analytic';
+-        results.cpf.coupled_current_limits = logical(opt.coupled_current_limits);
+-        results.cpf.current_limit_release = logical(opt.current_limit_release);
+-        results.cpf.current_release_margin = opt.current_release_margin;
++        results.cpf.coupled_current_limits = logical(opt.coupled_current_limits);
++        results.cpf.current_limit_release = logical(opt.current_limit_release);
++        results.cpf.current_release_policy = 'localized_branch_intersection';
++        results.cpf.current_release_margin_legacy_ignored = opt.current_release_margin;
+         results.cpf.turn_detection = struct('history',{turn_history}, ...
+             'arclength_resolution',turn_resolution,'state_tolerance',nose_tol);
+         results.cpf.checkpoint_replay = struct('max_attempts',opt.nose_replay_max, ...
+@@ -1791,79 +1811,158 @@
+         end
+     end
+ 
+-    function [ctx,ctxt,sd,x,e,nf,r,V,ev,changed] = ...
+-            try_unified_current_release(ctx,ctxt,sd,x,e,nf,r,lam,event_k)
+-        % Counterfactual fixed-lambda solve. Rejected proposals restore all
+-        % active sets, policy anchors, caches and physical-control state.
+-        ev=struct('k',{},'name',{},'idx',{},'msg',{});changed=false;
++    function [ctx,ctxt,sd,x,lam,r,V,ev,changed,diagnostic] = ...
++            try_unified_current_release(ctx,ctxt,sd,x,~,~,r,lam,event_k, ...
++            xprev,lprev,zprev,other_changed)
++        % Release only at the local intersection I=Imax and Vpcc=Vset.
++        % A feasible, distant voltage-controlled PF solution is insufficient.
++        ev=struct('k',{},'name',{},'idx',{},'msg',{});changed=false;diagnostic='';
+         V=original_ac_voltage_for_result(r,base_bus_ids);
+         if ~opt.current_limit_release || ~unified_vsc_capability_enabled() || ...
+                 ~isfield(mpcb,'vsc_current_limit') || ...
+-                ~isfield(mpcb,'vsc_current_restore_mode')
+-            return;
+-        end
+-        eligible=find(mpcb.vsc_current_limit(:)>0 & ...
++                ~isfield(mpcb,'vsc_current_restore_mode') || ...
++                ~isfield(last,'vsc_current_limit')
++            return;
++        end
++        eligible=find(mpcb.vsc_current_limit(:)>0 & last.vsc_current_limit(:)>0 & ...
+             ismember(mpcb.vsc_current_restore_mode(:),[c.VSC_AC_V c.VSC_AC_PV]));
++        vtol=max(1e-9,ctx.opt.tol);state_tol=max(1e-7,10*ctx.opt.tol);
++        contacts={};
+         for k=eligible'
+-            stage=active_set_stage_snapshot(ctx,ctxt,sd);
+-            misc=control_state_snapshot();
+-            oldctx=ctx;oldx=x;olde=e;oldnf=nf;oldr=r;oldV=V;
+-            oldcarry=transition_carried;oldkeys=transition_carried_keys;
+-            incoming=transition_incoming_direction(ctx,sd,x,lam,event_k);
+-            imax=mpcb.vsc_current_limit(k);
+-            mode=mpcb.vsc_current_restore_mode(k);
+-            mpcb.vsc_current_limit(k)=0;mpct.vsc_current_limit(k)=0;
+-            mpcb.vsc(k,c.AC_MODE)=mode;mpct.vsc(k,c.AC_MODE)=mode;
+-            refresh_incremental_policy_anchor(lam);
+-            [ctx,ctxt,sd]=build_unified_context_pair();
+-            x0=unified_x_from_controlled_ac(ctx,r.ac,r);
+-            [x,e,nf,it,ok]=solve_unified_pf_at_lambda(ctx,x0,lam,sd);
+-            trial_events=struct('k',{},'name',{},'idx',{},'msg',{});
++            g0=last.vsc(k,c.VAC_PCC)-last.vsc(k,c.VAC_SET);
++            g1=r.vsc(k,c.VAC_PCC)-r.vsc(k,c.VAC_SET);
++            if g0*g1>0 && min(abs([g0 g1]))>vtol
++                profile_count('current_release_no_local_contact');continue;
++            end
++            if other_changed || ~isequal(size(xprev),size(x))
++                diagnostic='Voltage-target contact coincides with another active-set change';return;
++            end
++            [contact,ok]=locate_current_release_contact(ctx,sd,xprev,lprev,zprev,x,lam,k,g0,g1,vtol);
++            if ~ok
++                diagnostic='Voltage-target contact localization failed on current-limited branch';return;
++            end
++            contacts{end+1}=contact; %#ok<AGROW>
++        end
++        if isempty(contacts),return;end
++        [~,order]=sort(cellfun(@(v)v.h,contacts));
++        for candidate=order
++        best=contacts{candidate};
++        k=best.k;stage=active_set_stage_snapshot(ctx,ctxt,sd);
++        misc=control_state_snapshot();oldcarry=transition_carried;oldkeys=transition_carried_keys;
++        oldctx=ctx;oldx=x;oldlam=lam;oldr=r;oldV=V;
++        incoming=unified_cpf_tangent(ctx,best.x,best.lambda,sd,zprev,best.x,best.lambda,3,1);
++        if dot(incoming,zprev)<0,incoming=-incoming;end
++        imax=mpcb.vsc_current_limit(k);mode=mpcb.vsc_current_restore_mode(k);
++        mpcb.vsc_current_limit(k)=0;mpct.vsc_current_limit(k)=0;
++        mpcb.vsc(k,c.AC_MODE)=mode;mpct.vsc(k,c.AC_MODE)=mode;
++        refresh_incremental_policy_anchor(best.lambda);
++        [ctx,ctxt,sd]=build_unified_context_pair();
++        anchor=unified_x_from_controlled_ac(ctx,best.result.ac,best.result);
++        seed=transport_tangent(oldctx,ctx,incoming);
++        % Zero-length augmented correction: both modes must share this point.
++        [xr,lr,er,nr,it,ok]=unified_cpf_corrector(ctx,sd,anchor,best.lambda, ...
++            anchor,best.lambda,seed,0,3);
++        gap=norm(([xr;lr]-[anchor;best.lambda])./max(1,abs([anchor;best.lambda])),Inf);
++        ok=ok && gap<=state_tol;
++        reason='New mode does not meet the incoming branch continuously';
++        trial_events=struct('k',{},'name',{},'idx',{},'msg',{});
++        if ok
++            rr=build_unified_cpf_result(ctx,xr,er,lr,it,nr);
++            [rr,~]=stamp_original_ac_solution(rr,base_bus_ids,base_branch_count,base_gen_count);
++            hardware_before=psse_active_set_signature(mpcb);
++            [ctx,ctxt,sd,xr,er,nr,~,rr,~,trial_events,settled]= ...
++                settle_unified_psse_controls(ctx,ctxt,sd,xr,er,lr,it,nr,rr, ...
++                base_bus_ids,base_branch_count,base_gen_count,event_k);
++            gap=norm(([xr;lr]-[anchor;best.lambda])./max(1,abs([anchor;best.lambda])),Inf);
++            ok=settled && strcmp(hardware_before,psse_active_set_signature(mpcb)) && ...
++                gap<=state_tol && release_capability_feasible(rr,lr);
++            reason='Release requires an unresolved physical-control or capability change';
++        end
++        outward=false;probe_h=1e-4;probe_ratio=NaN;half_ratio=NaN;orientation=NaN;
++        if ok
++            zr=unified_cpf_tangent(ctx,xr,lr,sd,seed,xr,lr,3,1);
++            orientation=dot(zr,seed);
++            % Orient by the physical tangent, never by the sign of d(lambda).
++            if orientation<0,zr=-zr;orientation=-orientation;end
++            ok=isfinite(orientation) && orientation>1e-6;
++            reason='Outgoing tangent is not transverse to the incoming direction';
+             if ok
+-                r=build_unified_cpf_result(ctx,x,e,lam,it,nf);
+-                [r,~]=stamp_original_ac_solution(r,base_bus_ids,base_branch_count,base_gen_count);
+-                [ctx,ctxt,sd,x,e,nf,~,r,V,trial_events,ok]= ...
+-                    settle_unified_psse_controls(ctx,ctxt,sd,x,e,lam,it,nf,r, ...
+-                    base_bus_ids,base_branch_count,base_gen_count,event_k);
+-            end
+-            ratio=Inf;
+-            if ok
+-                ratio=hypot(r.vsc(k,c.PCONV),r.vsc(k,c.QCONV))/ ...
+-                    (r.vsc(k,c.VAC_INTERNAL)*mpcb.baseMVA*imax);
+-                ok=ratio<=1-opt.current_release_margin && release_capability_feasible(r,lam);
+-            end
+-            if ~ok
+-                [ctx,ctxt,sd]=restore_active_set_stage_snapshot(stage);
+-                restore_control_state(misc);
+-                x=oldx;e=olde;nf=oldnf;r=oldr;V=oldV;
+-                transition_carried=oldcarry;transition_carried_keys=oldkeys;
+-                profile_count('current_release_rejected');
+-                continue;
+-            end
+-            changed=true;profile_count('current_release_accepted');
+-            seed=transport_tangent(oldctx,ctx,incoming);
+-            transition_carried=unified_cpf_tangent(ctx,x,lam,sd,seed,x,lam,3,1);
+-            % This can be a finite voltage/control jump, not a continuous
+-            % branch crossing. Resume the incoming loading direction;
+-            % nearest-tangent orientation can otherwise retrace a loop.
+-            if transition_carried(end)*incoming(end)<0
+-                transition_carried=-transition_carried;
+-            end
+-            transition_carried_keys=transition_state_keys(ctx);
+-            msg=sprintf(['VSC %d restored AC voltage control at lambda %.10g; ' ...
+-                'settled current %.8g of limit (required <= %.8g). ' ...
+-                'Fixed-lambda equilibrium/control transition, not a dynamic stability certificate.'], ...
+-                k,lam,ratio,1-opt.current_release_margin);
+-            release=vsc_mtdc_cpf_event('VSC_CURRENT_RELEASE',event_k,k,msg);
+-            release.lambda_event=lam;release.current_ratio_final=ratio;
+-            release.kind='fixed_lambda_control_transition';
+-            release.loading_direction=sign(incoming(end));
+-            release.from_mode=oldr.vsc(k,c.AC_MODE);release.to_mode=mode;
+-            release.voltage_before=oldr.vsc(k,c.VAC_PCC);
+-            release.voltage_after=r.vsc(k,c.VAC_PCC);
+-            ev=vsc_mtdc_cpf_append_event(ev,trial_events);
+-            ev=vsc_mtdc_cpf_append_event(ev,release);
+-        end
++                [probe_ratio,pok]=release_forward_probe(ctx,sd,xr,lr,zr,probe_h,k,imax);
++                [half_ratio,hok]=release_forward_probe(ctx,sd,xr,lr,zr,probe_h/2,k,imax);
++                itol=max(1e-9,ctx.opt.tol);
++                inward=pok && hok && probe_ratio<1-itol && half_ratio<1-itol;
++                outward=pok && hok && probe_ratio>1+itol && half_ratio>1+itol;
++                ok=inward;
++                reason='Forward release probes are inconclusive or leave capability feasibility';
++            end
++        end
++        if ~ok
++            [ctx,ctxt,sd]=restore_active_set_stage_snapshot(stage);restore_control_state(misc);
++            transition_carried=oldcarry;transition_carried_keys=oldkeys;
++            x=oldx;lam=oldlam;r=oldr;V=oldV;
++            profile_count('current_release_rejected');
++            if ~outward,diagnostic=reason;return;end
++            continue;
++        end
++        x=xr;lam=lr;r=rr;V=original_ac_voltage_for_result(r,base_bus_ids);
++        changed=true;profile_count('current_release_accepted');
++        transition_carried=zr;transition_carried_keys=transition_state_keys(ctx);
++        ratio=hypot(r.vsc(k,c.PCONV),r.vsc(k,c.QCONV))/(r.vsc(k,c.VAC_INTERNAL)*mpcb.baseMVA*imax);
++        release=vsc_mtdc_cpf_event('VSC_CURRENT_RELEASE',event_k,k, ...
++            sprintf('VSC %d voltage control restored at a localized branch intersection, lambda %.12g.',k,lam));
++        release.kind='localized_branch_intersection';release.lambda_event=lam;
++        release.from_mode=best.result.vsc(k,c.AC_MODE);release.to_mode=mode;
++        release.voltage_before=best.result.vsc(k,c.VAC_PCC);release.voltage_after=r.vsc(k,c.VAC_PCC);
++        release.current_ratio_final=ratio;release.contact_voltage_error=best.error;
++        release.state_gap=gap;release.state_tolerance=state_tol;
++        release.orientation_dot=orientation;release.tangent_before=incoming(end);release.tangent_after=zr(end);
++        release.probe_step=probe_h;release.probe_current_ratio=probe_ratio;release.half_probe_current_ratio=half_ratio;
++        release.contact_iterations=best.iterations;
++        release.arclength_step=best.h;
++        ev=vsc_mtdc_cpf_append_event(ev,trial_events);
++        ev=vsc_mtdc_cpf_append_event(ev,release);
++        return;
++        end
++    end
++
++    function [loc,ok]=locate_current_release_contact(ctx,sd,x0,l0,z0,x1,l1,k,g0,g1,tol)
++        loc=[];ok=false;
++        h1=z0'*[x1-x0;l1-l0];
++        if ~isfinite(h1) || h1<=0,return;end
++        lo=0;hi=h1;fl=g0;fh=g1;
++        for j=1:60
++            if abs(fl)<=tol,h=lo;elseif abs(fh)<=tol,h=hi;
++            else,h=lo+(hi-lo)*max(.05,min(.95,fl/(fl-fh)));end
++            a=h/h1;guess=x0+a*(x1-x0);lg=l0+a*(l1-l0);
++            [xe,le,ee,ne,ni,pfok]=unified_cpf_corrector(ctx,sd,guess,lg,x0,l0,z0,h,3);
++            scale=max(1,abs([x0;l0]));
++            distance=norm(([xe;le]-[guess;lg])./scale,Inf);
++            span=norm([x1-x0;l1-l0]./scale,Inf);
++            if ~pfok || distance>max(1e-7,2*span),return;end
++            re=build_unified_cpf_result(ctx,xe,ee,le,ni,ne);
++            [re,~]=stamp_original_ac_solution(re,base_bus_ids,base_branch_count,base_gen_count);
++            fm=re.vsc(k,c.VAC_PCC)-re.vsc(k,c.VAC_SET);
++            if abs(fm)<=tol
++                loc=struct('x',xe,'lambda',le,'h',h,'k',k,'result',re,'error',fm,'iterations',j);
++                ok=true;return;
++            end
++            if fl*fm<=0,hi=h;fh=fm;else,lo=h;fl=fm;end
++        end
++    end
++
++    function [ratio,ok]=release_forward_probe(ctx,sd,x,lam,z,h,k,imax)
++        [xp,lp,ep,np,it,ok]=solve_unified_arc_point(ctx,sd,x,lam,z,h,3);
++        ratio=NaN;
++        if ~ok,return;end
++        scale=max(1,abs([x;lam]));
++        if norm(([xp;lp]-[x;lam]-h*z)./scale,Inf)>max(1e-7,.1*h)
++            ok=false;return;
++        end
++        rp=build_unified_cpf_result(ctx,xp,ep,lp,it,np);
++        [rp,~]=stamp_original_ac_solution(rp,base_bus_ids,base_branch_count,base_gen_count);
++        ratio=hypot(rp.vsc(k,c.PCONV),rp.vsc(k,c.QCONV))/(rp.vsc(k,c.VAC_INTERNAL)*mpcb.baseMVA*imax);
++        % Report an outward current direction separately from other violations.
++        if ratio<1,ok=release_capability_feasible(rp,lp);end
+     end
+ 
+     function ok = release_capability_feasible(r,lam)
+@@ -2202,7 +2301,7 @@
+                     V=original_ac_voltage_for_result(r,bus_ids);success=0;return;
+                 end
+                 if localized
+-                    lam=loc_info.lambda_event;r=loc_info.result;
++                    lam=loc_info.lambda_event;r=loc_info.result;
+                     [r,~]=stamp_original_ac_solution(r,bus_ids,nbranch,ngen);
+                     [~,mpcb_next,mpct_next,report]=unified_gen_capability_update(r,lam,loc_info);
+                     jj=find(original_report.changed_idx==loc_info.gen_idx,1);
+@@ -2651,7 +2750,7 @@
+             for boundary=find(ml>=-1e-7 & mh < -1e-8)'
+                 loc.required=true;
+                 lo=0;hi=1;fl=ml(boundary);fh=mh(boundary);
+-                rootok=false; xe=xx; le=lam; re=r; ee=[]; ne=Inf; fm=NaN;
++                rootok=false; xe=xx; le=lam; re=r; ee=[]; ne=Inf; fm=NaN;
+                 for it=1:60
+                     if abs(fl)<=1e-8
+                         fraction=lo;
+--- before/matpower/lib/mpoption.m
++++ after/matpower/lib/mpoption.m
+@@ -195,7 +195,7 @@
+ %      vsc_mtdc.capability_enforce 0        enable TESIS-style PF/CPF saturation
+ %      vsc_mtdc.coupled_current_limits 1   unified CPF: coupled current equations
+ %      vsc_mtdc.current_limit_release  1   restore original V/PV mode if feasible
+-%      vsc_mtdc.current_release_margin 1e-3 required fractional current headroom
++%      vsc_mtdc.current_release_margin 1e-3 legacy setting, ignored by local release
+ %          [ 0 - use projected Q limits; 1 - couple preserve-P current limits ]
+ %      vsc_mtdc.nose_replay_max 3          max checkpoint replays after turn stall
+ %          [ 0 - disable replay; each retry halves the checkpoint step cap ]
+--- before/tests/t_cpf_event_release.m
++++ after/tests/t_cpf_event_release.m
+@@ -1,157 +1,150 @@
+-function evidence=t_cpf_event_release(outdir)
+-% Regression for solved generator contacts and reversible VSC release.
+-% Historical scientific results are inputs only; all runs go to OUTDIR.
+-if nargin<1,error('An explicit new output directory is required.');end
+-if ~isfolder(outdir),mkdir(outdir);end
+-[base,target,options]=beerten_constant_pq_nonslack_dispatch;
+-c=idx_vsc;checks=struct('name',{},'passed',{},'error',{});runs=struct();
+-for typ=1:3
+-    [~,lim]=gen_capability_headroom(50,0,187.5,typ);
+-    for q=[lim(4)-1,lim(4),0,lim(3),lim(3)+1]
+-        m=gen_capability_headroom(50,q,187.5,typ);
+-        [~,pp,qq]=gen_capability_curve(50,q,187.5,typ);
+-        ck(sprintf('headroom_projection_type%d_q%.4g',typ,q), ...
+-            (min(m)>=-1e-8)==(max(abs([pp-50 qq-q]))<1e-8),min(m));
+-    end
+-end
+-for step=[.1 .05]
+- for endpoint={'NOSE','FULL'}
+-  for enabled=[0 1]
+-    tag=sprintf('%s_%03d_release%d',lower(endpoint{1}),round(step*1000),enabled);
+-    o=mpoption(options,'cpf.stop_at',endpoint{1},'cpf.step',step, ...
+-        'vsc_mtdc.current_limit_release',enabled);
+-    lastwarn('');[result,success]=runcpf_psse(base,target,o);[warning,warning_id]=lastwarn;
+-    save(fullfile(outdir,[tag '.mat']),'base','target','o','result','success','warning','warning_id');
+-    ev=result.cpf.events; ge=ev(strcmp({ev.name},'GEN_CAPABILITY'));
+-    contact=find(arrayfun(@(v)any(strcmp(v.active_limit,'p_max')),ge),1);
+-    ck([tag '_P_contact_reported'],~isempty(contact),numel(contact));
+-    if ~isempty(contact)
+-        err=abs(ge(contact).lambda_event-11/24);
+-        ck([tag '_P_exact_contact'],err<1e-9,err);
+-        ck([tag '_P_contact_on_accepted_trace'],min(abs(result.cpf.lam-11/24))<1e-9,0);
+-        ck([tag '_P_positive_previous_headroom'],ge(contact).margin_previous>0,ge(contact).margin_previous);
+-        ix=find(abs(result.cpf.lam-11/24)<1e-9,1);
+-        ck([tag '_P_limit_retains_PV'],~isempty(ix) && result.cpf.bus(6,2,ix)==2,0);
+-    end
+-    [peak,imax]=max(result.cpf.lam);pg=reshape(result.cpf.gen(2,2,:),1,[]);
+-    err=max(abs(pg(1:imax)-min(40+240*result.cpf.lam(1:imax),150)));
+-    ck([tag '_ascending_P_schedule'],err<1e-6,err);
+-    ck([tag '_first_turn_benchmark'],abs(peak-1.24566894351)<1e-7,peak);
+-    re=ev(strcmp({ev.name},'VSC_CURRENT_RELEASE'));
+-    ck([tag '_no_unlocalized_gen_contact'],all(arrayfun(@(v) ...
+-        strcmp(v.event_location_method{1},'solved_boundary') && abs(v.margin_event)<1e-7,ge)),0);
+-    if strcmp(endpoint{1},'NOSE') || ~enabled
+-        ck([tag '_no_release'],isempty(re),numel(re));
+-    else
+-        ck([tag '_one_release_no_cycle'],numel(re)==1,numel(re));
+-        if ~isempty(re)
+-            ck([tag '_release_current_headroom'],re(1).current_ratio_final<=.999,re(1).current_ratio_final);
+-            ck([tag '_release_declared_transition'],strcmp(re(1).kind,'fixed_lambda_control_transition'),0);
+-            ck([tag '_descending_after_release'],all(diff(result.cpf.lam(re(1).k+1:end))<=1e-8),0);
+-        end
+-    end
+-    if strcmp(endpoint{1},'NOSE') || enabled
+-        ck([tag '_requested_endpoint'],success && result.cpf.termination.requested_endpoint_reached,0);
+-    else
+-        ck([tag '_latched_FULL_not_complete'],~result.cpf.termination.requested_endpoint_reached,0);
+-    end
+-    audit=physical_audit(result,base,target,o);
+-    ck([tag '_physical_balance'],audit.balance_MVA<1e-5,audit.balance_MVA);
+-    ck([tag '_all_capability'],audit.capability_violation<1e-5,audit.capability_violation);
+-    ck([tag '_load_interpolation'],audit.load_error<1e-7,audit.load_error);
+-    ck([tag '_physical_controls'],audit.controls_accepted,audit.bad_control_points);
+-    if strcmp(endpoint{1},'NOSE')
+-        if ~enabled
+-            off=result;
+-        else
+-            err=max(abs(result.cpf.bus(:)-off.cpf.bus(:)));
+-            ck([tag '_rejected_release_restores_trace'],err==0,err);
+-            ck([tag '_rejected_release_restores_gen'],isequal(result.cpf.gen,off.cpf.gen),0);
+-        end
+-    end
+-    runs.(tag)=struct('success',success,'termination',result.cpf.termination, ...
+-        'peak_lambda',peak,'release_count',numel(re),'audit',audit,'warning',warning,'warning_id',warning_id);
+-    fprintf('%s success=%d endpoint=%d lambda=%.12g releases=%d\n',tag,success, ...
+-        result.cpf.termination.requested_endpoint_reached,result.cpf.lam(end),numel(re));
+-  end
+- end
+-end
+-% Saved active-set provenance survives round-trip; unknown modes stay unknown.
+-q=base;q.vsc(2,c.AC_MODE)=c.VSC_AC_Q;q.vsc_current_limit=[0;1.5;0];
+-q.vsc_current_restore_mode=[0;c.VSC_AC_V;0];
+-f=fullfile(outdir,'current_release_roundtrip.m');savecase(f,q);qq=loadcase(f);
+-ck('restore_mode_roundtrip',isequal(q.vsc_current_restore_mode,qq.vsc_current_restore_mode),0);
+-% Incremental policy anchors must carry activation, release, and rollback.
+-po=struct('cpf_policies',struct('load',struct('k',.1), ...
+-    'gen',struct('policy','none'),'hvdc',struct('policy','none')));
+-st=vsc_mtdc_cpf_policy_state('init',base,target,po);
+-active=vsc_mtdc_cpf_policy_state('current_mpc',q,.2,st);
+-ck('incremental_activation_carries_current',isequal(active.vsc_current_limit,q.vsc_current_limit),0);
+-st.anchor_mpc=active;st.anchor_lam=.2;
+-released=q;released.vsc(2,c.AC_MODE)=c.VSC_AC_V;released.vsc_current_limit(2)=0;
+-restored=vsc_mtdc_cpf_policy_state('current_mpc',released,.2,st);
+-ck('incremental_release_restores_original_mode',restored.vsc(2,c.AC_MODE)==c.VSC_AC_V && restored.vsc_current_limit(2)==0,0);
+-prior=vsc_mtdc_cpf_policy_state('current_mpc',base,.1,st);
+-ck('incremental_prior_context_does_not_inherit_current',~isfield(prior,'vsc_current_limit'),0);
+-for bad={[0;NaN;0],[0;3;0],[0;2]}
+-    qq.vsc_current_restore_mode=bad{1};caught=false;
+-    try,runpf_vsc_mtdc_unified('__setup',qq,options);catch me
+-        caught=strcmp(me.identifier,'runpf_vsc_mtdc_unified:current_restore_mode');
+-    end
+-    ck('invalid_restore_metadata_rejected',caught,0);
+-end
+-evidence=struct('checks',checks,'passed',sum([checks.passed]),'total',numel(checks),'runs',runs);
+-fid=fopen(fullfile(outdir,'evidence.json'),'w');fprintf(fid,'%s',jsonencode(evidence,PrettyPrint=true));fclose(fid);
+-fprintf('Event/release regression: %d/%d checks passed\n',evidence.passed,evidence.total);
+-assert(all([checks.passed]),'Event/release regression failed; inspect evidence.json');
+-    function ck(name,passed,err)
+-        checks(end+1)=struct('name',name,'passed',logical(passed),'error',err);
+-        if ~passed,fprintf('FAIL %s: %.12g\n',name,err);end
+-    end
+-end
+-
+-function audit=physical_audit(r,b,t,o)
+-c=idx_vsc;balance=0;violation=0;loaderr=0;bad=0;
+-% Use resolved controller tolerances, including options applied at setup.
+-xs=mp.psse_xfmr_states(r);ss=mp.psse_swshunt_states(r);
+-for k=1:numel(r.cpf.lam)
+-    q=b;
+-    for fields={'bus','gen','branch','vsc','busdc','branchdc'}
+-        name=fields{1};q.(name)=r.cpf.(name)(:,:,k);
+-    end
+-    ac=ext2int(struct('version','2','baseMVA',q.baseMVA,'bus',q.bus,'gen',q.gen,'branch',q.branch));
+-    U=ac.bus(:,8).*exp(1j*pi/180*ac.bus(:,9));Y=makeYbus(ac.baseMVA,ac.bus,ac.branch);
+-    S=makeSbus(ac.baseMVA,ac.bus,ac.gen);Pdc=zeros(size(q.busdc,1),1);
+-    for j=find(q.vsc(:,c.VSC_STATUS)>0)'
+-        row=find(ac.order.bus.i2e==q.vsc(j,c.VSC_BUS));
+-        S(row)=S(row)+complex(q.vsc(j,c.PAC),q.vsc(j,c.QAC))/q.baseMVA;
+-        dc=find(q.busdc(:,1)==q.vsc(j,c.BUSDC));Pdc(dc)=Pdc(dc)+q.vsc(j,c.PDC);
+-        p=vsc_capability_params(q,o.vsc_mtdc,j,j);
+-        [~,~,~,~,info]=vsc_capability_curve(q.vsc(j,c.PAC),q.vsc(j,c.QAC),p.Smax, ...
+-            q.vsc(j,c.VAC_PCC),q.vsc(j,:),p.mode,p.Vmax,q.baseMVA);
+-        violation=max(violation,-info.margin);
+-    end
+-    [~,pg,qg]=gen_capability_curve(q.gen(2,2),q.gen(2,3),b.gen_capability.Snom(2),2);
+-    violation=max([violation abs(pg-q.gen(2,2)) abs(qg-q.gen(2,3))]);
+-    G=makeGdc(q.busdc,q.branchdc);
+-    balance=max([balance;abs(U.*conj(Y*U)-S)*q.baseMVA; ...
+-        abs(q.busdc(:,3).*(G*q.busdc(:,3))*q.baseMVA-Pdc); ...
+-        abs(q.vsc(:,c.PCONV)+q.vsc(:,c.PDC)+q.vsc(:,c.PLOSS))]);
+-    loaderr=max(loaderr,max(abs(q.bus(:,3:4)-b.bus(:,3:4)-r.cpf.lam(k)*(t.bus(:,3:4)-b.bus(:,3:4))),[],'all'));
+-    % Saved trace tables contain actual settings. The base PSSE metadata
+-    % contains the initial step positions and must not overwrite them.
+-    tap=q.branch(9,9);B=q.bus(5,6);v7=q.bus(7,8);v5=q.bus(5,8);
+-    tapok=(v7>=.95-xs.vtol && v7<=1.03+xs.vtol) || ...
+-        (v7<.95-xs.vtol && abs(tap-.9)<1e-9) || ...
+-        (v7>1.03+xs.vtol && abs(tap-1.1)<1e-9);
+-    shuntok=(v5>=.95-ss.vtol && v5<=1.03+ss.vtol) || ...
+-        (v5<.95-ss.vtol && abs(B-15)<1e-9) || ...
+-        (v5>1.03+ss.vtol && abs(B)<1e-9);
+-    gridok=tap>=.9-1e-9 && tap<=1.1+1e-9 && ...
+-        abs((tap-.9)/(.2/9)-round((tap-.9)/(.2/9)))<1e-8 && ...
+-        B>=-1e-9 && B<=15+1e-9 && abs(B/5-round(B/5))<1e-8;
+-    bad=bad+~(tapok && shuntok && gridok);
+-end
+-audit=struct('balance_MVA',balance,'capability_violation',violation,'load_error',loaderr, ...
+-    'controls_accepted',bad==0,'bad_control_points',bad);
+-end
++function evidence=t_cpf_event_release(outdir)
++% Regression for solved generator contacts and reversible VSC release.
++% Historical scientific results are inputs only; all runs go to OUTDIR.
++if nargin<1,error('An explicit new output directory is required.');end
++if ~isfolder(outdir),mkdir(outdir);end
++[base,target,options]=beerten_constant_pq_nonslack_dispatch;
++c=idx_vsc;checks=struct('name',{},'passed',{},'error',{});runs=struct();
++for typ=1:3
++    [~,lim]=gen_capability_headroom(50,0,187.5,typ);
++    for q=[lim(4)-1,lim(4),0,lim(3),lim(3)+1]
++        m=gen_capability_headroom(50,q,187.5,typ);
++        [~,pp,qq]=gen_capability_curve(50,q,187.5,typ);
++        ck(sprintf('headroom_projection_type%d_q%.4g',typ,q), ...
++            (min(m)>=-1e-8)==(max(abs([pp-50 qq-q]))<1e-8),min(m));
++    end
++end
++for step=[.1 .05]
++ for endpoint={'NOSE','FULL'}
++  for enabled=[0 1]
++    tag=sprintf('%s_%03d_release%d',lower(endpoint{1}),round(step*1000),enabled);
++    o=mpoption(options,'cpf.stop_at',endpoint{1},'cpf.step',step, ...
++        'vsc_mtdc.current_limit_release',enabled);
++    lastwarn('');[result,success]=runcpf_psse(base,target,o);[warning,warning_id]=lastwarn;
++    save(fullfile(outdir,[tag '.mat']),'base','target','o','result','success','warning','warning_id');
++    ev=result.cpf.events; ge=ev(strcmp({ev.name},'GEN_CAPABILITY'));
++    contact=find(arrayfun(@(v)any(strcmp(v.active_limit,'p_max')),ge),1);
++    ck([tag '_P_contact_reported'],~isempty(contact),numel(contact));
++    if ~isempty(contact)
++        err=abs(ge(contact).lambda_event-11/24);
++        ck([tag '_P_exact_contact'],err<1e-9,err);
++        ck([tag '_P_contact_on_accepted_trace'],min(abs(result.cpf.lam-11/24))<1e-9,0);
++        ck([tag '_P_positive_previous_headroom'],ge(contact).margin_previous>0,ge(contact).margin_previous);
++        ix=find(abs(result.cpf.lam-11/24)<1e-9,1);
++        ck([tag '_P_limit_retains_PV'],~isempty(ix) && result.cpf.bus(6,2,ix)==2,0);
++    end
++    [peak,imax]=max(result.cpf.lam);pg=reshape(result.cpf.gen(2,2,:),1,[]);
++    err=max(abs(pg(1:imax)-min(40+240*result.cpf.lam(1:imax),150)));
++    ck([tag '_ascending_P_schedule'],err<1e-6,err);
++    ck([tag '_first_turn_benchmark'],abs(peak-1.24566894351)<1e-7,peak);
++    re=ev(strcmp({ev.name},'VSC_CURRENT_RELEASE'));
++    ck([tag '_no_unlocalized_gen_contact'],all(arrayfun(@(v) ...
++        strcmp(v.event_location_method{1},'solved_boundary') && abs(v.margin_event)<1e-7,ge)),0);
++    % This study never returns to VSC2's target on the lower branch.
++    % Feasible distant V-controlled solutions must not trigger restoration.
++    ck([tag '_no_branch_switch'],isempty(re),numel(re));
++    if strcmp(endpoint{1},'NOSE')
++        ck([tag '_requested_endpoint'],success && result.cpf.termination.requested_endpoint_reached,0);
++    else
++        ck([tag '_FULL_honest_capability_stop'],~result.cpf.termination.requested_endpoint_reached && ...
++            strcmp(result.cpf.termination.cause,'vsc_capability_limit'),0);
++    end
++    audit=physical_audit(result,base,target,o);
++    ck([tag '_physical_balance'],audit.balance_MVA<1e-5,audit.balance_MVA);
++    ck([tag '_all_capability'],audit.capability_violation<1e-5,audit.capability_violation);
++    ck([tag '_load_interpolation'],audit.load_error<1e-7,audit.load_error);
++    ck([tag '_physical_controls'],audit.controls_accepted,audit.bad_control_points);
++    if ~enabled
++        off=result;
++    else
++        err=max(abs(result.cpf.bus(:)-off.cpf.bus(:)));
++        ck([tag '_local_gate_preserves_trace'],err==0,err);
++        ck([tag '_local_gate_preserves_gen'],isequal(result.cpf.gen,off.cpf.gen),0);
++        ck([tag '_local_gate_preserves_lambda'],isequal(result.cpf.lam,off.cpf.lam),0);
++    end
++    runs.(tag)=struct('success',success,'termination',result.cpf.termination, ...
++        'peak_lambda',peak,'release_count',numel(re),'audit',audit,'warning',warning,'warning_id',warning_id);
++    fprintf('%s success=%d endpoint=%d lambda=%.12g releases=%d\n',tag,success, ...
++        result.cpf.termination.requested_endpoint_reached,result.cpf.lam(end),numel(re));
++  end
++ end
++end
++% Saved active-set provenance survives round-trip; unknown modes stay unknown.
++q=base;q.vsc(2,c.AC_MODE)=c.VSC_AC_Q;q.vsc_current_limit=[0;1.5;0];
++q.vsc_current_restore_mode=[0;c.VSC_AC_V;0];
++f=fullfile(outdir,'current_release_roundtrip.m');savecase(f,q);qq=loadcase(f);
++ck('restore_mode_roundtrip',isequal(q.vsc_current_restore_mode,qq.vsc_current_restore_mode),0);
++% Incremental policy anchors must carry activation, release, and rollback.
++po=struct('cpf_policies',struct('load',struct('k',.1), ...
++    'gen',struct('policy','none'),'hvdc',struct('policy','none')));
++st=vsc_mtdc_cpf_policy_state('init',base,target,po);
++active=vsc_mtdc_cpf_policy_state('current_mpc',q,.2,st);
++ck('incremental_activation_carries_current',isequal(active.vsc_current_limit,q.vsc_current_limit),0);
++st.anchor_mpc=active;st.anchor_lam=.2;
++released=q;released.vsc(2,c.AC_MODE)=c.VSC_AC_V;released.vsc_current_limit(2)=0;
++restored=vsc_mtdc_cpf_policy_state('current_mpc',released,.2,st);
++ck('incremental_release_restores_original_mode',restored.vsc(2,c.AC_MODE)==c.VSC_AC_V && restored.vsc_current_limit(2)==0,0);
++prior=vsc_mtdc_cpf_policy_state('current_mpc',base,.1,st);
++ck('incremental_prior_context_does_not_inherit_current',~isfield(prior,'vsc_current_limit'),0);
++for bad={[0;NaN;0],[0;3;0],[0;2]}
++    qq.vsc_current_restore_mode=bad{1};caught=false;
++    try,runpf_vsc_mtdc_unified('__setup',qq,options);catch me
++        caught=strcmp(me.identifier,'runpf_vsc_mtdc_unified:current_restore_mode');
++    end
++    ck('invalid_restore_metadata_rejected',caught,0);
++end
++evidence=struct('checks',checks,'passed',sum([checks.passed]),'total',numel(checks),'runs',runs);
++fid=fopen(fullfile(outdir,'evidence.json'),'w');fprintf(fid,'%s',jsonencode(evidence,PrettyPrint=true));fclose(fid);
++fprintf('Event/release regression: %d/%d checks passed\n',evidence.passed,evidence.total);
++assert(all([checks.passed]),'Event/release regression failed; inspect evidence.json');
++    function ck(name,passed,err)
++        checks(end+1)=struct('name',name,'passed',logical(passed),'error',err);
++        if ~passed,fprintf('FAIL %s: %.12g\n',name,err);end
++    end
++end
++
++function audit=physical_audit(r,b,t,o)
++c=idx_vsc;balance=0;violation=0;loaderr=0;bad=0;
++% Use resolved controller tolerances, including options applied at setup.
++xs=mp.psse_xfmr_states(r);ss=mp.psse_swshunt_states(r);
++for k=1:numel(r.cpf.lam)
++    q=b;
++    for fields={'bus','gen','branch','vsc','busdc','branchdc'}
++        name=fields{1};q.(name)=r.cpf.(name)(:,:,k);
++    end
++    ac=ext2int(struct('version','2','baseMVA',q.baseMVA,'bus',q.bus,'gen',q.gen,'branch',q.branch));
++    U=ac.bus(:,8).*exp(1j*pi/180*ac.bus(:,9));Y=makeYbus(ac.baseMVA,ac.bus,ac.branch);
++    S=makeSbus(ac.baseMVA,ac.bus,ac.gen);Pdc=zeros(size(q.busdc,1),1);
++    for j=find(q.vsc(:,c.VSC_STATUS)>0)'
++        row=find(ac.order.bus.i2e==q.vsc(j,c.VSC_BUS));
++        S(row)=S(row)+complex(q.vsc(j,c.PAC),q.vsc(j,c.QAC))/q.baseMVA;
++        dc=find(q.busdc(:,1)==q.vsc(j,c.BUSDC));Pdc(dc)=Pdc(dc)+q.vsc(j,c.PDC);
++        p=vsc_capability_params(q,o.vsc_mtdc,j,j);
++        [~,~,~,~,info]=vsc_capability_curve(q.vsc(j,c.PAC),q.vsc(j,c.QAC),p.Smax, ...
++            q.vsc(j,c.VAC_PCC),q.vsc(j,:),p.mode,p.Vmax,q.baseMVA);
++        violation=max(violation,-info.margin);
++    end
++    [~,pg,qg]=gen_capability_curve(q.gen(2,2),q.gen(2,3),b.gen_capability.Snom(2),2);
++    violation=max([violation abs(pg-q.gen(2,2)) abs(qg-q.gen(2,3))]);
++    G=makeGdc(q.busdc,q.branchdc);
++    balance=max([balance;abs(U.*conj(Y*U)-S)*q.baseMVA; ...
++        abs(q.busdc(:,3).*(G*q.busdc(:,3))*q.baseMVA-Pdc); ...
++        abs(q.vsc(:,c.PCONV)+q.vsc(:,c.PDC)+q.vsc(:,c.PLOSS))]);
++    loaderr=max(loaderr,max(abs(q.bus(:,3:4)-b.bus(:,3:4)-r.cpf.lam(k)*(t.bus(:,3:4)-b.bus(:,3:4))),[],'all'));
++    % Saved trace tables contain actual settings. The base PSSE metadata
++    % contains the initial step positions and must not overwrite them.
++    tap=q.branch(9,9);B=q.bus(5,6);v7=q.bus(7,8);v5=q.bus(5,8);
++    tapok=(v7>=.95-xs.vtol && v7<=1.03+xs.vtol) || ...
++        (v7<.95-xs.vtol && abs(tap-.9)<1e-9) || ...
++        (v7>1.03+xs.vtol && abs(tap-1.1)<1e-9);
++    shuntok=(v5>=.95-ss.vtol && v5<=1.03+ss.vtol) || ...
++        (v5<.95-ss.vtol && abs(B-15)<1e-9) || ...
++        (v5>1.03+ss.vtol && abs(B)<1e-9);
++    gridok=tap>=.9-1e-9 && tap<=1.1+1e-9 && ...
++        abs((tap-.9)/(.2/9)-round((tap-.9)/(.2/9)))<1e-8 && ...
++        B>=-1e-9 && B<=15+1e-9 && abs(B/5-round(B/5))<1e-8;
++    bad=bad+~(tapok && shuntok && gridok);
++end
++audit=struct('balance_MVA',balance,'capability_violation',violation,'load_error',loaderr, ...
++    'controls_accepted',bad==0,'bad_control_points',bad);
++end
+--- before/docs/CPF_LIMIT_CONTINUATION.md
++++ after/docs/CPF_LIMIT_CONTINUATION.md
+@@ -1,124 +1,131 @@
+-# Coupled current limits and continuation through control transitions
+-
+-The standard **unified VSC-MTDC CPF** now combines converter current-limit equations, augmented capability-transition correction, transported tangents and loading-turn detection. Sequential PF/CPF and AC-only CPF are not migrated to this formulation. No equipment ratings, case parameters or historical outputs are changed.
+-
+-## Converter current constraint
+-
+-Coupled-current activation is optional in unified CPF. Its default is enabled,
+-preserving the integrated algorithm's behavior. Set it with either syntax:
+-
+-```matlab
+-options = mpoption(options, 'vsc_mtdc.coupled_current_limits', 0); % off
+-options.vsc_mtdc.coupled_current_limits = 1;                      % on (default)
+-```
+-
+-With the toggle off, capability enforcement uses the existing projected-Q
+-treatment, including its configured saturation margin. Augmented correction,
+-tangent transport and nose detection stay enabled. The resolved setting is
+-reported in `results.cpf.coupled_current_limits`. This switch controls CPF
+-activation, not the lower-level PF interpretation of a saved active constraint.
+-An off-setting CPF rejects an input with a positive `vsc_current_limit` entry;
+-compare formulations from the original unsaturated case rather than silently
+-discarding its saved active-set state. Missing or empty options use the default.
+-
+-When the existing capability policy chooses **preserve active power** and identifies converter current as the binding constraint without changing active power, the released AC-Q equation becomes
+-
+-\[
+-f_I=\frac{I_c^2}{I_{\max}^2}-1=0,\qquad
+-I_c=\frac{\sqrt{P_c^2+Q_c^2}}{S_{\rm base}|U_c|}.
+-\]
+-
+-Here Pc and Qc are internal converter powers in MW/MVAr; Uc is the internal converter voltage in p.u. The transformer, filter and reactor remain in the network equations. PAC_SET/QAC_SET remain PCC orders. The released Q order remains stored for provenance but is no longer an enforced Q equation while the current constraint is active. DC-voltage control and the AC/DC bridge balance remain enforced.
+-
+-The Newton Jacobian includes the analytic derivative of this current equation with respect to all relevant network states. It is used consistently by the corrector and tangent calculation. Other capability policies (including radial projection and internal-voltage saturation) retain their existing projection behavior. A second binding ceiling on an already current-limited converter is not silently ignored: the active-set settlement rejects it under the existing failure/recovery policy. This is not an implementation of simultaneous independent current and internal-voltage equalities.
+-
+-`mpc.vsc_current_limit` is solver active-set state: one finite, nonnegative number per converter, in system-base current p.u.; zero means inactive. An active entry requires an online converter in Q/PQ mode. `savecase` preserves it. Sequential PF rejects active entries rather than silently restoring the stored Q order. Since 2026-09-18, unified CPF can restore the original voltage control under the acceptance rule below.
+-
+-## Return to voltage control (2026-09-18)
+-
+-`vsc_mtdc.current_limit_release=1` is the default. On current-limit activation, `vsc_current_restore_mode` records the original V or PV mode (one value per converter; zero means unknown/not eligible). It is validated and survives `savecase`. An old saved current-limited case without this provenance stays latched; the solver does not guess its original control mode.
+-
+-After normal active-set settlement, a proposal restores that converter's voltage equation and removes its current equation at the **same lambda**. It solves the electrical equations, settles the configured tap/shunt controls, and checks all enabled non-slack generator and converter capability constraints. It accepts only if the released converter has current headroom:
+-
+-\[
+-\frac{I_c}{I_{\max}}\le 1-\epsilon_I,
+-\qquad \epsilon_I=\texttt{current\_release\_margin}=10^{-3}.
+-\]
+-
+-The positive headroom is a hysteresis acceptance margin, not a changed rating. Failed correction, unsettled controls or violated capability reject the proposal and restore cases, policy anchors, control state, caches and tangent state. They do not terminate the accepted continuation. Other converters keep their current equations. Release does not unfreeze a previously saturated active-power dispatch participant.
+-
+-`VSC_CURRENT_RELEASE` records lambda, converter row, modes, PCC voltages before/after, current ratio and loading direction. A successful fixed-lambda solve can be a finite voltage jump to another equilibrium. The resumed tangent retains the incoming loading direction; the jump is explicitly a `fixed_lambda_control_transition`, not a smooth nose or localized limit-induced turn. FULL completion with such an event means completion of this hybrid steady-state control path, not proof of a continuous branch or a dynamically reachable transition. Release is checked at accepted candidate steps, so its first sampled occurrence is step dependent.
+-
+-Set `vsc_mtdc.current_limit_release=0` for the latched-current comparison. Both this setting and the resolved margin are reported in `results.cpf`. Incremental policy interpolation carries the current constraint and original-mode provenance and permits returning to the original AC mode; old predictor contexts do not inherit a later constraint.
+-
+-## Solved generator capability contact (2026-09-18)
+-
+-Generator localization uses signed physical headrooms (P minimum, P maximum, upper Q and lower Q) from the unchanged generic curve, instead of zero-inside projection distance. For a crossed boundary it brackets between the previous accepted lambda and the corrected candidate, solves the incoming equation set at trial lambdas, and locates zero headroom to 1e-8 MW/MVAr. The earliest solved contact along the step is selected. The new active set is corrected at that same lambda and the contact appears in the accepted trace. P-only contact retains PV control; Q contact releases voltage control.
+-
+-`GEN_CAPABILITY` preserves the overshooting candidate separately from the solved contact. Its `solved_boundary` event has signed `margin_previous`, `margin_candidate` and `margin_event`; the older `margin_final` remains projection distance. Base-point or discrete active-set updates without a bracket are explicitly `active_set_update_not_localized` with `lambda_event=NaN`. A failed bracket solve/localization requests the existing retry handling and is not reported as a solved contact. Event bracketing is local; it is not a guarantee of global event ordering through arbitrary discrete jumps.
+-
+-This change does not implement Q-first increasing-P boundary following. That separate policy still needs its own equation/derivative treatment. The studied G2 reaches Pmax first; its P remains clamped and its Q can regulate voltage until the Q boundary.
+-
+-## Augmented transition correction and tangent orientation
+-
+-For projected capability transitions without a solved generator contact, ordinary NOSE/FULL continuation corrects the new equation set on a transverse plane through the incoming corrected candidate:
+-
+-\[
+-F_{\rm new}(x,\lambda)=0,\qquad
+-\widehat t^T\big([x;\lambda]-[x_*;\lambda_*]\big)=0.
+-\]
+-
+-Lambda is free in this correction. Base-point settlement and explicitly requested numerical-lambda endpoints retain fixed-lambda correction. Existing discrete tap/shunt correction remains in place; its outgoing tangent now preserves the incoming orientation too.
+-
+-Tangents are mapped by identities of AC-angle, AC-voltage, converter-power and DC-voltage variables. Newly introduced coordinates have zero incoming component. The new tangent is oriented to agree with the mapped vector; a mode change does not force positive d(lambda)/ds. Normalization uses the existing solver coordinates (angles in radians, magnitudes in p.u., converter-power coordinates in MW). A different coordinate-scaling convention is not introduced here.
+-
+-## NOSE means the first local loading maximum on the traced operating path
+-
+-Two event kinds can satisfy `cpf.stop_at='NOSE'`:
+-
+-- `NOSE`, with `kind='SMOOTH_NOSE'`: a smooth loading-tangent zero on an unchanged equation set.
+-- `LIMIT_INDUCED_TURN`: a localized control transition with positive incoming and negative outgoing loading tangents, oriented consistently.
+-
+-FULL records the event and continues. Termination reports separate `smooth_nose_detected`, `limit_induced_turn_detected`, aggregate `nose_detected`, and `requested_endpoint_reached` fields. A FULL run that records a nose but stops later at a capability limit does not claim FULL completion. Neither event certifies dynamic stability.
+-
+-Before accepting a control-changing trial, the solver checks loading-tangent reversal and mapped tangent orientation. A reversed orientation is also suspicious without a control change. It restores the pre-trial cases, contexts, policy state, control-freeze state, event records, caches and diagnostics, then halves the arclength step. Rejected trials are retained only in `cpf.turn_detection.history`.
+-
+-For a continuous control-limit turn, localization requires all of:
+-
+-1. A control-changing trial with positive incoming and negative outgoing loading tangents and a positive orientation dot product.
+-2. Arclength step no larger than `max(1e-10,min(1e-7,cpf.nose_tol/100))`.
+-3. Both incoming-candidate and outgoing-state intervals, measured in the solver coordinates, no larger than `cpf.nose_tol`.
+-4. A converged corrected network state and settled enabled controls.
+-
+-The ordinary `cpf.step_min` does not prevent these event-refinement steps. The event search allows at most 60 rejected refinements and does not halve below 1e-12. If local refinement stalls, the checkpoint recovery described below runs before declaring failure. If recovery is unavailable or exhausted, an unresolved turn returns failure and retains the last accepted point. A discrete jump that does not shrink with refinement is therefore not mislabeled as a localized continuous turn. After either a smooth nose or a localized control turn, FULL restores the pre-refinement step size, subject to any replay cap.
+-
+-The smooth locator also checks its residual/tangent or bracket convergence before reporting an event. FULL avoids immediately rediscovering the same near-zero tangent.
+-
+-This is bracket refinement in continuation arclength, not a generic analytic solve of every possible control-limit equation. Endpoint sign checks cannot guarantee detection of multiple folds hidden inside a single step. The orientation check adds protection against branch reversal, but it is not a global branch-uniqueness test.
+-
+-## Checkpoint replay after stalled turn refinement
+-
+-Unified CPF automatically retries a stalled control-turn search from a saved accepted point before a capability update. This changes the approach to the difficult region, which can matter when the projected-Q policy makes a finite setpoint jump that persists even as the local trial step tends to zero. It applies with coupled current either enabled or disabled.
+-
+-```matlab
+-options = mpoption(options, 'vsc_mtdc.nose_replay_max', 3); % default
+-options = mpoption(options, 'vsc_mtdc.nose_replay_max', 0); % disable replay
+-```
+-
+-The nonnegative integer option bounds the total number of checkpoint replays in a run. The solver keeps a bounded cache of the base point and three recent pre-capability-update checkpoints. At the first suspicious turn it fixes the latest checkpoint as the replay anchor. Further local refinements do not replace that anchor with a nearly identical point at the stalled event.
+-
+-After local refinement exhausts its budget, recovery restores the checkpoint's cases, network contexts, policy state, discrete controls, control-freeze flags, caches, diagnostics, solution, tangent, accepted trace and events. Accepted points after the checkpoint are removed. The new step cap is half the checkpoint's saved step, or half the previous replay cap for another attempt from that anchor. The solver does not launch a replay with a cap below ordinary `cpf.step_min`. Adaptive growth and other step proposals remain bounded by the replay cap for the rest of the run.
+-
+-`results.cpf.checkpoint_replay` reports the attempt budget, attempt count, step cap and history. Each attempt records its failed lambda, checkpoint lambda/index, discarded-point count, old/new step caps and restoration verification. An infinite step cap means no replay occurred. Rejected local trials remain in `results.cpf.turn_detection.history`, tagged with `replay_attempt`; they are diagnostics, not accepted path points. Work-profile counters include discarded computation.
+-
+-Recovery does not relax convergence, feasibility or event-localization criteria. It can recover a trace without certifying that every smaller initial step produces the same projected-Q history or nose. In particular, this is not an exact event-ordering solution for discontinuous capability projections. A failed smooth-nose locator and unrelated corrector failures retain their existing handling; this recovery specifically follows exhausted suspicious-turn refinement.
+-
+-## Verified study and regressions
+-
+-The 2026-09-17 baseline for the Beerten constant-P/Q non-slack dispatch study with ULTC, switched shunt and G2's 150 MW capability located the first turn at approximately lambda=1.245668943, V5=0.680547 p.u. This agrees with the separately solved G2 Q-limit event. Its latched-current FULL path stopped later near lambda=0.603 without completing the requested endpoint. These historical results remain unchanged.
+-
+-The 2026-09-18 verification is in `outputs/cpf_event_release_20260918/`. G2's P contact is now accepted at lambda=11/24 with P=150 MW. Steps 0.1 and 0.05 preserve the first loading maximum. With release enabled, each FULL run restores VSC2 voltage control once after that maximum and reaches lambda=0. With release disabled, each retains the later converter-capability stop. `tests/t_cpf_event_release.m` checks the boundary, mode changes, rejected-proposal rollback, current headroom, incremental-state handoff, case persistence and independent physical balances/capabilities/control settings.
+-
+-Verification artifacts, source snapshots, diffs and exact flags are saved in `outputs/cpf_standard_integration_20260917/`. `tests/t_cpf_coupled_controls.m` verifies current-row derivatives for three station configurations, metadata validation/round-trip, rollback, event localization and independent AC/DC/bridge/capability checks on saved verification runs. The existing PCC/station, directional-loss and VSC regression suites are also run.
+-
+-Checkpoint-replay verification is saved separately in `outputs/cpf_checkpoint_replay_20260917/`. With coupled current disabled and initial step 0.1, the studied run previously stalled at lambda=1.245549498833. One replay from lambda=1.204212007000 with a 0.05 step cap locates a smooth nose at lambda=1.245535052415, V5=0.678662482 p.u. FULL records it and continues until a later converter-capability stop near lambda=0.603060043. Coupled-current-enabled NOSE/FULL accepted physical traces are identical to the preceding integration results and require no replay. The new `tests/t_cpf_checkpoint_replay.m` exercises replay, restoration, bounded options, disabled behavior and both endpoint modes using the saved study fixture.
++# Coupled current limits and continuation through control transitions
++
++The standard **unified VSC-MTDC CPF** now combines converter current-limit equations, augmented capability-transition correction, transported tangents and loading-turn detection. Sequential PF/CPF and AC-only CPF are not migrated to this formulation. No equipment ratings, case parameters or historical outputs are changed.
++
++## Converter current constraint
++
++Coupled-current activation is optional in unified CPF. Its default is enabled,
++preserving the integrated algorithm's behavior. Set it with either syntax:
++
++```matlab
++options = mpoption(options, 'vsc_mtdc.coupled_current_limits', 0); % off
++options.vsc_mtdc.coupled_current_limits = 1;                      % on (default)
++```
++
++With the toggle off, capability enforcement uses the existing projected-Q
++treatment, including its configured saturation margin. Augmented correction,
++tangent transport and nose detection stay enabled. The resolved setting is
++reported in `results.cpf.coupled_current_limits`. This switch controls CPF
++activation, not the lower-level PF interpretation of a saved active constraint.
++An off-setting CPF rejects an input with a positive `vsc_current_limit` entry;
++compare formulations from the original unsaturated case rather than silently
++discarding its saved active-set state. Missing or empty options use the default.
++
++When the existing capability policy chooses **preserve active power** and identifies converter current as the binding constraint without changing active power, the released AC-Q equation becomes
++
++\[
++f_I=\frac{I_c^2}{I_{\max}^2}-1=0,\qquad
++I_c=\frac{\sqrt{P_c^2+Q_c^2}}{S_{\rm base}|U_c|}.
++\]
++
++Here Pc and Qc are internal converter powers in MW/MVAr; Uc is the internal converter voltage in p.u. The transformer, filter and reactor remain in the network equations. PAC_SET/QAC_SET remain PCC orders. The released Q order remains stored for provenance but is no longer an enforced Q equation while the current constraint is active. DC-voltage control and the AC/DC bridge balance remain enforced.
++
++The Newton Jacobian includes the analytic derivative of this current equation with respect to all relevant network states. It is used consistently by the corrector and tangent calculation. Other capability policies (including radial projection and internal-voltage saturation) retain their existing projection behavior. A second binding ceiling on an already current-limited converter is not silently ignored: the active-set settlement rejects it under the existing failure/recovery policy. This is not an implementation of simultaneous independent current and internal-voltage equalities.
++
++`mpc.vsc_current_limit` is solver active-set state: one finite, nonnegative number per converter, in system-base current p.u.; zero means inactive. An active entry requires an online converter in Q/PQ mode. `savecase` preserves it. Sequential PF rejects active entries rather than silently restoring the stored Q order. Since 2026-09-18, unified CPF can restore the original voltage control under the acceptance rule below.
++
++## Return to voltage control — corrected 2026-09-18
++
++`vsc_mtdc.current_limit_release=1` enables **local, continuous release**, not a search for any feasible voltage-controlled equilibrium. `vsc_current_restore_mode` records the original V/PV mode on current-limit activation, is validated, and survives save/load. Old saved current-limited cases without this provenance remain constrained; no original mode is guessed.
++
++A release is considered only when the current-limited branch itself reaches the voltage target:
++
++\[
++I_c=I_{\max},\qquad V_{\rm PCC}=V_{\rm set}.
++\]
++
++The voltage-error event is bracketed between consecutive points on the same active set and located with pseudo-arclength correction. The old and new modes must share the localized equilibrium: a zero-length augmented correction must change the scaled physical state by at most `max(1e-7,10*PF_tolerance)`. The voltage contact tolerance is `max(1e-9,PF_tolerance)` p.u. Configured physical controls must be settled at the contact, without a simultaneous finite change to their settings, and enabled generator/converter capability checks must pass.
++
++The outgoing tangent is oriented by its dot product with the transported incoming tangent. **Its lambda component is never forced to have a chosen sign.** Two small forward corrections (arclength 1e-4 and 5e-5) must stay near their predictors and enter the feasible current interior. These probes do not advance the accepted trace. A clearly outward direction keeps the current constraint. Failed, ambiguous or nonlocal transitions are rolled back and retried with a smaller step; exhausted refinement returns `current_release_unresolved`, `success=0`, and `requested_endpoint_reached=false`, preserving the last accepted point.
++
++Multiple converter contacts are examined in arclength order. The first admissible local release is accepted at its contact, rather than at the original overshooting candidate. Ordinary loading-turn checks remain enabled across this transition. A release event cannot itself falsely complete a pending FULL lambda-zero step.
++
++`VSC_CURRENT_RELEASE` now has `kind='localized_branch_intersection'` and records the contact error, scaled state gap/tolerance, current ratio at contact, both forward-probe ratios, tangent orientation and lambda components. A finite voltage jump to a distant feasible equilibrium is rejected. The earlier `fixed_lambda_control_transition` behavior was an incorrect branch-tracing policy and is superseded.
++
++The old `current_release_margin` option remains readable for compatibility but is **ignored** by this local method. At the intersection the current is at its limit; requiring 0.1% headroom at that very point would prevent a continuous switch. Inward feasibility is tested by the forward probes instead. `results.cpf.current_release_policy` identifies `localized_branch_intersection`; the legacy option is explicitly reported as `current_release_margin_legacy_ignored`.
++
++Incremental policy interpolation carries current constraints and mode provenance, allows returning to the original AC mode, and prevents old predictor contexts from inheriting later constraints. Release does not restart a previously saturated active-power dispatch schedule. Physical current-limit enforcement and generator capability curves are unchanged.
++
++## Solved generator capability contact (2026-09-18)
++
++Generator localization uses signed physical headrooms (P minimum, P maximum, upper Q and lower Q) from the unchanged generic curve, instead of zero-inside projection distance. For a crossed boundary it brackets between the previous accepted lambda and the corrected candidate, solves the incoming equation set at trial lambdas, and locates zero headroom to 1e-8 MW/MVAr. The earliest solved contact along the step is selected. The new active set is corrected at that same lambda and the contact appears in the accepted trace. P-only contact retains PV control; Q contact releases voltage control.
++
++`GEN_CAPABILITY` preserves the overshooting candidate separately from the solved contact. Its `solved_boundary` event has signed `margin_previous`, `margin_candidate` and `margin_event`; the older `margin_final` remains projection distance. Base-point or discrete active-set updates without a bracket are explicitly `active_set_update_not_localized` with `lambda_event=NaN`. A failed bracket solve/localization requests the existing retry handling and is not reported as a solved contact. Event bracketing is local; it is not a guarantee of global event ordering through arbitrary discrete jumps.
++
++This change does not implement Q-first increasing-P boundary following. That separate policy still needs its own equation/derivative treatment. The studied G2 reaches Pmax first; its P remains clamped and its Q can regulate voltage until the Q boundary.
++
++## Augmented transition correction and tangent orientation
++
++For projected capability transitions without a solved generator contact, ordinary NOSE/FULL continuation corrects the new equation set on a transverse plane through the incoming corrected candidate:
++
++\[
++F_{\rm new}(x,\lambda)=0,\qquad
++\widehat t^T\big([x;\lambda]-[x_*;\lambda_*]\big)=0.
++\]
++
++Lambda is free in this correction. Base-point settlement and explicitly requested numerical-lambda endpoints retain fixed-lambda correction. Existing discrete tap/shunt correction remains in place; its outgoing tangent now preserves the incoming orientation too.
++
++Tangents are mapped by identities of AC-angle, AC-voltage, converter-power and DC-voltage variables. Newly introduced coordinates have zero incoming component. The new tangent is oriented to agree with the mapped vector; a mode change does not force positive d(lambda)/ds. Normalization uses the existing solver coordinates (angles in radians, magnitudes in p.u., converter-power coordinates in MW). A different coordinate-scaling convention is not introduced here.
++
++## NOSE means the first local loading maximum on the traced operating path
++
++Two event kinds can satisfy `cpf.stop_at='NOSE'`:
++
++- `NOSE`, with `kind='SMOOTH_NOSE'`: a smooth loading-tangent zero on an unchanged equation set.
++- `LIMIT_INDUCED_TURN`: a localized control transition with positive incoming and negative outgoing loading tangents, oriented consistently.
++
++FULL records the event and continues. Termination reports separate `smooth_nose_detected`, `limit_induced_turn_detected`, aggregate `nose_detected`, and `requested_endpoint_reached` fields. A FULL run that records a nose but stops later at a capability limit does not claim FULL completion. Neither event certifies dynamic stability.
++
++Before accepting a control-changing trial, the solver checks loading-tangent reversal and mapped tangent orientation. A reversed orientation is also suspicious without a control change. It restores the pre-trial cases, contexts, policy state, control-freeze state, event records, caches and diagnostics, then halves the arclength step. Rejected trials are retained only in `cpf.turn_detection.history`.
++
++For a continuous control-limit turn, localization requires all of:
++
++1. A control-changing trial with positive incoming and negative outgoing loading tangents and a positive orientation dot product.
++2. Arclength step no larger than `max(1e-10,min(1e-7,cpf.nose_tol/100))`.
++3. Both incoming-candidate and outgoing-state intervals, measured in the solver coordinates, no larger than `cpf.nose_tol`.
++4. A converged corrected network state and settled enabled controls.
++
++The ordinary `cpf.step_min` does not prevent these event-refinement steps. The event search allows at most 60 rejected refinements and does not halve below 1e-12. If local refinement stalls, the checkpoint recovery described below runs before declaring failure. If recovery is unavailable or exhausted, an unresolved turn returns failure and retains the last accepted point. A discrete jump that does not shrink with refinement is therefore not mislabeled as a localized continuous turn. After either a smooth nose or a localized control turn, FULL restores the pre-refinement step size, subject to any replay cap.
++
++The smooth locator also checks its residual/tangent or bracket convergence before reporting an event. FULL avoids immediately rediscovering the same near-zero tangent.
++
++This is bracket refinement in continuation arclength, not a generic analytic solve of every possible control-limit equation. Endpoint sign checks cannot guarantee detection of multiple folds hidden inside a single step. The orientation check adds protection against branch reversal, but it is not a global branch-uniqueness test.
++
++## Checkpoint replay after stalled turn refinement
++
++Unified CPF automatically retries a stalled control-turn search from a saved accepted point before a capability update. This changes the approach to the difficult region, which can matter when the projected-Q policy makes a finite setpoint jump that persists even as the local trial step tends to zero. It applies with coupled current either enabled or disabled.
++
++```matlab
++options = mpoption(options, 'vsc_mtdc.nose_replay_max', 3); % default
++options = mpoption(options, 'vsc_mtdc.nose_replay_max', 0); % disable replay
++```
++
++The nonnegative integer option bounds the total number of checkpoint replays in a run. The solver keeps a bounded cache of the base point and three recent pre-capability-update checkpoints. At the first suspicious turn it fixes the latest checkpoint as the replay anchor. Further local refinements do not replace that anchor with a nearly identical point at the stalled event.
++
++After local refinement exhausts its budget, recovery restores the checkpoint's cases, network contexts, policy state, discrete controls, control-freeze flags, caches, diagnostics, solution, tangent, accepted trace and events. Accepted points after the checkpoint are removed. The new step cap is half the checkpoint's saved step, or half the previous replay cap for another attempt from that anchor. The solver does not launch a replay with a cap below ordinary `cpf.step_min`. Adaptive growth and other step proposals remain bounded by the replay cap for the rest of the run.
++
++`results.cpf.checkpoint_replay` reports the attempt budget, attempt count, step cap and history. Each attempt records its failed lambda, checkpoint lambda/index, discarded-point count, old/new step caps and restoration verification. An infinite step cap means no replay occurred. Rejected local trials remain in `results.cpf.turn_detection.history`, tagged with `replay_attempt`; they are diagnostics, not accepted path points. Work-profile counters include discarded computation.
++
++Recovery does not relax convergence, feasibility or event-localization criteria. It can recover a trace without certifying that every smaller initial step produces the same projected-Q history or nose. In particular, this is not an exact event-ordering solution for discontinuous capability projections. A failed smooth-nose locator and unrelated corrector failures retain their existing handling; this recovery specifically follows exhausted suspicious-turn refinement.
++
++## Verified study and regressions
++
++The 2026-09-17 baseline for the Beerten constant-P/Q non-slack dispatch study with ULTC, switched shunt and G2's 150 MW capability located the first turn at approximately lambda=1.245668943, V5=0.680547 p.u. This agrees with the separately solved G2 Q-limit event. Its latched-current FULL path stopped later near lambda=0.603 without completing the requested endpoint. These historical results remain unchanged.
++
++The corrected 2026-09-18 verification is in `outputs/cpf_branch_preserving_release_20260918/`. G2's P contact remains at lambda=11/24 with P=150 MW; steps 0.1 and 0.05 preserve the first loading maximum near 1.245668944. The current-limited lower branch does not reach VSC2's voltage target, so no restoration occurs. With release enabled or disabled, FULL follows the same lower branch and stops at the existing converter-capability restriction near lambda=0.603, without claiming endpoint completion. The earlier `outputs/cpf_event_release_20260918/` remains historical evidence of the rejected finite-jump policy, not proof of complete branch tracing.
++
++`tests/t_cpf_local_release.m` verifies continuous restoration at an initial contact and at a bracketed interior contact, and rejection of an outward direction. `tests/t_cpf_event_release.m` verifies exact generator contact, NOSE/FULL behavior at two step sizes, identical constrained traces with the local policy on/off, and physical balances, capabilities, load interpolation and control acceptance.
++
++Verification artifacts, source snapshots, diffs and exact flags are saved in `outputs/cpf_standard_integration_20260917/`. `tests/t_cpf_coupled_controls.m` verifies current-row derivatives for three station configurations, metadata validation/round-trip, rollback, event localization and independent AC/DC/bridge/capability checks on saved verification runs. The existing PCC/station, directional-loss and VSC regression suites are also run.
++
++Checkpoint-replay verification is saved separately in `outputs/cpf_checkpoint_replay_20260917/`. With coupled current disabled and initial step 0.1, the studied run previously stalled at lambda=1.245549498833. One replay from lambda=1.204212007000 with a 0.05 step cap locates a smooth nose at lambda=1.245535052415, V5=0.678662482 p.u. FULL records it and continues until a later converter-capability stop near lambda=0.603060043. Coupled-current-enabled NOSE/FULL accepted physical traces are identical to the preceding integration results and require no replay. The new `tests/t_cpf_checkpoint_replay.m` exercises replay, restoration, bounded options, disabled behavior and both endpoint modes using the saved study fixture.
+--- /dev/null
++++ after/tests/t_cpf_local_release.m
+@@ -0,0 +1,65 @@
++function evidence=t_cpf_local_release(outdir)
++% Positive and negative local-release fixtures, independent of FULL completion.
++if ~isfolder(outdir),mkdir(outdir);end
++c=idx_vsc;q=case5_vsc_mtdc_beerten;
++% Isolated fixture: realistic station impedances, a known Q injection, and
++% enough generator capability that the test contains only a VSC transition.
++q.gen(2,7)=187.5;
++q.vsc(:,[c.TR_R c.TR_X c.FILTER_G c.FILTER_B c.REACTOR_R c.REACTOR_X])= ...
++    repmat([.0015 .1121 .002 .0887 .0001 .16428],3,1);
++q.vsc(3,c.QAC_SET)=40;
++pfopt=mpoption('verbose',0,'out.all',0,'vsc_mtdc.method','unified', ...
++    'vsc_mtdc.psse_aware',0,'vsc_mtdc.capability_enforce',1);
++[r0,ok]=runpf_vsc_mtdc_unified(q,pfopt);assert(ok,'Fixture PF failed');
++contact=q;contact.bus=r0.ac.bus(1:size(q.bus,1),:);
++contact.gen=r0.ac.gen(1:size(q.gen,1),:);contact.vsc=r0.vsc;contact.busdc=r0.busdc;
++contact.vsc(3,c.VAC_SET)=r0.vsc(3,c.VAC_PCC);
++contact.vsc_current_limit=[0;0;hypot(r0.vsc(3,c.PCONV),r0.vsc(3,c.QCONV))/r0.vsc(3,c.VAC_INTERNAL)/q.baseMVA];
++contact.vsc_current_restore_mode=[0;0;c.VSC_AC_PV];
++contact.vsc_capability.Snom=[150;150;contact.vsc_current_limit(3)*q.baseMVA];
++contact.vsc_capability.Vmax=1.15;
++% A nonzero initial reactor voltage drop avoids a singular zero-current seed.
++contact.bus(contact.bus(:,1)==contact.vsc(3,c.VSC_BUS),8)=contact.vsc(3,c.VAC_SET)-.01;
++checks=struct('name',{},'passed',{},'error',{});runs=cell(3,1);
++for trial=1:3
++    direction=-1;if trial==3,direction=1;end
++    b=contact;if trial==2,b.vsc(3,c.VAC_SET)=b.vsc(3,c.VAC_SET)+1e-4;end
++    t=b;t.bus(:,3:4)=b.bus(:,3:4)*(1+direction*.2);
++    opt=mpoption(pfopt,'cpf.stop_at',.05,'cpf.step',.02,'vsc_mtdc.current_limit_release',1);
++    lastwarn('');[r,success]=runcpf_psse(b,t,opt);[warning,warning_id]=lastwarn;
++    tags={'inward_at_base','inward_bracketed','outward'};tag=tags{trial};
++    save(fullfile(outdir,[tag '.mat']),'b','t','opt','r','success','warning','warning_id');
++    ev=r.cpf.events(strcmp({r.cpf.events.name},'VSC_CURRENT_RELEASE'));
++    ck([tag '_endpoint'],success && r.cpf.termination.requested_endpoint_reached,0);
++    if direction<0
++        ck('inward_releases_once',isscalar(ev),numel(ev));
++        if isscalar(ev)
++            ck('same_boundary_equilibrium',ev.state_gap<=ev.state_tolerance,ev.state_gap);
++            ck('voltage_continuity',abs(ev.voltage_before-ev.voltage_after)<1e-7,ev.voltage_before-ev.voltage_after);
++            ck('current_contact',abs(ev.current_ratio_final-1)<1e-6,ev.current_ratio_final);
++            ck('both_forward_probes_inward',max(ev.probe_current_ratio,ev.half_probe_current_ratio)<1,ev.probe_current_ratio);
++            ck('tangent_orientation_preserved',ev.orientation_dot>0,ev.orientation_dot);
++            ck('localized_event',strcmp(ev.kind,'localized_branch_intersection'),0);
++            if trial==2
++                ck('release_localized_inside_step',ev.lambda_event>0 && ev.lambda_event<.05,ev.lambda_event);
++                ck('voltage_target_contact',abs(ev.contact_voltage_error)<1e-8,ev.contact_voltage_error);
++            end
++        end
++        ck('ends_in_voltage_control',r.vsc(3,c.AC_MODE)==c.VSC_AC_PV,0);
++    else
++        ck('outward_does_not_release',isempty(ev),numel(ev));
++        ck('outward_remains_current_limited',r.vsc_current_limit(3)>0,0);
++    end
++    runs{trial}=struct('direction',tag,'termination',r.cpf.termination,'events',ev, ...
++        'warning',warning,'warning_id',warning_id);
++    fprintf('%s success %d endpoint %d releases %d\n',tag,success,r.cpf.termination.requested_endpoint_reached,numel(ev));
++end
++evidence=struct('checks',checks,'passed',sum([checks.passed]),'total',numel(checks),'runs',{runs}, ...
++    'fixture_voltage_target',contact.vsc(3,c.VAC_SET),'fixture_note','Synthetic reversal of demand at a solved contact, with physical controls fixed. No change to production study.');
++fid=fopen(fullfile(outdir,'evidence.json'),'w');fprintf(fid,'%s',jsonencode(evidence,PrettyPrint=true));fclose(fid);
++assert(all([checks.passed]),'Local release regression failed; inspect evidence.json');
++    function ck(name,pass,err)
++        checks(end+1)=struct('name',name,'passed',logical(pass),'error',err);
++        if ~pass,fprintf('FAIL %s %.12g\n',name,err);end
++    end
++end
+--- /dev/null
++++ after/outputs/cpf_branch_preserving_release_20260918/render_branch_preserving_pv.m
+@@ -0,0 +1,118 @@
++function summary=render_branch_preserving_pv
++% Measured full-CPF attempt with local, continuous voltage-control release.
++out=fileparts(mfilename('fullpath'));plotdir=fullfile(out,'all_pv_curves');
++if ~isfolder(plotdir),mkdir(plotdir);end
++on=load(fullfile(out,'verified/full_050_release1.mat'));
++off=load(fullfile(out,'verified/full_050_release0.mat'));
++r=on.result;s=off.result;c=idx_vsc;
++assert(~any(strcmp({r.cpf.events.name},'VSC_CURRENT_RELEASE')));
++assert(~r.cpf.termination.requested_endpoint_reached);
++for field={'bus','gen','branch','vsc','busdc','branchdc'}
++    name=field{1};assert(isequaln(r.cpf.(name),s.cpf.(name)), ...
++        'Local restoration must preserve this constrained branch.');
++end
++P=reshape(sum(r.cpf.bus(:,3,:),1),1,[]);n=numel(P);
++[peak,imax]=max(r.cpf.lam);Ppeak=P(imax);
++ac=reshape(r.cpf.bus(:,8,:),size(r.bus,1),n);
++station=zeros(6,n);stationnames=cell(6,1);
++for j=1:3
++    station(2*j-1,:)=reshape(r.cpf.vsc(j,c.VAC_FILTER,:),1,[]);
++    station(2*j,:)=reshape(r.cpf.vsc(j,c.VAC_INTERNAL,:),1,[]);
++    stationnames{2*j-1}=sprintf('VSC %d, PCC bus %d: filter',j,r.vsc(j,c.VSC_BUS));
++    stationnames{2*j}=sprintf('VSC %d, PCC bus %d: internal',j,r.vsc(j,c.VSC_BUS));
++end
++dc=reshape(r.cpf.busdc(:,3,:),size(r.busdc,1),n);
++roles={'AC slack';'VSC 1 PCC';'VSC 2 PCC';'Corridor / transformer'; ...
++    'Growing load + VSC 3 PCC';'Generator 2';'Regulated auxiliary AC bus'};
++f=figure('Visible','off','Color','w','Position',[30 30 1560 850]);guard=onCleanup(@()close(f));
++tl=tiledlayout(f,2,4,'TileSpacing','compact','Padding','compact');
++for j=1:7
++    ax=nexttile(tl);phaseplot(ax,ac(j,:));ylim(ax,[.2 1.16]);
++    yline(ax,on.base.bus(j,12),':','Color',[.65 .65 .65],'HandleVisibility','off');
++    yline(ax,on.base.bus(j,13),':','Color',[.65 .65 .65],'HandleVisibility','off');
++    title(ax,{sprintf('AC bus %d',r.bus(j,1)),roles{j}},'FontSize',11);
++end
++ax=nexttile(tl);axis(ax,'off');
++text(ax,.02,.98,sprintf(['CORRECTED CONTINUATION\n\n' ...
++    'First maximum: %.3f MW\n' ...
++    'lambda = %.9f\n\n' ...
++    'Voltage restorations: 0\n' ...
++    'No artificial branch jump.\n\n' ...
++    'Last accepted point: %.3f MW\n' ...
++    'lambda = %.9f\n' ...
++    'Converter capability stop.\n' ...
++    'FULL endpoint NOT reached.\n\n' ...
++    'Gray dotted: case VMIN / VMAX\n' ...
++    '(operating criteria, not stop rules).'],Ppeak,peak,P(end),r.cpf.lam(end)), ...
++    'Units','normalized','VerticalAlignment','top','FontSize',11,'Color',[.12 .12 .12]);
++finish(tl,'All 7 AC-bus PV curves — branch-preserving restoration policy', ...
++    'Measured FULL attempt, initial step 0.05 | Orange follows the lower branch | Common voltage scale');
++exportgraphics(f,fullfile(plotdir,'all_ac_bus_pv.png'),'Resolution',150);
++savefig(f,fullfile(plotdir,'all_ac_bus_pv.fig'));clear guard;
++
++f=figure('Visible','off','Color','w','Position',[30 30 1500 990]);guard=onCleanup(@()close(f));
++tl=tiledlayout(f,3,2,'TileSpacing','compact','Padding','compact');
++for j=1:6
++    ax=nexttile(tl);phaseplot(ax,station(j,:));ylim(ax,[.2 1.18]);
++    title(ax,stationnames{j},'FontSize',12);
++    if mod(j,2)==0
++        yline(ax,on.o.vsc_mtdc.capability_vsc_vmax,':','Internal voltage ceiling', ...
++            'Color',[.4 .4 .4],'HandleVisibility','off');
++    end
++end
++finish(tl,'All 6 converter filter/internal AC-node PV curves', ...
++    'Corrected policy: no remote restoration | PCC voltages appear in the AC-bus figure');
++exportgraphics(f,fullfile(plotdir,'all_station_node_pv.png'),'Resolution',150);
++savefig(f,fullfile(plotdir,'all_station_node_pv.fig'));clear guard;
++
++f=figure('Visible','off','Color','w','Position',[30 30 1500 490]);guard=onCleanup(@()close(f));
++tl=tiledlayout(f,1,3,'TileSpacing','compact','Padding','compact');
++lo=min(dc(:));hi=max(dc(:));pad=max(.002,(hi-lo)*.12);
++for j=1:3
++    ax=nexttile(tl);phaseplot(ax,dc(j,:));ylim(ax,[lo-pad hi+pad]);
++    title(ax,sprintf('DC bus %d',r.busdc(j,1)),'FontSize',12);
++end
++finish(tl,'All 3 DC-bus voltage versus demand curves', ...
++    'Same measured path | Shared magnified DC scale | DC bus 3 retains voltage control');
++exportgraphics(f,fullfile(plotdir,'all_dc_bus_pv.png'),'Resolution',150);
++savefig(f,fullfile(plotdir,'all_dc_bus_pv.fig'));clear guard;
++
++names=[compose('AC_bus_%d_pu',r.bus(:,1)); ...
++    reshape([compose('VSC%d_filter_pu',1:3);compose('VSC%d_internal_pu',1:3)],[],1); ...
++    compose('DC_bus_%d_pu',r.busdc(:,1))];
++phase=repmat("increasing_demand",n,1);phase(imax+1:end)="lower_branch_decreasing_demand";
++T=array2table([ac;station;dc]','VariableNames',cellstr(names));
++T=addvars(T,(1:n)',r.cpf.lam(:),P(:),phase,'Before',1, ...
++    'NewVariableNames',{'accepted_index','lambda','total_demand_MW','phase'});
++writetable(T,fullfile(plotdir,'all_voltage_traces.csv'));
++summary=struct('source','verified/full_050_release1.mat','accepted_points',n, ...
++    'peak_lambda',peak,'peak_demand_MW',Ppeak,'last_lambda',r.cpf.lam(end), ...
++    'last_demand_MW',P(end),'last_V5_pu',ac(5,end),'release_count',0, ...
++    'policy_on_off_physical_traces_identical',true,'termination',r.cpf.termination);
++fid=fopen(fullfile(plotdir,'summary.json'),'w');fprintf(fid,'%s',jsonencode(summary,PrettyPrint=true));fclose(fid);
++disp(summary);
++    function phaseplot(ax,y)
++        hold(ax,'on');
++        plot(ax,P(1:imax),y(1:imax),'-','Color',[.02 .37 .72],'LineWidth',2, ...
++            'DisplayName','Increasing demand');
++        plot(ax,P(imax:end),y(imax:end),'-','Color',[.86 .43 .05],'LineWidth',2, ...
++            'DisplayName','After maximum: decreasing demand');
++        plot(ax,P(imax),y(imax),'d','Color',[.12 .12 .12],'MarkerFaceColor',[.12 .12 .12], ...
++            'MarkerSize',5,'DisplayName','First loading maximum');
++        plot(ax,P(end),y(end),'x','Color',[.75 .13 .18],'LineWidth',2,'MarkerSize',8, ...
++            'DisplayName','Last accepted point (capability stop)');
++        grid(ax,'on');xlim(ax,[160 480]);
++        set(ax,'Color','w','XColor',[.15 .15 .15],'YColor',[.15 .15 .15], ...
++            'GridColor',[.6 .6 .6],'FontSize',10);
++    end
++    function finish(layout,heading,subheading)
++        title(layout,{heading;subheading},'FontSize',15,'Color',[.1 .1 .1]);
++        xlabel(layout,'Total scheduled AC demand (MW)   |   P = 165 + 240 lambda', ...
++            'Color',[.1 .1 .1],'FontSize',12);
++        ylabel(layout,'Voltage magnitude (p.u.)','Color',[.1 .1 .1],'FontSize',12);
++        aa=findall(layout,'Type','axes');usable=aa(arrayfun(@(z)numel(findobj(z,'Type','line'))>=4,aa));
++        lg=legend(usable(end),'NumColumns',2,'FontSize',11,'Color','w', ...
++            'TextColor',[.1 .1 .1],'EdgeColor',[.8 .8 .8]);lg.Layout.Tile='south';
++        set(findall(layout,'Type','text'),'Color',[.1 .1 .1]);
++    end
++end

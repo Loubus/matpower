@@ -1,0 +1,26 @@
+[
+  {
+    "path": "matpower/lib/runcpf_vsc_mtdc.m",
+    "sha256": "49a6713d5110b8b34d0e51f5d5bff8d01faab10fe992347c21eca1c32cd5db69"
+  },
+  {
+    "path": "matpower/lib/mpoption.m",
+    "sha256": "11c83450021b6ed5fac1106841bf86ae55141b972acc96dd7d04920a2b7295dd"
+  },
+  {
+    "path": "tests/t_cpf_event_release.m",
+    "sha256": "e67d29426268976eb526e25bbab8a4a27888f8b8354de66d3b75c399e7716070"
+  },
+  {
+    "path": "docs/CPF_LIMIT_CONTINUATION.md",
+    "sha256": "87aff8408d616f2d02af2deb1755de0dc385c8efa26cd5b929ca978b9f11254b"
+  },
+  {
+    "path": "tests/t_cpf_local_release.m",
+    "sha256": "719543deb37c29f1272affe93cd8f0b999dac75f61868ad0a5ad398a6ff20867"
+  },
+  {
+    "path": "outputs/cpf_branch_preserving_release_20260918/render_branch_preserving_pv.m",
+    "sha256": "a287abcb067e4e4a4b604c4553ffd5e37b78e46c28fd3f6a2aaa8bb006722f36"
+  }
+]
